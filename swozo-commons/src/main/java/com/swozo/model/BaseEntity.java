@@ -1,4 +1,4 @@
-package com.swozo.example;
+package com.swozo.model;
 
 import org.hibernate.Hibernate;
 

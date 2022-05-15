@@ -1,5 +1,6 @@
 package com.swozo.example;
 
+import com.swozo.model.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

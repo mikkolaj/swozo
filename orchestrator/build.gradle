@@ -16,11 +16,14 @@ configurations {
 
 repositories {
     mavenCentral()
+    flatDir {
+        dir '../swozo-commons/build/libs'
+    }
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'com.swozo:swozo'
+    implementation 'com.swozo:swozo-commons:0.0.1-SNAPSHOT'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'

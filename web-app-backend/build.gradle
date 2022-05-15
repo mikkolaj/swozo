@@ -16,15 +16,19 @@ configurations {
 
 repositories {
 	mavenCentral()
+	flatDir {
+		dir '../swozo-commons/build/libs'
+	}
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
 	implementation "org.springdoc:springdoc-openapi-ui:1.6.8"
 	implementation "org.springdoc:springdoc-openapi-data-rest:1.6.8"
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.7'
 	implementation 'org.postgresql:postgresql:42.3.4'
+
+	implementation 'com.swozo:swozo-commons:0.0.1-SNAPSHOT'
 
 	annotationProcessor 'org.projectlombok:lombok'
 
@@ -37,3 +41,4 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
