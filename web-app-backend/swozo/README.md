@@ -1,27 +1,25 @@
-# Getting Started
+# Swozo web-server
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Local developement
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.6.7/gradle-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.6.7/gradle-plugin/reference/html/#build-image)
-* [Spring Security](https://docs.spring.io/spring-boot/docs/2.6.7/reference/htmlsingle/#boot-features-security)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/2.6.7/reference/htmlsingle/#using-boot-devtools)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.6.7/reference/htmlsingle/#boot-features-developing-web-applications)
+In this directory run:
+```shell
+docker-compose up
+```
 
-### Guides
-The following guides illustrate how to use some features concretely:
+For now running server via Intellij is recommended. Server should be available at `localhost:5000`.
 
-* [Securing a Web Application](https://spring.io/guides/gs/securing-web/)
-* [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
-* [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
+---
+### Alternatively you can run dependencies individually:
 
-### Additional Links
-These additional references should also help you:
+#### Running database:
+```shell
+docker run -d \
+    -p 5432:5432 \
+    --name swozo-web-postgres \
+    -e POSTGRES_DB=swozo-web-db \
+    -e POSTGRES_PASSWORD=mysecretpassword \
+    postgres:14-alpine
+```
 
-* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
-
+---
