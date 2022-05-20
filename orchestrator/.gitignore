@@ -38,3 +38,4 @@ out/
 
 ## internal
 orchestrator-key.json
+**/.vagrant/
