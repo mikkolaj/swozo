@@ -12,6 +12,8 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    all*.exclude group: "commons-logging", module: "commons-logging"
+    all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
 }
 
 repositories {
@@ -25,6 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.swozo:swozo-commons:0.0.1-SNAPSHOT'
     implementation 'com.google.cloud:google-cloud-compute:1.9.1'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
