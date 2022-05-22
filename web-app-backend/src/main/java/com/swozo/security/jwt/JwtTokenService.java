@@ -1,9 +1,11 @@
 package com.swozo.security.jwt;
 
 import com.swozo.config.EnvNames;
+import com.swozo.model.users.Role;
 import com.swozo.model.users.User;
 import com.swozo.security.TokenService;
 import com.swozo.security.keys.KeyProvider;
+import com.swozo.security.util.AuthUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,6 +18,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -25,6 +28,7 @@ public class JwtTokenService implements TokenService {
     private static final String EXPIRY_DATE_FIELD = "exp";
     private static final String SUBJECT_FIELD = "sub";
     private static final String ISSUED_AT_FIELD = "iat";
+    private static final String ROLES_FIELD = "rol";
 
     private final KeyProvider keyProvider;
 
@@ -45,24 +49,34 @@ public class JwtTokenService implements TokenService {
                 )
         );
 
-        var token = createToken(String.valueOf(user.getId()), expirationDate);
-        return new JwtAccessToken(token, user.getId(), expirationDate.toInstant().getEpochSecond());
+        var roles = user.getRoles().stream().map(Role::getName).toList();
+        var token = createToken(String.valueOf(user.getId()), expirationDate, roles);
+
+        return new JwtAccessToken(
+                token,
+                user.getId(),
+                expirationDate.toInstant().getEpochSecond(),
+                AuthUtils.getUsersAuthorities(user));
     }
 
+    @SuppressWarnings("unchecked") // suppress List to List<String> cast warning
     public JwtAccessToken parseAccessToken(String token) {
         var claims = parseClaims(token);
+
         return new JwtAccessToken(
                 token,
                 Integer.parseInt(claims.getSubject()),
-                claims.get(EXPIRY_DATE_FIELD, Date.class).toInstant().getEpochSecond()
+                claims.get(EXPIRY_DATE_FIELD, Date.class).toInstant().getEpochSecond(),
+                AuthUtils.getUsersAuthorities((List<String>) claims.get(ROLES_FIELD, List.class))
         );
     }
 
-    private String createToken(String uuid, Date expirationDate) {
+    private String createToken(String uuid, Date expirationDate, List<String> roles) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(EXPIRY_DATE_FIELD, expirationDate.toInstant().getEpochSecond());
         claims.put(SUBJECT_FIELD, uuid);
         claims.put(ISSUED_AT_FIELD, new Date().toInstant().getEpochSecond());
+        claims.put(ROLES_FIELD, roles);
 
         return Jwts.builder()
                 .setSubject(uuid)

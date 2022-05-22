@@ -1,5 +1,6 @@
-package com.swozo.model.users;
+package com.swozo.repository;
 
+import com.swozo.model.users.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

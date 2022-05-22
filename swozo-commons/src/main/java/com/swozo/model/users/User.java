@@ -3,10 +3,11 @@ package com.swozo.model.users;
 import com.swozo.model.BaseEntity;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "Users", indexes = {
@@ -22,5 +23,10 @@ import javax.persistence.UniqueConstraint;
 public class User extends BaseEntity {
     private String email;
     private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
+    private Collection<Role> roles = new LinkedList<>();
 }
 

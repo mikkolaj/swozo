@@ -1,7 +1,9 @@
 package com.swozo.security.jwt;
 
 import com.swozo.security.AccessToken;
+import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collection;
 import java.util.Date;
 
 public class JwtAccessToken extends AccessToken {
@@ -9,8 +11,8 @@ public class JwtAccessToken extends AccessToken {
     private final long expireTime; // epoch time
     private final long uuid;
 
-    public JwtAccessToken(String token, long uuid, long expireTime) {
-        super(null);
+    public JwtAccessToken(String token, long uuid, long expireTime, Collection<? extends GrantedAuthority> authorities) {
+        super(authorities);
         this.token = token;
         this.uuid = uuid;
         this.expireTime = expireTime;

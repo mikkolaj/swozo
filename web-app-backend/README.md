@@ -1,8 +1,9 @@
 # Swozo web-server
 
-## Local developement
+## Local development
 
 In this directory run:
+
 ```shell
 docker-compose up
 ```
@@ -10,9 +11,11 @@ docker-compose up
 For now running server via Intellij is recommended. Server should be available at `localhost:5000`.
 
 ---
+
 ### Alternatively you can run dependencies individually:
 
 #### Running database:
+
 ```shell
 docker run -d \
     -p 5432:5432 \

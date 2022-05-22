@@ -1,8 +1,9 @@
 package com.swozo.api.auth;
 
+import com.swozo.api.auth.dto.AppRole;
 import com.swozo.api.auth.dto.AuthData;
 import com.swozo.api.auth.dto.LoginData;
-import com.swozo.model.users.UserRepository;
+import com.swozo.repository.UserRepository;
 import com.swozo.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ public class AuthService {
     public AuthData authenticateUser(LoginData loginData) {
         var user = userRepository.findByEmail(loginData.email()).orElseThrow();
         var token = tokenService.createAccessToken(user);
-        return new AuthData(token.getCredentials(), token.getExpireTime());
+        var appRoles = user.getRoles().stream().map(AppRole::from).toList();
+
+        // duplicate some data stored in token for easier access on frontend
+        return new AuthData(token.getCredentials(), token.getExpireTime(), appRoles);
     }
 }
