@@ -57,7 +57,7 @@ public class VMLifecycleManager {
     public Future<Operation> deleteInstance(VMAddress vmAddress)
             throws IOException, ExecutionException, InterruptedException, TimeoutException {
         try (var instancesClient = InstancesClient.create()) {
-            var deleteInstanceRequest = createDeleteInstanceRequest(vmAddress.project(), vmAddress.zone(), vmAddress.vmName());
+            var deleteInstanceRequest = createDeleteInstanceRequest(vmAddress);
 
             logger.info(String.format("Deleting instance: %s ", vmAddress.vmName()));
 
@@ -67,11 +67,11 @@ public class VMLifecycleManager {
         }
     }
 
-    private DeleteInstanceRequest createDeleteInstanceRequest(String project, String zone, String vmName) {
+    private DeleteInstanceRequest createDeleteInstanceRequest(VMAddress vmAddress) {
         return DeleteInstanceRequest.newBuilder()
-                .setProject(project)
-                .setZone(zone)
-                .setInstance(vmName)
+                .setProject(vmAddress.project())
+                .setZone(vmAddress.zone())
+                .setInstance(vmAddress.vmName())
                 .build();
     }
 
