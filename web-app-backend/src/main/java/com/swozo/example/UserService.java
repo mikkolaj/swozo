@@ -16,11 +16,11 @@ public class UserService {
     public UserService(UserRepository importedRepo) {
         this.importedRepo = importedRepo;
 
-        importedRepo.save(new User("admin"));
+        importedRepo.save(new User("admin", "admin"));
     }
 
     public User getUser() {
-        return importedRepo.findByName("admin").orElseThrow();
+        return importedRepo.findByEmail("admin").orElseThrow();
     }
 
     @PostConstruct

@@ -1,4 +1,4 @@
-package com.swozo.configs;
+package com.swozo.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
