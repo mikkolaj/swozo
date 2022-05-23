@@ -1,4 +1,4 @@
-package com.swozo.orchestrator;
+package com.swozo.orchestrator.gcloud.compute.examples;
 
 import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.compute.v1.*;
