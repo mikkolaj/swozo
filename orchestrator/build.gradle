@@ -12,8 +12,6 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-    all*.exclude group: "commons-logging", module: "commons-logging"
-    all*.exclude group: "org.slf4j", module: "slf4j-log4j12"
 }
 
 repositories {

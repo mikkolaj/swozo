@@ -26,7 +26,7 @@ public class OrchestratorApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void doSomethingAfterStartup() {
-        System.out.println("hello world, I have just started up");
+        System.out.println("Hello world, I have just started up");
         createAndDeleteInstance();
     }
 
