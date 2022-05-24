@@ -20,6 +20,7 @@ public class AuthService {
     }
 
     public AuthData authenticateUser(LoginData loginData) {
+        // TODO check passwd etc
         var user = userRepository.findByEmail(loginData.email()).orElseThrow();
         var token = tokenService.createAccessToken(user);
         var appRoles = user.getRoles().stream().map(AppRole::from).toList();

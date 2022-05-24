@@ -1,27 +1,58 @@
+import { getApis } from 'api/initialize-apis';
+import Login from 'pages/Login/Login';
 import { useEffect, useState } from 'react';
+import { useAppSelector } from 'Services/store';
 
 function App() {
+    const { authData } = useAppSelector(({ auth }) => auth);
     const [connState, setConnState] = useState('loading');
+    const [shouldTest, setShouldTest] = useState(false);
+    const [roleToTest, setRoleToTest] = useState('');
 
     useEffect(() => {
         const testConn = async () => {
             try {
-                const data = await fetch('http://localhost:5000/example').then((resp) => resp.text());
-                const jsonData = await fetch('http://localhost:5000/example/json').then((resp) =>
-                    resp.json()
-                );
+                let data;
+
+                if (roleToTest === '') data = await getApis().exampleApi.getExample();
+                else if (roleToTest === 'ADMIN') data = await getApis().exampleApi.getExampleJson();
+
                 console.log(data);
-                console.log(jsonData);
-                setConnState(data + JSON.stringify(jsonData));
+                setConnState(JSON.stringify(data));
             } catch (err) {
-                setConnState(`no connection: ${err}`);
+                setConnState(`error occurred: ${JSON.stringify(err)}`);
             }
         };
 
-        testConn();
-    }, []);
+        if (shouldTest) {
+            testConn();
+            setShouldTest(false);
+        }
+    }, [shouldTest, roleToTest]);
 
-    return <div>Hello {connState}</div>;
+    return (
+        <>
+            <Login />
+            <button
+                onClick={() => {
+                    setRoleToTest('');
+                    setShouldTest(true);
+                }}
+            >
+                test jwt no roles
+            </button>
+            <button
+                onClick={() => {
+                    setRoleToTest('ADMIN');
+                    setShouldTest(true);
+                }}
+            >
+                test admin role
+            </button>
+            <div>{JSON.stringify(connState)}</div>
+            <div>auth data from backend: {JSON.stringify(authData)}</div>
+        </>
+    );
 }
 
 export default App;

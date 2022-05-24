@@ -1,4 +1,8 @@
 package com.swozo.api.auth.dto;
 
-public record LoginData(String email, String password) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record LoginData(
+        @Schema(required = true) String email,
+        @Schema(required = true) String password) {
 }

@@ -62,5 +62,4 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         var technicalTeacherRole = roleRepository.findByName(AppRole.TECHNICAL_TEACHER.toString());
         userRepository.save(new User("teacher", "teacher", List.of(teacherRole, technicalTeacherRole)));
     }
-
 }

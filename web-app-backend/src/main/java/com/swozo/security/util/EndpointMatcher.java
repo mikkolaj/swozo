@@ -19,6 +19,7 @@ public class EndpointMatcher {
     }
 
     public boolean matches(String requestUri, HttpMethod httpMethod) {
+        // matching on http method may be useful in the future, doesn't work for now
         AntPathMatcher pathMatcher = new AntPathMatcher();
         return pathPatterns.stream().anyMatch(pathPattern -> pathMatcher.match(pathPattern, requestUri));
     }

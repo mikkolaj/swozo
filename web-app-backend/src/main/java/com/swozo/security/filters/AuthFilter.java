@@ -2,6 +2,7 @@ package com.swozo.security.filters;
 
 import com.swozo.security.AuthConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,6 +27,11 @@ public class AuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        if (isCorsPreflight(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // will throw Security or Unauthorized exception if authentication fails
         authConstraints.stream()
                 .filter(authConstraint -> authConstraint.appliesTo(request))
@@ -34,5 +40,10 @@ public class AuthFilter extends OncePerRequestFilter {
                 .ifPresent(authentication -> SecurityContextHolder.getContext().setAuthentication(authentication));
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isCorsPreflight(HttpServletRequest request) {
+        // TODO find more elegant way to handle this
+        return HttpMethod.OPTIONS.equals(HttpMethod.resolve(request.getMethod()));
     }
 }
