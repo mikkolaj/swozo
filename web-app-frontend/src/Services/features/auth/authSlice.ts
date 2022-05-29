@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from 'Services/store';
 const LOCAL_STORAGE_AUTH_KEY = 'JWT';
 
 export function isTokenExpired(authData: AuthData) {
-    return authData.expiresIn >= new Date().getTime();
+    return authData.expiresIn * 1000 <= new Date().getTime();
 }
 
 function persistAuthState(auth: AuthData): void {
