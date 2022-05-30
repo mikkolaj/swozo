@@ -1,4 +1,4 @@
-import { store } from 'Services/store';
+import { store } from 'services/store';
 import { isTokenExpired, logout } from './authSlice';
 
 export async function getAccessToken(): Promise<string> {

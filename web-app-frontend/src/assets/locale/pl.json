@@ -1,0 +1,27 @@
+{
+    "login": {
+        "header": "Logowanie",
+        "email": "Adres Email",
+        "password": "Hasło",
+        "button": "Zaloguj się"
+    },
+    "navbar": {
+        "logo": "SWOZO",
+        "courses": "kursy",
+        "logout": "wyloguj"
+    },
+    "courses": {
+        "header": "Moje kursy",
+        "course": {
+            "lastActivity": "Ostatnia aktywność:",
+            "teacher": "prowadzący: {{name}}",
+            "button": "szczegóły"
+        }
+    },
+    "course": {
+        "activity": {
+            "links": "linki",
+            "instructions": "instrukcje"
+        }
+    }
+}

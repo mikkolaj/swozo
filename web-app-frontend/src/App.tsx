@@ -1,56 +1,33 @@
-import { getApis } from 'api/initialize-apis';
+import { CssBaseline } from '@mui/material';
+import Navbar from 'common/Navbar/Navbar';
+import { PageGuard } from 'common/PageGuard/PageGuard';
+import { CourseView } from 'pages/Course/CourseView';
+import { CoursesListView } from 'pages/CoursesList/CoursesListView';
+import { Home } from 'pages/Home/Home';
 import Login from 'pages/Login/Login';
-import { useEffect, useState } from 'react';
-import { useAppSelector } from 'Services/store';
+import { Route, Routes } from 'react-router-dom';
+import { useAppSelector } from 'services/store';
+import { ANY_LOGGED_IN, AuthRequirement, NOT_LOGGED_IN } from 'utils/roles';
+import { PageRoutes } from 'utils/routes';
+
+export const guarded = (element: JSX.Element, authRequirement: AuthRequirement): JSX.Element => {
+    return <PageGuard authRequirement={authRequirement}>{element}</PageGuard>;
+};
 
 function App() {
-    const { authData } = useAppSelector(({ auth }) => auth);
-    const [connState, setConnState] = useState('loading');
-    const [shouldTest, setShouldTest] = useState(false);
-    const [roleToTest, setRoleToTest] = useState('');
-
-    useEffect(() => {
-        const testConn = async () => {
-            try {
-                let data;
-
-                if (roleToTest === '') data = await getApis().exampleApi.getExample();
-                else if (roleToTest === 'ADMIN') data = await getApis().exampleApi.getExampleJson();
-
-                console.log(data);
-                setConnState(JSON.stringify(data));
-            } catch (err) {
-                setConnState(`error occurred: ${JSON.stringify(err)}`);
-            }
-        };
-
-        if (shouldTest) {
-            testConn();
-            setShouldTest(false);
-        }
-    }, [shouldTest, roleToTest]);
+    const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
 
     return (
         <>
-            <Login />
-            <button
-                onClick={() => {
-                    setRoleToTest('');
-                    setShouldTest(true);
-                }}
-            >
-                test jwt no roles
-            </button>
-            <button
-                onClick={() => {
-                    setRoleToTest('ADMIN');
-                    setShouldTest(true);
-                }}
-            >
-                test admin role
-            </button>
-            <div>{JSON.stringify(connState)}</div>
-            <div>auth data from backend: {JSON.stringify(authData)}</div>
+            <CssBaseline />
+            {isLoggedIn && <Navbar />}
+            <Routes>
+                <Route path={PageRoutes.HOME} element={guarded(<Home />, ANY_LOGGED_IN)} />
+                <Route path={PageRoutes.LOGIN} element={guarded(<Login />, NOT_LOGGED_IN)} />
+                <Route path={PageRoutes.COURSES} element={guarded(<CoursesListView />, ANY_LOGGED_IN)} />
+                <Route path={PageRoutes.COURSE} element={guarded(<CourseView />, ANY_LOGGED_IN)} />
+                <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
+            </Routes>
         </>
     );
 }

@@ -1,20 +1,38 @@
+import pl from 'assets/locale/pl.json';
+import i18n from 'i18next';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { initReactI18next } from 'react-i18next';
 import { Provider } from 'react-redux';
-import { store } from 'Services/store';
+import { BrowserRouter } from 'react-router-dom';
+import { store } from 'services/store';
 import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(
-    document.getElementById('root') as HTMLElement,
-);
+i18n.use(initReactI18next) // passes i18n down to react-i18next
+    .init({
+        resources: {
+            pl: {
+                translation: pl,
+            },
+        },
+        lng: 'pl', // if you're using a language detector, do not define the lng option
+        fallbackLng: 'pl',
+        interpolation: {
+            escapeValue: false, // react already safes from xss
+        },
+    });
+
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
     <React.StrictMode>
         <Provider store={store}>
-            <App />
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
         </Provider>
-    </React.StrictMode>,
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

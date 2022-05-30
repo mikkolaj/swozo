@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthData, LoginData } from 'api';
 import { getApis } from 'api/initialize-apis';
-import { AppDispatch, RootState } from 'Services/store';
+import { AppDispatch, RootState } from 'services/store';
 
 const LOCAL_STORAGE_AUTH_KEY = 'JWT';
 
