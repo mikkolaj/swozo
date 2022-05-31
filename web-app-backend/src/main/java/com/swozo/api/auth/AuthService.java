@@ -26,6 +26,6 @@ public class AuthService {
         var appRoles = user.getRoles().stream().map(AppRole::from).toList();
 
         // duplicate some data stored in token for easier access on frontend
-        return new AuthData(token.getCredentials(), token.getExpireTime(), appRoles);
+        return new AuthData(token.getCredentials(), token.getExpirationTime(), appRoles);
     }
 }

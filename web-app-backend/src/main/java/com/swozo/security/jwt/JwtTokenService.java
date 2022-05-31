@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class JwtTokenService implements TokenService {
@@ -72,7 +71,7 @@ public class JwtTokenService implements TokenService {
     }
 
     private String createToken(String uuid, Date expirationDate, List<String> roles) {
-        Map<String, Object> claims = new HashMap<>();
+        var claims = new HashMap<String, Object>();
         claims.put(EXPIRY_DATE_FIELD, expirationDate.toInstant().getEpochSecond());
         claims.put(SUBJECT_FIELD, uuid);
         claims.put(ISSUED_AT_FIELD, new Date().toInstant().getEpochSecond());
