@@ -1,5 +1,6 @@
 package com.swozo.model;
 
+import lombok.Getter;
 import org.hibernate.Hibernate;
 
 import javax.persistence.GeneratedValue;
@@ -7,13 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 
-// Klasa implementująca defaultowy hashCode dla Entity
+// Class implementing default equals and hash code for all entities
 @MappedSuperclass
+@Getter
 public abstract class BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
-
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
