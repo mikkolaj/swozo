@@ -1,8 +1,8 @@
 package com.swozo.orchestrator;
 
-import com.swozo.orchestrator.gcloud.compute.VMLifecycleManager;
-import com.swozo.orchestrator.gcloud.compute.model.VMAddress;
-import com.swozo.orchestrator.gcloud.compute.model.VMSpecs;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.VMLifecycleManager;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

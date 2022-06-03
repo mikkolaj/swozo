@@ -1,0 +1,16 @@
+---
+
+- name: Run jupyter container
+  hosts: all
+  tasks:
+    - name: Run jupyter container
+      community.docker.docker_container:
+        name: jupyter
+        image: jupyter/datascience-notebook
+        auto_remove: yes
+        ports:
+          - "8888:8888"
+        mounts:
+          - source: "/home/swozo/jupyter"
+          - target: "/home/jovyan/work"
+      become: yes
