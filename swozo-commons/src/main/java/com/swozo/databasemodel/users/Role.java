@@ -1,6 +1,6 @@
-package com.swozo.model.users;
+package com.swozo.databasemodel.users;
 
-import com.swozo.model.BaseEntity;
+import com.swozo.databasemodel.BaseEntity;
 import lombok.*;
 
 import javax.persistence.Entity;
