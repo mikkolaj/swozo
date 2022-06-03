@@ -1,8 +1,8 @@
 package com.swozo.security.jwt;
 
 import com.swozo.config.EnvNames;
-import com.swozo.model.users.Role;
-import com.swozo.model.users.User;
+import com.swozo.databasemodel.users.Role;
+import com.swozo.databasemodel.users.User;
 import com.swozo.security.TokenService;
 import com.swozo.security.keys.KeyProvider;
 import com.swozo.security.util.AuthUtils;

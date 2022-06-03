@@ -1,4 +1,4 @@
-package com.swozo.model;
+package com.swozo.databasemodel;
 
 import lombok.Getter;
 import org.hibernate.Hibernate;
