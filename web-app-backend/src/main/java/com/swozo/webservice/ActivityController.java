@@ -2,13 +2,11 @@ package com.swozo.webservice;
 
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
+import com.swozo.databasemodel.ServiceModule;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -30,9 +28,9 @@ public class ActivityController {
 
     @GetMapping("/module_list")
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<Module> getModuleList(AccessToken token){
+    public Collection<ServiceModule> getModuleList(AccessToken token){
         System.out.println("module list");
-        return new LinkedList<Module>();
+        return new LinkedList<>();
     }
 
     @PostMapping("/add_module_to_activity")
@@ -42,7 +40,7 @@ public class ActivityController {
         return "activity_id";
     }
 
-    @PostMapping("/delete_module_from_activity")
+    @DeleteMapping("/delete_module_from_activity")
     @PreAuthorize("hasRole('TEACHER')")
     public String deleteModuleFromActivity(AccessToken token){
         System.out.println("deleting module from activity");
