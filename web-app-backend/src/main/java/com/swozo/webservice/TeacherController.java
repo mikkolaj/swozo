@@ -4,6 +4,7 @@ import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
 import com.swozo.security.AccessToken;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -29,7 +30,7 @@ public class TeacherController {
         return "course_id";
     }
 
-    @PostMapping("/deleting_course")
+    @DeleteMapping("/deleting_course")
     @PreAuthorize("hasRole('TEACHER')")
     public String deleteCourse(AccessToken token){
         System.out.println("deleting new course");
