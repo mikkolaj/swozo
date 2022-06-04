@@ -18,6 +18,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RestController
 @RequestMapping("/course")
 @SecurityRequirement(name = ACCESS_TOKEN)
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CourseController {
     @Autowired
     private final CourseService courseService;
