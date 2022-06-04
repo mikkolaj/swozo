@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AuthData, LoginData } from 'api';
+import { AuthData, AuthDataRolesEnum, LoginData } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { AppDispatch, RootState } from 'services/store';
+import { hasRole } from 'utils/roles';
 
 const LOCAL_STORAGE_AUTH_KEY = 'JWT';
+const LOCAL_STORAGE_ROLE_PREF_KEY = 'ROLE_PREF';
 
 export function isTokenExpired(authData: AuthData) {
     return authData.expiresIn * 1000 <= new Date().getTime();
@@ -17,16 +19,28 @@ function clearAuthPersistence(): void {
     window.localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
 }
 
+function canHaveRolePreference(authData: AuthData | null, pref?: AuthDataRolesEnum): boolean {
+    if (!pref) return true;
+
+    return hasRole(authData, pref);
+}
+
 export type AuthState = {
     authData: AuthData | null;
+    rolePreference?: AuthDataRolesEnum;
     isLoggedIn: boolean;
     isFetching: boolean;
     errors?: string[];
 };
 
 function buildInitialState(): AuthState {
-    const storedAuthData = window?.localStorage?.getItem(LOCAL_STORAGE_AUTH_KEY);
+    const storedAuthData = window.localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
+    const storedRolePreference = window.localStorage.getItem(LOCAL_STORAGE_ROLE_PREF_KEY);
+
     let authData: AuthData | null = storedAuthData ? JSON.parse(storedAuthData) : null;
+    const rolePreference: AuthDataRolesEnum | undefined = storedRolePreference
+        ? JSON.parse(storedRolePreference)
+        : undefined;
     let isLoggedIn = false;
 
     if (authData) {
@@ -44,6 +58,7 @@ function buildInitialState(): AuthState {
         authData,
         isLoggedIn,
         isFetching: false,
+        rolePreference: canHaveRolePreference(authData, rolePreference) ? rolePreference : undefined,
     };
 }
 
@@ -87,6 +102,19 @@ export const logout = createAsyncThunk('auth/logout', (_, { dispatch }) => {
     dispatch(resetAuthData());
 });
 
+// TODO NOT USED, probably was a bad idea, leaving just in case
+export const setRolePreference = createAsyncThunk<
+    unknown,
+    AuthDataRolesEnum,
+    { dispatch: AppDispatch; state: RootState }
+>('auth/roles/preference', (role: AuthDataRolesEnum, { getState, dispatch }) => {
+    const auth = getState().auth;
+    if (!auth || auth.rolePreference === role || !canHaveRolePreference(auth.authData, role)) return;
+
+    localStorage.setItem(LOCAL_STORAGE_ROLE_PREF_KEY, JSON.stringify(role));
+    dispatch(setRolePref(role));
+});
+
 export const authSlice = createSlice({
     name: 'auth',
     initialState: buildInitialState(),
@@ -101,6 +129,9 @@ export const authSlice = createSlice({
             state.isLoggedIn = false;
             state.errors = undefined; // maybe leave it
         },
+        setRolePref: (state: AuthState, action: PayloadAction<AuthDataRolesEnum>) => {
+            state.rolePreference = action.payload;
+        },
         clearAuthErrors: (state: AuthState) => {
             state.errors = undefined;
         },
@@ -113,6 +144,6 @@ export const authSlice = createSlice({
     },
 });
 
-export const { setAuthData, resetAuthData, setAuthErrors, clearAuthErrors, setFetching } = authSlice.actions;
+const { setAuthData, resetAuthData, setAuthErrors, setFetching, setRolePref } = authSlice.actions;
 
 export default authSlice.reducer;

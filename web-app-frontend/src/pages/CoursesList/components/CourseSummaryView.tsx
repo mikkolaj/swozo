@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ export const CourseSummaryView: React.FC<Props> = ({ courseSummary }: Props) => 
     const navigate = useNavigate();
 
     return (
-        <Card>
+        <Card sx={{ boxShadow: 3 }}>
             <CardContent>
                 <Grid container>
                     <Grid item xs={8}>
@@ -32,15 +32,19 @@ export const CourseSummaryView: React.FC<Props> = ({ courseSummary }: Props) => 
                             {courseSummary.lastActivity}
                         </Typography>
                     </Grid>
-                    <Grid container xs={8} sx={{ mt: 2, mb: -2 }} alignItems="center">
-                        <Typography variant="body2">
-                            {t('courses.course.teacher', { name: courseSummary.teacherName })}
-                        </Typography>
+                    <Grid item xs={8} sx={{ mt: 2, mb: -2 }}>
+                        <Box display="flex" alignItems="center">
+                            <Typography variant="body2">
+                                {t('courses.course.teacher', { name: courseSummary.teacherName })}
+                            </Typography>
+                        </Box>
                     </Grid>
-                    <Grid container xs={4} sx={{ mt: 2, mb: -2 }} justifyContent="flex-end">
-                        <Button onClick={() => navigate(PageRoutes.buildCourseRoute(courseSummary.id))}>
-                            {t('courses.course.button')}
-                        </Button>
+                    <Grid item xs={4} sx={{ mt: 2, mb: -2 }} justifyContent="flex-end">
+                        <Box display="flex" justifyContent="flex-end">
+                            <Button onClick={() => navigate(PageRoutes.buildCourseRoute(courseSummary.id))}>
+                                {t('courses.course.button')}
+                            </Button>
+                        </Box>
                     </Grid>
                 </Grid>
             </CardContent>

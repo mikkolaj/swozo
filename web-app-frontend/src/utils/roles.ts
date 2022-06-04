@@ -22,6 +22,7 @@ export const withRole = (...roles: AuthDataRolesEnum[]): AuthRequirement => {
     };
 };
 
-export const hasRole = (authData: AuthData, ...roles: AuthDataRolesEnum[]): boolean => {
+export const hasRole = (authData: AuthData | null, ...roles: AuthDataRolesEnum[]): boolean => {
+    if (!authData) return false;
     return roles.find((role) => authData.roles.includes(role)) !== undefined;
 };

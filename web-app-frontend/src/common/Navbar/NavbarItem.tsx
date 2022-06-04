@@ -1,4 +1,4 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -22,7 +22,9 @@ export const NavbarItem: React.FC<Props> = ({ textPath, route, onClick }: Props)
             color="inherit"
         >
             <Box sx={{ textDecoration: location.pathname === route ? 'underline' : 'none' }}>
-                {t(textPath)}
+                <Typography component="h1" variant="button">
+                    {t(textPath)}
+                </Typography>
             </Box>
         </Button>
     );

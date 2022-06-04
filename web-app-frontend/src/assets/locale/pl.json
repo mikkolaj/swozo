@@ -8,10 +8,15 @@
     "navbar": {
         "logo": "SWOZO",
         "courses": "kursy",
-        "logout": "wyloguj"
+        "menu": {
+            "logout": "wyloguj",
+            "switchToTechnical": "Widok nauczyciela technicznego",
+            "switchToTeacher": "Widok nauczyciela"
+        }
     },
     "courses": {
         "header": "Moje kursy",
+        "createCourseButton": "Utwórz kurs",
         "course": {
             "lastActivity": "Ostatnia aktywność:",
             "teacher": "prowadzący: {{name}}",
@@ -21,7 +26,11 @@
     "course": {
         "activity": {
             "links": "linki",
-            "instructions": "instrukcje"
+            "instructions": "instrukcje",
+            "linksInfo": {
+                "info": "Linki dla: {{courseName}} - {{activityName}}",
+                "closeButton": "Zamknij"
+            }
         }
     }
 }
