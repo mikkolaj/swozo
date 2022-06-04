@@ -1,6 +1,6 @@
 package com.swozo.orchestrator;
 
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.VMLifecycleManager;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.GCloudVMLifecycleManager;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 public class OrchestratorApplication {
     @Autowired
-    VMLifecycleManager vmLifecycleManager;
+    GCloudVMLifecycleManager GCloudVmLifecycleManager;
 
     Logger logger = LoggerFactory.getLogger(OrchestratorApplication.class);
 
@@ -40,7 +40,7 @@ public class OrchestratorApplication {
         var vmSpecs = new VMSpecs("e2-micro", "debian-11", 10);
 
         try {
-            var operation = vmLifecycleManager.createInstance(vmAddress, vmSpecs);
+            var operation = GCloudVmLifecycleManager.createInstance(vmAddress, vmSpecs);
             var response = operation.get(3, TimeUnit.MINUTES);
 
             if (response.hasError()) {
@@ -53,7 +53,7 @@ public class OrchestratorApplication {
         }
 
         try {
-            var operation = vmLifecycleManager.deleteInstance(vmAddress);
+            var operation = GCloudVmLifecycleManager.deleteInstance(vmAddress);
             var response = operation.get(3, TimeUnit.MINUTES);
 
             if (response.hasError()) {

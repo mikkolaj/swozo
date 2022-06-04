@@ -1,11 +1,12 @@
 package com.swozo.orchestrator.cloud.resources.gcloud.compute;
 
 import com.google.cloud.compute.v1.*;
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.storage.DiskProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.instance.InstanceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.networking.NetworkInterfaceProvider;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.storage.DiskProvider;
+import com.swozo.orchestrator.cloud.resources.vm.VMLifecycleManager;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 
 @Service
 @RequiredArgsConstructor
-public class VMLifecycleManager {
+public class GCloudVMLifecycleManager implements VMLifecycleManager {
     private static final String DEFAULT_DISK_NAME = "disk-1";
 
     private static final int GCLOUD_TIMEOUT_MINUTES = 3;
@@ -30,7 +31,7 @@ public class VMLifecycleManager {
     private final DiskProvider diskProvider;
     private final NetworkInterfaceProvider networkInterfaceProvider;
     private final InstanceProvider instanceProvider;
-    private final Logger logger = LoggerFactory.getLogger(VMLifecycleManager.class);
+    private final Logger logger = LoggerFactory.getLogger(GCloudVMLifecycleManager.class);
 
     @Async
     public Future<Operation> createInstance(VMAddress vmAddress, VMSpecs vmSpecs)
