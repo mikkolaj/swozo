@@ -4,7 +4,7 @@ import Navbar from 'common/Navbar/Navbar';
 import { PageGuard } from 'common/PageGuard/PageGuard';
 import { CourseView } from 'pages/Course/CourseView';
 import { CoursesListView } from 'pages/CoursesList/CoursesListView';
-import { CreateCourse } from 'pages/CreateCourse/CreateCourse';
+import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
 import { Home } from 'pages/Home/Home';
 import Login from 'pages/Login/Login';
 import { Route, Routes } from 'react-router-dom';
@@ -30,7 +30,7 @@ function App() {
                 <Route path={PageRoutes.COURSE} element={guarded(<CourseView />, ANY_LOGGED_IN)} />
                 <Route
                     path={PageRoutes.CREATE_COURSE}
-                    element={guarded(<CreateCourse />, withRole(AuthDataRolesEnum.Teacher))}
+                    element={guarded(<CreateCourseView />, withRole(AuthDataRolesEnum.Teacher))}
                 />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
             </Routes>

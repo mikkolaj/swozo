@@ -32,5 +32,31 @@
                 "closeButton": "Zamknij"
             }
         }
+    },
+    "createCourse": {
+        "title": "Nowy kurs",
+        "slides": {
+            "0": {
+                "title": "Informacje ogólne",
+                "form": {
+                    "name": "nazwa",
+                    "subject": "tematyka",
+                    "description": "opis",
+                    "numberOfActivities": "liczba zajęć",
+                    "numberOfStudents": "liczba uczestników"
+                }
+            },
+            "1": {
+                "title": "Planowanie zajęć",
+                "form": {}
+            },
+            "2": {
+                "title": "Podsumowanie"
+            }
+        }
+    },
+    "form": {
+        "nextButton": "Dalej",
+        "backButton": "Wróć"
     }
 }
