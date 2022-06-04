@@ -6,13 +6,13 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Modules")
+@Table(name = "ServiceModules")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class Module extends BaseEntity {
+public class ServiceModule extends BaseEntity {
     private String name;
     private String instructionsFromTechnicalTeacher;
 
