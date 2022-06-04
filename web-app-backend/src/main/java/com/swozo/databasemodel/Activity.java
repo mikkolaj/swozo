@@ -4,6 +4,7 @@ import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -16,19 +17,21 @@ import java.util.LinkedList;
 @ToString
 public class Activity extends BaseEntity {
     private String name;
-    private String dateTime;
+    private String description;
+    private LocalDateTime dateTime;
+    private String instructionsFromTeacher;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "module_id")
-    private Collection<Module> modules = new LinkedList<>();
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "activity_module_id")
+    private Collection<ActivityModule> modules = new LinkedList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;
 
-    public void addModule(Module newModule) {
-        modules.add(newModule);
+    public void addActivityModule(ActivityModule newModuleMetadata) {
+        modules.add(newModuleMetadata);
     }
 
 }
