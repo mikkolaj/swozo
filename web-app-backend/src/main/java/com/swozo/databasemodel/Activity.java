@@ -22,7 +22,7 @@ public class Activity extends BaseEntity {
     private String instructionsFromTeacher;
 
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "module_metadata_id")
+    @JoinColumn(name = "activity_module_id")
     private Collection<ActivityModule> modules = new LinkedList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -30,7 +30,7 @@ public class Activity extends BaseEntity {
     @JsonIgnore
     private Course course;
 
-    public void addModuleMetadata(ActivityModule newModuleMetadata) {
+    public void addActivityModule(ActivityModule newModuleMetadata) {
         modules.add(newModuleMetadata);
     }
 
