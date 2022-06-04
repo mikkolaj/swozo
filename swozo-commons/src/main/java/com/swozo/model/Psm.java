@@ -1,6 +1,4 @@
 package com.swozo.model;
 
-public class Psm {
-    String machineType;
-    int discSizeGB;
+public record Psm(String machineType, int discSizeGB) {
 }
