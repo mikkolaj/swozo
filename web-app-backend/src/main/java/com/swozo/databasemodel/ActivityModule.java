@@ -15,8 +15,8 @@ import java.util.List;
 @ToString
 public class ActivityModule extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "module_id")
-    private Module module;
+    @JoinColumn(name = "service_module_id")
+    private ServiceModule module;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "activity_id")
