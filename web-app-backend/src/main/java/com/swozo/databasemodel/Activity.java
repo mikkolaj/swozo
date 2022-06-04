@@ -20,7 +20,7 @@ public class Activity extends BaseEntity {
     private String description;
     private LocalDateTime dateTime;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "module_metadata_id")
     private Collection<ModuleMetadata> modules = new LinkedList<>();
 
