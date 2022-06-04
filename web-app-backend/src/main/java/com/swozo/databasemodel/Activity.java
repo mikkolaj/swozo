@@ -19,17 +19,18 @@ public class Activity extends BaseEntity {
     private String name;
     private String description;
     private LocalDateTime dateTime;
+    private String instructionsFromTeacher;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "module_metadata_id")
-    private Collection<ModuleMetadata> modules = new LinkedList<>();
+    private Collection<ActivityModule> modules = new LinkedList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
     @JsonIgnore
     private Course course;
 
-    public void addModuleMetadata(ModuleMetadata newModuleMetadata) {
+    public void addModuleMetadata(ActivityModule newModuleMetadata) {
         modules.add(newModuleMetadata);
     }
 

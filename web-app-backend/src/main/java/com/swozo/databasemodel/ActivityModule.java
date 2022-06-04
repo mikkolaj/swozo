@@ -7,21 +7,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "ModuleMetadata")
+@Table(name = "ActivityModules")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class ModuleMetadata extends BaseEntity {
+public class ActivityModule extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "module_id")
     private Module module;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "activity_id")
+    private Activity activity;
 
     private String instruction;
 
     @ElementCollection
     private List<String> links = new ArrayList<>();
+
+    /*
+    insert some MDA info fields here
+     */
 
     public void addLink(String link) {
         links.add(link);

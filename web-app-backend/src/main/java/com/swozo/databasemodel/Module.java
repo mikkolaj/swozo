@@ -14,4 +14,9 @@ import javax.persistence.Table;
 @ToString
 public class Module extends BaseEntity {
     private String name;
+    private String instructionsFromTechnicalTeacher;
+
+    /*
+    insert some service specs here
+     */
 }
