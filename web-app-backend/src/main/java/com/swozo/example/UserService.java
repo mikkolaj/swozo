@@ -1,6 +1,6 @@
 package com.swozo.example;
 
-import com.swozo.model.users.User;
+import com.swozo.databasemodel.users.User;
 import com.swozo.repository.RoleRepository;
 import com.swozo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
