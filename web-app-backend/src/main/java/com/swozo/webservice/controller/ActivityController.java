@@ -1,4 +1,4 @@
-package com.swozo.webservice;
+package com.swozo.webservice.controller;
 
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
