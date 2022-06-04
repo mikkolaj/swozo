@@ -1,4 +1,6 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
-public class JupyterProvisioner {
+import com.swozo.orchestrator.cloud.software.DockerSoftwareProvisioner;
+
+public class JupyterProvisioner extends DockerSoftwareProvisioner {
 }

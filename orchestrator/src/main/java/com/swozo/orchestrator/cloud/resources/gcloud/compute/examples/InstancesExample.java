@@ -4,6 +4,7 @@ import com.google.api.gax.longrunning.OperationFuture;
 import com.google.cloud.compute.v1.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -16,7 +17,7 @@ public class InstancesExample {
         var zone = "us-west2-a";
 //        createInstance(project, zone, "super-instancja");
         listInstances(project, zone);
-        deleteInstance(project, zone, "super-instancja");
+//        deleteInstance(project, zone, "super-instancja");
     }
 
     // List all instances in the given zone in the specified project ID.
@@ -24,7 +25,8 @@ public class InstancesExample {
         try (InstancesClient instancesClient = InstancesClient.create()) {
             System.out.printf("Listing instances from %s in %s:%n", project, zone);
             for (Instance zoneInstance : instancesClient.list(project, zone).iterateAll()) {
-                System.out.println(zoneInstance.getName());
+              System.out.println(zoneInstance.getName());
+              System.out.println(zoneInstance.getNetworkInterfaces(0).getAccessConfigs(0).getNatIP());
             }
             System.out.println("####### Listing instances complete #######");
         }
@@ -137,6 +139,45 @@ public class InstancesExample {
                 return;
             }
             System.out.println("Operation Status: " + response.getStatus());
+        }
+    }
+    public static InstancesClient.AggregatedListPagedResponse listAllInstances(String project) throws IOException {
+        // Initialize client that will be used to send requests. This client only needs to be created
+        // once, and can be reused for multiple requests. After completing all of your requests, call
+        // the `instancesClient.close()` method on the client to
+        // safely clean up any remaining background resources.
+        try (InstancesClient instancesClient = InstancesClient.create()) {
+
+            // Use the `setMaxResults` parameter to limit the number of results
+            // that the API returns per response page.
+            AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
+                    .newBuilder()
+                    .setProject(project)
+                    .setMaxResults(5)
+                    .build();
+
+            InstancesClient.AggregatedListPagedResponse response = instancesClient
+                    .aggregatedList(aggregatedListInstancesRequest);
+
+            // Despite using the `setMaxResults` parameter, you don't need to handle the pagination
+            // yourself. The returned `AggregatedListPager` object handles pagination
+            // automatically, requesting next pages as you iterate over the results.
+            for (Map.Entry<String, InstancesScopedList> zoneInstances : response.iterateAll()) {
+                // Instances scoped by each zone
+                String zone = zoneInstances.getKey();
+                if (!zoneInstances.getValue().getInstancesList().isEmpty()) {
+                    // zoneInstances.getKey() returns the fully qualified address.
+                    // Hence, strip it to get the zone name only
+                    System.out.printf("Instances at %s: ", zone.substring(zone.lastIndexOf('/') + 1));
+                    for (Instance instance : zoneInstances.getValue().getInstancesList()) {
+                        instance.getNetworkInterfacesList().forEach(bla -> {
+                            System.out.println(bla.getName());
+                        });
+                    }
+                }
+            }
+            System.out.println("####### Listing all instances complete #######");
+            return response;
         }
     }
 }

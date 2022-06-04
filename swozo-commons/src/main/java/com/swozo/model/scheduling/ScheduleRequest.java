@@ -8,7 +8,7 @@ import lombok.*;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class ScheduleRequest {
+public abstract class ScheduleRequest {
     private final ServiceLifespan serviceLifespan;
     private final Psm psm;
 }
