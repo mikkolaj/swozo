@@ -1,5 +1,7 @@
 package com.swozo.orchestratorclient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
 import com.swozo.model.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
@@ -26,7 +28,9 @@ public class OrchestratorService {
 
     public boolean postScheduleRequest(ScheduleRequest scheduleRequest) throws IOException {
         //here goes mapping request to json
-        String jsonRequest = "";
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String jsonRequest = ow.writeValueAsString(scheduleRequest);
+
         orchestratorController.postScheduleRequest(jsonRequest);
         return true;
     }
