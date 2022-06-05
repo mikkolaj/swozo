@@ -12,7 +12,7 @@ import { useAppDispatch } from 'services/store';
 import { PageRoutes } from 'utils/routes';
 import { NavbarItem } from './NavbarItem';
 
-const ResponsiveAppBar = () => {
+export const Navbar = () => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
     const appBarRef: RefObject<HTMLDivElement> = useRef(null);
@@ -106,4 +106,3 @@ const ResponsiveAppBar = () => {
         </Box>
     );
 };
-export default ResponsiveAppBar;

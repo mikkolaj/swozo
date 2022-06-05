@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { Bar } from 'common/Styled/Bar';
@@ -8,17 +8,17 @@ import { useTranslation } from 'react-i18next';
 type Props = {
     titlePath: string;
     slidesPath: string;
+    buttons: JSX.Element;
     slideCount: number;
     currentSlide: number;
-    setSlide: (previousSlide: number, newSlide: number) => void;
 };
 
 export const SlideForm: FC<React.PropsWithChildren<Props>> = ({
     titlePath,
     slidesPath,
+    buttons,
     slideCount,
     currentSlide,
-    setSlide,
     children,
 }) => {
     const { t } = useTranslation();
@@ -108,39 +108,12 @@ export const SlideForm: FC<React.PropsWithChildren<Props>> = ({
                     </Box>
                 </Grid>
             </Grid>
-            <Bar />
+            <Bar sx={{ mt: 4 }} />
 
             <Box sx={{ mt: 4, marginX: '5%' }}>{children}</Box>
 
             <Bar />
-
-            <Grid container sx={{ mt: 4 }}>
-                <Grid item xs={6}>
-                    {currentSlide > 0 && (
-                        <Button onClick={() => setSlide(currentSlide, currentSlide - 1)}>
-                            {t('form.backButton')}
-                        </Button>
-                    )}
-                </Grid>
-                <Grid
-                    item
-                    xs={6}
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                    }}
-                >
-                    {currentSlide < slideCount - 1 && (
-                        <Button
-                            sx={{ alignSelf: 'flex-end' }}
-                            onClick={() => setSlide(currentSlide, currentSlide + 1)}
-                        >
-                            {t('form.nextButton')}
-                        </Button>
-                    )}
-                </Grid>
-            </Grid>
+            {buttons}
         </PageContainer>
     );
 };

@@ -5,6 +5,7 @@ import { FieldArray, Form, Formik, FormikProps } from 'formik';
 import { ActivityValues } from 'pages/CreateCourse/CreateCourseView';
 import { FC, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as Yup from 'yup';
 
 type Values = {
     activities: ActivityValues[];
@@ -23,6 +24,13 @@ export const ActivitiesForm: FC<Props> = ({ formRef, initialValues, setActivityV
         <Formik
             innerRef={formRef}
             initialValues={{ activities: initialValues }}
+            validationSchema={Yup.object().shape({
+                activities: Yup.array().of(
+                    Yup.object().shape({
+                        name: Yup.string().max(10, 'e1').required('e2'),
+                    })
+                ),
+            })}
             validateOnChange={false}
             onSubmit={(values) => {
                 setActivityValues(values.activities);
@@ -50,6 +58,7 @@ export const ActivitiesForm: FC<Props> = ({ formRef, initialValues, setActivityV
                                             <InputField
                                                 wrapperSx={{ mb: 2 }}
                                                 name={`activities.${idx}.name`}
+                                                textFieldProps={{ required: true }}
                                                 type="text"
                                                 labelPath="createCourse.slides.1.form.name"
                                             />

@@ -1,6 +1,6 @@
 import { CssBaseline } from '@mui/material';
 import { AuthDataRolesEnum } from 'api';
-import Navbar from 'common/Navbar/Navbar';
+import { Navbar } from 'common/Navbar/Navbar';
 import { PageGuard } from 'common/PageGuard/PageGuard';
 import { CourseView } from 'pages/Course/CourseView';
 import { CoursesListView } from 'pages/CoursesList/CoursesListView';

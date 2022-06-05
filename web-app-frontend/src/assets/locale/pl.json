@@ -35,6 +35,7 @@
     },
     "createCourse": {
         "title": "Nowy kurs",
+        "finish": "Utwórz kurs",
         "slides": {
             "0": {
                 "title": "Informacje ogólne",
@@ -43,7 +44,7 @@
                     "subject": "tematyka",
                     "description": "opis",
                     "numberOfActivities": "liczba zajęć",
-                    "numberOfStudents": "liczba uczestników"
+                    "numberOfStudents": "planowana liczba uczestników"
                 }
             },
             "1": {

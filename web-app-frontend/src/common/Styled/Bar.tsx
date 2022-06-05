@@ -1,9 +1,20 @@
-import styled from '@emotion/styled';
+import { Box } from '@mui/material';
+import React, { FC } from 'react';
 
-export const Bar = styled.div`
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-    position: absolute;
-    left: 0;
-    width: 100%;
-    margin-top: 10px;
-`;
+export const Bar: FC<React.ComponentProps<typeof Box>> = (sx, ...props) => {
+    return (
+        <>
+            <Box
+                sx={{
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.5)',
+                    position: 'absolute',
+                    left: 0,
+                    width: '100%',
+                    marginTop: '10px',
+                    ...sx,
+                }}
+                {...props}
+            />
+        </>
+    );
+};
