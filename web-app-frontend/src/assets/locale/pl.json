@@ -48,7 +48,13 @@
             },
             "1": {
                 "title": "Planowanie zajęć",
-                "form": {}
+                "form": {
+                    "activityHeader": "Zajęcia {{idx}}",
+                    "name": "temat",
+                    "description": "opis",
+                    "modules": "moduły",
+                    "instructions": "dodatkowe instrukcje"
+                }
             },
             "2": {
                 "title": "Podsumowanie"

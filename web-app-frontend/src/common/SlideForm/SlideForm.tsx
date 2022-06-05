@@ -10,7 +10,7 @@ type Props = {
     slidesPath: string;
     slideCount: number;
     currentSlide: number;
-    setSlide: (newSlide: number) => void;
+    setSlide: (previousSlide: number, newSlide: number) => void;
 };
 
 export const SlideForm: FC<React.PropsWithChildren<Props>> = ({
@@ -117,7 +117,9 @@ export const SlideForm: FC<React.PropsWithChildren<Props>> = ({
             <Grid container sx={{ mt: 4 }}>
                 <Grid item xs={6}>
                     {currentSlide > 0 && (
-                        <Button onClick={() => setSlide(currentSlide - 1)}>{t('form.backButton')}</Button>
+                        <Button onClick={() => setSlide(currentSlide, currentSlide - 1)}>
+                            {t('form.backButton')}
+                        </Button>
                     )}
                 </Grid>
                 <Grid
@@ -130,7 +132,10 @@ export const SlideForm: FC<React.PropsWithChildren<Props>> = ({
                     }}
                 >
                     {currentSlide < slideCount - 1 && (
-                        <Button sx={{ alignSelf: 'flex-end' }} onClick={() => setSlide(currentSlide + 1)}>
+                        <Button
+                            sx={{ alignSelf: 'flex-end' }}
+                            onClick={() => setSlide(currentSlide, currentSlide + 1)}
+                        >
                             {t('form.nextButton')}
                         </Button>
                     )}

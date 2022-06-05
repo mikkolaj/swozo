@@ -1,5 +1,6 @@
 import { Box, SxProps, TextField, TextFieldProps, Theme } from '@mui/material';
 import { FieldHookConfig, useField } from 'formik';
+import { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -7,10 +8,17 @@ type Props = FieldHookConfig<any> & {
     labelPath: string;
     wrapperSx?: SxProps<Theme>;
     textFieldProps?: TextFieldProps;
+    onChangeDecorator?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 };
 
-export const InputField: React.FC<Props> = ({ labelPath, wrapperSx, textFieldProps, ...props }: Props) => {
-    const [field, meta] = useField(props);
+export const InputField: React.FC<Props> = ({
+    labelPath,
+    wrapperSx,
+    textFieldProps,
+    onChangeDecorator,
+    ...props
+}: Props) => {
+    const [{ onChange, ...field }, meta] = useField(props);
     const { t } = useTranslation();
 
     const capitalized = (x: string) => x && x[0].toUpperCase() + x.slice(1);
@@ -22,6 +30,10 @@ export const InputField: React.FC<Props> = ({ labelPath, wrapperSx, textFieldPro
                 error={!!(meta.touched && meta.error)}
                 helperText={meta.touched && meta.error}
                 variant={textFieldProps?.variant ?? 'standard'}
+                onChange={(e) => {
+                    onChange(e);
+                    if (onChangeDecorator) onChangeDecorator(e);
+                }}
                 {...field}
                 {...textFieldProps}
             />

@@ -1,10 +1,20 @@
-import { InputField } from 'common/Input/InputField';
 import { SlideForm } from 'common/SlideForm/SlideForm';
-import { Form, Formik, FormikProps } from 'formik';
-import { Ref, useRef, useState } from 'react';
+import { FormikProps } from 'formik';
+import { Ref, useEffect, useRef, useState } from 'react';
+import { range } from 'utils/utils';
+import { ActivitiesForm } from './components/forms/ActivitiesForm';
+import { GeneralInfoForm } from './components/forms/GeneralInfoForm';
+
+export type ActivityValues = {
+    name: string;
+    description: string;
+    module: string;
+    instructions: string;
+};
 
 export const CreateCourseView = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [nextRequestedSlide, setNextRequestedSlide] = useState(0);
     const [courseValues, setCourseValues] = useState({
         name: '',
         subject: '',
@@ -12,8 +22,14 @@ export const CreateCourseView = () => {
         numberOfActivities: 1,
         numberOfStudents: 0,
     });
+    const [activitiesValues, setActivitiesValues] = useState<ActivityValues[]>([]);
 
-    const formRef: Ref<FormikProps<typeof courseValues>> = useRef(null);
+    useEffect(() => {
+        if (currentSlide !== nextRequestedSlide) setCurrentSlide(nextRequestedSlide);
+    }, [nextRequestedSlide, currentSlide]);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formRef: Ref<FormikProps<any>> = useRef(null);
 
     return (
         <SlideForm
@@ -21,54 +37,41 @@ export const CreateCourseView = () => {
             slidesPath="createCourse.slides"
             slideCount={3}
             currentSlide={currentSlide}
-            setSlide={(slideNum) => {
+            setSlide={(_, next) => {
                 formRef.current?.handleSubmit();
-                setCurrentSlide(slideNum);
+                setNextRequestedSlide(next);
             }}
         >
             {currentSlide === 0 && (
-                <Formik
-                    innerRef={formRef}
+                <GeneralInfoForm
+                    formRef={formRef}
                     initialValues={courseValues}
-                    onSubmit={(values) => {
-                        console.log(values);
+                    setCourseValues={(values) => {
                         setCourseValues(values);
+                        if (values.numberOfActivities > activitiesValues.length) {
+                            setActivitiesValues([
+                                ...activitiesValues,
+                                ...range(values.numberOfActivities - activitiesValues.length).map((_) => ({
+                                    name: 'x',
+                                    description: '',
+                                    module: '',
+                                    instructions: '',
+                                })),
+                            ]);
+                        } else {
+                            setActivitiesValues(activitiesValues.slice(0, values.numberOfActivities));
+                        }
                     }}
-                >
-                    <Form>
-                        <InputField
-                            wrapperSx={{ mb: 2 }}
-                            name="name"
-                            type="text"
-                            labelPath="createCourse.slides.0.form.name"
-                        />
-                        <InputField
-                            wrapperSx={{ mb: 2 }}
-                            name="subject"
-                            type="text"
-                            labelPath="createCourse.slides.0.form.subject"
-                        />
-                        <InputField
-                            wrapperSx={{ mb: 2, width: '50%' }}
-                            name="description"
-                            type="text"
-                            textFieldProps={{ multiline: true, fullWidth: true }}
-                            labelPath="createCourse.slides.0.form.description"
-                        />
-                        <InputField
-                            wrapperSx={{ mb: 2 }}
-                            name="numberOfActivities"
-                            type="number"
-                            labelPath="createCourse.slides.0.form.numberOfActivities"
-                        />
-                        <InputField
-                            wrapperSx={{ mb: 2 }}
-                            name="numberOfStudents"
-                            type="number"
-                            labelPath="createCourse.slides.0.form.numberOfStudents"
-                        />
-                    </Form>
-                </Formik>
+                />
+            )}
+            {currentSlide === 1 && (
+                <ActivitiesForm
+                    formRef={formRef}
+                    initialValues={activitiesValues}
+                    setActivityValues={(values) => {
+                        setActivitiesValues(values);
+                    }}
+                />
             )}
         </SlideForm>
     );
