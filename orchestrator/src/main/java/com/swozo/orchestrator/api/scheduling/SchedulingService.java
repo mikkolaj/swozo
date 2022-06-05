@@ -4,7 +4,7 @@ import com.swozo.model.scheduling.ScheduleJupyter;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.cloud.resources.vm.VMConnectionDetails;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
-import com.swozo.orchestrator.cloud.resources.vm.VMProvider;
+import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.software.jupyter.JupyterProvisioner;
 import com.swozo.orchestrator.scheduler.TaskScheduler;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class SchedulingService {
     private final TaskScheduler scheduler;
-    private final VMProvider vmProvider;
+    private final TimedVMProvider timedVmProvider;
     private final JupyterProvisioner jupyterProvisioner;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -32,7 +32,7 @@ public class SchedulingService {
 
     private Void scheduleCreationAndDeletion(ScheduleRequest scheduleRequest, Consumer<VMConnectionDetails> provisionSoftware) throws InterruptedException {
         try {
-            var futureAddress = vmProvider.createInstance(scheduleRequest.getPsm());
+            var futureAddress = timedVmProvider.createInstance(scheduleRequest.getPsm());
             futureAddress.thenAccept(vmConnectionDetails -> {
                 provisionSoftware.accept(vmConnectionDetails);
                 scheduler.schedule(() -> deleteInstance(vmConnectionDetails), 3600);
@@ -45,7 +45,7 @@ public class SchedulingService {
 
     private Void deleteInstance(VMConnectionDetails connectionDetails) throws InterruptedException {
         try {
-            vmProvider.deleteInstance(connectionDetails.internalResourceId());
+            timedVmProvider.deleteInstance(connectionDetails.internalResourceId());
         } catch (VMOperationFailed e) {
             logger.error(e.getMessage());
         }

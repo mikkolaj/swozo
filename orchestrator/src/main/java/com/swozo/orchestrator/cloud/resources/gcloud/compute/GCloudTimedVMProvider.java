@@ -6,7 +6,7 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.vm.VMConnectionDetails;
 import com.swozo.orchestrator.cloud.resources.vm.VMDeleted;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
-import com.swozo.orchestrator.cloud.resources.vm.VMProvider;
+import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.configuration.EnvNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,26 +22,32 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 @Service
-public class GCloudVMProvider implements VMProvider {
+public class GCloudTimedVMProvider implements TimedVMProvider {
     private static final int VM_CREATION_SECONDS = 5 * 60;
     private static final String DEFAULT_NETWORK = "default";
     private final String project;
     private final String zone;
     private final String imageFamily;
+    private final String sshUser;
+    private final String sshKeyPath;
     private final GCloudVMLifecycleManager manager;
     private final Logger logger;
     // TODO: proper resource persistence
     private final List<VMAddress> resources;
 
-    public GCloudVMProvider(
+    public GCloudTimedVMProvider(
             @Value("${" + EnvNames.GCP_PROJECT + "}") String project,
             @Value("${" + EnvNames.GCP_ZONE + "}") String zone,
             @Value("${" + EnvNames.GCP_VM_IMAGE_FAMILY + "}") String imageFamily,
+            @Value("${" + EnvNames.GCP_SSH_USER + "}") String sshUser,
+            @Value("${" + EnvNames.GCP_SSH_KEY_PATH + "}") String sshKeyPath,
             GCloudVMLifecycleManager manager) {
         this.project = project;
         this.zone = zone;
         this.imageFamily = imageFamily;
         this.manager = manager;
+        this.sshUser = sshUser;
+        this.sshKeyPath = sshKeyPath;
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.resources = new ArrayList<>();
     }
@@ -58,7 +64,7 @@ public class GCloudVMProvider implements VMProvider {
             var publicIPAddress = manager.getInstanceExternalIP(vmAddress);
             var internalId = resources.size();
             resources.add(vmAddress);
-            return CompletableFuture.completedFuture(new VMConnectionDetails(internalId, publicIPAddress));
+            return CompletableFuture.completedFuture(getVMConnectionDetails(publicIPAddress, internalId));
         } catch (IOException | ExecutionException | TimeoutException e) {
             logger.error(e.getMessage());
             var newException = new VMOperationFailed(e.getMessage());
@@ -83,9 +89,13 @@ public class GCloudVMProvider implements VMProvider {
     }
 
     @Override
-    public int getVMCreationSeconds(Psm psm) {
+    public int getVMCreationTime(Psm psm) {
         // TODO: creation time based on machine type
         return VM_CREATION_SECONDS;
+    }
+
+    private VMConnectionDetails getVMConnectionDetails(String publicIPAddress, int internalId) {
+        return new VMConnectionDetails(internalId, publicIPAddress, sshUser, sshKeyPath);
     }
 
     private VMAddress getVMAddress(String name) {
