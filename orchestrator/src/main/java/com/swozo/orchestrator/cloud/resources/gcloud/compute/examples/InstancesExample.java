@@ -10,14 +10,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class InstancesExample {
-    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException, TimeoutException {
-//        SpringApplication.run(OrchestratorApplication.class, args);
+    public static void main(
+            String[] args) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        //        SpringApplication.run(OrchestratorApplication.class, args);
 
         var project = "hybrid-text-350213";
         var zone = "us-west2-a";
-//        createInstance(project, zone, "super-instancja");
+        //        createInstance(project, zone, "super-instancja");
         listInstances(project, zone);
-//        deleteInstance(project, zone, "super-instancja");
+        //        deleteInstance(project, zone, "super-instancja");
     }
 
     // List all instances in the given zone in the specified project ID.
@@ -25,8 +26,8 @@ public class InstancesExample {
         try (InstancesClient instancesClient = InstancesClient.create()) {
             System.out.printf("Listing instances from %s in %s:%n", project, zone);
             for (Instance zoneInstance : instancesClient.list(project, zone).iterateAll()) {
-              System.out.println(zoneInstance.getName());
-              System.out.println(zoneInstance.getNetworkInterfaces(0).getAccessConfigs(0).getNatIP());
+                System.out.println(zoneInstance.getName());
+                System.out.println(zoneInstance.getNetworkInterfaces(0).getAccessConfigs(0).getNatIP());
             }
             System.out.println("####### Listing instances complete #######");
         }
@@ -141,6 +142,7 @@ public class InstancesExample {
             System.out.println("Operation Status: " + response.getStatus());
         }
     }
+
     public static InstancesClient.AggregatedListPagedResponse listAllInstances(String project) throws IOException {
         // Initialize client that will be used to send requests. This client only needs to be created
         // once, and can be reused for multiple requests. After completing all of your requests, call

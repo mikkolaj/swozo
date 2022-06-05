@@ -4,8 +4,10 @@ import com.swozo.orchestrator.configuration.EnvNames;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class TaskScheduler {
@@ -15,9 +17,8 @@ public class TaskScheduler {
         executorService = new ScheduledThreadPoolExecutor(threadPoolSize);
     }
 
-    public void schedule(Runnable task, long secondsOffset) {
-//        TODO: Scheduling and persistence
-//        executorService.schedule(task, secondsOffset, TimeUnit.SECONDS);
-        executorService.submit(task);
+    public void schedule(Callable<Void> task, long secondsOffset) {
+        executorService.schedule(task, secondsOffset, TimeUnit.SECONDS);
     }
+
 }

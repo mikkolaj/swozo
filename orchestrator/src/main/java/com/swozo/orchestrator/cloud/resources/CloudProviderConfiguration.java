@@ -10,24 +10,24 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CloudProviderConfiguration {
-  private final String project;
-  private final String zone;
-  private final String imageFamily;
-  private final GCloudVMLifecycleManager manager;
+    private final String project;
+    private final String zone;
+    private final String imageFamily;
+    private final GCloudVMLifecycleManager manager;
 
-  public CloudProviderConfiguration(
-      @Value("${" + EnvNames.GCP_PROJECT + "}") String project,
-      @Value("${" + EnvNames.GCP_ZONE + "}") String zone,
-      @Value("${" + EnvNames.GCP_VM_IMAGE_FAMILY + "}") String imageFamily,
-      GCloudVMLifecycleManager manager) {
-    this.imageFamily = imageFamily;
-    this.manager = manager;
-    this.project = project;
-    this.zone = zone;
-  }
+    public CloudProviderConfiguration(
+            @Value("${" + EnvNames.GCP_PROJECT + "}") String project,
+            @Value("${" + EnvNames.GCP_ZONE + "}") String zone,
+            @Value("${" + EnvNames.GCP_VM_IMAGE_FAMILY + "}") String imageFamily,
+            GCloudVMLifecycleManager manager) {
+        this.imageFamily = imageFamily;
+        this.manager = manager;
+        this.project = project;
+        this.zone = zone;
+    }
 
-  @Bean
-  VMProvider instanceProvider() {
-    return new GCloudVMProvider(project, zone, imageFamily, manager);
-  }
+    @Bean
+    VMProvider instanceProvider() {
+        return new GCloudVMProvider(project, zone, imageFamily, manager);
+    }
 }

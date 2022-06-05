@@ -17,7 +17,7 @@ public class SchedulingController {
     }
 
     @PostMapping("schedule")
-    public void schedule(ScheduleRequest request) {
+    public void schedule(ScheduleRequest request) throws InterruptedException {
         service.schedule(request);
     }
 }

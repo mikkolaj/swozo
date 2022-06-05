@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 public class DefaultInstanceProvider implements InstanceProvider {
     private final MachineTypeProvider machineTypeProvider;
 
-    public Instance createInstance(VMAddress vmAddress, VMSpecs vmSpecs, AttachedDisk disk, NetworkInterface networkInterface) {
+    public Instance createInstance(VMAddress vmAddress, VMSpecs vmSpecs, AttachedDisk disk,
+            NetworkInterface networkInterface) {
         var machineType = machineTypeProvider.constructMachineType(vmAddress.zone(), vmSpecs.machineType());
 
         return Instance.newBuilder()
