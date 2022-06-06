@@ -3,19 +3,19 @@
 - name: Copy file to remote host
   hosts: all
   become: yes
-  become_user: swozo
+  become_user: '{{ user }}'
   tasks:
     - name: Create a directory if it does not exist
       ansible.builtin.file:
-        path: /home/swozo/jupyter
+        path: '{{ path_to }}'
         state: directory
-        mode: '0755'
-        owner: swozo
-        group: swozo
+        mode: '0777'
+        owner: '{{ user }}'
+        group: '{{ user }}'
     - name: Copy content of directory to remote host
       copy:
-        src: .
-        dest: /home/swozo/jupyter
-        owner: swozo
-        group: swozo
-        mode: 0644
+        src: '{{ path_from }}'
+        dest: '{{ path_to }}'
+        owner: '{{ user }}'
+        group: '{{ user }}'
+        mode: '0777'

@@ -1,13 +1,13 @@
 ---
 
-- name: Setup SWOZO user
+- name: Setup user
   hosts: all
   tasks:
     - name: Setup user
       user:
         create_home: yes
-        home: /home/swozo
-        name: swozo
+        home: '/home/{{ user }}'
+        name: '{{ user }}'
         groups:
           - "sudo"
 

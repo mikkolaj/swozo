@@ -1,0 +1,26 @@
+---
+
+- name: Install docker
+  import_playbook: ../docker/install-docker.yml
+
+- name: Setup SWOZO user
+  import_playbook: ../../administration/setup-user.yml
+  vars:
+    user: swozo
+
+- name: Copy Jupyter config file
+  import_playbook: ../../administration/copy-files.yml
+  vars:
+    path_from: ../software/jupyter/jupyter_notebook_config.py
+    path_to: /home/swozo/.jupyter
+    user: swozo
+
+- name: Copy notebooks
+  import_playbook: ../../administration/copy-files.yml
+  vars:
+    path_from: ../software/jupyter/notebooks
+    path_to: /home/swozo/jupyter
+    user: swozo
+
+- name: Run jupyter
+  import_playbook: run-jupyter.yml

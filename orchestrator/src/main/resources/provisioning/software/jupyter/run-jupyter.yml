@@ -11,6 +11,10 @@
         ports:
           - "8888:8888"
         mounts:
-          - source: "/home/swozo/jupyter"
-          - target: "/home/jovyan/work"
+          - source: /home/swozo/jupyter
+            target: /home/jovyan/work
+            type: bind
+          - source: /home/swozo/.jupyter/jupyter_notebook_config.py
+            target: /home/jovyan/.jupyter/jupyter_notebook_config.py
+            type: bind
       become: yes

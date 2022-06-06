@@ -38,7 +38,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     public GCloudTimedVMProvider(
             @Value("${" + EnvNames.GCP_PROJECT + "}") String project,
             @Value("${" + EnvNames.GCP_ZONE + "}") String zone,
-            @Value("${" + EnvNames.GCP_VM_IMAGE_FAMILY + "}") String imageFamily,
+            @Value("${" + EnvNames.GCP_COMPUTE_IMAGE_FAMILY + "}") String imageFamily,
             @Value("${" + EnvNames.GCP_SSH_USER + "}") String sshUser,
             @Value("${" + EnvNames.GCP_SSH_KEY_PATH + "}") String sshKeyPath,
             GCloudVMLifecycleManager manager) {
