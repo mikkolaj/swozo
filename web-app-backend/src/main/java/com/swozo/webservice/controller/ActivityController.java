@@ -4,6 +4,7 @@ import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.ServiceModule;
 import com.swozo.security.AccessToken;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +21,32 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 public class ActivityController {
     private final String activityService = "course service";
 
-    @GetMapping("/activity_info_by_id")
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course getCourseJson(AccessToken token){
-        System.out.println("course  info getter");
+    public Course getActivity(AccessToken token){
+        System.out.println("activity  info getter");
         return new Course();
+    }
+
+    @PostMapping()
+    @PreAuthorize("hasRole('TEACHER')")
+    public String addActivity(AccessToken token, @RequestBody String params) {
+        System.out.println("creating new activity inside course");
+        return "activity_id";
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public String deleteActivity(AccessToken token) {
+        System.out.println("deleting activity from course");
+        return "activity deleted";
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('TACHER')")
+    public String updateActivity(@PathVariable int id, @RequestBody Activity newActivity){
+        System.out.println("updating activity from course");
+        return "activity updated";
     }
 
     @GetMapping("/module_list")
@@ -34,24 +56,10 @@ public class ActivityController {
         return new LinkedList<>();
     }
 
-    @PostMapping("/add_module_to_activity")
-    @PreAuthorize("hasRole('TEACHER')")
-    public String addModuleToActivity(AccessToken token){
-        System.out.println("adding module to activity");
-        return "activity_id";
-    }
-
-    @DeleteMapping("/delete_module_from_activity")
-    @PreAuthorize("hasRole('TEACHER')")
-    public String deleteModuleFromActivity(AccessToken token){
-        System.out.println("deleting module from activity");
-        return "activity_id";
-    }
-
 //    pytanie czy jaką tu dać autroyzacje? bo czy jak więcej ról moze mieć
 //    dostęp to mam wpisywać więcej PreAuthorize?
     @GetMapping("/links")
-    @PreAuthorize("hasRole('TEACHER')")
+//    @PreAuthorize("hasRole('TEACHER')")
     public String getLinks(AccessToken token){
         System.out.println("sending links");
         return "links";

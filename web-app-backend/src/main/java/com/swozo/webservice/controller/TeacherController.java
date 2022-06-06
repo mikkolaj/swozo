@@ -22,18 +22,4 @@ public class TeacherController {
         System.out.println("course list");
         return new LinkedList<>();
     }
-
-    @PostMapping("/add_course")
-    @PreAuthorize("hasRole('TEACHER')")
-    public String addCourse(AccessToken token) {
-        System.out.println("creating new course");
-        return "course_id";
-    }
-
-    @DeleteMapping("/deleting_course")
-    @PreAuthorize("hasRole('TEACHER')")
-    public String deleteCourse(AccessToken token) {
-        System.out.println("deleting new course");
-        return "course deleted";
-    }
 }
