@@ -5,6 +5,7 @@ import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.users.User;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.CourseService;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,61 +28,67 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    //    tu nwm do czego to jeszcze będzie służyć, ale pewnie sie przyda
-    @GetMapping("/course_info_by_id")
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course getCourseJson(AccessToken token) {
-        System.out.println("course  info getter");
+    public Course getCourse(AccessToken token, @PathVariable int id) {
+        System.out.println("course info getter for id: " + id);
         return new Course();
     }
 
-    @GetMapping("/activity_list")
+//    przyjmujemy json jako jakies parametry utworzenia?
+    @PostMapping()
+    @PreAuthorize("hasRole('TEACHER')")
+    public String addCourse(AccessToken token, @RequestBody String params) {
+        System.out.println("creating new course with params: " + params);
+        return "course_id";
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public String deleteCourse(AccessToken token, @PathVariable int id) {
+        System.out.println("deleting course with id: " + id);
+        return "course deleted";
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public String editCourse(AccessToken token, @PathVariable int id, @RequestBody Course newCourse) {
+        System.out.println("edititng course");
+        return "course updated";
+    }
+
+    @GetMapping("/activities")
     @PreAuthorize("hasRole('TEACHER')")
     public Collection<Activity> getActivityList(AccessToken token) {
         System.out.println("activity list");
         return new LinkedList<>();
     }
 
-    @PostMapping("/add_activity")
-    @PreAuthorize("hasRole('TEACHER')")
-    public String addActivityToCourse(AccessToken token) {
-        System.out.println("creating new activity inside course");
-        return "activity_id";
-    }
-
-    @DeleteMapping("/delete_activity")
-    @PreAuthorize("hasRole('TEACHER')")
-    public String deleteActivityFromCourse(AccessToken token) {
-        System.out.println("deleting activity from course");
-        return "activity deleted";
-    }
-
-
-    @GetMapping("/student_list")
+    @GetMapping("/students")
     @PreAuthorize("hasRole('TEACHER')")
     public Collection<User> getStudentList(AccessToken token) {
         System.out.println("students list");
         return new LinkedList<>();
     }
 
-    @GetMapping("/student_list_inside_course")
+    @GetMapping("/students/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<User> getStudentListFromCourse(AccessToken token) {
-        System.out.println("students list inside course");
+    public Collection<User> getStudentListFromCourse(AccessToken token, @PathVariable int id) {
+        System.out.println("students list inside course with id: " + id);
         return new LinkedList<>();
     }
 
-    @PostMapping("/add_student")
+    @PostMapping("/{courseId}/student/{studentId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String addStudentToCourse(AccessToken token) {
-        System.out.println("creating new activity inside course");
+    public String addStudentToCourse(AccessToken token, @PathVariable int courseId, @PathVariable int studentId) {
+        System.out.println("adding student with id: " + studentId + " to course with id: " + courseId);
         return "student added";
     }
 
-    @DeleteMapping("/remove_student")
+    @DeleteMapping("/{courseId}/student/{studentId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String removeStudentFromCourse(AccessToken token) {
-        System.out.println("removing student from course");
+    public String removeStudentFromCourse(AccessToken token, @PathVariable int courseId, @PathVariable int studentId) {
+        System.out.println("removing student with id: " + studentId + " to course with id: " + courseId);
         return "student removed";
     }
 
