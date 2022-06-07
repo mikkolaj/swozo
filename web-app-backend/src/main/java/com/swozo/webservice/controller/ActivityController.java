@@ -30,7 +30,7 @@ public class ActivityController {
 
     @PostMapping()
     @PreAuthorize("hasRole('TEACHER')")
-    public String addActivity(AccessToken token, @RequestBody String params) {
+    public String addActivity(AccessToken token, @RequestBody Activity activity) {
         System.out.println("creating new activity inside course");
         return "activity_id";
     }

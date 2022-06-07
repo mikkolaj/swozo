@@ -1,5 +1,6 @@
 package com.swozo.webservice.controller;
 
+import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.ServiceModule;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -22,24 +23,24 @@ public class ServiceModuleController {
         return new ServiceModule();
     }
 
-    @PostMapping()
+    @PostMapping("/{activityId}/{moduleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String addModuleToActivity(AccessToken token){
-        System.out.println("adding module to activity");
-        return "activity_id";
+    public String addModuleToActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
+        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
+        return "module added";
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{activityId}/{moduleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String deleteModuleFromActivity(AccessToken token, @PathVariable long id){
-        System.out.println("deleting module from activity");
+    public String deleteModuleFromActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
+        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);;
         return "service module deleted";
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{moduleId}")
     @PreAuthorize("hasRole('TACHER')")
-    public String updateServiceModule(AccessToken token, @PathVariable long id, @RequestBody ServiceModule newServiceModule){
-        System.out.println("updating activity from course");
-        return "activity updated";
+    public String updateServiceModule(AccessToken token, @PathVariable long moduleId, @RequestBody ServiceModule newServiceModule){
+        System.out.println("updating module with id: " + moduleId);
+        return "module updated";
     }
 }

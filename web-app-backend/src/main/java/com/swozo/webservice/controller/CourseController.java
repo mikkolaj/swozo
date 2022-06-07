@@ -38,8 +38,8 @@ public class CourseController {
 //    przyjmujemy json jako jakies parametry utworzenia?
     @PostMapping()
     @PreAuthorize("hasRole('TEACHER')")
-    public String addCourse(AccessToken token, @RequestBody String params) {
-        System.out.println("creating new course with params: " + params);
+    public String addCourse(AccessToken token, @RequestBody Course course) {
+        System.out.println("creating new course");
         return "course_id";
     }
 
