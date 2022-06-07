@@ -45,22 +45,22 @@ public class CourseController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String deleteCourse(AccessToken token, @PathVariable int id) {
+    public String deleteCourse(AccessToken token, @PathVariable long id) {
         System.out.println("deleting course with id: " + id);
         return "course deleted";
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String editCourse(AccessToken token, @PathVariable int id, @RequestBody Course newCourse) {
+    public String editCourse(AccessToken token, @PathVariable long id, @RequestBody Course newCourse) {
         System.out.println("edititng course");
         return "course updated";
     }
 
-    @GetMapping("/activities")
+    @GetMapping("/{id}/activities")
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<Activity> getActivityList(AccessToken token) {
-        System.out.println("activity list");
+    public Collection<Activity> getCourseActivityList(AccessToken token, @PathVariable long id) {
+        System.out.println("activity list from course with id: " + id);
         return new LinkedList<>();
     }
 
@@ -71,23 +71,23 @@ public class CourseController {
         return new LinkedList<>();
     }
 
-    @GetMapping("/students/{id}")
+    @GetMapping("/{id}/students")
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<User> getStudentListFromCourse(AccessToken token, @PathVariable int id) {
+    public Collection<User> getStudentListFromCourse(AccessToken token, @PathVariable long id) {
         System.out.println("students list inside course with id: " + id);
         return new LinkedList<>();
     }
 
     @PostMapping("/{courseId}/student/{studentId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String addStudentToCourse(AccessToken token, @PathVariable int courseId, @PathVariable int studentId) {
+    public String addStudentToCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
         System.out.println("adding student with id: " + studentId + " to course with id: " + courseId);
         return "student added";
     }
 
     @DeleteMapping("/{courseId}/student/{studentId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String removeStudentFromCourse(AccessToken token, @PathVariable int courseId, @PathVariable int studentId) {
+    public String removeStudentFromCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
         System.out.println("removing student with id: " + studentId + " to course with id: " + courseId);
         return "student removed";
     }

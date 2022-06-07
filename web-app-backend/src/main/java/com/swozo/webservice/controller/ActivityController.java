@@ -23,7 +23,7 @@ public class ActivityController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course getActivity(AccessToken token){
+    public Course getActivity(AccessToken token, @PathVariable long id){
         System.out.println("activity  info getter");
         return new Course();
     }
@@ -37,30 +37,37 @@ public class ActivityController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String deleteActivity(AccessToken token) {
+    public String deleteActivity(AccessToken token, @PathVariable long id) {
         System.out.println("deleting activity from course");
         return "activity deleted";
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TACHER')")
-    public String updateActivity(@PathVariable int id, @RequestBody Activity newActivity){
+    public String updateActivity(AccessToken token, @PathVariable long id, @RequestBody Activity newActivity){
         System.out.println("updating activity from course");
         return "activity updated";
     }
 
-    @GetMapping("/module_list")
+    @GetMapping("/modules")
     @PreAuthorize("hasRole('TEACHER')")
     public Collection<ServiceModule> getModuleList(AccessToken token){
         System.out.println("module list");
         return new LinkedList<>();
     }
 
+    @GetMapping("/{id}/modules")
+    @PreAuthorize("hasRole('TEACHER')")
+    public Collection<ServiceModule> getCourseActivityList(AccessToken token, @PathVariable long id) {
+        System.out.println("service module list from activity with id: " + id);
+        return new LinkedList<>();
+    }
+
 //    pytanie czy jaką tu dać autroyzacje? bo czy jak więcej ról moze mieć
 //    dostęp to mam wpisywać więcej PreAuthorize?
-    @GetMapping("/links")
+    @GetMapping("/{id}/links")
 //    @PreAuthorize("hasRole('TEACHER')")
-    public String getLinks(AccessToken token){
+    public String getLinks(AccessToken token, @PathVariable long id){
         System.out.println("sending links");
         return "links";
     }

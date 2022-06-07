@@ -1,7 +1,5 @@
 package com.swozo.webservice.controller;
 
-import com.swozo.databasemodel.Activity;
-import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.ServiceModule;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -19,7 +17,7 @@ public class ServiceModuleController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public ServiceModule getServiceModule(AccessToken token){
+    public ServiceModule getServiceModule(AccessToken token, @PathVariable long id){
         System.out.println("service module  info getter");
         return new ServiceModule();
     }
@@ -33,14 +31,14 @@ public class ServiceModuleController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String deleteModuleFromActivity(AccessToken token){
+    public String deleteModuleFromActivity(AccessToken token, @PathVariable long id){
         System.out.println("deleting module from activity");
         return "service module deleted";
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TACHER')")
-    public String updateServiceModule(@PathVariable int id, @RequestBody ServiceModule newServiceModule){
+    public String updateServiceModule(AccessToken token, @PathVariable long id, @RequestBody ServiceModule newServiceModule){
         System.out.println("updating activity from course");
         return "activity updated";
     }
