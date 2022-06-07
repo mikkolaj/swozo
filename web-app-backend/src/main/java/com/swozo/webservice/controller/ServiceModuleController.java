@@ -33,7 +33,7 @@ public class ServiceModuleController {
     @DeleteMapping("/{activityId}/{moduleId}")
     @PreAuthorize("hasRole('TEACHER')")
     public String deleteModuleFromActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
-        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);;
+        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
         return "service module deleted";
     }
 
