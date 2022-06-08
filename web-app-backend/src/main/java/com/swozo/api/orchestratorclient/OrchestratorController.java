@@ -9,7 +9,6 @@ import java.net.URL;
 
 @RestController
 class OrchestratorController {
-
     String getActivityLinks(Long moduleActivityID) throws IOException {
         URL url = new URL(Config.ORCHESTRATOR_GET_URI + "/" + moduleActivityID);
         return RequestSender.sendGetRequest(url);
@@ -20,5 +19,4 @@ class OrchestratorController {
         //possible to return orchestrator response in the future
         RequestSender.sendPost(url, jsonRequest);
     }
-
 }

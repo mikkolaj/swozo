@@ -26,6 +26,8 @@ public class JsonMapper {
         }
     }
 
+    //TODO Json to schedule request - adding enum type required to create inherited classes?
+
     //can be used by orchestrator to map response to json before sending it back to backend
     public static Optional<String> mapLinkResponseToJson(OrchestratorLinkResponse linkResponse) {
         ObjectMapper mapper = new ObjectMapper();
