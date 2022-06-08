@@ -1,12 +1,10 @@
-package com.swozo.orchestratorclient;
+package com.swozo.api.orchestratorclient;
 
 import com.swozo.config.Config;
-import com.swozo.model.scheduling.ScheduleRequest;
-import com.swozo.request.RequestSender;
+import com.swozo.api.request.RequestSender;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 @RestController
