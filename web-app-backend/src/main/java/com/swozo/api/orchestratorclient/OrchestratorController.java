@@ -17,6 +17,7 @@ class OrchestratorController {
 
     void postScheduleRequest(String jsonRequest) throws IOException {
         URL url = new URL(Config.ORCHESTRATOR_POST_URI);
+        //possible to return orchestrator response in the future
         RequestSender.sendPost(url, jsonRequest);
     }
 
