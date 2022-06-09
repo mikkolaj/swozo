@@ -17,13 +17,14 @@ import java.util.LinkedList;
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
 @RestController
-@RequestMapping("/course")
+@RequestMapping("/courses")
 @SecurityRequirement(name = ACCESS_TOKEN)
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CourseController {
-    @Autowired
+
     private final CourseService courseService;
 
+    @Autowired
     public CourseController(CourseService courseService) {
         this.courseService = courseService;
     }
@@ -64,28 +65,14 @@ public class CourseController {
         return new LinkedList<>();
     }
 
-    @GetMapping("/students")
-    @PreAuthorize("hasRole('TEACHER')")
-    public Collection<User> getStudentList(AccessToken token) {
-        System.out.println("students list");
-        return new LinkedList<>();
-    }
-
-    @GetMapping("/{id}/students")
-    @PreAuthorize("hasRole('TEACHER')")
-    public Collection<User> getStudentListFromCourse(AccessToken token, @PathVariable long id) {
-        System.out.println("students list inside course with id: " + id);
-        return new LinkedList<>();
-    }
-
-    @PostMapping("/{courseId}/student/{studentId}")
+    @PostMapping("/{courseId}/students/{studentId}")
     @PreAuthorize("hasRole('TEACHER')")
     public String addStudentToCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
         System.out.println("adding student with id: " + studentId + " to course with id: " + courseId);
         return "student added";
     }
 
-    @DeleteMapping("/{courseId}/student/{studentId}")
+    @DeleteMapping("/{courseId}/students/{studentId}")
     @PreAuthorize("hasRole('TEACHER')")
     public String removeStudentFromCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
         System.out.println("removing student with id: " + studentId + " to course with id: " + courseId);

@@ -8,13 +8,23 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
 @RestController
-@RequestMapping("/service_module")
+@RequestMapping("/service-modules")
 @SecurityRequirement(name = ACCESS_TOKEN)
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ServiceModuleController {
+
+    @GetMapping()
+    @PreAuthorize("hasRole('TEACHER')")
+    public Collection<ServiceModule> getModuleList(AccessToken token){
+        System.out.println("module list");
+        return new LinkedList<>();
+    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")

@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
 @RestController
-@RequestMapping("/activity")
+@RequestMapping("/activities")
 @SecurityRequirement(name = ACCESS_TOKEN)
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ActivityController {
@@ -23,9 +23,9 @@ public class ActivityController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course getActivity(AccessToken token, @PathVariable long id){
+    public Activity getActivity(AccessToken token, @PathVariable long id){
         System.out.println("activity  info getter");
-        return new Course();
+        return new Activity();
     }
 
     @PostMapping()
@@ -49,24 +49,15 @@ public class ActivityController {
         return "activity updated";
     }
 
-    @GetMapping("/modules")
-    @PreAuthorize("hasRole('TEACHER')")
-    public Collection<ServiceModule> getModuleList(AccessToken token){
-        System.out.println("module list");
-        return new LinkedList<>();
-    }
-
-    @GetMapping("/{id}/modules")
+    @GetMapping("/{id}/service-modules")
     @PreAuthorize("hasRole('TEACHER')")
     public Collection<ServiceModule> getCourseActivityList(AccessToken token, @PathVariable long id) {
         System.out.println("service module list from activity with id: " + id);
         return new LinkedList<>();
     }
 
-//    pytanie czy jaką tu dać autroyzacje? bo czy jak więcej ról moze mieć
-//    dostęp to mam wpisywać więcej PreAuthorize?
     @GetMapping("/{id}/links")
-//    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public String getLinks(AccessToken token, @PathVariable long id){
         System.out.println("sending links");
         return "links";
