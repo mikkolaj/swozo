@@ -1,8 +1,7 @@
-package com.swozo.api.controller;
+package com.swozo.api.web;
 
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
-import com.swozo.databasemodel.users.User;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.CourseService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
