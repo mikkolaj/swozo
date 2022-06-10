@@ -16,7 +16,6 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RestController
 @RequestMapping("/service-modules")
 @SecurityRequirement(name = ACCESS_TOKEN)
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ServiceModuleController {
 
     @GetMapping()
@@ -31,20 +30,6 @@ public class ServiceModuleController {
     public ServiceModule getServiceModule(AccessToken token, @PathVariable long id){
         System.out.println("service module  info getter");
         return new ServiceModule();
-    }
-
-    @PostMapping("/{activityId}/{moduleId}")
-    @PreAuthorize("hasRole('TEACHER')")
-    public String addModuleToActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
-        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
-        return "module added";
-    }
-
-    @DeleteMapping("/{activityId}/{moduleId}")
-    @PreAuthorize("hasRole('TEACHER')")
-    public String deleteModuleFromActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
-        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
-        return "service module deleted";
     }
 
     @PutMapping("/{moduleId}")

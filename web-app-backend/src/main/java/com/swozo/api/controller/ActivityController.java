@@ -17,7 +17,6 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RestController
 @RequestMapping("/activities")
 @SecurityRequirement(name = ACCESS_TOKEN)
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ActivityController {
     private final String activityService = "course service";
 
@@ -56,11 +55,25 @@ public class ActivityController {
         return new LinkedList<>();
     }
 
+    @PostMapping("/{activityId}/service-modules/{moduleId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public String addModuleToActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
+        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
+        return "module added";
+    }
+
+    @DeleteMapping("/{activityId}/service-modules/{moduleId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public String deleteModuleFromActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
+        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
+        return "service module deleted";
+    }
+
     @GetMapping("/{id}/links")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
-    public String getLinks(AccessToken token, @PathVariable long id){
+    public Collection<String> getLinks(AccessToken token, @PathVariable long id){
         System.out.println("sending links");
-        return "links";
+        return new LinkedList<>();
     }
 
 }

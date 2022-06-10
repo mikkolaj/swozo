@@ -19,7 +19,6 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RestController
 @RequestMapping("/students")
 @SecurityRequirement(name = ACCESS_TOKEN)
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class StudentController {
 
     @GetMapping()
@@ -29,10 +28,10 @@ public class StudentController {
         return new LinkedList<>();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{courseId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<User> getStudentListFromCourse(AccessToken token, @PathVariable long id) {
-        System.out.println("students list inside course with id: " + id);
+    public Collection<User> getStudentListFromCourse(AccessToken token, @PathVariable long courseId) {
+        System.out.println("students list inside course with id: " + courseId);
         return new LinkedList<>();
     }
 }

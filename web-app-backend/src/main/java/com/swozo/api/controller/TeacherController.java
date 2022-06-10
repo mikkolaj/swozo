@@ -12,12 +12,9 @@ import java.util.LinkedList;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
-//tu nazwa wydaje mi sie że do zmiany, ale nwm jak nazwać taki najogólniejszy controller,
-//który ma obsługiwać listowanie i dodawanie/usuwanie kursów
 @RestController
 @RequestMapping("/teachers")
 @SecurityRequirement(name = ACCESS_TOKEN)
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class TeacherController {
     private final String teacherService = "course service";
 
