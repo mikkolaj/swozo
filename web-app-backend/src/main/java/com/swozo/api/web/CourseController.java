@@ -31,7 +31,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public Course getCourse(AccessToken token, @PathVariable int id) {
         System.out.println("course info getter for id: " + id);
-        return new Course();
+        return courseService.getCourse(id);
     }
 
 //    przyjmujemy json jako jakies parametry utworzenia?
@@ -39,6 +39,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public String addCourse(AccessToken token, @RequestBody Course course) {
         System.out.println("creating new course");
+        courseService.createCourse(course);
         return "course_id";
     }
 
@@ -46,6 +47,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public String deleteCourse(AccessToken token, @PathVariable long id) {
         System.out.println("deleting course with id: " + id);
+        courseService.deleteCourse(id);
         return "course deleted";
     }
 
@@ -53,6 +55,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public String editCourse(AccessToken token, @PathVariable long id, @RequestBody Course newCourse) {
         System.out.println("edititng course");
+        courseService.updateCourse(id, newCourse);
         return "course updated";
     }
 
@@ -60,7 +63,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public Collection<Activity> getCourseActivityList(AccessToken token, @PathVariable long id) {
         System.out.println("activity list from course with id: " + id);
-        return new LinkedList<>();
+        return courseService.courseActivityList(id);
     }
 
     @PostMapping("/{courseId}/students/{studentId}")
