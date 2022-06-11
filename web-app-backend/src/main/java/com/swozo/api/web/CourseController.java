@@ -70,6 +70,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public String addStudentToCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
         System.out.println("adding student with id: " + studentId + " to course with id: " + courseId);
+        courseService.addSudent(courseId,studentId);
         return "student added";
     }
 
