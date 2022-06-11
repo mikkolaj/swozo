@@ -2,8 +2,9 @@ import { Box, Grid, Typography } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { Bar } from 'common/Styled/Bar';
-import { FC, Ref, useEffect, useRef } from 'react';
+import { PropsWithChildren, Ref, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { range } from 'utils/utils';
 
 type Props = {
     titlePath: string;
@@ -13,14 +14,14 @@ type Props = {
     currentSlide: number;
 };
 
-export const SlideForm: FC<React.PropsWithChildren<Props>> = ({
+export const SlideForm = ({
     titlePath,
     slidesPath,
     buttons,
     slideCount,
     currentSlide,
     children,
-}) => {
+}: PropsWithChildren<Props>) => {
     const { t } = useTranslation();
 
     const barRef: Ref<HTMLDivElement> = useRef(null);
@@ -62,41 +63,39 @@ export const SlideForm: FC<React.PropsWithChildren<Props>> = ({
                             marginX: '15%',
                         }}
                     >
-                        {Array(slideCount)
-                            .fill(0)
-                            .map((_, idx) => (
-                                <Box key={idx}>
-                                    <Box>{t(`${slidesPath}.${idx}.title`)}</Box>
+                        {range(slideCount).map((_, idx) => (
+                            <Box key={idx}>
+                                <Box>{t(`${slidesPath}.${idx}.title`)}</Box>
+                                <Box
+                                    ref={
+                                        idx === 0
+                                            ? firstSlideRef
+                                            : idx === slideCount - 1
+                                            ? lastSlideRef
+                                            : undefined
+                                    }
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
                                     <Box
-                                        ref={
-                                            idx === 0
-                                                ? firstSlideRef
-                                                : idx === slideCount - 1
-                                                ? lastSlideRef
-                                                : undefined
-                                        }
                                         sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
+                                            width: '16px',
+                                            height: '16px',
+                                            border: `1px solid ${
+                                                currentSlide === idx ? blue['500'] : 'black'
+                                            }`,
+                                            position: 'relative',
+                                            borderRadius: '50%',
+                                            zIndex: 100,
+                                            background: currentSlide === idx ? blue['500'] : 'white',
                                         }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                width: '16px',
-                                                height: '16px',
-                                                border: `1px solid ${
-                                                    currentSlide === idx ? blue['500'] : 'black'
-                                                }`,
-                                                position: 'relative',
-                                                borderRadius: 100,
-                                                zIndex: 100,
-                                                background: currentSlide === idx ? blue['500'] : 'white',
-                                            }}
-                                        />
-                                    </Box>
+                                    />
                                 </Box>
-                            ))}
+                            </Box>
+                        ))}
                         <div
                             ref={barRef}
                             style={{

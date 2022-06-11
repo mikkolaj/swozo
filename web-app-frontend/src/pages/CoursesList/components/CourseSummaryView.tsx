@@ -9,7 +9,7 @@ type Props = {
     courseSummary: CourseSummary;
 };
 
-export const CourseSummaryView: React.FC<Props> = ({ courseSummary }: Props) => {
+export const CourseSummaryView = ({ courseSummary }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -23,26 +23,40 @@ export const CourseSummaryView: React.FC<Props> = ({ courseSummary }: Props) => 
                             to={PageRoutes.buildCourseRoute(courseSummary.id)}
                             text={courseSummary.name}
                         />
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                opacity: 0.8,
+                                minWidth: '40%',
+                                width: 'fit-content',
+                                borderBottom: '1px solid rgba(0,0,0, 0.3)',
+                            }}
+                        >
+                            #{courseSummary.subject}
+                        </Typography>
                     </Grid>
                     <Grid item xs={4} sx={{ textAlign: 'right' }}>
                         <Typography variant="h6" component="div">
-                            {t('courses.course.lastActivity')}
+                            {t('myCourses.course.lastActivity')}
                         </Typography>
                         <Typography sx={{ mt: -1 }} variant="h6" component="div">
                             {courseSummary.lastActivity}
                         </Typography>
                     </Grid>
-                    <Grid item xs={8} sx={{ mt: 2, mb: -2 }}>
+                    <Grid item xs={8} sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
                         <Box display="flex" alignItems="center">
                             <Typography variant="body2">
-                                {t('courses.course.teacher', { name: courseSummary.teacherName })}
+                                {t('myCourses.course.teacher', { name: courseSummary.teacherName })}
                             </Typography>
                         </Box>
                     </Grid>
-                    <Grid item xs={4} sx={{ mt: 2, mb: -2 }} justifyContent="flex-end">
+                    <Grid item xs={4} sx={{ mt: 2 }}>
                         <Box display="flex" justifyContent="flex-end">
-                            <Button onClick={() => navigate(PageRoutes.buildCourseRoute(courseSummary.id))}>
-                                {t('courses.course.button')}
+                            <Button
+                                variant="contained"
+                                onClick={() => navigate(PageRoutes.buildCourseRoute(courseSummary.id))}
+                            >
+                                {t('myCourses.course.button')}
                             </Button>
                         </Box>
                     </Grid>

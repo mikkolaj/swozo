@@ -9,7 +9,7 @@ type Props = {
     activity: Activity;
 };
 
-export const ActivityView: React.FC<Props> = ({ activity }: Props) => {
+export const ActivityView = ({ activity }: Props) => {
     const [linksModalOpen, setLinksModalOpen] = useState(false);
 
     return (

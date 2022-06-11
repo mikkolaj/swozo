@@ -11,13 +11,7 @@ type Props = FieldHookConfig<any> & {
     onChangeDecorator?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 };
 
-export const InputField: React.FC<Props> = ({
-    labelPath,
-    wrapperSx,
-    textFieldProps,
-    onChangeDecorator,
-    ...props
-}: Props) => {
+export const InputField = ({ labelPath, wrapperSx, textFieldProps, onChangeDecorator, ...props }: Props) => {
     const [{ onChange, ...field }, meta] = useField(props);
     const { t } = useTranslation();
 
@@ -29,7 +23,7 @@ export const InputField: React.FC<Props> = ({
                 label={capitalized(t(labelPath))}
                 error={!!(meta.touched && meta.error)}
                 helperText={meta.touched && meta.error}
-                variant={textFieldProps?.variant ?? 'standard'}
+                variant={textFieldProps?.variant ?? 'outlined'}
                 onChange={(e) => {
                     onChange(e);
                     if (onChangeDecorator) onChangeDecorator(e);

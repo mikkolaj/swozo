@@ -4,22 +4,22 @@ import { Bar } from 'common/Styled/Bar';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { mockCourseSummaryList } from 'utils/mocks';
-import { TEACHER, WithRole } from 'utils/roles';
+import { mockModuleSummaryList } from 'utils/mocks';
+import { TECHNICAL_TEACHER, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
-import { CourseSummaryView } from './components/CourseSummaryView';
+import { ModuleSummaryView } from './components/ModuleSummaryView';
 
-export const CoursesListView = () => {
-    const [courseSummaryItems] = useState(mockCourseSummaryList);
-    const navigate = useNavigate();
+export const ModulesListView = () => {
     const { t } = useTranslation();
+    const [moduleSummaryItems] = useState(mockModuleSummaryList);
+    const navigate = useNavigate();
 
     return (
         <PageContainer>
             <Grid container>
                 <Grid item xs={6}>
                     <Typography variant="h4" component="div">
-                        {t('myCourses.header')}
+                        {t('myModules.header')}
                     </Typography>
                 </Grid>
                 <Grid
@@ -31,9 +31,9 @@ export const CoursesListView = () => {
                         justifyContent: 'flex-end',
                     }}
                 >
-                    <WithRole roles={[TEACHER]}>
+                    <WithRole roles={[TECHNICAL_TEACHER]}>
                         <Button onClick={() => navigate(PageRoutes.CREATE_COURSE)}>
-                            {t('myCourses.createCourseButton')}
+                            {t('myModules.createModuleButton')}
                         </Button>
                     </WithRole>
                 </Grid>
@@ -41,8 +41,8 @@ export const CoursesListView = () => {
             <Bar />
             <Container sx={{ marginTop: 4 }}>
                 <Stack spacing={2}>
-                    {courseSummaryItems.map((course) => (
-                        <CourseSummaryView key={course.id} courseSummary={course} />
+                    {moduleSummaryItems.map((module) => (
+                        <ModuleSummaryView key={module.id} moduleSummary={module} />
                     ))}
                 </Stack>
                 <Box sx={{ height: 1000 }} />

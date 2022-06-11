@@ -1,9 +1,10 @@
 export class PageRoutes {
     static readonly HOME = '/';
     static readonly LOGIN = '/login';
-    static readonly COURSES = '/courses';
-    static readonly COURSE = `${this.COURSES}/:courseId`;
-    static readonly CREATE_COURSE = `${this.COURSES}/creator`;
+    static readonly MY_COURSES = '/my-courses';
+    static readonly COURSE = `${this.MY_COURSES}/:courseId`;
+    static readonly CREATE_COURSE = `${this.MY_COURSES}/creator`;
+    static readonly MY_MODULES = '/my-modules';
 
     static buildCourseRoute(courseId: string | number): string {
         return this.replace(this.COURSE, { name: 'courseId', value: `${courseId}` });

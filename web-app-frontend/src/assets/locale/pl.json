@@ -7,14 +7,15 @@
     },
     "navbar": {
         "logo": "SWOZO",
-        "courses": "kursy",
+        "myCourses": "moje kursy",
+        "myModules": "moje moduły",
         "menu": {
             "logout": "wyloguj",
             "switchToTechnical": "Widok nauczyciela technicznego",
             "switchToTeacher": "Widok nauczyciela"
         }
     },
-    "courses": {
+    "myCourses": {
         "header": "Moje kursy",
         "createCourseButton": "Utwórz kurs",
         "course": {
@@ -36,6 +37,10 @@
     "createCourse": {
         "title": "Nowy kurs",
         "finish": "Utwórz kurs",
+        "buttons": {
+            "next": "Dalej",
+            "back": "Wróć"
+        },
         "slides": {
             "0": {
                 "title": "Informacje ogólne",
@@ -62,8 +67,17 @@
             }
         }
     },
-    "form": {
-        "nextButton": "Dalej",
-        "backButton": "Wróć"
+    "myModules": {
+        "header": "Moje moduły",
+        "createModuleButton": "Utwórz moduł",
+        "module": {
+            "creationDate": "Data utworzenia:",
+            "usedBy": "Liczba korzystających aktywności: {{activitiesCount}}",
+            "buttons": {
+                "details": "szczegóły",
+                "edit": "edytuj",
+                "delete": "usuń"
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ import {
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { Bar } from 'common/Styled/Bar';
 import { CourseContext } from 'pages/Course/CourseView';
-import { FC, useContext } from 'react';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Activity } from 'utils/mocks';
 
@@ -25,7 +25,7 @@ type Props = {
     onClose: () => void;
 };
 
-export const LinksModal: FC<Props> = ({ activity, open, onClose }: Props) => {
+export const LinksModal = ({ activity, open, onClose }: Props) => {
     const { t } = useTranslation();
     const course = useContext(CourseContext);
 

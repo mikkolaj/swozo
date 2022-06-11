@@ -19,10 +19,30 @@ function clearAuthPersistence(): void {
     window.localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
 }
 
+function getPersistedAuthState(): AuthData | undefined {
+    const data = window.localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
+    return data ? JSON.parse(data) : undefined;
+}
+
+function getPersistedRolePreference(): AuthDataRolesEnum | undefined {
+    const data = window.localStorage.getItem(LOCAL_STORAGE_ROLE_PREF_KEY);
+    return data ? JSON.parse(data) : undefined;
+}
+
+// TODO im not sure if this role preference idea wont turn out too complicated
+// its maily to distinguish between teacher and technical teacher views, we dont want to
+// throw every option to normal teacher, but usually normal teacher will be also a technical teacher (and always vice versa)
+
+// if we set rolePreference to teacher we can hide all these technical teacher buttons
 function canHaveRolePreference(authData: AuthData | null, pref?: AuthDataRolesEnum): boolean {
     if (!pref) return true;
 
     return hasRole(authData, pref);
+}
+
+function getDefaultRolePreference(authData: AuthData): AuthDataRolesEnum | undefined {
+    if (hasRole(authData, AuthDataRolesEnum.Teacher, AuthDataRolesEnum.TechnicalTeacher))
+        return AuthDataRolesEnum.Teacher;
 }
 
 export type AuthState = {
@@ -34,13 +54,8 @@ export type AuthState = {
 };
 
 function buildInitialState(): AuthState {
-    const storedAuthData = window.localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
-    const storedRolePreference = window.localStorage.getItem(LOCAL_STORAGE_ROLE_PREF_KEY);
-
-    let authData: AuthData | null = storedAuthData ? JSON.parse(storedAuthData) : null;
-    const rolePreference: AuthDataRolesEnum | undefined = storedRolePreference
-        ? JSON.parse(storedRolePreference)
-        : undefined;
+    let authData = getPersistedAuthState() ?? null;
+    const rolePreference = getPersistedRolePreference();
     let isLoggedIn = false;
 
     if (authData) {
@@ -68,18 +83,22 @@ const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthData>, { dispat
         dispatch(setFetching(true));
         try {
             const data = await resp;
+            // TODO error handling
             console.log(data);
 
-            // if (data.errors) {
-            //     console.log(data.errors);
-            //     dispatch(setAuthErrors(data.errors!));
-            // }
-            // else {
             persistAuthState(data);
             dispatch(setAuthData(data));
-            // }
+
+            let rolePreference = getPersistedRolePreference();
+            if (!rolePreference || !canHaveRolePreference(data, rolePreference)) {
+                rolePreference = getDefaultRolePreference(data);
+            }
+
+            if (rolePreference) {
+                dispatch(setRolePref(rolePreference));
+            }
         } catch (err) {
-            console.log('got err' + err);
+            console.log('[LOGIN ERROR]' + err);
             dispatch(setAuthErrors([JSON.stringify(err)])); // TODO error handling
         } finally {
             dispatch(setFetching(false));
@@ -102,7 +121,7 @@ export const logout = createAsyncThunk('auth/logout', (_, { dispatch }) => {
     dispatch(resetAuthData());
 });
 
-// TODO NOT USED, probably was a bad idea, leaving just in case
+// TODO redirect if on page not-for-that-preference?
 export const setRolePreference = createAsyncThunk<
     unknown,
     AuthDataRolesEnum,

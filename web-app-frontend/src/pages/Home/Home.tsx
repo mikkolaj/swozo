@@ -109,7 +109,7 @@ export const Home = () => {
                                 <Typography>Nowe ogłoszenia</Typography>
                             </Paper>
                             <Button
-                                onClick={() => navigate(PageRoutes.COURSES)}
+                                onClick={() => navigate(PageRoutes.MY_COURSES)}
                                 sx={{ display: 'block', margin: 'auto' }}
                             >
                                 Zobacz wszystkie kursy

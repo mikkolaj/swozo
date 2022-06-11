@@ -12,6 +12,6 @@ export async function getAccessToken(): Promise<string> {
         }
     }
 
-    // TODO refresh token
+    // TODO refresh token ?
     return new Promise((_, rej) => rej('access token not found or expired'));
 }

@@ -49,7 +49,7 @@ export const CreateCourseView = () => {
                                     setCurrentSlide(currentSlide - 1);
                                 }}
                             >
-                                {t('form.backButton')}
+                                {t('createCourse.buttons.back')}
                             </Button>
                         )}
                     </Grid>
@@ -68,7 +68,7 @@ export const CreateCourseView = () => {
                                 formRef.current?.handleSubmit();
                             }}
                         >
-                            {t(currentSlide === 2 ? 'createCourse.finish' : 'form.nextButton')}
+                            {t(currentSlide === 2 ? 'createCourse.finish' : 'createCourse.buttons.next')}
                         </Button>
                     </Grid>
                 </Grid>

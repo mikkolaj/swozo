@@ -1,14 +1,15 @@
 import { Typography } from '@mui/material';
+import { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-type Props = React.ComponentProps<typeof Typography> & {
+type Props = ComponentProps<typeof Typography> & {
     to: string;
     textPath?: string;
     text?: string;
 };
 
-export const LinkedTypography: React.FC<Props> = ({ to, textPath, text, ...props }: Props) => {
+export const LinkedTypography = ({ to, textPath, text, ...props }: Props) => {
     const { t } = useTranslation();
 
     return (

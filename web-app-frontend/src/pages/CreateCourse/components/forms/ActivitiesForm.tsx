@@ -3,7 +3,7 @@ import { InputField } from 'common/Input/InputField';
 import { Bar } from 'common/Styled/Bar';
 import { FieldArray, Form, Formik, FormikProps } from 'formik';
 import { ActivityValues } from 'pages/CreateCourse/CreateCourseView';
-import { FC, Ref } from 'react';
+import { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
@@ -17,7 +17,7 @@ type Props = {
     setActivityValues: (values: ActivityValues[]) => void;
 };
 
-export const ActivitiesForm: FC<Props> = ({ formRef, initialValues, setActivityValues }: Props) => {
+export const ActivitiesForm = ({ formRef, initialValues, setActivityValues }: Props) => {
     const { t } = useTranslation();
 
     return (

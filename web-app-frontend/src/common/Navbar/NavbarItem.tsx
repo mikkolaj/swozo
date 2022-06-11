@@ -8,7 +8,7 @@ type Props = {
     onClick?: () => unknown;
 };
 
-export const NavbarItem: React.FC<Props> = ({ textPath, route, onClick }: Props) => {
+export const NavbarItem = ({ textPath, route, onClick }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();

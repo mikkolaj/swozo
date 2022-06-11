@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'services/store';
 import { AuthRequirement, hasRole } from 'utils/roles';
@@ -13,7 +13,7 @@ type Props = {
     redirectPath?: string;
 };
 
-export const PageGuard = ({ authRequirement, redirectPath, children }: React.PropsWithChildren<Props>) => {
+export const PageGuard = ({ authRequirement, redirectPath, children }: PropsWithChildren<Props>) => {
     const navigate = useNavigate();
     const authState = useAppSelector((state) => state.auth);
 

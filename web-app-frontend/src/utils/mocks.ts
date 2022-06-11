@@ -3,23 +3,27 @@ export type CourseSummary = {
     name: string;
     teacherName: string;
     lastActivity: string;
+    subject: string;
 };
 
 export const mockCourseSummaryList = [
     {
         id: 1,
+        subject: 'Informatyka',
         name: 'Systemy operacyjne',
         teacherName: 'Marek Nowak',
         lastActivity: '25.03.2022',
     },
     {
         id: 2,
+        subject: 'Socjologia',
         name: 'Pierwotniaki',
         teacherName: 'Grzegorz Rogus',
         lastActivity: '13.04.2022',
     },
     {
         id: 3,
+        subject: 'Programowanie',
         name: 'Programowanie w języku Python',
         teacherName: 'Zbigniew Kowalski',
         lastActivity: '05.04.2022',
@@ -49,6 +53,7 @@ export const mockCourse: Course = {
     name: 'Systemy operacyjne',
     teacherName: 'Marek Nowak',
     lastActivity: '25.03.2022',
+    subject: 'Informatyka',
     activities: [
         {
             id: 1,
@@ -93,3 +98,39 @@ export const mockCourse: Course = {
         },
     ],
 };
+
+export type ModuleSummary = {
+    id: number;
+    name: string;
+    creatorName: string;
+    creationDate: string;
+    subject: string;
+    usedInActivitiesCount: number;
+};
+
+export const mockModuleSummaryList: ModuleSummary[] = [
+    {
+        id: 1,
+        name: 'Sockety',
+        subject: 'Informatyka',
+        creatorName: 'Marek Nowak',
+        creationDate: '11-05-2022',
+        usedInActivitiesCount: 10,
+    },
+    {
+        id: 2,
+        name: 'Funkcje w Pythonie',
+        subject: 'Programowanie',
+        creatorName: 'Zbigniew Kowalski',
+        creationDate: '15-05-2022',
+        usedInActivitiesCount: 12,
+    },
+    {
+        id: 3,
+        name: 'Klasy w Pythonie',
+        subject: 'Programowanie',
+        creatorName: 'Zbigniew Kowalski',
+        creationDate: '18-05-2022',
+        usedInActivitiesCount: 0,
+    },
+];

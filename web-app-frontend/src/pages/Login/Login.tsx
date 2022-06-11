@@ -1,4 +1,5 @@
-import { Box, Button, Container, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, Typography } from '@mui/material';
+import { InputField } from 'common/Input/InputField';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { login } from 'services/features/auth/authSlice';
@@ -17,7 +18,7 @@ const Login = () => {
                     dispatch(login(values));
                 }}
             >
-                {({ values, handleChange }) => (
+                {() => (
                     <Form>
                         <Box
                             sx={{
@@ -30,28 +31,38 @@ const Login = () => {
                             <Typography component="h1" variant="h5">
                                 {t('login.header')}
                             </Typography>
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                label={t('login.email')}
+                            <InputField
                                 name="email"
-                                autoComplete="email"
-                                value={values.email}
-                                onChange={handleChange}
-                                autoFocus
+                                textFieldProps={{
+                                    required: true,
+                                    fullWidth: true,
+                                    autoFocus: true,
+                                    autoComplete: 'email',
+                                    variant: 'outlined',
+                                }}
+                                wrapperSx={{
+                                    mt: 3,
+                                    width: '100%',
+                                }}
+                                type="email"
+                                labelPath="login.email"
                             />
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
+                            <InputField
                                 name="password"
-                                label={t('login.password')}
+                                textFieldProps={{
+                                    required: true,
+                                    fullWidth: true,
+                                    autoComplete: 'current-password',
+                                    variant: 'outlined',
+                                }}
+                                wrapperSx={{
+                                    mt: 2,
+                                    width: '100%',
+                                }}
                                 type="password"
-                                autoComplete="current-password"
-                                value={values.password}
-                                onChange={handleChange}
+                                labelPath="login.password"
                             />
+
                             <Button
                                 type="submit"
                                 disabled={authState.isFetching}

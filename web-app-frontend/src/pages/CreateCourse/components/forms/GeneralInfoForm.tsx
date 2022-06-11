@@ -1,7 +1,7 @@
 import { Grid, Typography } from '@mui/material';
 import { InputField } from 'common/Input/InputField';
 import { FieldArray, Form, Formik, FormikProps } from 'formik';
-import { FC, Ref } from 'react';
+import { Ref } from 'react';
 import * as Yup from 'yup';
 
 type CourseValues = {
@@ -19,7 +19,7 @@ type Props = {
     setCourseValues: (valuse: CourseValues) => void;
 };
 
-export const GeneralInfoForm: FC<Props> = ({ formRef, initialValues, setCourseValues }: Props) => {
+export const GeneralInfoForm = ({ formRef, initialValues, setCourseValues }: Props) => {
     // const [numberOfStudents, setNumberOfStudents] = useState(0);
 
     return (
@@ -54,7 +54,7 @@ export const GeneralInfoForm: FC<Props> = ({ formRef, initialValues, setCourseVa
                         wrapperSx={{ mb: 2, width: '50%' }}
                         name="description"
                         type="text"
-                        textFieldProps={{ multiline: true, fullWidth: true }}
+                        textFieldProps={{ multiline: true, fullWidth: true, variant: 'outlined' }}
                         labelPath="createCourse.slides.0.form.description"
                     />
                     <InputField
@@ -82,6 +82,7 @@ export const GeneralInfoForm: FC<Props> = ({ formRef, initialValues, setCourseVa
                                     <Grid item key={idx} xs={6}>
                                         <InputField
                                             name={`students.${idx}`}
+                                            wrapperSx={{ mt: 2 }}
                                             type="text"
                                             labelPath=""
                                             textFieldProps={{

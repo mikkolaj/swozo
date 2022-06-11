@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
-import React, { FC } from 'react';
+import { ComponentProps, FC } from 'react';
 
-export const Bar: FC<React.ComponentProps<typeof Box>> = (sx, ...props) => {
+export const Bar: FC<ComponentProps<typeof Box>> = (sx, ...props) => {
     return (
         <>
             <Box
