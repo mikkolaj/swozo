@@ -1,9 +1,9 @@
 import { Box, Typography } from '@mui/material';
-import { InputField } from 'common/Input/InputField';
+import { SlideProps } from 'common/SlideForm/SlideForm';
+import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
 import { Bar } from 'common/Styled/Bar';
-import { FieldArray, Form, Formik, FormikProps } from 'formik';
+import { FieldArray, Form, Formik } from 'formik';
 import { ActivityValues } from 'pages/CreateCourse/CreateCourseView';
-import { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
@@ -11,19 +11,13 @@ type Values = {
     activities: ActivityValues[];
 };
 
-type Props = {
-    formRef: Ref<FormikProps<Values>>;
-    initialValues: ActivityValues[];
-    setActivityValues: (values: ActivityValues[]) => void;
-};
-
-export const ActivitiesForm = ({ formRef, initialValues, setActivityValues }: Props) => {
+export const ActivitiesForm = ({ formRef, initialValues, setValues }: SlideProps<Values>) => {
     const { t } = useTranslation();
 
     return (
         <Formik
             innerRef={formRef}
-            initialValues={{ activities: initialValues }}
+            initialValues={initialValues}
             validationSchema={Yup.object().shape({
                 activities: Yup.array().of(
                     Yup.object().shape({
@@ -32,9 +26,7 @@ export const ActivitiesForm = ({ formRef, initialValues, setActivityValues }: Pr
                 ),
             })}
             validateOnChange={false}
-            onSubmit={(values) => {
-                setActivityValues(values.activities);
-            }}
+            onSubmit={setValues}
         >
             {({ values }) => (
                 <Form>
@@ -55,28 +47,27 @@ export const ActivitiesForm = ({ formRef, initialValues, setActivityValues }: Pr
                                                     idx: idx + 1,
                                                 })}
                                             </Typography>
-                                            <InputField
-                                                wrapperSx={{ mb: 2 }}
+                                            <SlideFormInputField
                                                 name={`activities.${idx}.name`}
-                                                textFieldProps={{ required: true }}
+                                                textFieldProps={{ fullWidth: true }}
+                                                wrapperSx={{ width: '50%' }}
                                                 type="text"
                                                 labelPath="createCourse.slides.1.form.name"
                                             />
-                                            <InputField
-                                                wrapperSx={{ mb: 2, width: '50%' }}
+                                            <SlideFormInputField
+                                                wrapperSx={{ width: '50%' }}
                                                 name={`activities.${idx}.description`}
                                                 type="text"
                                                 textFieldProps={{ fullWidth: true, multiline: true }}
                                                 labelPath="createCourse.slides.1.form.description"
                                             />
-                                            <InputField
-                                                wrapperSx={{ mb: 2 }}
+                                            <SlideFormInputField
                                                 name={`activities.${idx}.module`}
                                                 type="text"
                                                 labelPath="createCourse.slides.1.form.modules"
                                             />
-                                            <InputField
-                                                wrapperSx={{ mb: 2, width: '50%' }}
+                                            <SlideFormInputField
+                                                wrapperSx={{ width: '50%' }}
                                                 name={`activities.${idx}.instructions`}
                                                 type="text"
                                                 textFieldProps={{ fullWidth: true, multiline: true }}

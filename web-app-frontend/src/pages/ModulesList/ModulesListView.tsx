@@ -32,14 +32,14 @@ export const ModulesListView = () => {
                     }}
                 >
                     <WithRole roles={[TECHNICAL_TEACHER]}>
-                        <Button onClick={() => navigate(PageRoutes.CREATE_COURSE)}>
+                        <Button onClick={() => navigate(PageRoutes.CREATE_MODULE)}>
                             {t('myModules.createModuleButton')}
                         </Button>
                     </WithRole>
                 </Grid>
             </Grid>
-            <Bar />
-            <Container sx={{ marginTop: 4 }}>
+            <Bar sx={{ mt: 1 }} />
+            <Container sx={{ mt: 4 }}>
                 <Stack spacing={2}>
                     {moduleSummaryItems.map((module) => (
                         <ModuleSummaryView key={module.id} moduleSummary={module} />

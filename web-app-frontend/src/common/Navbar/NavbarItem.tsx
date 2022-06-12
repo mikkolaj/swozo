@@ -21,7 +21,11 @@ export const NavbarItem = ({ textPath, route, onClick }: Props) => {
             }}
             color="inherit"
         >
-            <Box sx={{ textDecoration: location.pathname === route ? 'underline' : 'none' }}>
+            <Box
+                sx={{
+                    borderBottom: location.pathname === route ? '1px solid rgba(255,255,255, 0.8)' : 'none',
+                }}
+            >
                 <Typography component="h1" variant="button">
                     {t(textPath)}
                 </Typography>

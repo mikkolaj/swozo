@@ -4,6 +4,7 @@ import { PageGuard } from 'common/PageGuard/PageGuard';
 import { CourseView } from 'pages/Course/CourseView';
 import { CoursesListView } from 'pages/CoursesList/CoursesListView';
 import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
+import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
 import { Home } from 'pages/Home/Home';
 import Login from 'pages/Login/Login';
 import { ModulesListView } from 'pages/ModulesList/ModulesListView';
@@ -42,6 +43,10 @@ function App() {
                 <Route
                     path={PageRoutes.MY_MODULES}
                     element={guarded(<ModulesListView />, withRole(TEACHER, TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.CREATE_MODULE}
+                    element={guarded(<CreateModuleView />, withRole(TECHNICAL_TEACHER))}
                 />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
             </Routes>

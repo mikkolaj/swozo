@@ -134,3 +134,5 @@ export const mockModuleSummaryList: ModuleSummary[] = [
         usedInActivitiesCount: 0,
     },
 ];
+
+export const mockServices: string[] = ['Jupyter', 'Sozisel'];

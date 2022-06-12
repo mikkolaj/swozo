@@ -26,7 +26,7 @@ export const CourseView = () => {
                         </Typography>
                     </Grid>
                 </Grid>
-                <Bar />
+                <Bar sx={{ mt: 1 }} />
                 <Container sx={{ marginTop: 4 }}>
                     <Stack spacing={2}>
                         {course.activities.map((activity) => (

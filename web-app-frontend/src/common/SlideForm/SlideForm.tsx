@@ -2,6 +2,7 @@ import { Box, Grid, Typography } from '@mui/material';
 import { blue } from '@mui/material/colors';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { Bar } from 'common/Styled/Bar';
+import { FormikProps } from 'formik';
 import { PropsWithChildren, Ref, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { range } from 'utils/utils';
@@ -12,6 +13,12 @@ type Props = {
     buttons: JSX.Element;
     slideCount: number;
     currentSlide: number;
+};
+
+export type SlideProps<T> = {
+    formRef: Ref<FormikProps<T>>;
+    initialValues: T;
+    setValues: (values: T) => void;
 };
 
 export const SlideForm = ({
@@ -107,11 +114,12 @@ export const SlideForm = ({
                     </Box>
                 </Grid>
             </Grid>
-            <Bar sx={{ mt: 4 }} />
+            <Bar sx={{ mt: 2, mb: 5 }} />
 
             <Box sx={{ mt: 4, marginX: '5%' }}>{children}</Box>
 
-            <Bar />
+            <Bar sx={{ mt: 2 }} />
+
             {buttons}
         </PageContainer>
     );

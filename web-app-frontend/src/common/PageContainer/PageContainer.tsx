@@ -1,12 +1,14 @@
-import { Card, CardContent } from '@mui/material';
-import { Container } from '@mui/system';
-import { PropsWithChildren } from 'react';
+import { Card, CardContent, Container } from '@mui/material';
+import { ComponentProps, PropsWithChildren } from 'react';
 
-export const PageContainer = ({ children }: PropsWithChildren<unknown>) => {
+export const PageContainer = ({
+    children,
+    ...props
+}: PropsWithChildren<ComponentProps<typeof CardContent>>) => {
     return (
         <Container>
             <Card sx={{ position: 'relative', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
-                <CardContent>{children}</CardContent>
+                <CardContent {...props}>{children}</CardContent>
             </Card>
         </Container>
     );

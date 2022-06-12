@@ -38,8 +38,8 @@ export const CoursesListView = () => {
                     </WithRole>
                 </Grid>
             </Grid>
-            <Bar />
-            <Container sx={{ marginTop: 4 }}>
+            <Bar sx={{ mt: 1 }} />
+            <Container sx={{ mt: 4 }}>
                 <Stack spacing={2}>
                     {courseSummaryItems.map((course) => (
                         <CourseSummaryView key={course.id} courseSummary={course} />

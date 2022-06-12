@@ -1,4 +1,4 @@
-// python semantics
+// python range
 export const range = (end: number, start?: number): number[] => {
     if (!start) start = 0;
     const arr = Array(end - start);

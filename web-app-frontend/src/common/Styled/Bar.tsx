@@ -1,20 +1,18 @@
 import { Box } from '@mui/material';
-import { ComponentProps, FC } from 'react';
+import { ComponentProps } from 'react';
 
-export const Bar: FC<ComponentProps<typeof Box>> = (sx, ...props) => {
+export const Bar = ({ sx, ...props }: ComponentProps<typeof Box>) => {
     return (
-        <>
+        <Box sx={sx}>
             <Box
                 sx={{
                     borderBottom: '1px solid rgba(0, 0, 0, 0.5)',
                     position: 'absolute',
                     left: 0,
                     width: '100%',
-                    marginTop: '10px',
-                    ...sx,
                 }}
                 {...props}
             />
-        </>
+        </Box>
     );
 };

@@ -3,38 +3,37 @@ import { SlideForm } from 'common/SlideForm/SlideForm';
 import { FormikProps } from 'formik';
 import { Ref, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { range } from 'utils/utils';
-import { ActivitiesForm } from './components/forms/ActivitiesForm';
-import { GeneralInfoForm } from './components/forms/GeneralInfoForm';
-import { Summary } from './components/forms/Summary';
+import { GeneralInfoForm } from './components/GeneralInfoForm';
+import { ModuleSpecsForm } from './components/ModuleSpecsForm';
+import { Summary } from './components/Summary';
 
-export type ActivityValues = {
-    name: string;
-    description: string;
-    module: string;
-    instructions: string;
-};
-
-export const CreateCourseView = () => {
+export const CreateModuleView = () => {
     const { t } = useTranslation();
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [courseValues, setCourseValues] = useState({
+    const [moduleValues, setModuleValues] = useState({
         name: '',
         subject: '',
         description: '',
-        numberOfActivities: 1,
-        numberOfStudents: 0,
-        students: ['', ''],
+        service: 'Jupyter',
+        serviceFile: '',
+        instructions: '',
+        isPublic: true,
     });
-    const [activitiesValues, setActivitiesValues] = useState<ActivityValues[]>([]);
+
+    const [moduleSpec, setModuleSpecs] = useState({
+        environment: 'isolated',
+        storage: 1,
+        cpu: 'big',
+        ram: 'big',
+    });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formRef: Ref<FormikProps<any>> = useRef(null);
 
     return (
         <SlideForm
-            titlePath="createCourse.title"
-            slidesPath="createCourse.slides"
+            titlePath="createModule.title"
+            slidesPath="createModule.slides"
             slideCount={3}
             currentSlide={currentSlide}
             buttons={
@@ -43,13 +42,10 @@ export const CreateCourseView = () => {
                         {currentSlide > 0 && (
                             <Button
                                 onClick={() => {
-                                    if (currentSlide === 1) {
-                                        setActivitiesValues(formRef.current?.values.activities);
-                                    }
                                     setCurrentSlide(currentSlide - 1);
                                 }}
                             >
-                                {t('createCourse.buttons.back')}
+                                {t('createModule.buttons.back')}
                             </Button>
                         )}
                     </Grid>
@@ -68,7 +64,7 @@ export const CreateCourseView = () => {
                                 formRef.current?.handleSubmit();
                             }}
                         >
-                            {t(currentSlide === 2 ? 'createCourse.finish' : 'createCourse.buttons.next')}
+                            {t(currentSlide === 2 ? 'createModule.finish' : 'createModule.buttons.next')}
                         </Button>
                     </Grid>
                 </Grid>
@@ -77,33 +73,19 @@ export const CreateCourseView = () => {
             {currentSlide === 0 && (
                 <GeneralInfoForm
                     formRef={formRef}
-                    initialValues={courseValues}
+                    initialValues={moduleValues}
                     setValues={(values) => {
-                        setCourseValues(values);
-                        if (values.numberOfActivities > activitiesValues.length) {
-                            setActivitiesValues([
-                                ...activitiesValues,
-                                ...range(values.numberOfActivities - activitiesValues.length).map((_) => ({
-                                    name: '',
-                                    description: '',
-                                    module: '',
-                                    instructions: '',
-                                })),
-                            ]);
-                        } else {
-                            setActivitiesValues(activitiesValues.slice(0, values.numberOfActivities));
-                        }
-
+                        setModuleValues(values);
                         setCurrentSlide(currentSlide + 1);
                     }}
                 />
             )}
             {currentSlide === 1 && (
-                <ActivitiesForm
+                <ModuleSpecsForm
                     formRef={formRef}
-                    initialValues={{ activities: activitiesValues }}
+                    initialValues={moduleSpec}
                     setValues={(values) => {
-                        setActivitiesValues(values.activities);
+                        setModuleSpecs(values);
                         setCurrentSlide(currentSlide + 1);
                     }}
                 />

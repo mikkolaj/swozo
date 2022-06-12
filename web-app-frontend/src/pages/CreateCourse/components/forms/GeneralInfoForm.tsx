@@ -1,7 +1,8 @@
-import { Grid, Typography } from '@mui/material';
+import { Divider, Grid, Typography } from '@mui/material';
 import { InputField } from 'common/Input/InputField';
-import { FieldArray, Form, Formik, FormikProps } from 'formik';
-import { Ref } from 'react';
+import { SlideProps } from 'common/SlideForm/SlideForm';
+import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
+import { FieldArray, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
 type CourseValues = {
@@ -13,13 +14,7 @@ type CourseValues = {
     students: string[];
 };
 
-type Props = {
-    formRef: Ref<FormikProps<CourseValues>>;
-    initialValues: CourseValues;
-    setCourseValues: (valuse: CourseValues) => void;
-};
-
-export const GeneralInfoForm = ({ formRef, initialValues, setCourseValues }: Props) => {
+export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProps<CourseValues>) => {
     // const [numberOfStudents, setNumberOfStudents] = useState(0);
 
     return (
@@ -30,50 +25,48 @@ export const GeneralInfoForm = ({ formRef, initialValues, setCourseValues }: Pro
             validationSchema={Yup.object({
                 name: Yup.string().max(10, 'e1').required('e2'),
             })}
-            onSubmit={(values) => {
-                console.log(values);
-                setCourseValues(values);
-            }}
+            onSubmit={setValues}
         >
             {({ values }) => (
                 <Form>
-                    <InputField
-                        wrapperSx={{ mb: 2 }}
+                    <SlideFormInputField
+                        wrapperSx={{ width: '50%' }}
                         name="name"
                         type="text"
-                        textFieldProps={{ required: true }}
+                        textFieldProps={{ fullWidth: true }}
                         labelPath="createCourse.slides.0.form.name"
                     />
-                    <InputField
-                        wrapperSx={{ mb: 2 }}
+                    <SlideFormInputField
                         name="subject"
                         type="text"
                         labelPath="createCourse.slides.0.form.subject"
                     />
-                    <InputField
-                        wrapperSx={{ mb: 2, width: '50%' }}
+                    <SlideFormInputField
+                        wrapperSx={{ width: '50%' }}
                         name="description"
                         type="text"
-                        textFieldProps={{ multiline: true, fullWidth: true, variant: 'outlined' }}
+                        textFieldProps={{ multiline: true, fullWidth: true, required: false }}
                         labelPath="createCourse.slides.0.form.description"
                     />
-                    <InputField
-                        wrapperSx={{ mb: 2 }}
+                    <SlideFormInputField
                         name="numberOfActivities"
                         type="number"
                         labelPath="createCourse.slides.0.form.numberOfActivities"
                     />
-                    <InputField
-                        wrapperSx={{ mb: 2 }}
+                    <SlideFormInputField
                         name="numberOfStudents"
                         type="number"
                         labelPath="createCourse.slides.0.form.numberOfStudents"
                         onChangeDecorator={() => {
-                            // TODO
+                            // TODO how this value affects array below
                             // if (!isNaN(+e.target.value)) setNumberOfStudents(+e.target.value);
                         }}
                     />
-                    <Typography variant="subtitle1">Adresy Email uczestników</Typography>
+                    {/* // TODO how to style this */}
+                    <Divider sx={{ width: '75%', mt: 2 }} />
+                    <Typography sx={{ mt: 0 }} variant="subtitle1">
+                        Adresy Email uczestników
+                    </Typography>
                     <FieldArray
                         name="students"
                         render={(arrayHelpers) => (

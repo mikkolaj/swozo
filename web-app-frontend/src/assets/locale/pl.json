@@ -20,7 +20,7 @@
         "createCourseButton": "Utwórz kurs",
         "course": {
             "lastActivity": "Ostatnia aktywność:",
-            "teacher": "prowadzący: {{name}}",
+            "teacher": "Prowadzący: {{name}}",
             "button": "szczegóły"
         }
     },
@@ -77,6 +77,40 @@
                 "details": "szczegóły",
                 "edit": "edytuj",
                 "delete": "usuń"
+            }
+        }
+    },
+    "createModule": {
+        "title": "Nowy moduł",
+        "finish": "Utwórz moduł",
+        "buttons": {
+            "next": "Dalej",
+            "back": "Wróć"
+        },
+        "slides": {
+            "0": {
+                "title": "Informacje ogólne",
+                "form": {
+                    "name": "nazwa",
+                    "subject": "tematyka",
+                    "description": "opis",
+                    "service": "Serwis",
+                    "serviceConfig": "Konfiguracja serwisu",
+                    "instructions": "Ogólne instrukcje",
+                    "public": "Moduł publiczny"
+                }
+            },
+            "1": {
+                "title": "Specyfikacja techniczna",
+                "form": {
+                    "environment": "Typ środowiska",
+                    "storage": "Wymagane miejsce",
+                    "cpu": "Obciążenie procesora",
+                    "ram": "Wymagany RAM"
+                }
+            },
+            "2": {
+                "title": "Podsumowanie"
             }
         }
     }
