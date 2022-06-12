@@ -1,3 +1,5 @@
+import dayjs, { Dayjs } from 'dayjs';
+
 export type CourseSummary = {
     id: number;
     name: string;
@@ -136,3 +138,19 @@ export const mockModuleSummaryList: ModuleSummary[] = [
 ];
 
 export const mockServices: string[] = ['Jupyter', 'Sozisel'];
+
+export type CalendarActivity = {
+    at: Dayjs;
+    description: string;
+};
+
+export const mockCalendarActivities: CalendarActivity[] = [
+    {
+        at: dayjs().day(1),
+        description: 'Zajęcia: Klasy w Pythonie o 14:40',
+    },
+    {
+        at: dayjs().day(-3),
+        description: 'Zajęcia: Funkcje w Pythonie o 14:40',
+    },
+];

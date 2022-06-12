@@ -2,6 +2,7 @@ import { Box, SxProps, TextField, TextFieldProps, Theme } from '@mui/material';
 import { FieldHookConfig, useField } from 'formik';
 import { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { capitalized } from 'utils/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Props = FieldHookConfig<any> & {
@@ -23,8 +24,6 @@ export const InputField = ({
 }: Props) => {
     const [{ onChange, ...field }, meta] = useField(props);
     const { t } = useTranslation();
-
-    const capitalized = (x: string) => x && x[0].toUpperCase() + x.slice(1);
 
     return (
         <Box sx={wrapperSx}>

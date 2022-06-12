@@ -1,43 +1,96 @@
-import { Box, Card, Grid, Typography } from '@mui/material';
-import moment from 'moment';
-import { WEEKDAYS } from './utils';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Button, Card, Grid, Paper, Typography } from '@mui/material';
+import dayjs from 'dayjs';
+import { useState } from 'react';
+import { mockCalendarActivities } from 'utils/mocks';
+import { capitalized, range } from 'utils/utils';
+import { CalendarDay } from './components/CalendarDay';
+import { buildWeeks, DAYS_IN_WEEK, getWeeksInMonthCount } from './utils';
 
 export const Calendar = () => {
-    console.log(moment().startOf('month').day());
+    const [displayedDate, setDisplayedDate] = useState(dayjs());
+    const [daysInMonth, setDaysInMonth] = useState(buildWeeks(displayedDate));
+    const [activities] = useState(mockCalendarActivities);
 
     return (
         <Card sx={{ p: 2 }}>
             <Grid container>
-                <Typography variant="h6">Marzec 2022</Typography>
+                <Grid
+                    item
+                    xs={12}
+                    sx={{
+                        display: 'flex',
+                        alignContent: 'center',
+                        flexDirection: 'row',
+                        justifyItems: 'space-between',
+                        mb: 1,
+                    }}
+                >
+                    <Button
+                        startIcon={<ArrowBackIcon />}
+                        onClick={() => {
+                            const nextDate = displayedDate.subtract(1, 'month');
+                            setDaysInMonth(buildWeeks(nextDate));
+                            setDisplayedDate(dayjs().isSame(nextDate, 'month') ? dayjs() : nextDate);
+                        }}
+                    />
+                    <Typography
+                        sx={{ width: '100%', textAlign: 'center', textTransform: 'capitalize' }}
+                        variant="h6"
+                    >
+                        {displayedDate.format('MMMM YYYY')}
+                    </Typography>
+                    <Button
+                        startIcon={<ArrowForwardIcon />}
+                        onClick={() => {
+                            const nextDate = displayedDate.add(1, 'month');
+                            setDaysInMonth(buildWeeks(nextDate));
+                            setDisplayedDate(dayjs().isSame(nextDate, 'month') ? dayjs() : nextDate);
+                        }}
+                    />
+                </Grid>
                 <Grid
                     item
                     xs={12}
                     sx={{
                         display: 'flex',
                         flexDirection: 'row',
-                        borderTop: '1px solid black',
-                        borderBottom: '1px solid black',
+                        marginBottom: '5px',
                     }}
                     justifyContent="space-between"
                     alignContent="center"
                 >
-                    {WEEKDAYS.map((day, idx) => (
-                        <Box
-                            sx={{
-                                display: 'inline-block',
-                                p: 2,
-                                borderRight: '1px solid black',
-                                borderLeft: idx === 0 ? '1px solid black' : 'none',
-                            }}
+                    {range(DAYS_IN_WEEK).map((day) => (
+                        <Paper
+                            sx={{ boxShadow: 2, width: '100%', textAlign: 'center', margin: '1px' }}
                             key={day}
                         >
-                            {day}
-                        </Box>
+                            {capitalized(
+                                dayjs()
+                                    .day((day + 1) % DAYS_IN_WEEK)
+                                    .format('dd')
+                            ) + '.'}
+                        </Paper>
                     ))}
                 </Grid>
-                <Grid item xs={12}>
-                    <Box width="100%" height={350} sx={{ background: '#eee' }} />
-                </Grid>
+                {range(getWeeksInMonthCount(displayedDate)).map((week) => (
+                    <Grid
+                        item
+                        key={week}
+                        xs={12}
+                        sx={{ display: 'flex', alignContent: 'center', flexDirection: 'row' }}
+                    >
+                        {range(DAYS_IN_WEEK).map((day) => (
+                            <CalendarDay
+                                key={day}
+                                displayedDate={displayedDate}
+                                day={daysInMonth[week * DAYS_IN_WEEK + day]}
+                                activities={activities}
+                            />
+                        ))}
+                    </Grid>
+                ))}
             </Grid>
         </Card>
     );

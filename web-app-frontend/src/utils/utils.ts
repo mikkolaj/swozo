@@ -5,3 +5,5 @@ export const range = (end: number, start?: number): number[] => {
     for (let i = start; i < end; i++) arr[i - start] = i;
     return arr;
 };
+
+export const capitalized = (x: string) => x && x[0].toUpperCase() + x.slice(1);

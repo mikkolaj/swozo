@@ -1,4 +1,5 @@
 import { AuthData, AuthDataRolesEnum } from 'api';
+import { PageGuard } from 'common/PageGuard/PageGuard';
 import { useAppSelector } from 'services/store';
 
 export const STUDENT = AuthDataRolesEnum.Student;
@@ -42,4 +43,8 @@ export const WithRole = ({ children, roles }: React.PropsWithChildren<{ roles: A
 export const WithPreference = ({ children, role }: React.PropsWithChildren<{ role: AuthDataRolesEnum }>) => {
     const auth = useAppSelector((state) => state.auth);
     return <>{hasRole(auth.authData, role) && auth.rolePreference === role && children}</>;
+};
+
+export const guarded = (element: JSX.Element, authRequirement: AuthRequirement): JSX.Element => {
+    return <PageGuard authRequirement={authRequirement}>{element}</PageGuard>;
 };
