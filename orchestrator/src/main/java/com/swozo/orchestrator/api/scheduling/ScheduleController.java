@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/schedules")
-public class SchedulingController {
-    private final SchedulingService service;
+public class ScheduleController {
+    private final ScheduleService service;
 
     @Autowired
-    public SchedulingController(SchedulingService service) {
+    public ScheduleController(ScheduleService service) {
         this.service = service;
     }
 

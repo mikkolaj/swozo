@@ -3,10 +3,10 @@ package com.swozo.orchestrator.cloud.resources.gcloud.compute;
 import com.swozo.model.Psm;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
-import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMDeleted;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
-import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
+import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +36,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
 
     @Async
     @Override
-    public CompletableFuture<VMResourceDetails> createInstance(
-            Psm psm) throws InterruptedException, VMOperationFailed {
+    public CompletableFuture<VMResourceDetails> createInstance(Psm psm) throws InterruptedException, VMOperationFailed {
         try {
             // TODO: create unique name
             var vmAddress = getVMAddress("uniqueName");

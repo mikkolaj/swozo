@@ -3,6 +3,7 @@ package com.swozo.orchestrator.cloud.software;
 public class HttpLinkFormatter {
     private HttpLinkFormatter() {
     }
+
     private static final String HTTP_LINK_TEMPLATE = "http://%s:%s%s";
 
     public static String getLink(String ip, String port) {

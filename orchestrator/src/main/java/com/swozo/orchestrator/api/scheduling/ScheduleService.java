@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
-public class SchedulingService {
+public class ScheduleService {
     private final TaskScheduler scheduler;
     private final TimedVMProvider timedVmProvider;
     private final TimedSoftwareProvisioner jupyterProvisioner;
