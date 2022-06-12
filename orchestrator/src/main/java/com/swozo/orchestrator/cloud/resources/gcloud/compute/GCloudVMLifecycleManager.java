@@ -6,41 +6,26 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.instance.InstanceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.networking.NetworkInterfaceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.storage.DiskProvider;
-import com.swozo.orchestrator.configuration.EnvNames;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-@Service
+@RequiredArgsConstructor
 public class GCloudVMLifecycleManager {
     private static final String DEFAULT_DISK_NAME = "disk-1";
     private static final int DEFAULT_NIC_INDEX = 0;
     private static final int DEFAULT_ACCESS_CONFIG_INDEX = 0;
 
-    private final int gCloudTimeoutMinutes;
     private final DiskProvider diskProvider;
     private final NetworkInterfaceProvider networkInterfaceProvider;
     private final InstanceProvider instanceProvider;
+    private final int gCloudTimeoutMinutes;
     private final Logger logger = LoggerFactory.getLogger(GCloudVMLifecycleManager.class);
-
-    @Autowired
-    public GCloudVMLifecycleManager(
-            DiskProvider diskProvider,
-            NetworkInterfaceProvider networkInterfaceProvider,
-            InstanceProvider instanceProvider,
-            @Value("${" + EnvNames.GCP_REQUEST_TIMEOUT + "}") int gCloudTimeoutMinutes) {
-        this.gCloudTimeoutMinutes = gCloudTimeoutMinutes;
-        this.diskProvider = diskProvider;
-        this.networkInterfaceProvider = networkInterfaceProvider;
-        this.instanceProvider = instanceProvider;
-    }
 
     public Operation createInstance(VMAddress vmAddress, VMSpecs vmSpecs)
             throws IOException, ExecutionException, TimeoutException, InterruptedException {

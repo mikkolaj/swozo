@@ -11,4 +11,5 @@ import lombok.*;
 public abstract class ScheduleRequest {
     private final ServiceLifespan serviceLifespan;
     private final Psm psm;
+    private final Long activityModuleID;
 }

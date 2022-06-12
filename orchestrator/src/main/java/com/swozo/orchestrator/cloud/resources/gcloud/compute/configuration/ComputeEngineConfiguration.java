@@ -7,10 +7,12 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.networkin
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.networking.OneToOneNATProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.storage.DefaultDebianDiskProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.storage.DiskProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(name = "cloud.provider", havingValue = "gcloud")
 public class ComputeEngineConfiguration {
     @Bean
     InstanceProvider instanceProvider() {

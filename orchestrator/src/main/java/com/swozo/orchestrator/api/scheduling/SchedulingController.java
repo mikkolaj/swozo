@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/scheduling")
+@RequestMapping("/schedules")
 public class SchedulingController {
     private final SchedulingService service;
 
@@ -16,8 +16,8 @@ public class SchedulingController {
         this.service = service;
     }
 
-    @PostMapping("schedule")
-    public void schedule(ScheduleRequest request) throws InterruptedException {
+    @PostMapping
+    public void schedule(ScheduleRequest request) {
         service.schedule(request);
     }
 }

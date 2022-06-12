@@ -1,7 +1,6 @@
 package com.swozo.orchestrator.scheduler;
 
-import com.swozo.orchestrator.configuration.EnvNames;
-import org.springframework.beans.factory.annotation.Value;
+import com.swozo.orchestrator.configuration.ApplicationProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.Callable;
@@ -13,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 public class TaskScheduler {
     private final ScheduledExecutorService executorService;
 
-    public TaskScheduler(@Value("${" + EnvNames.SCHEDULER_THREAD_POOL_SIZE + "}") int threadPoolSize) {
-        executorService = new ScheduledThreadPoolExecutor(threadPoolSize);
+    public TaskScheduler(ApplicationProperties properties) {
+        executorService = new ScheduledThreadPoolExecutor(properties.schedulerThreadPoolSize);
     }
 
     public void schedule(Callable<Void> task, long secondsOffset) {

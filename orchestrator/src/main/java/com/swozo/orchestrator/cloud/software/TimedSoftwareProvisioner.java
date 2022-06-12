@@ -1,8 +1,12 @@
 package com.swozo.orchestrator.cloud.software;
 
-import com.swozo.orchestrator.cloud.resources.vm.VMConnectionDetails;
+import com.swozo.model.links.Link;
+import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+
+import java.util.List;
 
 public interface TimedSoftwareProvisioner {
-    boolean provision(VMConnectionDetails connectionDetails);
+    List<Link> provision(VMResourceDetails resourceDetails) throws InterruptedException;
+
     int getProvisioningSeconds();
 }

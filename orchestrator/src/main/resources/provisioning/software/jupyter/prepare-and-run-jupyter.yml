@@ -1,12 +1,12 @@
 ---
 
-- name: Install docker
-  import_playbook: ../docker/install-docker.yml
-
 - name: Setup SWOZO user
   import_playbook: ../../administration/setup-user.yml
   vars:
-    user: swozo
+    new_user: swozo
+
+- name: Install docker
+  import_playbook: ../docker/install-docker.yml
 
 - name: Copy Jupyter config file
   import_playbook: ../../administration/copy-files.yml

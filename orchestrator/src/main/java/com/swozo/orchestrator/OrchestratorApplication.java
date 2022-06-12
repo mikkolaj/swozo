@@ -14,7 +14,7 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 public class OrchestratorApplication {
     @Autowired
-    GCloudVMLifecycleManager GCloudVmLifecycleManager;
+    GCloudVMLifecycleManager gCloudVmLifecycleManager;
 
     Logger logger = LoggerFactory.getLogger(OrchestratorApplication.class);
 
@@ -38,13 +38,13 @@ public class OrchestratorApplication {
         var vmSpecs = new VMSpecs("e2-micro", "debian-11", 10);
 
         try {
-            GCloudVmLifecycleManager.createInstance(vmAddress, vmSpecs);
+            gCloudVmLifecycleManager.createInstance(vmAddress, vmSpecs);
         } catch (Exception exception) {
             logger.error("Failed to create instance. " + vmAddress + " " + exception);
         }
 
         try {
-            GCloudVmLifecycleManager.deleteInstance(vmAddress);
+            gCloudVmLifecycleManager.deleteInstance(vmAddress);
         } catch (Exception exception) {
             logger.error("Failed to delete instance. " + vmAddress + " " + exception);
         }
