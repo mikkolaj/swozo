@@ -30,6 +30,7 @@
             "instructions": "instrukcje",
             "linksInfo": {
                 "info": "Linki dla: {{courseName}} - {{activityName}}",
+                "connectionInstruction": "Instrukcja podłączenia",
                 "closeButton": "Zamknij"
             }
         }

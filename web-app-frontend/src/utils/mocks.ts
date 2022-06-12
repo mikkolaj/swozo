@@ -35,7 +35,13 @@ export const mockCourseSummaryList = [
 export type LinkInfo = {
     url: string;
     serviceName: string;
-    serviceInfo: string;
+    connectionInstruction: string;
+    connectionInfo: string;
+};
+
+export type InstructionContent = {
+    header?: string;
+    body: string;
 };
 
 export type Activity = {
@@ -43,7 +49,7 @@ export type Activity = {
     name: string;
     date: string;
     links: LinkInfo[];
-    instructions: string[];
+    instructions: InstructionContent[];
 };
 
 export type Course = CourseSummary & {
@@ -65,11 +71,12 @@ export const mockCourse: Course = {
                 {
                     url: 'https://www.facebook.com/',
                     serviceName: 'Facebook',
-                    serviceInfo:
-                        'Facebook is an American online social media and social networking service owned by Meta Platforms. Founded in 2004 by Mark Zuckerberg with fellow Harvard College students and roommates',
+                    connectionInstruction:
+                        '1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki',
+                    connectionInfo: 'Login: student@123.swozo.com\nHasło: 123123',
                 },
             ],
-            instructions: ['just login'],
+            instructions: [],
         },
         {
             id: 2,
@@ -79,17 +86,28 @@ export const mockCourse: Course = {
                 {
                     url: 'https://www.facebook.com/',
                     serviceName: 'Facebook',
-                    serviceInfo:
-                        'Facebook is an American online social media and social networking service owned by Meta Platforms. Founded in 2004 by Mark Zuckerberg with fellow Harvard College students and roommates',
+                    connectionInstruction:
+                        '1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki',
+                    connectionInfo: 'Login: student@123.swozo.com\nHasło: 123123',
                 },
                 {
                     url: 'https://www.facebook.com/',
                     serviceName: 'Facebook',
-                    serviceInfo:
-                        'Facebook is an American online social media and social networking service owned by Meta Platforms.',
+                    connectionInstruction:
+                        '1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki',
+                    connectionInfo: 'Login: student@123.swozo.com\nHasło: 123123',
                 },
             ],
-            instructions: ['just login'],
+            instructions: [
+                {
+                    header: 'Informacje ogólne',
+                    body: 'Na zajeciach potrzebny bedzie mikrofon i kamera. Warto mieć mocny komputer itp. Nulla facilisi. Proin id diam dictum neque mattis consequat. Morbi viverra egestas tincidunt. Donec viverra malesuada ipsum ut fermentum. Aliquam tempus risus vulputate, dignissim arcu id, eleifend libero. Nullam a iaculis eros. Aliquam erat volutpat. Sed blandit eu metus vitae interdum. Integer at mi erat. Etiam varius interdum egestas. Aliquam vel metus vel erat mollis elementum. Etiam aliquet justo sit amet ipsum viverra auctor. Aliquam placerat turpis eu ligula consequat, sed varius massa cursus. Integer ullamcorper mauris ac fermentum auctor. Praesent pulvinar nunc quis ullamcorper molestie. ',
+                },
+                {
+                    header: 'Przebieg zajęć z Jupyterem',
+                    body: 'Otworzycie notebook i rozwiążecie tyle ile wam się uda, za tydzień będziemy kontynuuować.',
+                },
+            ],
         },
         {
             id: 3,

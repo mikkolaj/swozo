@@ -3,6 +3,7 @@ import { Container } from '@mui/system';
 import { useState } from 'react';
 import { Activity } from 'utils/mocks';
 import { ActivityActionButton } from './components/ActivityActionButton';
+import { InstructionsModal } from './components/InstructionsModal';
 import { LinksModal } from './components/LinksModal';
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 
 export const ActivityView = ({ activity }: Props) => {
     const [linksModalOpen, setLinksModalOpen] = useState(false);
+    const [instructionsModalOpen, setInstructionsModalOpen] = useState(false);
 
     return (
         <Box>
@@ -24,12 +26,21 @@ export const ActivityView = ({ activity }: Props) => {
                             onClick={() => setLinksModalOpen(true)}
                             textPath="course.activity.links"
                         />
-                        <ActivityActionButton textPath="course.activity.instructions" />
+                        <ActivityActionButton
+                            onClick={() => setInstructionsModalOpen(true)}
+                            textPath="course.activity.instructions"
+                        />
                     </Container>
                 </CardContent>
             </Card>
 
             <LinksModal activity={activity} open={linksModalOpen} onClose={() => setLinksModalOpen(false)} />
+
+            <InstructionsModal
+                activity={activity}
+                open={instructionsModalOpen}
+                onClose={() => setInstructionsModalOpen(false)}
+            />
         </Box>
     );
 };
