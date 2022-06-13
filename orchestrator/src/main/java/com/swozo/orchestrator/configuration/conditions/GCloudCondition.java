@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.configuration.conditions;
 
-import com.swozo.orchestrator.configuration.CloudProvider;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
