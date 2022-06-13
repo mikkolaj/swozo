@@ -3,9 +3,8 @@ package com.swozo.orchestrator.cloud.resources.gcloud.compute;
 import com.swozo.model.Psm;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
-import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GcpProperties;
+import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
-import com.swozo.orchestrator.cloud.resources.vm.VMDeleted;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.configuration.conditions.GCloudCondition;
@@ -31,7 +30,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     private static final int DEFAULT_SSH_PORT = 22;
     private static final String DEFAULT_NETWORK = "default";
 
-    private final GcpProperties gcpProperties;
+    private final GCloudProperties GCloudProperties;
     private final GCloudVMLifecycleManager manager;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     // TODO: proper resource persistence
@@ -59,14 +58,14 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
 
     @Async
     @Override
-    public CompletableFuture<VMDeleted> deleteInstance(int internalId) throws InterruptedException, VMOperationFailed {
+    public CompletableFuture<Void> deleteInstance(int internalId) throws InterruptedException, VMOperationFailed {
         if (internalId > resources.size() || resources.get(internalId) == null) {
             throw new VMOperationFailed("No such instance");
         }
         try {
             var vmAddress = resources.get(internalId);
             manager.deleteInstance(vmAddress);
-            return CompletableFuture.completedFuture(new VMDeleted());
+            return CompletableFuture.completedFuture(null);
         } catch (IOException | ExecutionException | TimeoutException e) {
             throw new VMOperationFailed(e.getMessage());
         }
@@ -79,14 +78,14 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     }
 
     private VMResourceDetails getVMConnectionDetails(String publicIPAddress, int internalId) {
-        return new VMResourceDetails(internalId, publicIPAddress, gcpProperties.sshUser(), DEFAULT_SSH_PORT, gcpProperties.sshKeyPath());
+        return new VMResourceDetails(internalId, publicIPAddress, GCloudProperties.sshUser(), DEFAULT_SSH_PORT, GCloudProperties.sshKeyPath());
     }
 
     private VMAddress getVMAddress(String name) {
-        return new VMAddress(gcpProperties.project(), gcpProperties.zone(), DEFAULT_NETWORK, name);
+        return new VMAddress(GCloudProperties.project(), GCloudProperties.zone(), DEFAULT_NETWORK, name);
     }
 
     private VMSpecs getVMSpecs(Psm psm) {
-        return new VMSpecs(psm.machineType(), gcpProperties.computeImageFamily(), psm.discSizeGB());
+        return new VMSpecs(psm.machineType(), GCloudProperties.computeImageFamily(), psm.discSizeGB());
     }
 }

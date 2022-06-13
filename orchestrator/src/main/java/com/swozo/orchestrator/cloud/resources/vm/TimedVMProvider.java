@@ -8,7 +8,7 @@ import java.util.concurrent.Future;
 public interface TimedVMProvider {
     CompletableFuture<VMResourceDetails> createInstance(Psm psm) throws InterruptedException, VMOperationFailed;
 
-    Future<VMDeleted> deleteInstance(int internalResourceId) throws InterruptedException, VMOperationFailed;
+    Future<Void> deleteInstance(int internalResourceId) throws InterruptedException, VMOperationFailed;
 
     int getVMCreationTime(Psm psm);
 }

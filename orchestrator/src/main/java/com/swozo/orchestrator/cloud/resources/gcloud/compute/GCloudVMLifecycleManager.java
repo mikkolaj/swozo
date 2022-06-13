@@ -6,7 +6,7 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.instance.InstanceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.networking.NetworkInterfaceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.storage.DiskProvider;
-import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GcpProperties;
+import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
 import com.swozo.orchestrator.configuration.conditions.GCloudCondition;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class GCloudVMLifecycleManager {
     private final DiskProvider diskProvider;
     private final NetworkInterfaceProvider networkInterfaceProvider;
     private final InstanceProvider instanceProvider;
-    private final GcpProperties properties;
+    private final GCloudProperties properties;
     private final Logger logger = LoggerFactory.getLogger(GCloudVMLifecycleManager.class);
 
     public Operation createInstance(VMAddress vmAddress, VMSpecs vmSpecs)

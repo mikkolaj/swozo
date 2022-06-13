@@ -1,12 +1,15 @@
 package com.swozo.orchestrator.cloud.resources.gcloud.configuration;
 
+import com.swozo.orchestrator.configuration.conditions.GCloudCondition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.context.annotation.Conditional;
 
 
 @ConstructorBinding
-@ConfigurationProperties(prefix = GcpProperties.prefix)
-public record GcpProperties(
+@ConfigurationProperties(prefix = GCloudProperties.prefix)
+@Conditional(GCloudCondition.class)
+public record GCloudProperties(
         String project,
         String zone,
         Compute compute,
