@@ -27,13 +27,9 @@ public class ScheduleService {
     private final ScheduleRequestTracker scheduleRequestTracker;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public void schedule(ScheduleRequest request) {
+    public void schedule(ScheduleJupyter request) {
         scheduleRequestTracker.persist(request);
-        switch (request) {
-            case ScheduleJupyter jupyterRequest ->
-                    scheduler.schedule(() -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision), 1);
-            default -> throw new IllegalArgumentException("Unsupported request type: " + request);
-        }
+        scheduler.schedule(() -> scheduleCreationAndDeletion(request, jupyterProvisioner::provision), 1);
     }
 
     private Void scheduleCreationAndDeletion(

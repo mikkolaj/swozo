@@ -3,14 +3,18 @@ package com.swozo.orchestrator.cloud.resources.gcloud.compute;
 import com.swozo.model.Psm;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
+import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GcpProperties;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMDeleted;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.orchestrator.configuration.conditions.GCloudCondition;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,16 +23,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+@Service
 @RequiredArgsConstructor
+@Conditional(GCloudCondition.class)
 public class GCloudTimedVMProvider implements TimedVMProvider {
     private static final int VM_CREATION_SECONDS = 5 * 60;
     private static final int DEFAULT_SSH_PORT = 22;
     private static final String DEFAULT_NETWORK = "default";
-    private final String project;
-    private final String zone;
-    private final String imageFamily;
-    private final String sshUser;
-    private final String sshKeyPath;
+
+    private final GcpProperties gcpProperties;
     private final GCloudVMLifecycleManager manager;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     // TODO: proper resource persistence
@@ -76,14 +79,14 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     }
 
     private VMResourceDetails getVMConnectionDetails(String publicIPAddress, int internalId) {
-        return new VMResourceDetails(internalId, publicIPAddress, sshUser, DEFAULT_SSH_PORT, sshKeyPath);
+        return new VMResourceDetails(internalId, publicIPAddress, gcpProperties.sshUser(), DEFAULT_SSH_PORT, gcpProperties.sshKeyPath());
     }
 
     private VMAddress getVMAddress(String name) {
-        return new VMAddress(project, zone, DEFAULT_NETWORK, name);
+        return new VMAddress(gcpProperties.project(), gcpProperties.zone(), DEFAULT_NETWORK, name);
     }
 
     private VMSpecs getVMSpecs(Psm psm) {
-        return new VMSpecs(psm.machineType(), imageFamily, psm.discSizeGB());
+        return new VMSpecs(psm.machineType(), gcpProperties.computeImageFamily(), psm.discSizeGB());
     }
 }

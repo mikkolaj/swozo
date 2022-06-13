@@ -13,7 +13,7 @@ public class TaskScheduler {
     private final ScheduledExecutorService executorService;
 
     public TaskScheduler(ApplicationProperties properties) {
-        executorService = new ScheduledThreadPoolExecutor(properties.schedulerThreadPoolSize);
+        executorService = new ScheduledThreadPoolExecutor(properties.schedulerThreadPoolSize());
     }
 
     public void schedule(Callable<Void> task, long secondsOffset) {

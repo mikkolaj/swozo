@@ -6,16 +6,22 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.instance.InstanceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.networking.NetworkInterfaceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.storage.DiskProvider;
+import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GcpProperties;
+import com.swozo.orchestrator.configuration.conditions.GCloudCondition;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@Service
 @RequiredArgsConstructor
+@Conditional(GCloudCondition.class)
 public class GCloudVMLifecycleManager {
     private static final String DEFAULT_DISK_NAME = "disk-1";
     private static final int DEFAULT_NIC_INDEX = 0;
@@ -24,7 +30,7 @@ public class GCloudVMLifecycleManager {
     private final DiskProvider diskProvider;
     private final NetworkInterfaceProvider networkInterfaceProvider;
     private final InstanceProvider instanceProvider;
-    private final int gCloudTimeoutMinutes;
+    private final GcpProperties properties;
     private final Logger logger = LoggerFactory.getLogger(GCloudVMLifecycleManager.class);
 
     public Operation createInstance(VMAddress vmAddress, VMSpecs vmSpecs)
@@ -45,7 +51,7 @@ public class GCloudVMLifecycleManager {
 
             var futureOperation = instancesClient.insertAsync(insertInstanceRequest);
 
-            return futureOperation.get(gCloudTimeoutMinutes, TimeUnit.MINUTES);
+            return futureOperation.get(properties.computeRequestTimeoutMinutes(), TimeUnit.MINUTES);
         }
     }
 
@@ -58,7 +64,7 @@ public class GCloudVMLifecycleManager {
 
             var futureOperation = instancesClient.deleteAsync(deleteInstanceRequest);
 
-            return futureOperation.get(gCloudTimeoutMinutes, TimeUnit.MINUTES);
+            return futureOperation.get(properties.computeRequestTimeoutMinutes(), TimeUnit.MINUTES);
         }
     }
 

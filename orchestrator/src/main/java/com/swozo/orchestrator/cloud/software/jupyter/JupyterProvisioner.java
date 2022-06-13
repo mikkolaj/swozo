@@ -22,7 +22,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
 
     public JupyterProvisioner(AnsibleRunner ansibleRunner, ApplicationProperties properties) {
         this.ansibleRunner = ansibleRunner;
-        this.playbookPath = properties.jupyterPlaybookPath;
+        this.playbookPath = properties.jupyterPlaybookPath();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.api.scheduling;
 
-import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.model.scheduling.ScheduleJupyter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +16,8 @@ public class ScheduleController {
         this.service = service;
     }
 
-    @PostMapping
-    public void schedule(ScheduleRequest request) {
+    @PostMapping("/jupyter")
+    public void schedule(ScheduleJupyter request) {
         service.schedule(request);
     }
 }

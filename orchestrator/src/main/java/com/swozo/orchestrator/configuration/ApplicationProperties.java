@@ -1,18 +1,28 @@
 package com.swozo.orchestrator.configuration;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
-@Component
-public class ApplicationProperties {
-    public final int schedulerThreadPoolSize;
-    public final String jupyterPlaybookPath;
+@ConstructorBinding
+@ConfigurationProperties
+public record ApplicationProperties(
+        Scheduler scheduler,
+        Ansible ansible,
+        CloudProvider cloudProvider
+) {
+    private record Scheduler(int threadPoolSize) {
+    }
 
-    public ApplicationProperties(
-            @Value("${" + EnvNames.SCHEDULER_THREAD_POOL_SIZE + "}") int schedulerThreadPoolSize,
-            @Value("${" + EnvNames.ANSIBLE_JUPYTER_PLAYBOOK_PATH + "}") String jupyterPlaybookPath
-    ) {
-        this.schedulerThreadPoolSize = schedulerThreadPoolSize;
-        this.jupyterPlaybookPath = jupyterPlaybookPath;
+    private record Ansible(Jupyter jupyter) {
+        private record Jupyter(String playbookPath) {
+        }
+    }
+
+    public String jupyterPlaybookPath() {
+        return ansible.jupyter.playbookPath;
+    }
+
+    public int schedulerThreadPoolSize() {
+        return scheduler.threadPoolSize;
     }
 }
