@@ -33,7 +33,7 @@ public class OrchestratorService {
         Optional<String> mappedRequest = JsonMapper.mapScheduleRequestToJson(scheduleRequest);
         if (mappedRequest.isPresent()) {
             try {
-                orchestratorController.postScheduleRequest(mappedRequest.get());
+                orchestratorController.postScheduleRequest(mappedRequest.get(), scheduleRequest.getScheduleType());
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();

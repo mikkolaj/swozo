@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.swozo.model.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.model.scheduling.ScheduleType;
 
 import java.util.Optional;
 
@@ -26,7 +27,16 @@ public class JsonMapper {
         }
     }
 
-    //TODO Json to schedule request - adding enum type required to create inherited classes?
+    public static Optional<ScheduleRequest> mapJsonToScheduleRequest(String json, ScheduleType scheduleType) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            ScheduleRequest mappedRequest = (ScheduleRequest) objectMapper.readValue(json, scheduleType.getScheduleRequestClass());
+            return Optional.of(mappedRequest);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
 
     //can be used by orchestrator to map response to json before sending it back to backend
     public static Optional<String> mapLinkResponseToJson(OrchestratorLinkResponse linkResponse) {

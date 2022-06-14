@@ -13,7 +13,7 @@ public final class ScheduleJupyter extends ScheduleRequest {
     private final String noteBookLocation;
 
     public ScheduleJupyter(String notebookLocation, ServiceLifespan serviceLifespan, Psm psm, Long activityModuleID) {
-        super(serviceLifespan, psm, activityModuleID);
+        super(serviceLifespan, psm, activityModuleID, ScheduleType.JUPYTER);
         this.noteBookLocation = notebookLocation;
     }
 }
