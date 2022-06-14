@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -42,7 +41,7 @@ public class CourseService {
         User teacher = new User("e-mail", "haslo", List.of(teacherRole));
         studentRepository.save(teacher);
 
-//        c1.setTeacher(teacher);
+        c1.setTeacher(teacher);
         createCourse(c1);
         long courseId = c1.getId();
         System.out.println("id: " + courseId);
@@ -52,7 +51,7 @@ public class CourseService {
         Course c2 = new Course("kurs1");
         c2.setDescription("opis");
         c2.setSubject("MATEMATYKA");
-//        c2.setTeacher(teacher);
+        c2.setTeacher(teacher);
         updateCourse(courseId, c2);
 
 //        Course getter = getCourse(courseId);
@@ -70,14 +69,12 @@ public class CourseService {
 //        studentRepository.getById()
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new CourseNotFoundException(id));
-        System.out.println(course);
+        System.out.println("kurs2: " + course);
         return course;
     }
 
     public Course createCourse(Course newCourse){
-        newCourse.getActivities().forEach(activity -> {
-            activity.setCourse(newCourse);
-        });
+        newCourse.getActivities().forEach(activity -> activity.setCourse(newCourse));
         courseRepository.save(newCourse);
         return newCourse;
     }
@@ -95,14 +92,12 @@ public class CourseService {
         course.setDescription(newCourse.getDescription());
         course.setCreationTime(newCourse.getCreationTime());
         Collection<Activity> activityList = newCourse.getActivities();
-        activityList.forEach(activity -> {
-            activity.setCourse(newCourse);
-        });
-        course.setActivities(newCourse.getActivities());
+        activityList.forEach(activity -> activity.setCourse(newCourse));
+        course.setActivities(activityList);
         course.setStudents(newCourse.getStudents());
         course.setTeacher(newCourse.getTeacher());
         courseRepository.save(course);
-        return newCourse;
+        return course;
     }
 
     public Collection<Activity> courseActivityList(long id){
@@ -117,6 +112,7 @@ public class CourseService {
         User student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new StudentNotFoundException(courseId ));
         course.addStudent(student);
+        courseRepository.save(course);
         return course;
     }
 
@@ -128,6 +124,7 @@ public class CourseService {
         Collection<User> students = course.getStudents();
         students.remove(student);
         course.setStudents(students);
+        courseRepository.save(course);
         return course;
     }
 }

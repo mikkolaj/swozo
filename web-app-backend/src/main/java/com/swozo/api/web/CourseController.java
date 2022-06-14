@@ -18,7 +18,6 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RestController
 @RequestMapping("/courses")
 @SecurityRequirement(name = ACCESS_TOKEN)
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CourseController {
 
     private final CourseService courseService;
@@ -32,7 +31,9 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public Course getCourse(AccessToken token, @PathVariable int id) {
         System.out.println("course info getter for id: " + id);
-        return courseService.getCourse(id);
+        Course course = courseService.getCourse(id);
+        System.out.println("kurs3: " + course);
+        return course;
     }
 
 //    przyjmujemy json jako jakies parametry utworzenia?

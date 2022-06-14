@@ -29,7 +29,7 @@ public class Course extends BaseEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     private Collection<User> students = new LinkedHashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User teacher;
 
     //constructor for testing

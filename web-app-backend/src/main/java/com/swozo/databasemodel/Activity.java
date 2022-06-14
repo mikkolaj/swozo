@@ -21,7 +21,7 @@ public class Activity extends BaseEntity {
     private LocalDateTime dateTime;
     private String instructionsFromTeacher;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_module_id")
     private Collection<ActivityModule> modules = new LinkedList<>();
 
