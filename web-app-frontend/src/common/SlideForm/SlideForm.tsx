@@ -1,6 +1,5 @@
-import { Box, Grid, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { Box, Divider, Grid, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { Bar } from 'common/Styled/Bar';
 import { FormikProps } from 'formik';
 import { PropsWithChildren, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,8 +30,9 @@ export const SlideForm = ({
     const { t } = useTranslation();
 
     return (
-        <PageContainer>
-            <Grid container sx={{ mb: 1 }}>
+        // no idea what overwrites this padding bottom, but couldnt find another way
+        <PageContainer sx={{ p: 0, paddingBottom: '0px !important' }}>
+            <Grid container sx={{ p: 2 }}>
                 <Grid item xs={12}>
                     <Typography variant="h4" component="div">
                         {t(titlePath)}
@@ -48,13 +48,14 @@ export const SlideForm = ({
                     </Stepper>
                 </Grid>
             </Grid>
-            <Bar sx={{ mt: 2, mb: 5 }} />
 
-            <Box sx={{ mt: 4, marginX: '5%' }}>{children}</Box>
+            <Divider />
 
-            <Bar sx={{ mt: 2 }} />
+            <Box sx={{ px: 2, mt: 4, mb: 4, marginX: '5%' }}>{children}</Box>
 
-            {buttons}
+            <Divider />
+
+            <Box sx={{ p: 1 }}>{buttons}</Box>
         </PageContainer>
     );
 };

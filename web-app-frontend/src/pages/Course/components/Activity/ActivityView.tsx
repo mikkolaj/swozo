@@ -1,9 +1,11 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { Container } from '@mui/system';
-import { useState } from 'react';
+import { CourseContext } from 'pages/Course/CourseView';
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Activity } from 'utils/mocks';
+import { PageRoutes } from 'utils/routes';
 import { ActivityActionButton } from './components/ActivityActionButton';
-import { InstructionsModal } from './components/InstructionsModal';
 import { LinksModal } from './components/LinksModal';
 
 type Props = {
@@ -11,12 +13,17 @@ type Props = {
 };
 
 export const ActivityView = ({ activity }: Props) => {
+    const navigate = useNavigate();
+    const course = useContext(CourseContext);
     const [linksModalOpen, setLinksModalOpen] = useState(false);
-    const [instructionsModalOpen, setInstructionsModalOpen] = useState(false);
+    if (!course) {
+        navigate(PageRoutes.HOME);
+        return <></>;
+    }
 
     return (
         <Box>
-            <Card>
+            <Card sx={{ boxShadow: 3 }}>
                 <CardContent>
                     <Typography component="h1" variant="h5" gutterBottom>
                         {activity.name}
@@ -27,7 +34,7 @@ export const ActivityView = ({ activity }: Props) => {
                             textPath="course.activity.links"
                         />
                         <ActivityActionButton
-                            onClick={() => setInstructionsModalOpen(true)}
+                            onClick={() => navigate(PageRoutes.ActivityInstructions(course.id, activity.id))}
                             textPath="course.activity.instructions"
                         />
                     </Container>
@@ -35,12 +42,6 @@ export const ActivityView = ({ activity }: Props) => {
             </Card>
 
             <LinksModal activity={activity} open={linksModalOpen} onClose={() => setLinksModalOpen(false)} />
-
-            <InstructionsModal
-                activity={activity}
-                open={instructionsModalOpen}
-                onClose={() => setInstructionsModalOpen(false)}
-            />
         </Box>
     );
 };

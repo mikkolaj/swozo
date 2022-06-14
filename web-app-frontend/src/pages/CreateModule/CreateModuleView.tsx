@@ -37,7 +37,7 @@ export const CreateModuleView = () => {
             slideCount={3}
             currentSlide={currentSlide}
             buttons={
-                <Grid container sx={{ mt: 3, pb: -2, mb: -2 }}>
+                <Grid container>
                     <Grid item xs={6}>
                         {currentSlide > 0 && (
                             <Button

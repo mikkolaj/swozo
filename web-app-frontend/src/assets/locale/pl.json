@@ -114,5 +114,17 @@
                 "title": "Podsumowanie"
             }
         }
+    },
+    "activityInstructions": {
+        "header": "Instrukcje dla: {{courseName}} - {{activityName}}",
+        "goBackBtn": "Wróć do kursu",
+        "tabs": {
+            "teacher": {
+                "label": "Instrukcje od nauczyciela"
+            },
+            "modules": {
+                "label": "Informacje o używanych modułach"
+            }
+        }
     }
 }

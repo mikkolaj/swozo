@@ -134,7 +134,7 @@ export const mockModuleSummaryList: ModuleSummary[] = [
         name: 'Sockety',
         subject: 'Informatyka',
         creatorName: 'Marek Nowak',
-        creationDate: '11-05-2022',
+        creationDate: '11.05.2022',
         usedInActivitiesCount: 10,
     },
     {
@@ -142,7 +142,7 @@ export const mockModuleSummaryList: ModuleSummary[] = [
         name: 'Funkcje w Pythonie',
         subject: 'Programowanie',
         creatorName: 'Zbigniew Kowalski',
-        creationDate: '15-05-2022',
+        creationDate: '15.05.2022',
         usedInActivitiesCount: 12,
     },
     {
@@ -150,7 +150,7 @@ export const mockModuleSummaryList: ModuleSummary[] = [
         name: 'Klasy w Pythonie',
         subject: 'Programowanie',
         creatorName: 'Zbigniew Kowalski',
-        creationDate: '18-05-2022',
+        creationDate: '18.05.2022',
         usedInActivitiesCount: 0,
     },
 ];

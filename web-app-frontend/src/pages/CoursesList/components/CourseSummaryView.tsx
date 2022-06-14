@@ -20,7 +20,7 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                     <Grid item xs={8}>
                         <LinkedTypography
                             variant="h4"
-                            to={PageRoutes.buildCourseRoute(courseSummary.id)}
+                            to={PageRoutes.Course(courseSummary.id)}
                             text={courseSummary.name}
                         />
                         <Typography
@@ -54,7 +54,7 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                         <Box display="flex" justifyContent="flex-end">
                             <Button
                                 variant="contained"
-                                onClick={() => navigate(PageRoutes.buildCourseRoute(courseSummary.id))}
+                                onClick={() => navigate(PageRoutes.Course(courseSummary.id))}
                             >
                                 {t('myCourses.course.button')}
                             </Button>

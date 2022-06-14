@@ -1,6 +1,5 @@
-import { Box, Container, Grid, Stack, Typography } from '@mui/material';
+import { Box, Container, Divider, Grid, Stack, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { Bar } from 'common/Styled/Bar';
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Course, mockCourse } from 'utils/mocks';
@@ -18,17 +17,17 @@ export const CourseView = () => {
 
     return (
         <CourseContext.Provider value={course}>
-            <PageContainer>
-                <Grid container>
+            <PageContainer sx={{ p: 0 }}>
+                <Grid container sx={{ p: 2 }}>
                     <Grid item xs={6}>
                         <Typography variant="h4" component="div">
                             {course.name}
                         </Typography>
                     </Grid>
                 </Grid>
-                <Bar sx={{ mt: 1 }} />
-                <Container sx={{ marginTop: 4 }}>
-                    <Stack spacing={2}>
+                <Divider />
+                <Container sx={{ mt: 4 }}>
+                    <Stack spacing={2} sx={{ px: 2 }}>
                         {course.activities.map((activity) => (
                             <ActivityView key={activity.id} activity={activity} />
                         ))}

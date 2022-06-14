@@ -66,8 +66,10 @@ export const Home = () => {
                 </Grid>
                 <Grid item xs={6}>
                     <Card sx={{ shadow: 3, position: 'relative' }}>
-                        <CardContent>
-                            <Typography variant="h6">Ostatnio aktywne kursy</Typography>
+                        <CardContent sx={{ p: 0 }}>
+                            <Typography sx={{ p: 2 }} variant="h6">
+                                Ostatnio aktywne kursy
+                            </Typography>
                             <Divider />
                             <Paper
                                 sx={{

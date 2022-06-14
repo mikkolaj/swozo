@@ -1,5 +1,6 @@
 import { CssBaseline } from '@mui/material';
 import { Navbar } from 'common/Navbar/Navbar';
+import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionViews';
 import { CourseView } from 'pages/Course/CourseView';
 import { CoursesListView } from 'pages/CoursesList/CoursesListView';
 import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
@@ -35,6 +36,10 @@ function App() {
                 <Route
                     path={PageRoutes.CREATE_MODULE}
                     element={guarded(<CreateModuleView />, withRole(TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.ACTIVITY_INSTRUCTIONS}
+                    element={guarded(<ActivityInstructionsView />, ANY_LOGGED_IN)}
                 />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
             </Routes>

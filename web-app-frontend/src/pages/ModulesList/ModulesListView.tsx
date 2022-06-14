@@ -1,6 +1,5 @@
-import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Divider, Grid, Stack, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { Bar } from 'common/Styled/Bar';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -15,8 +14,8 @@ export const ModulesListView = () => {
     const navigate = useNavigate();
 
     return (
-        <PageContainer>
-            <Grid container>
+        <PageContainer sx={{ p: 0 }}>
+            <Grid container sx={{ p: 2 }}>
                 <Grid item xs={6}>
                     <Typography variant="h4" component="div">
                         {t('myModules.header')}
@@ -38,9 +37,9 @@ export const ModulesListView = () => {
                     </WithRole>
                 </Grid>
             </Grid>
-            <Bar sx={{ mt: 1 }} />
+            <Divider />
             <Container sx={{ mt: 4 }}>
-                <Stack spacing={2}>
+                <Stack spacing={2} px={2}>
                     {moduleSummaryItems.map((module) => (
                         <ModuleSummaryView key={module.id} moduleSummary={module} />
                     ))}
