@@ -41,7 +41,7 @@ public class ScheduleService {
                     .createInstance(scheduleRequest.getPsm())
                     .thenAccept(provisionSoftwareAndScheduleDeletion(scheduleRequest, provisionSoftware));
         } catch (VMOperationFailed e) {
-            logger.error(e.getMessage());
+            logger.error("Creating instance failed!", e);
         }
         return null;
     }
@@ -62,7 +62,7 @@ public class ScheduleService {
             timedVmProvider.deleteInstance(connectionDetails.internalResourceId());
             scheduleRequestTracker.unpersist(scheduleRequest.getActivityModuleID());
         } catch (VMOperationFailed e) {
-            logger.error(e.getMessage());
+            logger.error("Deleting instance failed!", e);
         }
         return null;
     }

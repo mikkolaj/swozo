@@ -30,7 +30,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     private static final int DEFAULT_SSH_PORT = 22;
     private static final String DEFAULT_NETWORK = "default";
 
-    private final GCloudProperties GCloudProperties;
+    private final GCloudProperties gCloudProperties;
     private final GCloudVMLifecycleManager manager;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     // TODO: proper resource persistence
@@ -49,10 +49,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
             resources.add(vmAddress);
             return CompletableFuture.completedFuture(getVMConnectionDetails(publicIPAddress, internalId));
         } catch (IOException | ExecutionException | TimeoutException e) {
-            logger.error(e.getMessage());
-            var newException = new VMOperationFailed(e.getMessage());
-            newException.setStackTrace(e.getStackTrace());
-            throw newException;
+            throw new VMOperationFailed(e);
         }
     }
 
@@ -67,7 +64,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
             manager.deleteInstance(vmAddress);
             return CompletableFuture.completedFuture(null);
         } catch (IOException | ExecutionException | TimeoutException e) {
-            throw new VMOperationFailed(e.getMessage());
+            throw new VMOperationFailed(e);
         }
     }
 
@@ -78,14 +75,14 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     }
 
     private VMResourceDetails getVMConnectionDetails(String publicIPAddress, int internalId) {
-        return new VMResourceDetails(internalId, publicIPAddress, GCloudProperties.sshUser(), DEFAULT_SSH_PORT, GCloudProperties.sshKeyPath());
+        return new VMResourceDetails(internalId, publicIPAddress, gCloudProperties.sshUser(), DEFAULT_SSH_PORT, gCloudProperties.sshKeyPath());
     }
 
     private VMAddress getVMAddress(String name) {
-        return new VMAddress(GCloudProperties.project(), GCloudProperties.zone(), DEFAULT_NETWORK, name);
+        return new VMAddress(gCloudProperties.project(), gCloudProperties.zone(), DEFAULT_NETWORK, name);
     }
 
     private VMSpecs getVMSpecs(Psm psm) {
-        return new VMSpecs(psm.machineType(), GCloudProperties.computeImageFamily(), psm.discSizeGB());
+        return new VMSpecs(psm.machineType(), gCloudProperties.computeImageFamily(), psm.discSizeGB());
     }
 }

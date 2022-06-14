@@ -33,8 +33,8 @@ public class AnsibleRunner {
 
                 return new CommandResult(returnCode, output, errors);
             }
-        } catch (IOException exception) {
-            logger.error(exception.getMessage());
+        } catch (IOException e) {
+            logger.error("Failed to run notebook!", e);
             return new CommandResult(EXEC_ERROR_CODE, "", "");
         }
     }
