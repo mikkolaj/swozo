@@ -7,17 +7,18 @@ import com.swozo.webservice.service.CourseService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
 @RestController
 @RequestMapping("/courses")
 @SecurityRequirement(name = ACCESS_TOKEN)
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CourseController {
 
     private final CourseService courseService;
@@ -35,12 +36,11 @@ public class CourseController {
     }
 
 //    przyjmujemy json jako jakies parametry utworzenia?
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('TEACHER')")
-    public String addCourse(AccessToken token, @RequestBody Course course) {
+    public Course addCourse(AccessToken token, @RequestBody Course course) {
         System.out.println("creating new course");
-        courseService.createCourse(course);
-        return "course_id";
+        return courseService.createCourse(course);
     }
 
     @DeleteMapping("/{id}")
@@ -53,10 +53,9 @@ public class CourseController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String editCourse(AccessToken token, @PathVariable long id, @RequestBody Course newCourse) {
+    public Course editCourse(AccessToken token, @PathVariable long id, @RequestBody Course newCourse) {
         System.out.println("edititng course");
-        courseService.updateCourse(id, newCourse);
-        return "course updated";
+        return courseService.updateCourse(id, newCourse);
     }
 
     @GetMapping("/{id}/activities")
@@ -68,17 +67,16 @@ public class CourseController {
 
     @PostMapping("/{courseId}/students/{studentId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String addStudentToCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
+    public Course addStudentToCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
         System.out.println("adding student with id: " + studentId + " to course with id: " + courseId);
-        courseService.addSudent(courseId,studentId);
-        return "student added";
+        return courseService.addSudent(courseId,studentId);
     }
 
     @DeleteMapping("/{courseId}/students/{studentId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String removeStudentFromCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
+    public Course removeStudentFromCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
         System.out.println("removing student with id: " + studentId + " to course with id: " + courseId);
-        return "student removed";
+        return courseService.deleteStudent(courseId, studentId);
     }
 
 }
