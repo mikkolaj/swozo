@@ -1,5 +1,8 @@
 package com.swozo.model.scheduling;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.swozo.model.Psm;
 import com.swozo.model.ServiceLifespan;
 import lombok.*;
@@ -8,6 +11,11 @@ import lombok.*;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ScheduleJupyter.class, name = "ScheduleJupyter")
+})
 public abstract class ScheduleRequest {
     private final ServiceLifespan serviceLifespan;
     private final Psm psm;

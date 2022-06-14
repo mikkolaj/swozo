@@ -1,4 +1,4 @@
-package com.swozo.api.request;
+package com.swozo.api.requestsender;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class RequestSender {
-    public static String sendGetRequest(URL url) throws IOException {
+    public static String sendGet(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -46,7 +46,7 @@ public class RequestSender {
             System.out.println(response);
         }
 
-        //considering returning response in this method
+        //considering returning response here
 
     }
 }

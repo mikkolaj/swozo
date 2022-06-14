@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Service
 public class OrchestratorService {
-    private final OrchestratorController orchestratorController;
+    private final OrchestratorRequestSender orchestratorController;
 
-    OrchestratorService(OrchestratorController orchestratorController) {
+    OrchestratorService(OrchestratorRequestSender orchestratorController) {
         this.orchestratorController = orchestratorController;
     }
 

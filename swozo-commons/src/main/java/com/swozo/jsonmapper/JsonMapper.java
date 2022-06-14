@@ -4,20 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.swozo.model.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
-import com.swozo.model.scheduling.ScheduleType;
 
 import java.util.Optional;
 
 public class JsonMapper {
     public static Optional<String> mapScheduleRequestToJson(ScheduleRequest scheduleRequest) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         try {
-            return Optional.of(mapper
+            return Optional.of(objectMapper
                     .writer()
                     .withDefaultPrettyPrinter()
                     .writeValueAsString(scheduleRequest));
@@ -27,10 +27,17 @@ public class JsonMapper {
         }
     }
 
-    public static Optional<ScheduleRequest> mapJsonToScheduleRequest(String json, ScheduleType scheduleType) {
+    /*
+        returns specific schedule request class
+        can be used by orchestrator to map received request
+     */
+    public static Optional<ScheduleRequest> mapJsonToScheduleRequest(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new ParameterNamesModule());
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         try {
-            ScheduleRequest mappedRequest = (ScheduleRequest) objectMapper.readValue(json, scheduleType.getScheduleRequestClass());
+            ScheduleRequest mappedRequest = objectMapper.readValue(json, ScheduleRequest.class);
             return Optional.of(mappedRequest);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
