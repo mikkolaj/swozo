@@ -1,4 +1,4 @@
 package com.swozo.model.links;
 
-record Link(String link, String description) {
+public record Link(String link, String description) {
 }

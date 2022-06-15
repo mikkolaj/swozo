@@ -10,69 +10,57 @@ import com.swozo.model.scheduling.ScheduleRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 public class JsonMapper {
     private static final Logger logger = LoggerFactory.getLogger(JsonMapper.class);
 
-    public static Optional<String> mapScheduleRequestToJson(ScheduleRequest scheduleRequest) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
+    private static Optional<String> parseObject(Object targetObject, ObjectMapper objectMapper) {
         try {
             return Optional.of(objectMapper
                     .writer()
                     .withDefaultPrettyPrinter()
-                    .writeValueAsString(scheduleRequest));
+                    .writeValueAsString(targetObject));
         } catch (JsonProcessingException e) {
-            logger.error(Arrays.toString(e.getStackTrace()));
+            logger.error(e.getMessage(), e);
             return Optional.empty();
         }
     }
 
-    /*
-        returns specific schedule request class
-        can be used by orchestrator to map received request
-     */
-    public static Optional<ScheduleRequest> mapJsonToScheduleRequest(String json) {
+    public static Optional<String> mapScheduleRequestToJson(ScheduleRequest scheduleRequest) {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new ParameterNamesModule());
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        try {
-            ScheduleRequest mappedRequest = objectMapper.readValue(json, ScheduleRequest.class);
-            return Optional.of(mappedRequest);
-        } catch (JsonProcessingException e) {
-            logger.error(Arrays.toString(e.getStackTrace()));
-            return Optional.empty();
-        }
+        return parseObject(scheduleRequest, objectMapper);
     }
 
     //can be used by orchestrator to map response to json before sending it back to backend
     public static Optional<String> mapLinkResponseToJson(OrchestratorLinkResponse linkResponse) {
-        ObjectMapper mapper = new ObjectMapper();
+        return parseObject(linkResponse, new ObjectMapper());
+    }
+
+    private static <T> Optional<T> parseJson(String json, ObjectMapper objectMapper, Class<T> mappedClass) {
         try {
-            return Optional.of(mapper
-                    .writer()
-                    .withDefaultPrettyPrinter()
-                    .writeValueAsString(linkResponse));
-        } catch (JsonProcessingException e) {
-            logger.error(Arrays.toString(e.getStackTrace()));
+            return Optional.of(objectMapper.readValue(json, mappedClass));
+        } catch (Exception e) {
             return Optional.empty();
         }
     }
 
     public static Optional<OrchestratorLinkResponse> mapJsonToLinkResponse(String json) {
+        return parseJson(json, new ObjectMapper(), OrchestratorLinkResponse.class);
+    }
+
+    /*
+    returns specific schedule request class
+    can be used by orchestrator to map received request
+    */
+    public static Optional<ScheduleRequest> mapJsonToScheduleRequest(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            OrchestratorLinkResponse mappedResponse = objectMapper.readValue(json, OrchestratorLinkResponse.class);
-            return Optional.of(mappedResponse);
-        } catch (JsonProcessingException e) {
-            logger.error(Arrays.toString(e.getStackTrace()));
-            return Optional.empty();
-        }
+        objectMapper.registerModule(new ParameterNamesModule());
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return parseJson(json, objectMapper, ScheduleRequest.class);
     }
 
     /*

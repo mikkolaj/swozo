@@ -1,4 +1,4 @@
-package com.swozo.model;
+package com.swozo.model.scheduling.properties;
 
 import java.time.LocalDateTime;
 

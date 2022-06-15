@@ -1,57 +1,40 @@
 package com.swozo.api.requestsender;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
 
+@Component
 public class RequestSender {
-    public static String sendGet(URL url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod(String.valueOf(HttpMethod.GET));
+    public HttpResponse<String> sendGet(URI uri) {
+        var request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
 
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
-            String line;
-            StringBuilder content = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                content.append(line);
-            }
-            br.close();
-            connection.disconnect();
-
-            return content.toString();
-        }
+        return sendRequest(request).join();
     }
 
-    public static String sendPost(URL url, String jsonInputString) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod(String.valueOf(HttpMethod.POST));
-        connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        connection.setRequestProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-        connection.setDoOutput(true);
+    public HttpResponse<String> sendPost(URI uri, String jsonInputString) {
+        var request = HttpRequest.newBuilder()
+                .uri(uri)
+                .headers(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .headers(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .POST(HttpRequest.BodyPublishers.ofString(jsonInputString))
+                .build();
 
-        try (OutputStream os = connection.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
+        return sendRequest(request).join();
+    }
 
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
-            StringBuilder response = new StringBuilder();
-            String responseLine;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-            return response.toString();
-        }
-
+    private CompletableFuture<HttpResponse<String>> sendRequest(HttpRequest request) {
+        return HttpClient.newBuilder()
+                .build()
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 }
