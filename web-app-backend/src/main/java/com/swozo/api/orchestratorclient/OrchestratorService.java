@@ -1,39 +1,26 @@
 package com.swozo.api.orchestratorclient;
 
-import com.swozo.api.exceptions.ServiceType;
 import com.swozo.api.exceptions.ServiceUnavailableException;
-import com.swozo.jsonmapper.JsonMapper;
 import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class OrchestratorService {
-    private final OrchestratorRequestSender orchestratorController;
+    private final OrchestratorRequestSender requestSender;
 
-    OrchestratorService(OrchestratorRequestSender orchestratorController) {
-        this.orchestratorController = orchestratorController;
+    @Autowired
+    OrchestratorService(OrchestratorRequestSender requestSender) {
+        this.requestSender = requestSender;
     }
 
-    public OrchestratorLinkResponse getActivityLinks(Long activityModuleID) throws IllegalArgumentException {
-        String jsonLinks = orchestratorController.getActivityLinks(activityModuleID);
-
-        Optional<OrchestratorLinkResponse> response = JsonMapper.mapJsonToLinkResponse(jsonLinks);
-
-        return response
-                .orElseThrow(() -> new ServiceUnavailableException(ServiceType.ORCHESTRATOR));
+    public OrchestratorLinkResponse getActivityLinks(Long activityModuleID) throws ServiceUnavailableException {
+        return requestSender.getActivityLinks(activityModuleID);
     }
 
-    public boolean postScheduleRequest(ScheduleRequest scheduleRequest) throws IllegalArgumentException {
-        Optional<String> mappedRequest = JsonMapper.mapScheduleRequestToJson(scheduleRequest);
-        if (mappedRequest.isPresent()) {
-            orchestratorController.postScheduleRequest(mappedRequest.get(), scheduleRequest.getScheduleType());
-            return true;
-        } else {
-            throw new IllegalArgumentException();
-        }
+    public void postScheduleRequest(ScheduleRequest scheduleRequest) throws IllegalArgumentException {
+        requestSender.postScheduleRequest(scheduleRequest);
     }
 
 }
