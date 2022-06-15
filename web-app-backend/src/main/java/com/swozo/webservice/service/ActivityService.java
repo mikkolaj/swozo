@@ -17,27 +17,27 @@ public class ActivityService {
     private final ActivityModuleRepository activityModuleRepository;
 
     public ActivityService(ActivityRepository activityRepository,
-                           ActivityModuleRepository activityModuleRepository){
+                           ActivityModuleRepository activityModuleRepository) {
         this.activityRepository = activityRepository;
         this.activityModuleRepository = activityModuleRepository;
     }
 
-    public Activity getActivity(long id){
+    public Activity getActivity(long id) {
         return activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityNotFoundException(id));
     }
 
-    public Activity createActivity(Activity newActivity){
+    public Activity createActivity(Activity newActivity) {
         newActivity.getModules().forEach(activityModule -> activityModule.setActivity(newActivity));
         activityRepository.save(newActivity);
         return newActivity;
     }
 
-    public void deleteActivity(long id){
+    public void deleteActivity(long id) {
         activityRepository.deleteById(id);
     }
 
-    public Activity updateActivity(long id, Activity newActivity){
+    public Activity updateActivity(long id, Activity newActivity) {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityNotFoundException(id));
         activity.setName(newActivity.getName());
@@ -52,13 +52,13 @@ public class ActivityService {
         return activity;
     }
 
-    public Collection<ActivityModule> activityModulesList(long id){
+    public Collection<ActivityModule> activityModulesList(long id) {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityNotFoundException(id));
         return activity.getModules();
     }
 
-    public Activity addModuleToActivity(long activityId, long moduleId){
+    public Activity addModuleToActivity(long activityId, long moduleId) {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityNotFoundException(activityId));
         ActivityModule activityModule = activityModuleRepository.findById(moduleId)
@@ -68,7 +68,7 @@ public class ActivityService {
         return activity;
     }
 
-    public Activity deleteModuleFromActivity(long activityId, long moduleId){
+    public Activity deleteModuleFromActivity(long activityId, long moduleId) {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityNotFoundException(activityId));
         ActivityModule activityModule = activityModuleRepository.findById(moduleId)
@@ -80,7 +80,7 @@ public class ActivityService {
         return activity;
     }
 
-    public Collection<String> linksList(long id){
+    public Collection<String> linksList(long id) {
         Activity activity = activityRepository.findById(id)
                 .orElseThrow(() -> new ActivityNotFoundException(id));
 //        TODO cos trzeba zmienić bo linki tryzmamy w activity modules

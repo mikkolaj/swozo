@@ -4,7 +4,6 @@ import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.ActivityModule;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.ActivityService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +27,7 @@ public class ActivityController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Activity getActivity(AccessToken token, @PathVariable long id){
+    public Activity getActivity(AccessToken token, @PathVariable long id) {
         System.out.println("activity  info getter");
         return activityService.getActivity(id);
     }
@@ -50,7 +49,7 @@ public class ActivityController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TACHER')")
-    public Activity updateActivity(AccessToken token, @PathVariable long id, @RequestBody Activity newActivity){
+    public Activity updateActivity(AccessToken token, @PathVariable long id, @RequestBody Activity newActivity) {
         System.out.println("updating activity from course");
         return activityService.updateActivity(id, newActivity);
     }
@@ -64,21 +63,21 @@ public class ActivityController {
 
     @PostMapping("/{activityId}/service-modules/{moduleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Activity addModuleToActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
+    public Activity addModuleToActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId) {
         System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
         return activityService.addModuleToActivity(activityId, moduleId);
     }
 
     @DeleteMapping("/{activityId}/service-modules/{moduleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId){
+    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId) {
         System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
         return activityService.deleteModuleFromActivity(activityId, moduleId);
     }
 
     @GetMapping("/{id}/links")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
-    public Collection<String> getLinks(AccessToken token, @PathVariable long id){
+    public Collection<String> getLinks(AccessToken token, @PathVariable long id) {
         System.out.println("sending links");
         return new LinkedList<>();
     }

@@ -4,7 +4,6 @@ import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.CourseService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,7 +18,6 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RequestMapping("/courses")
 @SecurityRequirement(name = ACCESS_TOKEN)
 public class CourseController {
-
     private final CourseService courseService;
 
     @Autowired
@@ -36,7 +34,7 @@ public class CourseController {
         return course;
     }
 
-//    przyjmujemy json jako jakies parametry utworzenia?
+    //    przyjmujemy json jako jakies parametry utworzenia?
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('TEACHER')")
     public Course addCourse(AccessToken token, @RequestBody Course course) {
@@ -70,7 +68,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public Course addStudentToCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
         System.out.println("adding student with id: " + studentId + " to course with id: " + courseId);
-        return courseService.addSudent(courseId,studentId);
+        return courseService.addSudent(courseId, studentId);
     }
 
     @DeleteMapping("/{courseId}/students/{studentId}")
