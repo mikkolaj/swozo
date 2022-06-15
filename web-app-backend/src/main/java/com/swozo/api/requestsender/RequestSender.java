@@ -1,5 +1,9 @@
 package com.swozo.api.requestsender;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,24 +15,27 @@ import java.nio.charset.StandardCharsets;
 public class RequestSender {
     public static String sendGet(URL url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        BufferedReader input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String line;
-        StringBuilder content = new StringBuilder();
-        while ((line = input.readLine()) != null) {
-            content.append(line);
-        }
-        input.close();
-        connection.disconnect();
+        connection.setRequestMethod(String.valueOf(HttpMethod.GET));
 
-        return content.toString();
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+            String line;
+            StringBuilder content = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                content.append(line);
+            }
+            br.close();
+            connection.disconnect();
+
+            return content.toString();
+        }
     }
 
-    public static void sendPost(URL url, String jsonInputString) throws IOException {
+    public static String sendPost(URL url, String jsonInputString) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestMethod(String.valueOf(HttpMethod.POST));
+        connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        connection.setRequestProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         connection.setDoOutput(true);
 
         try (OutputStream os = connection.getOutputStream()) {
@@ -43,10 +50,8 @@ public class RequestSender {
             while ((responseLine = br.readLine()) != null) {
                 response.append(responseLine.trim());
             }
-            System.out.println(response);
+            return response.toString();
         }
-
-        //considering returning response here
 
     }
 }

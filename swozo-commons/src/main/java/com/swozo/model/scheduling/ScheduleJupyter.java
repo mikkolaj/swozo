@@ -8,12 +8,12 @@ import lombok.ToString;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
-@ToString
+@ToString(callSuper = true)
 public final class ScheduleJupyter extends ScheduleRequest {
-    private final String noteBookLocation;
+    private final String notebookLocation;
 
     public ScheduleJupyter(String notebookLocation, ServiceLifespan serviceLifespan, Psm psm, Long activityModuleID) {
         super(serviceLifespan, psm, activityModuleID, ScheduleType.JUPYTER);
-        this.noteBookLocation = notebookLocation;
+        this.notebookLocation = notebookLocation;
     }
 }

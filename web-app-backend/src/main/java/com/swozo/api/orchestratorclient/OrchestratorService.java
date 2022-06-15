@@ -1,15 +1,20 @@
 package com.swozo.api.orchestratorclient;
 
 import com.swozo.jsonmapper.JsonMapper;
-import com.swozo.model.OrchestratorLinkResponse;
+import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
 public class OrchestratorService {
+    private final Logger logger = LoggerFactory.getLogger(OrchestratorService.class);
+
     private final OrchestratorRequestSender orchestratorController;
 
     OrchestratorService(OrchestratorRequestSender orchestratorController) {
@@ -29,18 +34,19 @@ public class OrchestratorService {
         }
     }
 
-    public boolean postScheduleRequest(ScheduleRequest scheduleRequest) {
+    public boolean postScheduleRequest(ScheduleRequest scheduleRequest) throws IllegalArgumentException {
         Optional<String> mappedRequest = JsonMapper.mapScheduleRequestToJson(scheduleRequest);
         if (mappedRequest.isPresent()) {
             try {
                 orchestratorController.postScheduleRequest(mappedRequest.get(), scheduleRequest.getScheduleType());
                 return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(Arrays.toString(e.getStackTrace()));
                 return false;
             }
+        } else {
+            throw new IllegalArgumentException();
         }
-        return false;
     }
 
 }

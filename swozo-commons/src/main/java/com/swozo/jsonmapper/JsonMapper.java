@@ -5,12 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import com.swozo.model.OrchestratorLinkResponse;
+import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class JsonMapper {
+    private static final Logger logger = LoggerFactory.getLogger(JsonMapper.class);
+
     public static Optional<String> mapScheduleRequestToJson(ScheduleRequest scheduleRequest) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -22,7 +27,7 @@ public class JsonMapper {
                     .withDefaultPrettyPrinter()
                     .writeValueAsString(scheduleRequest));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(Arrays.toString(e.getStackTrace()));
             return Optional.empty();
         }
     }
@@ -40,7 +45,7 @@ public class JsonMapper {
             ScheduleRequest mappedRequest = objectMapper.readValue(json, ScheduleRequest.class);
             return Optional.of(mappedRequest);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(Arrays.toString(e.getStackTrace()));
             return Optional.empty();
         }
     }
@@ -54,7 +59,7 @@ public class JsonMapper {
                     .withDefaultPrettyPrinter()
                     .writeValueAsString(linkResponse));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(Arrays.toString(e.getStackTrace()));
             return Optional.empty();
         }
     }
@@ -65,7 +70,7 @@ public class JsonMapper {
             OrchestratorLinkResponse mappedResponse = objectMapper.readValue(json, OrchestratorLinkResponse.class);
             return Optional.of(mappedResponse);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            logger.error(Arrays.toString(e.getStackTrace()));
             return Optional.empty();
         }
     }
