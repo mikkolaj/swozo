@@ -1,8 +1,8 @@
 package com.swozo.util;
 
 import com.swozo.api.auth.dto.AppRole;
-import com.swozo.model.users.Role;
-import com.swozo.model.users.User;
+import com.swozo.databasemodel.users.Role;
+import com.swozo.databasemodel.users.User;
 import com.swozo.repository.RoleRepository;
 import com.swozo.repository.UserRepository;
 import org.slf4j.Logger;

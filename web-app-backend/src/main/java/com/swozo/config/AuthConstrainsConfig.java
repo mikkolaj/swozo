@@ -28,7 +28,7 @@ public class AuthConstrainsConfig {
 
     @Bean
     public List<AuthConstraint> authConstraints() {
-        List<AuthConstraint> constraints = new LinkedList<>();
+        var constraints = new LinkedList<AuthConstraint>();
 
         var jwtRoutes = AllExceptEndpointMatcher.of(
                 "/auth/**", // auth
@@ -59,6 +59,4 @@ public class AuthConstrainsConfig {
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
     }
-
-
 }

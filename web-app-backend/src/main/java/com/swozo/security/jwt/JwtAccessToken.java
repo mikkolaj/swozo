@@ -8,14 +8,14 @@ import java.util.Date;
 
 public class JwtAccessToken extends AccessToken {
     private final String token;
-    private final long expireTime; // epoch time
+    private final long expirationTime; // epoch time in seconds
     private final long uuid;
 
-    public JwtAccessToken(String token, long uuid, long expireTime, Collection<? extends GrantedAuthority> authorities) {
+    public JwtAccessToken(String token, long uuid, long expirationTime, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.token = token;
         this.uuid = uuid;
-        this.expireTime = expireTime;
+        this.expirationTime = expirationTime;
     }
 
     @Override
@@ -42,11 +42,11 @@ public class JwtAccessToken extends AccessToken {
         return uuid;
     }
 
-    public long getExpireTime() {
-        return expireTime;
+    public long getExpirationTime() {
+        return expirationTime;
     }
 
     public boolean isExpired() {
-        return expireTime - new Date().toInstant().getEpochSecond() <= 0;
+        return expirationTime - new Date().toInstant().getEpochSecond() <= 0;
     }
 }

@@ -12,6 +12,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
 @RestController
 @RequestMapping("/example")
+@SecurityRequirement(name = ACCESS_TOKEN)
 public class ExampleController {
     private final ExampleService exampleService;
 
@@ -21,7 +22,6 @@ public class ExampleController {
     }
 
     @GetMapping
-    @SecurityRequirement(name = ACCESS_TOKEN)
     public String getExample() {
         return "Swozo";
     }
@@ -29,7 +29,6 @@ public class ExampleController {
     // use @PreAuthorize with required roles to limit access to only these roles
     // put AccessToken in arg list to get token passed from client, token will contain userId
     @GetMapping("/json")
-    @SecurityRequirement(name = ACCESS_TOKEN)
     @PreAuthorize("hasRole('ADMIN')")
     public ExampleModel getExampleJson(AccessToken token) {
         System.out.println(token.getUserId() + "    " + token.getAuthorities());
@@ -37,7 +36,6 @@ public class ExampleController {
     }
 
     @GetMapping("/err")
-    @SecurityRequirement(name = ACCESS_TOKEN)
     @PreAuthorize("hasRole('TEACHER')")
     public void getExampleError() {
         throw new IllegalArgumentException("errrrrrrrr");

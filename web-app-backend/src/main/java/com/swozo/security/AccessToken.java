@@ -18,5 +18,5 @@ public abstract class AccessToken extends AbstractAuthenticationToken {
 
     public abstract boolean isExpired();
 
-    public abstract long getExpireTime();
+    public abstract long getExpirationTime();
 }
