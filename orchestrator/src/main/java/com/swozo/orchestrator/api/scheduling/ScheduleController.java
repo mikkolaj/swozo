@@ -1,5 +1,6 @@
 package com.swozo.orchestrator.api.scheduling;
 
+import com.swozo.config.Config;
 import com.swozo.model.scheduling.ScheduleRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/schedules")
+@RequestMapping(Config.SCHEDULES)
 public class ScheduleController {
     private final ScheduleService service;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

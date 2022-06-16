@@ -28,7 +28,7 @@ public class UriFactory {
     public URI createSchedulesUri(ScheduleType scheduleType) {
         return createURI(orchestratorServerUrl +
                 Config.ORCHESTRATOR +
-                Config.SCHEDULE +
+                Config.SCHEDULES +
                 "/" +
                 scheduleType.name().toLowerCase(Locale.ROOT));
     }

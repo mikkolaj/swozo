@@ -32,7 +32,6 @@ public class Course extends BaseEntity {
     private Collection<User> students = new LinkedHashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Exclude
     private User teacher;
 
     //constructor for testing
