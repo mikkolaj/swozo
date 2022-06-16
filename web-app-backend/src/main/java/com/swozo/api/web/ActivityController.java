@@ -5,6 +5,8 @@ import com.swozo.databasemodel.ActivityModule;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.ActivityService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RequestMapping("/activities")
 @SecurityRequirement(name = ACCESS_TOKEN)
 public class ActivityController {
+    private final Logger logger = LoggerFactory.getLogger(ActivityController.class);
     private final ActivityService activityService;
 
     @Autowired
@@ -28,57 +31,60 @@ public class ActivityController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
     public Activity getActivity(AccessToken token, @PathVariable Long id) {
-        System.out.println("activity  info getter");
+        logger.info("activity  info getter");
         return activityService.getActivity(id);
     }
 
+    //wouldn't it be better to pass course_id via path?
     @PostMapping()
     @PreAuthorize("hasRole('TEACHER')")
     public Activity addActivity(AccessToken token, @RequestBody Activity activity) {
-        System.out.println("creating new activity inside course");
+        logger.info("creating new activity inside course");
         return activityService.createActivity(activity);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
     public String deleteActivity(AccessToken token, @PathVariable Long id) {
-        System.out.println("deleting activity from course");
+        logger.info("deleting activity from course");
         activityService.deleteActivity(id);
         return "activity deleted";
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('TACHER')")
+    @PreAuthorize("hasRole('TEACHER')")
     public Activity updateActivity(AccessToken token, @PathVariable Long id, @RequestBody Activity newActivity) {
-        System.out.println("updating activity from course");
+        logger.info("updating activity from course");
         return activityService.updateActivity(id, newActivity);
     }
 
     @GetMapping("/{id}/service-modules")
     @PreAuthorize("hasRole('TEACHER')")
     public Collection<ActivityModule> getCourseActivityList(AccessToken token, @PathVariable Long id) {
-        System.out.println("service module list from activity with id: " + id);
+        logger.info("service module list from activity with id: " + id);
         return activityService.activityModulesList(id);
     }
 
-    @PostMapping("/{activityId}/service-modules/{moduleId}")
+    @PostMapping("/{activityId}/service-modules/{activityModuleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Activity addModuleToActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long moduleId) {
-        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
-        return activityService.addModuleToActivity(activityId, moduleId);
+    public Activity addModuleToActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
+        logger.info("adding module with id: " + activityModuleId + " to activity with id: " + activityId);
+        return activityService.addModuleToActivity(activityId, activityModuleId);
     }
 
-    @DeleteMapping("/{activityId}/service-modules/{moduleId}")
+    @DeleteMapping("/{activityId}/service-modules/{activityModuleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long moduleId) {
-        System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
-        return activityService.deleteModuleFromActivity(activityId, moduleId);
+    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
+        logger.info("adding module with id: " + activityModuleId + " to activity with id: " + activityId);
+        return activityService.deleteModuleFromActivity(activityId, activityModuleId);
     }
 
+
+    //imo this endpoint should be removed, links are now stored in the ActivityModule, and we already have a method for getting them
     @GetMapping("/{id}/links")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public Collection<String> getLinks(AccessToken token, @PathVariable Long id) {
-        System.out.println("sending links");
+        logger.info("sending links");
         return new LinkedList<>();
     }
 

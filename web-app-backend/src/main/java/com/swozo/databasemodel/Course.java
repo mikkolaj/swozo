@@ -23,7 +23,7 @@ public class Course extends BaseEntity {
     private LocalDateTime creationTime = LocalDateTime.now();
 
     //FetchType.LAZY - we won't need downloading classes list everytime e.g. in courses view
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Collection<Activity> activities = new LinkedList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
