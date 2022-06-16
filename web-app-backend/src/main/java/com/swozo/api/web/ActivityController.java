@@ -27,7 +27,7 @@ public class ActivityController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Activity getActivity(AccessToken token, @PathVariable long id) {
+    public Activity getActivity(AccessToken token, @PathVariable Long id) {
         System.out.println("activity  info getter");
         return activityService.getActivity(id);
     }
@@ -41,7 +41,7 @@ public class ActivityController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String deleteActivity(AccessToken token, @PathVariable long id) {
+    public String deleteActivity(AccessToken token, @PathVariable Long id) {
         System.out.println("deleting activity from course");
         activityService.deleteActivity(id);
         return "activity deleted";
@@ -49,35 +49,35 @@ public class ActivityController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TACHER')")
-    public Activity updateActivity(AccessToken token, @PathVariable long id, @RequestBody Activity newActivity) {
+    public Activity updateActivity(AccessToken token, @PathVariable Long id, @RequestBody Activity newActivity) {
         System.out.println("updating activity from course");
         return activityService.updateActivity(id, newActivity);
     }
 
     @GetMapping("/{id}/service-modules")
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<ActivityModule> getCourseActivityList(AccessToken token, @PathVariable long id) {
+    public Collection<ActivityModule> getCourseActivityList(AccessToken token, @PathVariable Long id) {
         System.out.println("service module list from activity with id: " + id);
         return activityService.activityModulesList(id);
     }
 
     @PostMapping("/{activityId}/service-modules/{moduleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Activity addModuleToActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId) {
+    public Activity addModuleToActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long moduleId) {
         System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
         return activityService.addModuleToActivity(activityId, moduleId);
     }
 
     @DeleteMapping("/{activityId}/service-modules/{moduleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable long activityId, @PathVariable long moduleId) {
+    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long moduleId) {
         System.out.println("adding module with id: " + moduleId + " to activity with id: " + activityId);
         return activityService.deleteModuleFromActivity(activityId, moduleId);
     }
 
     @GetMapping("/{id}/links")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
-    public Collection<String> getLinks(AccessToken token, @PathVariable long id) {
+    public Collection<String> getLinks(AccessToken token, @PathVariable Long id) {
         System.out.println("sending links");
         return new LinkedList<>();
     }

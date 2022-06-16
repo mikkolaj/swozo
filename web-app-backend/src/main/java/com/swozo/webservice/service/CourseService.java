@@ -65,27 +65,31 @@ public class CourseService {
 //        end
     }
 
-    public Course getCourse(long id) {
-        Course course = courseRepository.findById(id)
+    public Collection<Course> getCoursesForTeacher(Long teacherId){
+        return courseRepository.getTeacherCourses(teacherId);
+    }
+
+    public Course getCourse(Long id) {
+        return courseRepository.findById(id)
                 .orElseThrow(() -> new CourseNotFoundException(id));
-        return course;
     }
 
     public Course createCourse(Course newCourse) {
 //        newCourse.getActivities().forEach(activity -> activity.setCourse(newCourse));
         Long id = newCourse.getTeacher().getId();
-        User teacher = userRepository.findById(id).orElseThrow(() -> new TeacherNotFoundException(id));
+        User teacher = userRepository.findById(id)
+                .orElseThrow(() -> new TeacherNotFoundException(id));
         newCourse.setTeacher(teacher);
         courseRepository.save(newCourse);
         return newCourse;
     }
 
-    public void deleteCourse(long id) {
+    public void deleteCourse(Long id) {
 //        TODO sprawdz czy usuwaja się activities...
         courseRepository.deleteById(id);
     }
 
-    public Course updateCourse(long id, Course newCourse) {
+    public Course updateCourse(Long id, Course newCourse) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new CourseNotFoundException(id));
         course.setName(newCourse.getName());
@@ -96,13 +100,13 @@ public class CourseService {
         return course;
     }
 
-    public Collection<Activity> courseActivityList(long id) {
+    public Collection<Activity> courseActivityList(Long id) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new CourseNotFoundException(id));
         return course.getActivities();
     }
 
-    public Course addSudent(long courseId, long studentId) {
+    public Course addSudent(Long courseId, Long studentId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException(courseId));
         User student = userRepository.findById(studentId)
@@ -112,14 +116,12 @@ public class CourseService {
         return course;
     }
 
-    public Course deleteStudent(long courseId, long studentId) {
+    public Course deleteStudent(Long courseId, Long studentId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new CourseNotFoundException(courseId));
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new StudentNotFoundException(courseId));
-        Collection<User> students = course.getStudents();
-        students.remove(student);
-        course.setStudents(students);
+        course.deleteStudent(student);
         courseRepository.save(course);
         return course;
     }
