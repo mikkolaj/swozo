@@ -27,9 +27,7 @@ public class AnsibleRunner {
     public CommandResult runNotebook(List<SshTarget> sshTargets, String sshUser, String sshKeyPath, String playbookPath) throws InterruptedException {
         try {
             var command = createAnsibleCommand(sshTargets, sshKeyPath, sshUser, playbookPath);
-            sshTargets.forEach(sshTarget ->
-                    CheckedExceptionConverter.from(() -> clearSshHostEntries(sshTarget.ipAddress())).run()
-            );
+            clearAllHostEntries(sshTargets);
             var process = Runtime.getRuntime().exec(command);
             try (var outputScanner = new Scanner(process.getInputStream()).useDelimiter(INPUT_BOUNDARY);
                  var errorScanner = new Scanner(process.getErrorStream()).useDelimiter(INPUT_BOUNDARY)
@@ -44,6 +42,12 @@ public class AnsibleRunner {
             logger.error("Failed to run notebook!", e);
             return new CommandResult(EXEC_ERROR_CODE, "", "");
         }
+    }
+
+    private void clearAllHostEntries(List<SshTarget> sshTargets) {
+        sshTargets.stream()
+                .map(SshTarget::ipAddress)
+                .forEach(CheckedExceptionConverter.from(this::clearSshHostEntries));
     }
 
     private void clearSshHostEntries(String ip) throws IOException, InterruptedException {
