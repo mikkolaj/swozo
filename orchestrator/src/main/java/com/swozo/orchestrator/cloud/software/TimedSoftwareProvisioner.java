@@ -6,7 +6,7 @@ import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import java.util.List;
 
 public interface TimedSoftwareProvisioner {
-    List<Link> provision(VMResourceDetails resourceDetails) throws InterruptedException;
+    List<Link> provision(VMResourceDetails resourceDetails) throws InterruptedException, ProvisioningFailed;
 
     int getProvisioningSeconds();
 }

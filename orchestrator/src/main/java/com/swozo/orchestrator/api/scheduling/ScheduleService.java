@@ -27,9 +27,12 @@ public class ScheduleService {
     private final ScheduleRequestTracker scheduleRequestTracker;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public void schedule(ScheduleJupyter request) {
+    public void schedule(ScheduleRequest request) {
         scheduleRequestTracker.persist(request);
-        scheduler.schedule(() -> scheduleCreationAndDeletion(request, jupyterProvisioner::provision), 1);
+        switch (request) {
+            case ScheduleJupyter scheduleJupyter -> scheduler.schedule(() -> scheduleCreationAndDeletion(scheduleJupyter, jupyterProvisioner::provision), 1);
+            default -> throw new IllegalStateException("Unexpected request type: " + request);
+        }
     }
 
     private Void scheduleCreationAndDeletion(
@@ -59,8 +62,8 @@ public class ScheduleService {
 
     private Void deleteInstance(ScheduleRequest scheduleRequest, VMResourceDetails connectionDetails) throws InterruptedException {
         try {
-            timedVmProvider.deleteInstance(connectionDetails.internalResourceId());
-            scheduleRequestTracker.unpersist(scheduleRequest.getActivityModuleID());
+            timedVmProvider.deleteInstance(connectionDetails.internalResourceId())
+                    .thenRun(() ->scheduleRequestTracker.unpersist(scheduleRequest.getActivityModuleID()));
         } catch (VMOperationFailed e) {
             logger.error("Deleting instance failed!", e);
         }

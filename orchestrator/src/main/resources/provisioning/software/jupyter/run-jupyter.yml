@@ -9,7 +9,7 @@
         image: jupyter/datascience-notebook
         auto_remove: yes
         ports:
-          - "8888:8888"
+          - "80:8888"
         mounts:
           - source: /home/swozo/jupyter
             target: /home/jovyan/work

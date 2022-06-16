@@ -30,6 +30,8 @@ public class ScheduleRequestTracker {
 
     public void saveLinks(Long activityModuleId, List<Link> links) {
         Optional.ofNullable(requestDb.get(activityModuleId))
-                .ifPresent(requestWithLinks -> new RequestWithLinks(requestWithLinks.scheduleRequest, links));
+                .ifPresent(requestWithLinks ->
+                        requestDb.put(activityModuleId, new RequestWithLinks(requestWithLinks.scheduleRequest, links))
+                );
     }
 }

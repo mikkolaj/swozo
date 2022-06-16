@@ -47,7 +47,7 @@ public class GCloudVMLifecycleManager {
 
             var insertInstanceRequest = createInsertInstanceRequest(vmAddress, instanceResource);
 
-            logger.info("Creating instance: {} at {}\n", vmAddress.vmName(), vmAddress.zone());
+            logger.info("Creating instance: {} with specs {}", vmAddress, vmSpecs);
 
             var futureOperation = instancesClient.insertAsync(insertInstanceRequest);
 
