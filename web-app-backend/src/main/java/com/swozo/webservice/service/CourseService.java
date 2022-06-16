@@ -9,6 +9,7 @@ import com.swozo.repository.RoleRepository;
 import com.swozo.repository.UserRepository;
 import com.swozo.webservice.exceptions.CourseNotFoundException;
 import com.swozo.webservice.exceptions.StudentNotFoundException;
+import com.swozo.webservice.exceptions.TeacherNotFoundException;
 import com.swozo.webservice.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,15 +66,16 @@ public class CourseService {
     }
 
     public Course getCourse(long id) {
-//        studentRepository.getById()
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new CourseNotFoundException(id));
-        System.out.println("kurs2: " + course);
         return course;
     }
 
     public Course createCourse(Course newCourse) {
-        newCourse.getActivities().forEach(activity -> activity.setCourse(newCourse));
+//        newCourse.getActivities().forEach(activity -> activity.setCourse(newCourse));
+        Long id = newCourse.getTeacher().getId();
+        User teacher = userRepository.findById(id).orElseThrow(() -> new TeacherNotFoundException(id));
+        newCourse.setTeacher(teacher);
         courseRepository.save(newCourse);
         return newCourse;
     }
@@ -90,11 +92,6 @@ public class CourseService {
         course.setSubject(newCourse.getSubject());
         course.setDescription(newCourse.getDescription());
         course.setCreationTime(newCourse.getCreationTime());
-        Collection<Activity> activityList = newCourse.getActivities();
-        activityList.forEach(activity -> activity.setCourse(newCourse));
-        course.setActivities(activityList);
-        course.setStudents(newCourse.getStudents());
-        course.setTeacher(newCourse.getTeacher());
         courseRepository.save(course);
         return course;
     }

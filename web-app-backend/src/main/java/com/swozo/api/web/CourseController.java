@@ -25,6 +25,7 @@ public class CourseController {
         this.courseService = courseService;
     }
 
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
     public Course getCourse(AccessToken token, @PathVariable int id) {
@@ -44,10 +45,9 @@ public class CourseController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String deleteCourse(AccessToken token, @PathVariable long id) {
+    public void deleteCourse(AccessToken token, @PathVariable long id) {
         System.out.println("deleting course with id: " + id);
         courseService.deleteCourse(id);
-        return "course deleted";
     }
 
     @PutMapping("/{id}")
