@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,31 +14,33 @@ export const CoursesListView = () => {
     const { t } = useTranslation();
 
     return (
-        <PageContainer sx={{ p: 0 }}>
-            <Grid container sx={{ p: 2 }}>
-                <Grid item xs={6}>
-                    <Typography variant="h4" component="div">
-                        {t('myCourses.header')}
-                    </Typography>
-                </Grid>
-                <Grid
-                    item
-                    xs={6}
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                    }}
-                >
-                    <WithRole roles={[TEACHER]}>
-                        <Button onClick={() => navigate(PageRoutes.CREATE_COURSE)}>
-                            {t('myCourses.createCourseButton')}
-                        </Button>
-                    </WithRole>
-                </Grid>
-            </Grid>
-            <Divider />
-            <Container sx={{ mt: 4 }}>
+        <PageContainer
+            header={
+                <>
+                    <Grid item xs={6}>
+                        <Typography variant="h4" component="div">
+                            {t('myCourses.header')}
+                        </Typography>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={6}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'flex-end',
+                        }}
+                    >
+                        <WithRole roles={[TEACHER]}>
+                            <Button onClick={() => navigate(PageRoutes.CREATE_COURSE)}>
+                                {t('myCourses.createCourseButton')}
+                            </Button>
+                        </WithRole>
+                    </Grid>
+                </>
+            }
+        >
+            <Container>
                 <Stack spacing={2} px={2}>
                     {courseSummaryItems.map((course) => (
                         <CourseSummaryView key={course.id} courseSummary={course} />

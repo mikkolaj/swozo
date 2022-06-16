@@ -23,7 +23,7 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
             initialValues={initialValues}
             validateOnChange={false}
             validationSchema={Yup.object({
-                name: Yup.string().max(10, 'e1').required('e2'),
+                // name: Yup.string().max(10, 'e1').required('e2'),
             })}
             onSubmit={setValues}
         >

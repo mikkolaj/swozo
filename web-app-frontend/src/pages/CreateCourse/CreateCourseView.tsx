@@ -1,9 +1,9 @@
 import { Button, Grid } from '@mui/material';
 import { SlideForm } from 'common/SlideForm/SlideForm';
 import { FormikProps } from 'formik';
+import _ from 'lodash';
 import { Ref, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { range } from 'utils/utils';
 import { ActivitiesForm } from './components/forms/ActivitiesForm';
 import { GeneralInfoForm } from './components/forms/GeneralInfoForm';
 import { Summary } from './components/forms/Summary';
@@ -83,7 +83,7 @@ export const CreateCourseView = () => {
                         if (values.numberOfActivities > activitiesValues.length) {
                             setActivitiesValues([
                                 ...activitiesValues,
-                                ...range(values.numberOfActivities - activitiesValues.length).map((_) => ({
+                                ..._.range(values.numberOfActivities - activitiesValues.length).map((_) => ({
                                     name: '',
                                     description: '',
                                     module: '',

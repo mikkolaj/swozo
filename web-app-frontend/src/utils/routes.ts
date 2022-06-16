@@ -9,6 +9,7 @@ export class PageRoutes {
     static readonly ACTIVITIES = `${this.COURSE}/activities`;
     static readonly ACTIVITY = `${this.ACTIVITIES}/:activityId`;
     static readonly ACTIVITY_INSTRUCTIONS = `${this.ACTIVITY}/instructions`;
+    static readonly FILES = '/files';
 
     static Course(courseId: string | number): string {
         return RouteBuilder.of(this.COURSE).withReplaced('courseId', courseId).build();

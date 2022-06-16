@@ -1,8 +1,8 @@
 import { Box, SxProps, TextField, TextFieldProps, Theme } from '@mui/material';
 import { FieldHookConfig, useField } from 'formik';
+import _ from 'lodash';
 import { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { capitalized } from 'utils/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Props = FieldHookConfig<any> & {
@@ -20,6 +20,7 @@ export const InputField = ({
     textFieldProps,
     onChangeDecorator,
     children,
+    type,
     ...props
 }: Props) => {
     const [{ onChange, ...field }, meta] = useField(props);
@@ -28,7 +29,8 @@ export const InputField = ({
     return (
         <Box sx={wrapperSx}>
             <TextField
-                label={labelPath ? capitalized(t(labelPath)) : labelText ?? ''}
+                label={labelPath ? _.capitalize(t(labelPath)) : labelText ?? ''}
+                type={type}
                 error={!!(meta.touched && meta.error)}
                 helperText={meta.touched && meta.error}
                 variant={textFieldProps?.variant ?? 'outlined'}

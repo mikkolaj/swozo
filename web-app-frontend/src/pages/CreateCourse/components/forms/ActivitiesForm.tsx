@@ -21,7 +21,7 @@ export const ActivitiesForm = ({ formRef, initialValues, setValues }: SlideProps
             validationSchema={Yup.object().shape({
                 activities: Yup.array().of(
                     Yup.object().shape({
-                        name: Yup.string().max(10, 'e1').required('e2'),
+                        // name: Yup.string().max(10, 'e1').required('e2'),
                     })
                 ),
             })}

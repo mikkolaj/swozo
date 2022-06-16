@@ -7,8 +7,9 @@
     },
     "navbar": {
         "logo": "SWOZO",
-        "myCourses": "moje kursy",
-        "myModules": "moje moduły",
+        "myCourses": "kursy",
+        "myModules": "moduły",
+        "myFiles": "pliki",
         "menu": {
             "logout": "wyloguj",
             "switchToTechnical": "Widok nauczyciela technicznego",
@@ -126,5 +127,11 @@
                 "label": "Informacje o używanych modułach"
             }
         }
+    },
+    "myFiles": {
+        "header": "Moje pliki",
+        "fileName": "Nazwa pliku",
+        "courseName": "Nazwa kursu",
+        "creationDate": "Data utworzenia"
     }
 }

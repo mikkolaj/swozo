@@ -33,33 +33,31 @@ const Login = () => {
                             </Typography>
                             <InputField
                                 name="email"
+                                type="text" // TODO make it email, text for easier testing (no @ required)
                                 textFieldProps={{
                                     required: true,
                                     fullWidth: true,
                                     autoFocus: true,
-                                    autoComplete: 'email',
                                     variant: 'outlined',
                                 }}
                                 wrapperSx={{
                                     mt: 3,
                                     width: '100%',
                                 }}
-                                type="email"
                                 labelPath="login.email"
                             />
                             <InputField
                                 name="password"
+                                type="password"
                                 textFieldProps={{
                                     required: true,
                                     fullWidth: true,
-                                    autoComplete: 'current-password',
                                     variant: 'outlined',
                                 }}
                                 wrapperSx={{
                                     mt: 2,
                                     width: '100%',
                                 }}
-                                type="password"
                                 labelPath="login.password"
                             />
 

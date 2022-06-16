@@ -2,9 +2,9 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Button, Card, Grid, Paper, Typography } from '@mui/material';
 import dayjs from 'dayjs';
+import _ from 'lodash';
 import { useState } from 'react';
 import { mockCalendarActivities } from 'utils/mocks';
-import { capitalized, range } from 'utils/utils';
 import { CalendarDay } from './components/CalendarDay';
 import { buildWeeks, DAYS_IN_WEEK, getWeeksInMonthCount } from './utils';
 
@@ -61,12 +61,12 @@ export const Calendar = () => {
                     justifyContent="space-between"
                     alignContent="center"
                 >
-                    {range(DAYS_IN_WEEK).map((day) => (
+                    {_.range(DAYS_IN_WEEK).map((day) => (
                         <Paper
                             sx={{ boxShadow: 2, width: '100%', textAlign: 'center', margin: '1px' }}
                             key={day}
                         >
-                            {capitalized(
+                            {_.capitalize(
                                 dayjs()
                                     .day((day + 1) % DAYS_IN_WEEK)
                                     .format('dd')
@@ -74,14 +74,14 @@ export const Calendar = () => {
                         </Paper>
                     ))}
                 </Grid>
-                {range(getWeeksInMonthCount(displayedDate)).map((week) => (
+                {_.range(getWeeksInMonthCount(displayedDate)).map((week) => (
                     <Grid
                         item
                         key={week}
                         xs={12}
                         sx={{ display: 'flex', alignContent: 'center', flexDirection: 'row' }}
                     >
-                        {range(DAYS_IN_WEEK).map((day) => (
+                        {_.range(DAYS_IN_WEEK).map((day) => (
                             <CalendarDay
                                 key={day}
                                 displayedDate={displayedDate}

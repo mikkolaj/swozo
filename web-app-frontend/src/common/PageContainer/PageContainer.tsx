@@ -1,14 +1,25 @@
-import { Card, CardContent, Container } from '@mui/material';
+import { Card, CardContent, Container, Divider, Grid } from '@mui/material';
 import { ComponentProps, PropsWithChildren } from 'react';
 
-export const PageContainer = ({
-    children,
-    ...props
-}: PropsWithChildren<ComponentProps<typeof CardContent>>) => {
+type Props = ComponentProps<typeof CardContent> & {
+    header?: JSX.Element;
+};
+
+export const PageContainer = ({ children, header, sx, ...props }: PropsWithChildren<Props>) => {
     return (
         <Container>
             <Card sx={{ position: 'relative', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}>
-                <CardContent {...props}>{children}</CardContent>
+                <CardContent sx={{ p: 0, ...sx }} {...props}>
+                    {header && (
+                        <>
+                            <Grid container sx={{ p: 2 }}>
+                                {header}
+                            </Grid>
+                            <Divider sx={{ mb: 4 }} />
+                        </>
+                    )}
+                    {children}
+                </CardContent>
             </Card>
         </Container>
     );

@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
-import { TEACHER, TECHNICAL_TEACHER, WithPreference, WithRole } from 'utils/roles';
+import { STUDENT, TEACHER, TECHNICAL_TEACHER, WithPreference, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { NavbarItem } from './NavbarItem';
 
@@ -33,6 +33,9 @@ export const Navbar = () => {
                         {t('navbar.logo')}
                     </Typography>
                     <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center">
+                        <WithRole roles={[STUDENT]}>
+                            <NavbarItem textPath="navbar.myFiles" route={PageRoutes.FILES} />
+                        </WithRole>
                         <WithPreference role={TECHNICAL_TEACHER}>
                             <NavbarItem textPath="navbar.myModules" route={PageRoutes.MY_MODULES} />
                         </WithPreference>

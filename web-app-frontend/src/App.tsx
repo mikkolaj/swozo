@@ -5,12 +5,21 @@ import { CourseView } from 'pages/Course/CourseView';
 import { CoursesListView } from 'pages/CoursesList/CoursesListView';
 import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
 import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
+import { FilesListView } from 'pages/FilesList/FilesListView';
 import { Home } from 'pages/Home/Home';
 import Login from 'pages/Login/Login';
 import { ModulesListView } from 'pages/ModulesList/ModulesListView';
 import { Route, Routes } from 'react-router-dom';
 import { useAppSelector } from 'services/store';
-import { ANY_LOGGED_IN, guarded, NOT_LOGGED_IN, TEACHER, TECHNICAL_TEACHER, withRole } from 'utils/roles';
+import {
+    ANY_LOGGED_IN,
+    guarded,
+    NOT_LOGGED_IN,
+    STUDENT,
+    TEACHER,
+    TECHNICAL_TEACHER,
+    withRole,
+} from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 
 function App() {
@@ -41,6 +50,7 @@ function App() {
                     path={PageRoutes.ACTIVITY_INSTRUCTIONS}
                     element={guarded(<ActivityInstructionsView />, ANY_LOGGED_IN)}
                 />
+                <Route path={PageRoutes.FILES} element={guarded(<FilesListView />, withRole(STUDENT))} />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
             </Routes>
         </>
