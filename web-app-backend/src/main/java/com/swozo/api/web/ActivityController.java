@@ -31,7 +31,7 @@ public class ActivityController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
     public Activity getActivity(AccessToken token, @PathVariable Long id) {
-        logger.info("activity  info getter");
+        logger.info("activity info for id {}", id);
         return activityService.getActivity(id);
     }
 
@@ -39,43 +39,42 @@ public class ActivityController {
     @PostMapping()
     @PreAuthorize("hasRole('TEACHER')")
     public Activity addActivity(AccessToken token, @RequestBody Activity activity) {
-        logger.info("creating new activity inside course");
+        logger.info("creating new activity with name {} by user {}", activity.getName(), token.getUserId());
         return activityService.createActivity(activity);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String deleteActivity(AccessToken token, @PathVariable Long id) {
-        logger.info("deleting activity from course");
+    public void deleteActivity(AccessToken token, @PathVariable Long id) {
+        logger.info("deleting activity with id: {}", id);
         activityService.deleteActivity(id);
-        return "activity deleted";
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
     public Activity updateActivity(AccessToken token, @PathVariable Long id, @RequestBody Activity newActivity) {
-        logger.info("updating activity from course");
+        logger.info("updating activity with name: {}", newActivity.getName());
         return activityService.updateActivity(id, newActivity);
     }
 
     @GetMapping("/{id}/service-modules")
     @PreAuthorize("hasRole('TEACHER')")
     public Collection<ActivityModule> getCourseActivityList(AccessToken token, @PathVariable Long id) {
-        logger.info("service module list from activity with id: " + id);
+        logger.info("service module list from activity with id: {}", id);
         return activityService.activityModulesList(id);
     }
 
     @PostMapping("/{activityId}/service-modules/{activityModuleId}")
     @PreAuthorize("hasRole('TEACHER')")
     public Activity addModuleToActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
-        logger.info("adding module with id: " + activityModuleId + " to activity with id: " + activityId);
+        logger.info("adding module with id: {} to activity with id: {}", activityModuleId, activityId);
         return activityService.addModuleToActivity(activityId, activityModuleId);
     }
 
     @DeleteMapping("/{activityId}/service-modules/{activityModuleId}")
     @PreAuthorize("hasRole('TEACHER')")
     public Activity deleteModuleFromActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
-        logger.info("adding module with id: " + activityModuleId + " to activity with id: " + activityId);
+        logger.info("removing module with id: {} from activity with id: {}", activityModuleId, activityId);
         return activityService.deleteModuleFromActivity(activityId, activityModuleId);
     }
 

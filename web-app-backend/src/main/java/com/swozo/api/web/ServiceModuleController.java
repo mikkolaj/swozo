@@ -32,8 +32,8 @@ public class ServiceModuleController {
 
     @PutMapping("/{moduleId}")
     @PreAuthorize("hasRole('TACHER')")
-    public String updateServiceModule(AccessToken token, @PathVariable long moduleId, @RequestBody ServiceModule newServiceModule) {
+    public ServiceModule updateServiceModule(AccessToken token, @PathVariable long moduleId, @RequestBody ServiceModule newServiceModule) {
         System.out.println("updating module with id: " + moduleId);
-        return "module updated";
+        return new ServiceModule();
     }
 }
