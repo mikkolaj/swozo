@@ -2,7 +2,7 @@ package com.swozo.orchestrator.api.scheduling;
 
 import com.swozo.function.ThrowingFunction;
 import com.swozo.model.links.Link;
-import com.swozo.model.scheduling.ScheduleJupyter;
+import com.swozo.model.scheduling.JupyterScheduleRequest;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
@@ -30,7 +30,9 @@ public class ScheduleService {
     public void schedule(ScheduleRequest request) {
         scheduleRequestTracker.persist(request);
         switch (request) {
-            case ScheduleJupyter scheduleJupyter -> scheduler.schedule(() -> scheduleCreationAndDeletion(scheduleJupyter, jupyterProvisioner::provision), 1);
+            case JupyterScheduleRequest jupyterRequest -> scheduler.schedule(
+                    () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision)
+                    , 1);
             default -> throw new IllegalStateException("Unexpected request type: " + request);
         }
     }
@@ -63,7 +65,7 @@ public class ScheduleService {
     private Void deleteInstance(ScheduleRequest scheduleRequest, VMResourceDetails connectionDetails) throws InterruptedException {
         try {
             timedVmProvider.deleteInstance(connectionDetails.internalResourceId())
-                    .thenRun(() ->scheduleRequestTracker.unpersist(scheduleRequest.getActivityModuleID()));
+                    .thenRun(() -> scheduleRequestTracker.unpersist(scheduleRequest.getActivityModuleID()));
         } catch (VMOperationFailed e) {
             logger.error("Deleting instance failed!", e);
         }
