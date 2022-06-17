@@ -9,14 +9,19 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 public record ApplicationProperties(
         Scheduler scheduler,
         Ansible ansible,
-        CloudProvider cloudProvider
+        CloudProvider cloudProvider,
+        int systemCommandTimeoutMinutes
 ) {
     private record Scheduler(int threadPoolSize) {
     }
 
-    private record Ansible(Jupyter jupyter) {
+    private record Ansible(Jupyter jupyter, int maxTimeoutMinutes) {
         private record Jupyter(String playbookPath) {
         }
+    }
+
+    public int ansibleMaxTimeoutMinutes() {
+        return ansible.maxTimeoutMinutes;
     }
 
     public String jupyterPlaybookPath() {

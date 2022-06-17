@@ -36,22 +36,13 @@ public class GCloudVMLifecycleManager {
     public Operation createInstance(VMAddress vmAddress, VMSpecs vmSpecs)
             throws IOException, ExecutionException, TimeoutException, InterruptedException {
         try (InstancesClient instancesClient = InstancesClient.create()) {
-            var disk =
-                    diskProvider.createDisk(DEFAULT_DISK_NAME, vmSpecs.imageFamily(), vmSpecs.diskSizeGB());
-
-            var networkInterface =
-                    networkInterfaceProvider.createNetworkInterface(vmAddress.networkName());
-
-            var instanceResource =
-                    instanceProvider.createInstance(vmAddress, vmSpecs, disk, networkInterface);
-
-            var insertInstanceRequest = createInsertInstanceRequest(vmAddress, instanceResource);
+            var insertInstanceRequest = createInsertInstanceRequest(vmAddress, vmSpecs);
 
             logger.info("Creating instance: {} with specs {}", vmAddress, vmSpecs);
 
-            var futureOperation = instancesClient.insertAsync(insertInstanceRequest);
-
-            return futureOperation.get(properties.computeRequestTimeoutMinutes(), TimeUnit.MINUTES);
+            return instancesClient
+                    .insertAsync(insertInstanceRequest)
+                    .get(properties.computeRequestTimeoutMinutes(), TimeUnit.MINUTES);
         }
     }
 
@@ -62,9 +53,9 @@ public class GCloudVMLifecycleManager {
 
             logger.info("Deleting instance: {} ", vmAddress.vmName());
 
-            var futureOperation = instancesClient.deleteAsync(deleteInstanceRequest);
-
-            return futureOperation.get(properties.computeRequestTimeoutMinutes(), TimeUnit.MINUTES);
+            return instancesClient
+                    .deleteAsync(deleteInstanceRequest)
+                    .get(properties.computeRequestTimeoutMinutes(), TimeUnit.MINUTES);
         }
     }
 
@@ -85,12 +76,21 @@ public class GCloudVMLifecycleManager {
                 .build();
     }
 
-    private InsertInstanceRequest createInsertInstanceRequest(
-            VMAddress vmAddress, Instance instance) {
+    private InsertInstanceRequest createInsertInstanceRequest(VMAddress vmAddress, VMSpecs vmSpecs) {
+        var instance = createInstanceRepresentation(vmAddress, vmSpecs);
+
         return InsertInstanceRequest.newBuilder()
                 .setProject(vmAddress.project())
                 .setZone(vmAddress.zone())
                 .setInstanceResource(instance)
                 .build();
+    }
+
+    private Instance createInstanceRepresentation(VMAddress vmAddress, VMSpecs vmSpecs) {
+        var disk = diskProvider.createDisk(DEFAULT_DISK_NAME, vmSpecs.imageFamily(), vmSpecs.diskSizeGB());
+
+        var networkInterface = networkInterfaceProvider.createNetworkInterface(vmAddress.networkName());
+
+        return instanceProvider.createInstance(vmAddress, vmSpecs, disk, networkInterface);
     }
 }

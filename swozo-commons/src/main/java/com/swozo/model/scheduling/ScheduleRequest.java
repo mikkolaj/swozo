@@ -17,7 +17,7 @@ import lombok.*;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = JupyterScheduleRequest.class, name = "ScheduleJupyter")
 })
-public abstract class ScheduleRequest {
+public abstract sealed class ScheduleRequest permits JupyterScheduleRequest {
     private final ServiceLifespan serviceLifespan;
     private final Psm psm;
     private final Long activityModuleID;

@@ -15,6 +15,8 @@ public class CheckedExceptionConverter {
         return () -> {
             try {
                 throwingRunnable.run();
+            } catch (RuntimeException e) {
+                throw e;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -25,6 +27,8 @@ public class CheckedExceptionConverter {
         return (T t) -> {
             try {
                 throwingConsumer.accept(t);
+            } catch (RuntimeException e) {
+                throw e;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -35,6 +39,8 @@ public class CheckedExceptionConverter {
         return (T t) -> {
             try {
                 return throwingFunction.apply(t);
+            } catch (RuntimeException e) {
+                throw e;
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -1,15 +1,21 @@
 package com.swozo.orchestrator.cloud.software.runner;
 
+import com.swozo.orchestrator.cloud.software.runner.process.ProcessFailed;
+import com.swozo.orchestrator.cloud.software.runner.process.ProcessRunner;
+import com.swozo.orchestrator.configuration.ApplicationProperties;
 import com.swozo.utils.CheckedExceptionConverter;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 @Service
+@RequiredArgsConstructor
 public class AnsibleRunner {
     private static final String PLAYBOOK_COMMAND = "ansible-playbook";
     private static final String INVENTORY_ARG_NAME = "-i";
@@ -20,27 +26,48 @@ public class AnsibleRunner {
     private static final String INVENTORY_DELIMITER = ",";
     private static final String EXTRA_VARS_DELIMITER = " ";
     private static final String INPUT_BOUNDARY = "\\A";
-    private static final int EXEC_ERROR_CODE = 123;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final ApplicationProperties properties;
+    private final ProcessRunner processRunner;
 
-    public CommandResult runNotebook(List<SshTarget> sshTargets, String sshUser, String sshKeyPath, String playbookPath) throws InterruptedException {
+
+    public void runNotebook(
+            List<SshTarget> sshTargets,
+            String sshUser,
+            String sshKeyPath,
+            String playbookPath,
+            int timeoutMinutes
+    ) throws InterruptedException, NotebookFailed {
+        runNotebook(sshTargets, sshUser, sshKeyPath, playbookPath, Collections.emptyList(), timeoutMinutes);
+    }
+
+    public void runNotebook(
+            List<SshTarget> sshTargets,
+            String sshUser,
+            String sshKeyPath,
+            String playbookPath,
+            List<String> userVars,
+            int timeoutMinutes
+    ) throws InterruptedException, NotebookFailed {
         try {
-            var command = createAnsibleCommand(sshTargets, sshKeyPath, sshUser, playbookPath);
+            var command = createAnsibleCommand(sshTargets, sshKeyPath, sshUser, playbookPath, userVars);
             clearAllHostEntries(sshTargets);
-            var process = Runtime.getRuntime().exec(command);
+            var process = processRunner.createProcess(command);
             try (var outputScanner = new Scanner(process.getInputStream()).useDelimiter(INPUT_BOUNDARY);
                  var errorScanner = new Scanner(process.getErrorStream()).useDelimiter(INPUT_BOUNDARY)
             ) {
-                var returnCode = process.waitFor();
+                processRunner.waitFor(process, timeoutMinutes);
                 var output = outputScanner.hasNext() ? outputScanner.next() : "";
                 var errors = errorScanner.hasNext() ? errorScanner.next() : "";
 
-                return new CommandResult(returnCode, output, errors);
+                if (process.exitValue() != ProcessRunner.SUCCESS_CODE) {
+                    logger.info(output);
+                    logger.error(errors);
+                }
             }
-        } catch (IOException e) {
-            logger.error("Failed to run notebook!", e);
-            return new CommandResult(EXEC_ERROR_CODE, "", "");
+        } catch (ProcessFailed e) {
+            throw new NotebookFailed(e);
         }
     }
 
@@ -50,15 +77,25 @@ public class AnsibleRunner {
                 .forEach(CheckedExceptionConverter.from(this::clearSshHostEntries));
     }
 
-    private void clearSshHostEntries(String ip) throws IOException, InterruptedException {
-        Runtime.getRuntime().exec(String.format("ssh-keygen -R %s", ip)).waitFor();
+    private void clearSshHostEntries(String ip) throws InterruptedException, NotebookFailed {
+        try {
+            var process = processRunner.createProcess(String.format("ssh-keygen -R %s", ip));
+            processRunner.waitFor(process, properties.systemCommandTimeoutMinutes());
+        } catch (ProcessFailed e) {
+            throw new NotebookFailed(e);
+        }
     }
 
-    private String[] createAnsibleCommand(List<SshTarget> hosts, String sshKeyPath, String sshUser, String playbookPath) {
+    private String[] createAnsibleCommand(
+            List<SshTarget> hosts,
+            String sshKeyPath,
+            String sshUser,
+            String playbookPath,
+            List<String> userVars
+    ) {
         var hostParams = hosts.stream().map(SshTarget::toString).toList();
         var inventory = String.join(INVENTORY_DELIMITER, hostParams) + INVENTORY_DELIMITER;
-        var sshUserArgument = String.format(SSH_USER_TEMPLATE, sshUser);
-        var extraVars = List.of(sshUserArgument, DISABLE_STRICT_HOST_CHECKING);
+        var extraVars = getAllVars(sshUser, userVars);
         var extraVarsArgument = String.join(EXTRA_VARS_DELIMITER, extraVars);
 
         return new String[]{
@@ -73,22 +110,10 @@ public class AnsibleRunner {
         };
     }
 
-    // Local/remote provisioning test
-    public static void main(String[] args) throws InterruptedException {
-        // Local
-        //        System.out.println(new AnsibleRunner().runNotebook(
-        //                List.of(new SshTarget("localhost", 2222)),
-        //                "vagrant",
-        //                "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/local/.vagrant/machines/default/virtualbox/private_key",
-        //                "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml"
-        //        ));
-
-        // Remote
-        System.out.println(new AnsibleRunner().runNotebook(
-                List.of(new SshTarget("34.118.97.16", 22)),
-                "swozo",
-                "/home/mikolaj/.ssh/orchestrator_id_rsa",
-                "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml"
-        ));
+    private List<String> getAllVars(String sshUser, List<String> userVars) {
+        var sshUserArgument = String.format(SSH_USER_TEMPLATE, sshUser);
+        var vars = new ArrayList<>(List.of(sshUserArgument, DISABLE_STRICT_HOST_CHECKING));
+        vars.addAll(userVars);
+        return Collections.unmodifiableList(vars);
     }
 }

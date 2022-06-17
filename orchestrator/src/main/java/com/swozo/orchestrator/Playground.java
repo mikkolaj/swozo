@@ -3,10 +3,15 @@ package com.swozo.orchestrator;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.GCloudVMLifecycleManager;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
+import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
+import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
+import com.swozo.orchestrator.cloud.software.runner.SshTarget;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +24,8 @@ public class Playground implements Runnable {
     private static final String imageFamily = "debian-11";
     private static final int diskSizeGb = 10;
     private final GCloudVMLifecycleManager gCloudVmLifecycleManager;
+    private final GCloudProperties properties;
+    private final AnsibleRunner ansibleRunner;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void createInstance() {
@@ -42,9 +49,31 @@ public class Playground implements Runnable {
         }
     }
 
+    public void runNotebookLocally() throws InterruptedException {
+        ansibleRunner.runNotebook(
+                List.of(new SshTarget("localhost", 2222)),
+                "vagrant",
+                "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/local/.vagrant/machines/default/virtualbox/private_key",
+                "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml",
+                10
+        );
+    }
+
+    public void runNotebookRemotely() throws InterruptedException {
+        ansibleRunner.runNotebook(List.of(new SshTarget("34.118.97.16", 22)),
+                "swozo",
+                "/home/mikolaj/.ssh/orchestrator_id_rsa",
+                "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml",
+                10
+        );
+    }
+
     @Override
     public void run() {
 //        createInstance();
 //        deleteInstance();
+//        runNotebookLocally();
+//        runNotebookRemotely();
+        System.out.println(properties);
     }
 }

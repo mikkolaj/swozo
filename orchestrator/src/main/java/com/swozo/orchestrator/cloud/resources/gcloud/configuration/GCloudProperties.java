@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Conditional;
 
 
 @ConstructorBinding
-@ConfigurationProperties(prefix = GCloudProperties.prefix)
+@ConfigurationProperties(prefix = GCloudProperties.PREFIX)
 @Conditional(GCloudCondition.class)
 public record GCloudProperties(
         String project,
@@ -15,7 +15,7 @@ public record GCloudProperties(
         Compute compute,
         Ssh ssh
 ) {
-    public static final String prefix = "gcp";
+    public static final String PREFIX = "gcp";
 
     private record Compute(int requestTimeoutMinutes, String imageFamily) {
     }

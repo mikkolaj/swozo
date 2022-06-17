@@ -21,19 +21,22 @@ import java.util.function.Consumer;
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
+    // TODO: probably will change if we decide to execute tasks (e.g. saving user's files) before deleting the instance
+    private static final int CLEANUP_SECONDS = 0;
     private final TaskScheduler scheduler;
     private final TimedVMProvider timedVmProvider;
     private final TimedSoftwareProvisioner jupyterProvisioner;
     private final ScheduleRequestTracker scheduleRequestTracker;
+    private final TimingService timingService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void schedule(ScheduleRequest request) {
         scheduleRequestTracker.persist(request);
         switch (request) {
             case JupyterScheduleRequest jupyterRequest -> scheduler.schedule(
-                    () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision)
-                    , 1);
-            default -> throw new IllegalStateException("Unexpected request type: " + request);
+                    () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision),
+                    timingService.getScheludingOffset(request, jupyterProvisioner.getProvisioningSeconds()));
+            default -> throw new IllegalStateException("Unexpected value: " + request);
         }
     }
 
@@ -58,7 +61,9 @@ public class ScheduleService {
         return resourceDetails -> {
             var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
             scheduleRequestTracker.saveLinks(scheduleRequest.getActivityModuleID(), links);
-            scheduler.schedule(() -> deleteInstance(scheduleRequest, resourceDetails), 600);
+            scheduler.schedule(
+                    () -> deleteInstance(scheduleRequest, resourceDetails),
+                    timingService.getDeletionOffset(scheduleRequest, CLEANUP_SECONDS));
         };
     }
 
