@@ -1,7 +1,9 @@
 package com.swozo.databasemodel;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
-import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,17 +23,22 @@ public class Activity extends BaseEntity {
     private LocalDateTime dateTime;
     private String instructionsFromTeacher;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_module_id")
     private Collection<ActivityModule> modules = new LinkedList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
-    @JsonIgnore
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private Course course;
 
     public void addActivityModule(ActivityModule newModuleMetadata) {
         modules.add(newModuleMetadata);
+    }
+
+    public void removeActivityModule(ActivityModule activityModule) {
+        modules.remove(activityModule);
     }
 
 }

@@ -2,16 +2,17 @@ package com.swozo.api.web;
 
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
+import com.swozo.databasemodel.users.User;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.CourseService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -19,7 +20,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RequestMapping("/courses")
 @SecurityRequirement(name = ACCESS_TOKEN)
 public class CourseController {
-
+    private final Logger logger = LoggerFactory.getLogger(CourseController.class);
     private final CourseService courseService;
 
     @Autowired
@@ -27,54 +28,67 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
-    public Course getCourse(AccessToken token, @PathVariable int id) {
-        System.out.println("course info getter for id: " + id);
-        return new Course();
+    @GetMapping("/all-system-courses")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Collection<Course> getAllSystemCourses(AccessToken token) {
+        return courseService.getAllCourses();
     }
 
-//    przyjmujemy json jako jakies parametry utworzenia?
+    @GetMapping("/all-courses")
+    @PreAuthorize("hasRole('TEACHER') or hasRole('STUDENT')")
+    public Collection<Course> getUserCourses(AccessToken token) {
+        Long userId = token.getUserId();
+        logger.info("course list for user with id: {}", userId);
+        return courseService.getUserCourses(userId);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public Course getCourse(AccessToken token, @PathVariable Long id) {
+        logger.info("course info getter for id: {}", id);
+        return courseService.getCourse(id);
+    }
+
     @PostMapping()
     @PreAuthorize("hasRole('TEACHER')")
-    public String addCourse(AccessToken token, @RequestBody Course course) {
-        System.out.println("creating new course");
-        return "course_id";
+    public Course addCourse(AccessToken token, @RequestBody Course course) {
+        logger.info("creating new course with name: {}", course.getName());
+        return courseService.createCourse(course, token.getUserId());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String deleteCourse(AccessToken token, @PathVariable long id) {
-        System.out.println("deleting course with id: " + id);
-        return "course deleted";
+    public void deleteCourse(AccessToken token, @PathVariable Long id) {
+        logger.info("deleting course with id: {}", id);
+        courseService.deleteCourse(id);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public String editCourse(AccessToken token, @PathVariable long id, @RequestBody Course newCourse) {
-        System.out.println("edititng course");
-        return "course updated";
+    public Course editCourse(AccessToken token, @PathVariable Long id, @RequestBody Course newCourse) {
+        logger.info("editing course with id: {}", id);
+        return courseService.updateCourse(id, newCourse);
     }
 
     @GetMapping("/{id}/activities")
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<Activity> getCourseActivityList(AccessToken token, @PathVariable long id) {
-        System.out.println("activity list from course with id: " + id);
-        return new LinkedList<>();
+    public Collection<Activity> getCourseActivityList(AccessToken token, @PathVariable Long id) {
+        logger.info("activity list from course with id: {}", id);
+        return courseService.courseActivityList(id);
     }
 
-    @PostMapping("/{courseId}/students/{studentId}")
+    @PostMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
-    public String addStudentToCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
-        System.out.println("adding student with id: " + studentId + " to course with id: " + courseId);
-        return "student added";
+    public Course addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
+        logger.info("adding student with email: {} to course with id: {}", student.getEmail(), courseId);
+        return courseService.addStudent(courseId, student.getEmail());
     }
 
-    @DeleteMapping("/{courseId}/students/{studentId}")
+    @DeleteMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
-    public String removeStudentFromCourse(AccessToken token, @PathVariable long courseId, @PathVariable long studentId) {
-        System.out.println("removing student with id: " + studentId + " to course with id: " + courseId);
-        return "student removed";
+    public Course removeStudentFromCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
+        logger.info("removing student with email: {} from course with id: {}", student.getEmail(), courseId);
+        return courseService.deleteStudent(courseId, student.getEmail());
     }
 
 }
