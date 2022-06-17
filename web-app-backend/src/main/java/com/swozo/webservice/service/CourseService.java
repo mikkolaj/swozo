@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 
 @Service
 public class CourseService {
@@ -26,10 +27,10 @@ public class CourseService {
     }
 
     public Collection<Course> getUserCourses(Long userId) {
-        if (userService.hasUserRole(userId, "TEACHER")) {
-            return courseRepository.getCoursesByTeacherId(userId);
-        } else {
+        if (userService.hasUserRole(userId, "STUDENT")) {
             return courseRepository.getCoursesByStudentsId(userId);
+        } else {
+            return courseRepository.getCoursesByTeacherId(userId);
         }
     }
 
@@ -41,6 +42,17 @@ public class CourseService {
     public Course createCourse(Course newCourse, Long teacherId) {
         User teacher = userService.getUserById(teacherId);
         newCourse.setTeacher(teacher);
+
+        Collection<User> students = new LinkedHashSet<>();
+        for (User student : newCourse.getStudents()) {
+            students.add(userService.getUserByEmail(student.getEmail()));
+        }
+        newCourse.setStudents(students);
+
+        for (Activity activity : newCourse.getActivities()) {
+            activity.setCourse(newCourse);
+        }
+
         courseRepository.save(newCourse);
         return newCourse;
     }
@@ -65,6 +77,7 @@ public class CourseService {
 
     public Course addStudent(Long courseId, String studentEmail) {
         Course course = getCourse(courseId);
+        //TODO check if student has student role
         User student = userService.getUserByEmail(studentEmail);
         course.addStudent(student);
         courseRepository.save(course);
@@ -73,6 +86,7 @@ public class CourseService {
 
     public Course deleteStudent(Long courseId, String studentEmail) {
         Course course = getCourse(courseId);
+        //TODO check if student has student role
         User student = userService.getUserByEmail(studentEmail);
         course.deleteStudent(student);
         courseRepository.save(course);
