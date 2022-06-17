@@ -15,13 +15,9 @@ public record ApplicationProperties(
     private record Scheduler(int threadPoolSize) {
     }
 
-    private record Ansible(Jupyter jupyter, int maxTimeoutMinutes) {
+    private record Ansible(Jupyter jupyter) {
         private record Jupyter(String playbookPath) {
         }
-    }
-
-    public int ansibleMaxTimeoutMinutes() {
-        return ansible.maxTimeoutMinutes;
     }
 
     public String jupyterPlaybookPath() {
