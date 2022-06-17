@@ -1,0 +1,55 @@
+{
+	"info": {
+		"_postman_id": "546b3952-ebf2-466d-a43d-23e540d457bf",
+		"name": "Orchestrator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Schedule Jupyter",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"@type\" : \"ScheduleJupyter\",\n  \"serviceLifespan\" : {\n    \"startTime\" : \"2022-06-14T21:44:47.4281697\",\n    \"endTime\" : \"2022-06-14T21:44:47.4291679\"\n  },\n  \"psm\" : {\n    \"machineType\" : \"e2-medium\",\n    \"discSizeGB\" : 10\n  },\n  \"activityModuleID\" : 2,\n  \"scheduleType\" : \"JUPYTER\",\n  \"notebookLocation\" : \"aaa\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/schedules",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"schedules"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get links",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/links/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"links",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
