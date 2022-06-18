@@ -9,10 +9,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class TaskScheduler {
+public class InternalTaskScheduler {
     private final ScheduledExecutorService executorService;
 
-    public TaskScheduler(ApplicationProperties properties) {
+    public InternalTaskScheduler(ApplicationProperties properties) {
         executorService = new ScheduledThreadPoolExecutor(properties.schedulerThreadPoolSize());
     }
 

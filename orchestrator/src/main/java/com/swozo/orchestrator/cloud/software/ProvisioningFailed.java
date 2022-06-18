@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.cloud.software;
 
-public class ProvisioningFailed extends Exception {
+public class ProvisioningFailed extends RuntimeException {
     public ProvisioningFailed(String message) {
         super(message);
     }

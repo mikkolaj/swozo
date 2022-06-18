@@ -7,8 +7,9 @@ import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
-import com.swozo.orchestrator.scheduler.TaskScheduler;
+import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
 import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 @Service
@@ -23,7 +25,8 @@ import java.util.function.Consumer;
 public class ScheduleService {
     // TODO: probably will change if we decide to execute tasks (e.g. saving user's files) before deleting the instance
     private static final int CLEANUP_SECONDS = 0;
-    private final TaskScheduler scheduler;
+    private static final int IMMEDIATE_OFFSET = 0;
+    private final InternalTaskScheduler scheduler;
     private final TimedVMProvider timedVmProvider;
     private final TimedSoftwareProvisioner jupyterProvisioner;
     private final ScheduleRequestTracker scheduleRequestTracker;
@@ -47,9 +50,14 @@ public class ScheduleService {
         try {
             timedVmProvider
                     .createInstance(scheduleRequest.getPsm())
-                    .thenAccept(provisionSoftwareAndScheduleDeletion(scheduleRequest, provisionSoftware));
-        } catch (VMOperationFailed e) {
-            logger.error("Creating instance failed!", e);
+                    .thenAccept(provisionSoftwareAndScheduleDeletion(scheduleRequest, provisionSoftware))
+                    .get();
+        } catch (ExecutionException e) {
+            switch (e.getCause()) {
+                case VMOperationFailed ex ->
+                        logger.error("Error while creating instance. Request: {}", scheduleRequest, ex);
+                default -> logger.error("Unexpected exception. Request: {}", scheduleRequest, e);
+            }
         }
         return null;
     }
@@ -59,11 +67,16 @@ public class ScheduleService {
             ThrowingFunction<VMResourceDetails, List<Link>> provisionSoftware
     ) {
         return resourceDetails -> {
-            var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
-            scheduleRequestTracker.saveLinks(scheduleRequest.getActivityModuleID(), links);
-            scheduler.schedule(
-                    () -> deleteInstance(scheduleRequest, resourceDetails),
-                    timingService.getDeletionOffset(scheduleRequest, CLEANUP_SECONDS));
+            try {
+                var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
+                scheduleRequestTracker.saveLinks(scheduleRequest.getActivityModuleID(), links);
+                scheduler.schedule(
+                        () -> deleteInstance(scheduleRequest, resourceDetails),
+                        timingService.getDeletionOffset(scheduleRequest, CLEANUP_SECONDS));
+            } catch (ProvisioningFailed e) {
+                logger.error("Provisioning software on: {} failed. Scheduling deletion.", resourceDetails, e);
+                scheduler.schedule(() -> deleteInstance(scheduleRequest, resourceDetails), IMMEDIATE_OFFSET);
+            }
         };
     }
 

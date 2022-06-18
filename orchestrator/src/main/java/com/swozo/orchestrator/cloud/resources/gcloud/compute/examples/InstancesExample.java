@@ -10,12 +10,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class InstancesExample {
-    public static void main(
-            String[] args) throws IOException, ExecutionException, InterruptedException, TimeoutException {
-        //        SpringApplication.run(OrchestratorApplication.class, args);
-
+    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException, TimeoutException {
         var project = "hybrid-text-350213";
-        var zone = "us-west2-a";
+        var zone = "europe-central2-a";
         //        createInstance(project, zone, "super-instancja");
         listInstances(project, zone);
         //        deleteInstance(project, zone, "super-instancja");

@@ -6,6 +6,7 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.SshTarget;
+import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ public class Playground implements Runnable {
     private final GCloudVMLifecycleManager gCloudVmLifecycleManager;
     private final GCloudProperties properties;
     private final AnsibleRunner ansibleRunner;
+    private final InternalTaskScheduler internalTaskScheduler;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void createInstance() {
@@ -74,6 +76,9 @@ public class Playground implements Runnable {
 //        deleteInstance();
 //        runNotebookLocally();
 //        runNotebookRemotely();
-        System.out.println(properties);
+        internalTaskScheduler.schedule(() -> {
+            System.out.println(properties);
+            return null;
+        }, -100000000);
     }
 }

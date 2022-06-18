@@ -71,7 +71,7 @@ public class AnsibleRunner {
         }
     }
 
-    private void clearAllHostEntries(List<SshTarget> sshTargets) {
+    private void clearAllHostEntries(List<SshTarget> sshTargets) throws NotebookFailed {
         sshTargets.stream()
                 .map(SshTarget::ipAddress)
                 .forEach(CheckedExceptionConverter.from(this::clearSshHostEntries));
@@ -95,8 +95,7 @@ public class AnsibleRunner {
     ) {
         var hostParams = hosts.stream().map(SshTarget::toString).toList();
         var inventory = String.join(INVENTORY_DELIMITER, hostParams) + INVENTORY_DELIMITER;
-        var extraVars = getAllVars(sshUser, userVars);
-        var extraVarsArgument = String.join(EXTRA_VARS_DELIMITER, extraVars);
+        var extraVarsArgument = buildExtraVarsArgument(sshUser, userVars);
 
         return new String[]{
                 PLAYBOOK_COMMAND,
@@ -110,10 +109,10 @@ public class AnsibleRunner {
         };
     }
 
-    private List<String> getAllVars(String sshUser, List<String> userVars) {
+    private String buildExtraVarsArgument(String sshUser, List<String> userVars) {
         var sshUserArgument = String.format(SSH_USER_TEMPLATE, sshUser);
-        var vars = new ArrayList<>(List.of(sshUserArgument, DISABLE_STRICT_HOST_CHECKING));
-        vars.addAll(userVars);
-        return Collections.unmodifiableList(vars);
+        var extraVars = new ArrayList<>(List.of(sshUserArgument, DISABLE_STRICT_HOST_CHECKING));
+        extraVars.addAll(userVars);
+        return String.join(EXTRA_VARS_DELIMITER, extraVars);
     }
 }
