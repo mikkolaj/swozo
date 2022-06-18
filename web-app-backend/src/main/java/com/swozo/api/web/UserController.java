@@ -20,7 +20,7 @@ public class UserController {
     public UserController(UserService userService) { this.userService = userService; }
 
 //    we may use in the future getmapping without any path to get all users for admin...
-    @GetMapping("/getMe")
+    @GetMapping("/me")
     public UserDetailsResp getUserInfo(AccessToken token) {
         Long userId = token.getUserId();
         logger.info("user info for user with id: {}", userId);
