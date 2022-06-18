@@ -23,7 +23,7 @@ public class Course extends BaseEntity {
     private LocalDateTime creationTime = LocalDateTime.now();
 
     //FetchType.LAZY - we won't need downloading classes list everytime e.g. in courses view
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @ToString.Exclude
     private Collection<Activity> activities = new LinkedList<>();
 
@@ -31,7 +31,7 @@ public class Course extends BaseEntity {
     @ToString.Exclude
     private Collection<User> students = new LinkedHashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User teacher;
 
     //constructor for testing
@@ -39,11 +39,15 @@ public class Course extends BaseEntity {
         this.name = name;
     }
 
-    public void addActivity(Activity newClass) {
-        activities.add(newClass);
+    public void addActivity(Activity activity) {
+        activities.add(activity);
     }
+
+    public void deleteActivity(Activity activity) { activities.remove(activity); }
 
     public void addStudent(User student) {
         students.add(student);
     }
+
+    public void deleteStudent(User student){ students.remove(student); }
 }

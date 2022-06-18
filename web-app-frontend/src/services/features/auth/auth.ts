@@ -1,4 +1,4 @@
-import { store } from 'Services/store';
+import { store } from 'services/store';
 import { isTokenExpired, logout } from './authSlice';
 
 export async function getAccessToken(): Promise<string> {
@@ -12,6 +12,6 @@ export async function getAccessToken(): Promise<string> {
         }
     }
 
-    // TODO refresh token
+    // TODO refresh token ?
     return new Promise((_, rej) => rej('access token not found or expired'));
 }

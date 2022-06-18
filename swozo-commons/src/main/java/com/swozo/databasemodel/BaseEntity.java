@@ -1,6 +1,7 @@
 package com.swozo.databasemodel;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.Hibernate;
 
 import javax.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import java.util.Objects;
 // Class implementing default equals and hash code for all entities
 @MappedSuperclass
 @Getter
+@Setter
 public abstract class BaseEntity {
     @Id
     @GeneratedValue

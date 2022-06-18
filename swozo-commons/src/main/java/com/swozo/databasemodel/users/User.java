@@ -1,5 +1,6 @@
 package com.swozo.databasemodel.users;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swozo.databasemodel.BaseEntity;
 import lombok.*;
 
@@ -24,6 +25,8 @@ import java.util.LinkedList;
 @ToString
 public class User extends BaseEntity {
     private String email;
+
+    @JsonIgnore
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)

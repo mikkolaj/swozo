@@ -16,11 +16,4 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @SecurityRequirement(name = ACCESS_TOKEN)
 public class TeacherController {
     private final String teacherService = "course service";
-
-    @GetMapping("/{id}/course-list")
-    @PreAuthorize("hasRole('TEACHER')")
-    public Collection<Course> getActivityList(AccessToken token, @PathVariable long id) {
-        System.out.println("course list for teacher with id: " + id);
-        return new LinkedList<>();
-    }
 }
