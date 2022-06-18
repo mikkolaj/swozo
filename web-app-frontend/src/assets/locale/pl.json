@@ -1,0 +1,137 @@
+{
+    "login": {
+        "header": "Logowanie",
+        "email": "Adres Email",
+        "password": "Hasło",
+        "button": "Zaloguj się"
+    },
+    "navbar": {
+        "logo": "SWOZO",
+        "myCourses": "kursy",
+        "myModules": "moduły",
+        "myFiles": "pliki",
+        "menu": {
+            "logout": "wyloguj",
+            "switchToTechnical": "Widok nauczyciela technicznego",
+            "switchToTeacher": "Widok nauczyciela"
+        }
+    },
+    "myCourses": {
+        "header": "Moje kursy",
+        "createCourseButton": "Utwórz kurs",
+        "course": {
+            "lastActivity": "Ostatnia aktywność:",
+            "teacher": "Prowadzący: {{name}}",
+            "button": "szczegóły"
+        }
+    },
+    "course": {
+        "activity": {
+            "links": "linki",
+            "instructions": "instrukcje",
+            "linksInfo": {
+                "info": "Linki dla: {{courseName}} - {{activityName}}",
+                "connectionInstruction": "Instrukcja podłączenia",
+                "closeButton": "Zamknij"
+            }
+        }
+    },
+    "createCourse": {
+        "title": "Nowy kurs",
+        "finish": "Utwórz kurs",
+        "buttons": {
+            "next": "Dalej",
+            "back": "Wróć"
+        },
+        "slides": {
+            "0": {
+                "title": "Informacje ogólne",
+                "form": {
+                    "name": "nazwa",
+                    "subject": "tematyka",
+                    "description": "opis",
+                    "numberOfActivities": "liczba zajęć",
+                    "numberOfStudents": "planowana liczba uczestników"
+                }
+            },
+            "1": {
+                "title": "Planowanie zajęć",
+                "form": {
+                    "activityHeader": "Zajęcia {{idx}}",
+                    "name": "temat",
+                    "description": "opis",
+                    "modules": "moduły",
+                    "instructions": "dodatkowe instrukcje"
+                }
+            },
+            "2": {
+                "title": "Podsumowanie"
+            }
+        }
+    },
+    "myModules": {
+        "header": "Moje moduły",
+        "createModuleButton": "Utwórz moduł",
+        "module": {
+            "creationDate": "Data utworzenia:",
+            "usedBy": "Liczba korzystających aktywności: {{activitiesCount}}",
+            "buttons": {
+                "details": "szczegóły",
+                "edit": "edytuj",
+                "delete": "usuń"
+            }
+        }
+    },
+    "createModule": {
+        "title": "Nowy moduł",
+        "finish": "Utwórz moduł",
+        "buttons": {
+            "next": "Dalej",
+            "back": "Wróć"
+        },
+        "slides": {
+            "0": {
+                "title": "Informacje ogólne",
+                "form": {
+                    "name": "nazwa",
+                    "subject": "tematyka",
+                    "description": "opis",
+                    "service": "Serwis",
+                    "serviceConfig": "Konfiguracja serwisu",
+                    "instructions": "Ogólne instrukcje",
+                    "public": "Moduł publiczny"
+                }
+            },
+            "1": {
+                "title": "Specyfikacja techniczna",
+                "form": {
+                    "environment": "Typ środowiska",
+                    "storage": "Wymagane miejsce",
+                    "cpu": "Obciążenie procesora",
+                    "ram": "Wymagany RAM"
+                }
+            },
+            "2": {
+                "title": "Podsumowanie"
+            }
+        }
+    },
+    "activityInstructions": {
+        "header": "Instrukcje dla: {{courseName}} - {{activityName}}",
+        "goBackBtn": "Wróć do kursu",
+        "tabs": {
+            "teacher": {
+                "label": "Instrukcje od nauczyciela"
+            },
+            "modules": {
+                "label": "Informacje o używanych modułach"
+            }
+        }
+    },
+    "myFiles": {
+        "header": "Moje pliki",
+        "fileName": "Nazwa pliku",
+        "courseName": "Nazwa kursu",
+        "creationDate": "Data utworzenia"
+    }
+}

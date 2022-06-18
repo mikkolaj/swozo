@@ -1,5 +1,5 @@
 import { AuthControllerApi, Configuration, ExampleControllerApi } from 'api';
-import { getAccessToken } from 'Services/features/auth/auth';
+import { getAccessToken } from 'services/features/auth/auth';
 
 type Apis = {
     authApi: AuthControllerApi;
