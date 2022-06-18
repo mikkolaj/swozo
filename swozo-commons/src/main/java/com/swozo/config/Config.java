@@ -1,7 +1,7 @@
 package com.swozo.config;
 
 public class Config {
-    public final static String ORCHESTRATOR = "/orchestrator";
-    public final static String SCHEDULE = "/schedules";
-    public final static String LINKS = "/links";
+    public static final String ORCHESTRATOR = "/orchestrator";
+    public static final String SCHEDULES = "/schedules";
+    public static final String LINKS = "/links";
 }

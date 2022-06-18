@@ -1,0 +1,16 @@
+---
+
+- name: Setup user
+  hosts: all
+  tasks:
+    - name: Setup user
+      user:
+        create_home: yes
+        home: '/home/{{ new_user }}'
+        name: '{{ new_user }}'
+        append: yes
+        #password: '$6$QPljr4yU12Hw$dX4ja8QoOackfQncXTT5biKF7QLmuICCEqS2nj/CLE5UyrUDdt5FDTGzjO5sSLtxc/.MxyXDvxJWromC4kHD40'
+        groups:
+          - "sudo"
+
+      become: yes

@@ -1,0 +1,21 @@
+---
+
+- name: Copy file to remote host
+  hosts: all
+  become: yes
+  become_user: '{{ user }}'
+  tasks:
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: '{{ path_to }}'
+        state: directory
+        mode: '0777'
+        owner: '{{ user }}'
+        group: '{{ user }}'
+    - name: Copy content of directory to remote host
+      copy:
+        src: '{{ path_from }}'
+        dest: '{{ path_to }}'
+        owner: '{{ user }}'
+        group: '{{ user }}'
+        mode: '0777'

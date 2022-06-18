@@ -24,9 +24,11 @@ public class Course extends BaseEntity {
 
     //FetchType.LAZY - we won't need downloading classes list everytime e.g. in courses view
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
     private Collection<Activity> activities = new LinkedList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Collection<User> students = new LinkedHashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
