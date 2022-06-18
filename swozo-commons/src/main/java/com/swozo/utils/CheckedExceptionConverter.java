@@ -1,6 +1,6 @@
 package com.swozo.utils;
 
-import com.swozo.excpetions.PropagatingException;
+import com.swozo.exceptions.PropagatingException;
 import com.swozo.function.*;
 import org.apache.logging.log4j.util.Supplier;
 
