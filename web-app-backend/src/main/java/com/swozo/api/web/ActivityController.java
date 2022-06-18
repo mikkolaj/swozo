@@ -28,6 +28,8 @@ public class ActivityController {
         this.activityService = activityService;
     }
 
+    // TODO return proper DTO types (based on frontend requirements) instead of persistence types
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
     public Activity getActivity(AccessToken token, @PathVariable Long id) {

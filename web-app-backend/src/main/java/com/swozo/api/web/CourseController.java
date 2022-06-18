@@ -3,6 +3,8 @@ package com.swozo.api.web;
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.users.User;
+import com.swozo.dto.course.CourseDetailsReq;
+import com.swozo.dto.course.CourseDetailsResp;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.CourseService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,9 +36,10 @@ public class CourseController {
         return courseService.getAllCourses();
     }
 
-    @GetMapping("/all-courses")
+    @GetMapping
     @PreAuthorize("hasRole('TEACHER') or hasRole('STUDENT')")
-    public Collection<Course> getUserCourses(AccessToken token) {
+    public Collection<CourseDetailsResp> getUserCourses(AccessToken token) {
+        // TODO we need only partial course data here to display the list, create another DTO with summary
         Long userId = token.getUserId();
         logger.info("course list for user with id: {}", userId);
         return courseService.getUserCourses(userId);
@@ -44,16 +47,16 @@ public class CourseController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course getCourse(AccessToken token, @PathVariable Long id) {
+    public CourseDetailsResp getCourse(AccessToken token, @PathVariable Long id) {
         logger.info("course info getter for id: {}", id);
-        return courseService.getCourse(id);
+        return courseService.getCourseDetails(id);
     }
 
     @PostMapping()
     @PreAuthorize("hasRole('TEACHER')")
-    public Course addCourse(AccessToken token, @RequestBody Course course) {
-        logger.info("creating new course with name: {}", course.getName());
-        return courseService.createCourse(course, token.getUserId());
+    public CourseDetailsResp addCourse(AccessToken token, @RequestBody CourseDetailsReq courseDetailsReq) {
+        logger.info("creating new course with name: {}", courseDetailsReq.name());
+        return courseService.createCourse(courseDetailsReq, token.getUserId());
     }
 
     @DeleteMapping("/{id}")
@@ -65,14 +68,15 @@ public class CourseController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course editCourse(AccessToken token, @PathVariable Long id, @RequestBody Course newCourse) {
+    public Course editCourse(AccessToken token, @PathVariable Long id, @RequestBody CourseDetailsReq courseDetailsReq) {
         logger.info("editing course with id: {}", id);
-        return courseService.updateCourse(id, newCourse);
+        return courseService.updateCourse(id, token.getUserId(), courseDetailsReq);
     }
 
     @GetMapping("/{id}/activities")
     @PreAuthorize("hasRole('TEACHER')")
     public Collection<Activity> getCourseActivityList(AccessToken token, @PathVariable Long id) {
+        // TODO not sure if this endpoint is needed since we return this data in getCourse
         logger.info("activity list from course with id: {}", id);
         return courseService.courseActivityList(id);
     }
@@ -80,6 +84,7 @@ public class CourseController {
     @PostMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
     public Course addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
+        // TODO email - not User in RequestBody
         logger.info("adding student with email: {} to course with id: {}", student.getEmail(), courseId);
         return courseService.addStudent(courseId, student.getEmail());
     }
@@ -87,6 +92,7 @@ public class CourseController {
     @DeleteMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
     public Course removeStudentFromCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
+        // TODO email - not User in RequestBody
         logger.info("removing student with email: {} from course with id: {}", student.getEmail(), courseId);
         return courseService.deleteStudent(courseId, student.getEmail());
     }

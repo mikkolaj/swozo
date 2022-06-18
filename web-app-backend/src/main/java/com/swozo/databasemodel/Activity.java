@@ -20,7 +20,8 @@ import java.util.LinkedList;
 public class Activity extends BaseEntity {
     private String name;
     private String description;
-    private LocalDateTime dateTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String instructionsFromTeacher;
 
     @OneToMany(fetch = FetchType.LAZY)
