@@ -52,7 +52,7 @@ public class ActivityService {
         Activity activity = getActivity(id);
         activity.setName(newActivity.getName());
         activity.setDescription(newActivity.getDescription());
-        activity.setDateTime(newActivity.getDateTime());
+        activity.setStartTime(newActivity.getStartTime());
         activity.setInstructionsFromTeacher(newActivity.getInstructionsFromTeacher());
         activityRepository.save(activity);
         return activity;

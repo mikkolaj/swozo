@@ -3,35 +3,33 @@ package com.swozo.webservice.service;
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.users.User;
+import com.swozo.dto.course.CourseDetailsReq;
+import com.swozo.dto.course.CourseDetailsResp;
+import com.swozo.mapper.CourseMapper;
 import com.swozo.webservice.exceptions.CourseNotFoundException;
 import com.swozo.webservice.repository.CourseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 
 @Service
+@RequiredArgsConstructor
 public class CourseService {
     private final CourseRepository courseRepository;
     private final UserService userService;
-
-    @Autowired
-    public CourseService(CourseRepository courseRepository, UserService userService) {
-        this.courseRepository = courseRepository;
-        this.userService = userService;
-    }
+    private final CourseMapper courseMapper;
 
     public Collection<Course> getAllCourses() {
         return courseRepository.findAll();
     }
 
-    public Collection<Course> getUserCourses(Long userId) {
-        if (userService.hasUserRole(userId, "STUDENT")) {
-            return courseRepository.getCoursesByStudentsId(userId);
-        } else {
-            return courseRepository.getCoursesByTeacherId(userId);
-        }
+    public Collection<CourseDetailsResp> getUserCourses(Long userId) {
+        var courses = userService.hasUserRole(userId, "STUDENT") ?
+                courseRepository.getCoursesByStudentsId(userId) :
+                courseRepository.getCoursesByTeacherId(userId);
+
+        return courses.stream().map(courseMapper::toModel).toList();
     }
 
     public Course getCourse(Long id) {
@@ -39,33 +37,27 @@ public class CourseService {
                 .orElseThrow(() -> new CourseNotFoundException(id));
     }
 
-    public Course createCourse(Course newCourse, Long teacherId) {
-        User teacher = userService.getUserById(teacherId);
-        newCourse.setTeacher(teacher);
+    public CourseDetailsResp getCourseDetails(Long id) {
+        return courseMapper.toModel(getCourse(id));
+    }
 
-        Collection<User> students = new LinkedHashSet<>();
-        for (User student : newCourse.getStudents()) {
-            students.add(userService.getUserByEmail(student.getEmail()));
-        }
-        newCourse.setStudents(students);
-
-        for (Activity activity : newCourse.getActivities()) {
-            activity.setCourse(newCourse);
-        }
-
-        courseRepository.save(newCourse);
-        return newCourse;
+    public CourseDetailsResp createCourse(CourseDetailsReq courseDetailsReq, Long teacherId) {
+        var course = courseMapper.toPersistence(courseDetailsReq, teacherId);
+        courseRepository.save(course);
+        return courseMapper.toModel(course);
     }
 
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
     }
 
-    public Course updateCourse(Long id, Course newCourse) {
-        Course course = getCourse(id);
-        course.setName(newCourse.getName());
-        course.setSubject(newCourse.getSubject());
-        course.setDescription(newCourse.getDescription());
+    public Course updateCourse(Long id, Long teacherId, CourseDetailsReq courseDetailsReq) {
+        // TODO validate that teacherId = id of creator etc...
+        var oldCourse = courseRepository.getById(id);
+        var course = courseMapper.toPersistence(courseDetailsReq, oldCourse.getTeacher().getId());
+        course.setId(oldCourse.getId());
+
+        // TODO maybe check what should be overwritten
         courseRepository.save(course);
         return course;
     }
