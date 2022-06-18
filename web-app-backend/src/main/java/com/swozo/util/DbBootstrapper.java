@@ -50,7 +50,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         logger.info("preparing database...");
 
         prepareRoles();
-        setupTestUsers();
+        setupTestData();
 
         logger.info("database ready");
         alreadySetup = true;
@@ -64,7 +64,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     }
 
     // TODO assert dev env
-    private void setupTestUsers() {
+    private void setupTestData() {
         var adminRole = roleRepository.findByName(AppRole.ADMIN.toString());
         userRepository.save(new User("Bolek", "Kowalski", "admin", "admin", List.of(adminRole)));
 
