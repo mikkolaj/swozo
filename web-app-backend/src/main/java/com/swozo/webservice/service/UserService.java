@@ -2,19 +2,18 @@ package com.swozo.webservice.service;
 
 import com.swozo.databasemodel.users.Role;
 import com.swozo.databasemodel.users.User;
+import com.swozo.dto.user.UserDetailsResp;
+import com.swozo.mapper.UserMapper;
 import com.swozo.repository.UserRepository;
 import com.swozo.webservice.exceptions.UserNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserMapper userMapper;
 
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
@@ -24,6 +23,10 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
+    }
+
+    public UserDetailsResp getUserInfo(Long userId){
+        return userMapper.toModel(getUserById(userId));
     }
 
     public boolean hasUserRole(Long userId, String roleName) {

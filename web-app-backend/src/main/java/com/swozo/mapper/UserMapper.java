@@ -21,6 +21,6 @@ public abstract class UserMapper {
 
     // TODO proper mapping
     public UserDetailsResp toModel(User user) {
-        return new UserDetailsResp(user.getEmail(), "Grzegorz", "Rogus");
+        return new UserDetailsResp(user.getName(), user.getSurname(), user.getEmail());
     }
 }

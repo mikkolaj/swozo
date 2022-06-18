@@ -24,6 +24,8 @@ import java.util.LinkedList;
 @Setter
 @ToString
 public class User extends BaseEntity {
+    private String name;
+    private String surname;
     private String email;
 
     @JsonIgnore

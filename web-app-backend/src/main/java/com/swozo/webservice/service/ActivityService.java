@@ -7,23 +7,17 @@ import com.swozo.webservice.exceptions.ActivityModuleNotFoundException;
 import com.swozo.webservice.exceptions.ActivityNotFoundException;
 import com.swozo.webservice.repository.ActivityModuleRepository;
 import com.swozo.webservice.repository.ActivityRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 @Service
+@RequiredArgsConstructor
 public class ActivityService {
     private final CourseService courseService;
     private final ActivityRepository activityRepository;
     private final ActivityModuleRepository activityModuleRepository;
-
-    public ActivityService(CourseService courseService,
-                           ActivityRepository activityRepository,
-                           ActivityModuleRepository activityModuleRepository) {
-        this.courseService = courseService;
-        this.activityRepository = activityRepository;
-        this.activityModuleRepository = activityModuleRepository;
-    }
 
     public Activity getActivity(Long id) {
         return activityRepository.findById(id)
@@ -53,6 +47,7 @@ public class ActivityService {
         activity.setName(newActivity.getName());
         activity.setDescription(newActivity.getDescription());
         activity.setStartTime(newActivity.getStartTime());
+        activity.setEndTime(newActivity.getEndTime());
         activity.setInstructionsFromTeacher(newActivity.getInstructionsFromTeacher());
         activityRepository.save(activity);
         return activity;
