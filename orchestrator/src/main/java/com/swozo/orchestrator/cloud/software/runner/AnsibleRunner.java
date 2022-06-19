@@ -2,8 +2,8 @@ package com.swozo.orchestrator.cloud.software.runner;
 
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessFailed;
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessRunner;
-import com.swozo.orchestrator.configuration.ApplicationProperties;
-import com.swozo.utils.CheckedExceptionConverter;
+import com.swozo.orchestrator.cloud.software.ssh.SshService;
+import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +28,8 @@ public class AnsibleRunner {
     private static final String INPUT_BOUNDARY = "\\A";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final ApplicationProperties properties;
     private final ProcessRunner processRunner;
+    private final SshService sshService;
 
 
     public void runNotebook(
@@ -52,7 +52,7 @@ public class AnsibleRunner {
     ) throws InterruptedException, NotebookFailed {
         try {
             var command = createAnsibleCommand(sshTargets, sshKeyPath, sshUser, playbookPath, userVars);
-            clearAllHostEntries(sshTargets);
+            sshService.clearAllHostEntries(sshTargets);
             var process = processRunner.createProcess(command);
             try (var outputScanner = new Scanner(process.getInputStream()).useDelimiter(INPUT_BOUNDARY);
                  var errorScanner = new Scanner(process.getErrorStream()).useDelimiter(INPUT_BOUNDARY)
@@ -64,23 +64,9 @@ public class AnsibleRunner {
                 if (process.exitValue() != ProcessRunner.SUCCESS_CODE) {
                     logger.info(output);
                     logger.error(errors);
+                    throw new NotebookFailed(errors);
                 }
             }
-        } catch (ProcessFailed e) {
-            throw new NotebookFailed(e);
-        }
-    }
-
-    private void clearAllHostEntries(List<SshTarget> sshTargets) throws NotebookFailed {
-        sshTargets.stream()
-                .map(SshTarget::ipAddress)
-                .forEach(CheckedExceptionConverter.from(this::clearSshHostEntries));
-    }
-
-    private void clearSshHostEntries(String ip) throws InterruptedException, NotebookFailed {
-        try {
-            var process = processRunner.createProcess(String.format("ssh-keygen -R %s", ip));
-            processRunner.waitFor(process, properties.systemCommandTimeoutMinutes());
         } catch (ProcessFailed e) {
             throw new NotebookFailed(e);
         }

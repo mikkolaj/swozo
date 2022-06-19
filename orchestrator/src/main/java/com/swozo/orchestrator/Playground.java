@@ -5,7 +5,7 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
-import com.swozo.orchestrator.cloud.software.runner.SshTarget;
+import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
 import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -72,10 +72,10 @@ public class Playground implements Runnable {
 
     @Override
     public void run() {
-//        createInstance();
-//        deleteInstance();
-//        runNotebookLocally();
-//        runNotebookRemotely();
+        //        createInstance();
+        //        deleteInstance();
+        //        runNotebookLocally();
+        //        runNotebookRemotely();
         internalTaskScheduler.schedule(() -> {
             System.out.println(properties);
             return null;
