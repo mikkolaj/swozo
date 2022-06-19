@@ -721,6 +721,7 @@ components:
             $ref: '#/components/schemas/Role'
     ActivityDetailsResp:
       required:
+      - activityLinkInfos
       - description
       - endTime
       - id
@@ -746,6 +747,24 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ActivityInstruction'
+        activityLinkInfos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityLinkInfo'
+    ActivityLinkInfo:
+      required:
+      - connectionInstruction
+      - serviceName
+      type: object
+      properties:
+        url:
+          type: string
+        serviceName:
+          type: string
+        connectionInstruction:
+          type: string
+        connectionInfo:
+          type: string
     CourseDetailsResp:
       required:
       - activities

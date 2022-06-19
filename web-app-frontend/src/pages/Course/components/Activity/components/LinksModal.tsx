@@ -13,14 +13,14 @@ import {
     Modal,
     Typography,
 } from '@mui/material';
+import { ActivityDetailsResp } from 'api';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Activity } from 'utils/mocks';
 
 type Props = {
-    activity: Activity;
+    activity: ActivityDetailsResp;
     open: boolean;
     onClose: () => void;
 };
@@ -72,14 +72,18 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
 
                         <Grid container sx={{ p: 2 }}>
                             <Grid item xs={12}>
-                                {activity.links.map((link, idx) => (
+                                {activity.activityLinkInfos.map((link, idx) => (
                                     <Accordion sx={{ mb: 2, boxShadow: 3 }} key={idx}>
                                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                             <Box
                                                 sx={{ cursor: 'default', pr: 4 }}
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                <Typography component="h3" variant="h6">
+                                                <Typography
+                                                    sx={{ textTransform: 'capitalize' }}
+                                                    component="h3"
+                                                    variant="h6"
+                                                >
                                                     {link.serviceName}
                                                 </Typography>
                                                 <Link target="_blank" rel="noopener" href={link.url}>
@@ -94,7 +98,7 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                     }}
                                                 >
                                                     {/* TODO use more advanced/flexible format */}
-                                                    {link.connectionInfo.split('\n').map((line, idx) => (
+                                                    {link.connectionInfo?.split('\n').map((line, idx) => (
                                                         <Box key={idx}>
                                                             <Typography>{line}</Typography>
                                                         </Box>
@@ -107,13 +111,13 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                 {t('course.activity.linksInfo.connectionInstruction')}
                                             </Typography>
                                             <Divider />
-                                            <Typography sx={{ mt: 1 }} variant="body2">
+                                            <Box sx={{ mt: 1 }}>
                                                 {link.connectionInstruction.split('\n').map((line, idx) => (
                                                     <Box key={idx}>
-                                                        <Typography>{line}</Typography>
+                                                        <Typography variant="body2">{line}</Typography>
                                                     </Box>
                                                 ))}
-                                            </Typography>
+                                            </Box>
                                         </AccordionDetails>
                                     </Accordion>
                                 ))}

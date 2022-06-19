@@ -6,6 +6,7 @@ import i18n from 'i18next';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { initReactI18next } from 'react-i18next';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { store } from 'services/store';
@@ -30,13 +31,25 @@ i18n.use(initReactI18next) // passes i18n down to react-i18next
 dayjs.locale('pl');
 dayjs.extend(isToday);
 
+// TODO different config in prod
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+            retry: 0,
+        },
+    },
+});
+
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
     <React.StrictMode>
         <Provider store={store}>
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </QueryClientProvider>
         </Provider>
     </React.StrictMode>
 );

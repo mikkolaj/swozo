@@ -11,6 +11,7 @@ models/Activity.ts
 models/ActivityDetailsReq.ts
 models/ActivityDetailsResp.ts
 models/ActivityInstruction.ts
+models/ActivityLinkInfo.ts
 models/ActivityModule.ts
 models/AuthData.ts
 models/Course.ts

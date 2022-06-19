@@ -4,6 +4,7 @@ export * from './Activity';
 export * from './ActivityDetailsReq';
 export * from './ActivityDetailsResp';
 export * from './ActivityInstruction';
+export * from './ActivityLinkInfo';
 export * from './ActivityModule';
 export * from './AuthData';
 export * from './Course';

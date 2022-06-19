@@ -1,17 +1,18 @@
 import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { mockCourseSummaryList } from 'utils/mocks';
 import { TEACHER, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { CourseSummaryView } from './components/CourseSummaryView';
 
 export const CoursesListView = () => {
-    const [courseSummaryItems] = useState(mockCourseSummaryList);
     const navigate = useNavigate();
     const { t } = useTranslation();
+
+    const { data: courseSummaryItems } = useQuery('courses', () => getApis().courseApi.getUserCourses());
 
     return (
         <PageContainer
@@ -42,7 +43,7 @@ export const CoursesListView = () => {
         >
             <Container>
                 <Stack spacing={2} px={2}>
-                    {courseSummaryItems.map((course) => (
+                    {courseSummaryItems?.map((course) => (
                         <CourseSummaryView key={course.id} courseSummary={course} />
                     ))}
                 </Stack>
