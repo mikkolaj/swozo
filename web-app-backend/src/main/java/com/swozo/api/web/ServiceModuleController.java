@@ -1,13 +1,14 @@
 package com.swozo.api.web;
 
-import com.swozo.databasemodel.ServiceModule;
+import com.swozo.dto.servicemodule.ServiceModuleDetailsResp;
 import com.swozo.security.AccessToken;
+import com.swozo.webservice.service.ServiceModuleService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -15,25 +16,32 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @RequestMapping("/service-modules")
 @SecurityRequirement(name = ACCESS_TOKEN)
 public class ServiceModuleController {
+    private final ServiceModuleService serviceModuleService;
+
+    @Autowired
+    public ServiceModuleController(ServiceModuleService serviceModuleService){
+        this.serviceModuleService = serviceModuleService;
+    }
 
     @GetMapping()
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<ServiceModule> getModuleList(AccessToken token) {
+    public Collection<ServiceModuleDetailsResp> getModuleList(AccessToken token) {
         System.out.println("module list");
-        return new LinkedList<>();
+        return serviceModuleService.getServiceModuleList();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public ServiceModule getServiceModule(AccessToken token, @PathVariable long id) {
+    public ServiceModuleDetailsResp getServiceModule(AccessToken token, @PathVariable Long id) {
         System.out.println("service module  info getter");
-        return new ServiceModule();
+        return serviceModuleService.getServiceModuleInfo(id);
     }
 
-    @PutMapping("/{moduleId}")
-    @PreAuthorize("hasRole('TACHER')")
-    public ServiceModule updateServiceModule(AccessToken token, @PathVariable long moduleId, @RequestBody ServiceModule newServiceModule) {
-        System.out.println("updating module with id: " + moduleId);
-        return new ServiceModule();
-    }
+//    Na razie nie dajemy możliwosci dodawania mdoułów, jest 1 i tyle
+//    @PutMapping("/{moduleId}")
+//    @PreAuthorize("hasRole('TACHER')")
+//    public ServiceModuleDetailsResp updateServiceModule(AccessToken token, @PathVariable Long moduleId, @RequestBody ServiceModule newServiceModule) {
+//        System.out.println("updating module with id: " + moduleId);
+//        return new ServiceModule();
+//    }
 }

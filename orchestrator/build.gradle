@@ -6,8 +6,8 @@ plugins {
 
 group = 'com.swozo'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = "17.PREVIEW"
-targetCompatibility = "17.PREVIEW"
+sourceCompatibility = "17"
+targetCompatibility = "17"
 
 configurations {
     compileOnly {
