@@ -16,32 +16,39 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface AuthError
+ * @interface ActivityInstruction
  */
-export interface AuthError {
+export interface ActivityInstruction {
     /**
      * 
      * @type {string}
-     * @memberof AuthError
+     * @memberof ActivityInstruction
      */
-    message: string;
+    header?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ActivityInstruction
+     */
+    body: string;
 }
 
-export function AuthErrorFromJSON(json: any): AuthError {
-    return AuthErrorFromJSONTyped(json, false);
+export function ActivityInstructionFromJSON(json: any): ActivityInstruction {
+    return ActivityInstructionFromJSONTyped(json, false);
 }
 
-export function AuthErrorFromJSONTyped(json: any, ignoreDiscriminator: boolean): AuthError {
+export function ActivityInstructionFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityInstruction {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'message': json['message'],
+        'header': !exists(json, 'header') ? undefined : json['header'],
+        'body': json['body'],
     };
 }
 
-export function AuthErrorToJSON(value?: AuthError | null): any {
+export function ActivityInstructionToJSON(value?: ActivityInstruction | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -50,7 +57,8 @@ export function AuthErrorToJSON(value?: AuthError | null): any {
     }
     return {
         
-        'message': value.message,
+        'header': value.header,
+        'body': value.body,
     };
 }
 

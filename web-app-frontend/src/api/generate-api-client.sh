@@ -1,8 +1,8 @@
 #!/bin/bash
 
-spec_file="__api_spec__.json"
+spec_file="generated-api-spec.yaml"
 
-curl http://localhost:5000/v3/api-docs/ > $spec_file
+curl http://localhost:5000/v3/api-docs.yaml > $spec_file
 
 npx openapi-generator-cli generate \
 -g typescript-fetch \
@@ -16,7 +16,6 @@ npx openapi-generator-cli generate \
 --additional-properties=supportsES6=true,typescriptFourPlus=true
 
 
-rm $spec_file
 
 # replace GlobalFetch with WindowOrWorkerGlobalScope to avoid ts errors
 sed -i 's/GlobalFetch/WindowOrWorkerGlobalScope/' ./src/api/runtime.ts
