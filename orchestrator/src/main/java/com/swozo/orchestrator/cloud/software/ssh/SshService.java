@@ -9,6 +9,8 @@ import com.swozo.utils.RetryHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -29,7 +31,7 @@ public class SshService {
         ).run();
     }
 
-    public void clearAllHostEntries(List<SshTarget> sshTargets) throws ConnectionFailed {
+    public void clearAllSshHostEntries(Collection<SshTarget> sshTargets) throws ConnectionFailed {
         sshTargets.forEach(CheckedExceptionConverter.from(this::clearSshHostEntry));
     }
 

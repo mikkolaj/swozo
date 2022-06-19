@@ -52,7 +52,7 @@ public class AnsibleRunner {
     ) throws InterruptedException, NotebookFailed {
         try {
             var command = createAnsibleCommand(sshTargets, sshKeyPath, sshUser, playbookPath, userVars);
-            sshService.clearAllHostEntries(sshTargets);
+            sshService.clearAllSshHostEntries(sshTargets);
             var process = processRunner.createProcess(command);
             try (var outputScanner = new Scanner(process.getInputStream()).useDelimiter(INPUT_BOUNDARY);
                  var errorScanner = new Scanner(process.getErrorStream()).useDelimiter(INPUT_BOUNDARY)
