@@ -3,16 +3,8 @@ import { InputField } from 'common/Input/InputField';
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
 import { FieldArray, Form, Formik } from 'formik';
+import { CourseValues } from 'pages/CreateCourse/CreateCourseView';
 import * as Yup from 'yup';
-
-type CourseValues = {
-    name: string;
-    subject: string;
-    description: string;
-    numberOfActivities: number;
-    numberOfStudents: number;
-    students: string[];
-};
 
 export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProps<CourseValues>) => {
     // const [numberOfStudents, setNumberOfStudents] = useState(0);
@@ -63,7 +55,7 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
                         }}
                     />
                     {/* // TODO how to style this */}
-                    <Divider sx={{ width: '75%', mt: 2 }} />
+                    <Divider sx={{ width: '75%', mt: 2, mb: 2 }} />
                     <Typography sx={{ mt: 0 }} variant="subtitle1">
                         Adresy Email uczestników
                     </Typography>

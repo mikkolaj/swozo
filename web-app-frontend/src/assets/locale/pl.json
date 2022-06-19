@@ -63,7 +63,11 @@
                     "activityHeader": "Zajęcia {{idx}}",
                     "name": "temat",
                     "description": "opis",
-                    "modules": "moduły",
+                    "date": "Data zajęć",
+                    "startTime": "Czas rozpoczęcia",
+                    "endTime": "Czas zakończenia",
+                    "lessonModules": "moduły lekcyjne",
+                    "generalModules": "moduły ogólne",
                     "instructions": "dodatkowe instrukcje"
                 }
             },

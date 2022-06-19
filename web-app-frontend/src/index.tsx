@@ -1,3 +1,5 @@
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import pl from 'assets/locale/pl.json';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pl';
@@ -46,9 +48,11 @@ root.render(
     <React.StrictMode>
         <Provider store={store}>
             <QueryClientProvider client={queryClient}>
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <BrowserRouter>
+                        <App />
+                    </BrowserRouter>
+                </LocalizationProvider>
             </QueryClientProvider>
         </Provider>
     </React.StrictMode>

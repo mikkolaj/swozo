@@ -1,9 +1,11 @@
 import { Button, Grid } from '@mui/material';
 import { SlideForm } from 'common/SlideForm/SlideForm';
+import dayjs, { Dayjs } from 'dayjs';
 import { FormikProps } from 'formik';
 import _ from 'lodash';
 import { Ref, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { mockGeneralModuleSummaryList, mockModuleSummaryList, ModuleSummary } from 'utils/mocks';
 import { ActivitiesForm } from './components/forms/ActivitiesForm';
 import { GeneralInfoForm } from './components/forms/GeneralInfoForm';
 import { Summary } from './components/forms/Summary';
@@ -11,8 +13,20 @@ import { Summary } from './components/forms/Summary';
 export type ActivityValues = {
     name: string;
     description: string;
-    module: string;
+    lessonModules: ModuleSummary[];
+    generalModules: ModuleSummary[];
     instructions: string;
+    startTime: Dayjs;
+    endTime: Dayjs;
+};
+
+export type CourseValues = {
+    name: string;
+    subject: string;
+    description: string;
+    numberOfActivities: number;
+    numberOfStudents: number;
+    students: string[];
 };
 
 export const CreateCourseView = () => {
@@ -27,6 +41,9 @@ export const CreateCourseView = () => {
         students: ['', ''],
     });
     const [activitiesValues, setActivitiesValues] = useState<ActivityValues[]>([]);
+
+    const [availableLessonModules] = useState(mockModuleSummaryList);
+    const [availableGeneralModules] = useState(mockGeneralModuleSummaryList);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formRef: Ref<FormikProps<any>> = useRef(null);
@@ -86,8 +103,11 @@ export const CreateCourseView = () => {
                                 ..._.range(values.numberOfActivities - activitiesValues.length).map((_) => ({
                                     name: '',
                                     description: '',
-                                    module: '',
+                                    lessonModules: [],
+                                    generalModules: [],
                                     instructions: '',
+                                    startTime: dayjs(),
+                                    endTime: dayjs().add(90, 'minutes'), // TODO assert same day
                                 })),
                             ]);
                         } else {
@@ -101,6 +121,8 @@ export const CreateCourseView = () => {
             {currentSlide === 1 && (
                 <ActivitiesForm
                     formRef={formRef}
+                    availableLessonModules={availableLessonModules}
+                    availableGeneralModules={availableGeneralModules}
                     initialValues={{ activities: activitiesValues }}
                     setValues={(values) => {
                         setActivitiesValues(values.activities);

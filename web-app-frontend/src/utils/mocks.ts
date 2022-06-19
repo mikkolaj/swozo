@@ -155,6 +155,18 @@ export const mockModuleSummaryList: ModuleSummary[] = [
     },
 ];
 
+// should have different type but will do for now
+export const mockGeneralModuleSummaryList: ModuleSummary[] = [
+    {
+        id: 5,
+        name: 'Wideokonferencja',
+        subject: 'Programowanie',
+        creatorName: 'Zbigniew Kowalski',
+        creationDate: '18.05.2022',
+        usedInActivitiesCount: 0,
+    },
+];
+
 export const mockServices: string[] = ['Jupyter', 'Sozisel'];
 
 export type CalendarActivity = {
