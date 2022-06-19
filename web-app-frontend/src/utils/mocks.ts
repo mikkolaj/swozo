@@ -130,7 +130,7 @@ export type ModuleSummary = {
 
 export const mockModuleSummaryList: ModuleSummary[] = [
     {
-        id: 1,
+        id: 12,
         name: 'Sockety',
         subject: 'Informatyka',
         creatorName: 'Marek Nowak',

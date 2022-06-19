@@ -1,36 +1,25 @@
 import { Button, Grid } from '@mui/material';
+import { CourseDetailsReq } from 'api';
+import { getApis } from 'api/initialize-apis';
 import { SlideForm } from 'common/SlideForm/SlideForm';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { FormikProps } from 'formik';
 import _ from 'lodash';
 import { Ref, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mockGeneralModuleSummaryList, mockModuleSummaryList, ModuleSummary } from 'utils/mocks';
+import { useMutation, useQueryClient } from 'react-query';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { mockGeneralModuleSummaryList, mockModuleSummaryList } from 'utils/mocks';
+import { PageRoutes } from 'utils/routes';
 import { ActivitiesForm } from './components/forms/ActivitiesForm';
 import { GeneralInfoForm } from './components/forms/GeneralInfoForm';
 import { Summary } from './components/forms/Summary';
-
-export type ActivityValues = {
-    name: string;
-    description: string;
-    lessonModules: ModuleSummary[];
-    generalModules: ModuleSummary[];
-    instructions: string;
-    startTime: Dayjs;
-    endTime: Dayjs;
-};
-
-export type CourseValues = {
-    name: string;
-    subject: string;
-    description: string;
-    numberOfActivities: number;
-    numberOfStudents: number;
-    students: string[];
-};
+import { ActivityValues, buildCreateCourseRequest } from './util';
 
 export const CreateCourseView = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [courseValues, setCourseValues] = useState({
         name: '',
@@ -41,9 +30,22 @@ export const CreateCourseView = () => {
         students: ['', ''],
     });
     const [activitiesValues, setActivitiesValues] = useState<ActivityValues[]>([]);
-
     const [availableLessonModules] = useState(mockModuleSummaryList);
     const [availableGeneralModules] = useState(mockGeneralModuleSummaryList);
+
+    const queryClient = useQueryClient();
+
+    const createCourseMutation = useMutation(
+        (courseDetailsReq: CourseDetailsReq) => getApis().courseApi.addCourse({ courseDetailsReq }),
+        {
+            onSuccess: (courseDetailsResp) => {
+                // TODO update instead of invalidation
+                queryClient.invalidateQueries('courses');
+                toast(t('toast.courseCreated'));
+                navigate(PageRoutes.Course(courseDetailsResp.id));
+            },
+        }
+    );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formRef: Ref<FormikProps<any>> = useRef(null);
@@ -82,7 +84,15 @@ export const CreateCourseView = () => {
                         <Button
                             sx={{ alignSelf: 'flex-end' }}
                             onClick={() => {
-                                formRef.current?.handleSubmit();
+                                // TODO refactor this
+                                if (currentSlide === 2) {
+                                    // TODO assert valid
+                                    createCourseMutation.mutate(
+                                        buildCreateCourseRequest(courseValues, activitiesValues)
+                                    );
+                                } else {
+                                    formRef.current?.handleSubmit();
+                                }
                             }}
                         >
                             {t(currentSlide === 2 ? 'createCourse.finish' : 'createCourse.buttons.next')}
@@ -130,7 +140,7 @@ export const CreateCourseView = () => {
                     }}
                 />
             )}
-            {currentSlide === 2 && <Summary />}
+            {currentSlide === 2 && <Summary course={courseValues} activities={activitiesValues} />}
         </SlideForm>
     );
 };

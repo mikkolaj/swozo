@@ -10,7 +10,10 @@ import { Home } from 'pages/Home/Home';
 import Login from 'pages/Login/Login';
 import { ModulesListView } from 'pages/ModulesList/ModulesListView';
 import { Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useAppSelector } from 'services/store';
+
 import {
     ANY_LOGGED_IN,
     guarded,
@@ -53,6 +56,18 @@ function App() {
                 <Route path={PageRoutes.FILES} element={guarded(<FilesListView />, withRole(STUDENT))} />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
             </Routes>
+
+            <ToastContainer
+                position="bottom-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
         </>
     );
 }

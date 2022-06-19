@@ -3,7 +3,7 @@ import { InputField } from 'common/Input/InputField';
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
 import { FieldArray, Form, Formik } from 'formik';
-import { CourseValues } from 'pages/CreateCourse/CreateCourseView';
+import { CourseValues } from 'pages/CreateCourse/util';
 import * as Yup from 'yup';
 
 export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProps<CourseValues>) => {

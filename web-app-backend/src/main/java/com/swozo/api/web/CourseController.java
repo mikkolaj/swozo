@@ -37,7 +37,7 @@ public class CourseController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('TEACHER') or hasRole('STUDENT')")
+    @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public Collection<CourseDetailsResp> getUserCourses(AccessToken token) {
         // TODO we need only partial course data here to display the list, create another DTO with summary
         Long userId = token.getUserId();
@@ -46,7 +46,7 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public CourseDetailsResp getCourse(AccessToken token, @PathVariable Long id) {
         logger.info("course info getter for id: {}", id);
         return courseService.getCourseDetails(id);

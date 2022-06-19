@@ -6,7 +6,7 @@ import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
 import { Bar } from 'common/Styled/Bar';
 import { FieldArray, Form, Formik } from 'formik';
-import { ActivityValues } from 'pages/CreateCourse/CreateCourseView';
+import { ActivityValues } from 'pages/CreateCourse/util';
 import { useTranslation } from 'react-i18next';
 import { ModuleSummary } from 'utils/mocks';
 import * as Yup from 'yup';

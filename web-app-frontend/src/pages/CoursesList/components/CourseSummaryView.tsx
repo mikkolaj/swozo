@@ -4,6 +4,7 @@ import { LinkedTypography } from 'common/Styled/LinkedTypography';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { STUDENT, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatDate } from 'utils/util';
 
@@ -46,13 +47,15 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                         </Typography>
                     </Grid>
                     <Grid item xs={8} sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                        <Box display="flex" alignItems="center">
-                            <Typography variant="body2">
-                                {t('myCourses.course.teacher', {
-                                    name: `${courseSummary.teacher.name} ${courseSummary.teacher.surname} `,
-                                })}
-                            </Typography>
-                        </Box>
+                        <WithRole roles={[STUDENT]}>
+                            <Box display="flex" alignItems="center">
+                                <Typography variant="body2">
+                                    {t('myCourses.course.teacher', {
+                                        name: `${courseSummary.teacher.name} ${courseSummary.teacher.surname} `,
+                                    })}
+                                </Typography>
+                            </Box>
+                        </WithRole>
                     </Grid>
                     <Grid item xs={4} sx={{ mt: 2 }}>
                         <Box display="flex" justifyContent="flex-end">

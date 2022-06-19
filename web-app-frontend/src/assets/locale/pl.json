@@ -149,5 +149,8 @@
         "defaultMessage": "Coś poszło nie tak...",
         "defaultNavigationBtn": "Wróć do strony głównej",
         "refresh": "Odśwież"
+    },
+    "toast": {
+        "courseCreated": "Kurs został utworzony!"
     }
 }

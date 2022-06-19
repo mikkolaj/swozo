@@ -5,11 +5,13 @@ import {
     Middleware,
     ResponseContext,
     ServiceModuleControllerApi,
+    UserControllerApi,
 } from 'api';
 import { getAccessToken } from 'services/features/auth/auth';
 
 type Apis = {
     authApi: AuthControllerApi;
+    userApi: UserControllerApi;
     courseApi: CourseControllerApi;
     serviceModuleApi: ServiceModuleControllerApi;
 };
@@ -42,6 +44,7 @@ export const initializeApis = (): Apis => {
 
     return {
         authApi: new AuthControllerApi(configuration),
+        userApi: new UserControllerApi(configuration),
         courseApi: new CourseControllerApi(configuration),
         serviceModuleApi: new ServiceModuleControllerApi(configuration),
     };
