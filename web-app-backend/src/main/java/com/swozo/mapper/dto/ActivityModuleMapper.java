@@ -11,7 +11,6 @@ import java.util.LinkedList;
 
 @Mapper(componentModel = "spring")
 public abstract class ActivityModuleMapper {
-    //    TODO po co nam wszedzie autowired?
     @Autowired
     protected ActivityModuleService activityModuleService;
     @Autowired
