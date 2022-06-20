@@ -4,8 +4,9 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.GCloudVMLifecycleMa
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
+import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
-import com.swozo.orchestrator.cloud.software.runner.SshTarget;
+import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
 import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -52,19 +53,22 @@ public class Playground implements Runnable {
     }
 
     public void runNotebookLocally() throws InterruptedException {
-        ansibleRunner.runNotebook(
-                List.of(new SshTarget("localhost", 2222)),
-                "vagrant",
-                "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/local/.vagrant/machines/default/virtualbox/private_key",
+        ansibleRunner.runPlaybook(
+                new AnsibleConnectionDetails(
+                        List.of(new SshTarget("localhost", 2222)),
+                        "vagrant",
+                        "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/local/.vagrant/machines/default/virtualbox/private_key"),
                 "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml",
                 10
         );
     }
 
     public void runNotebookRemotely() throws InterruptedException {
-        ansibleRunner.runNotebook(List.of(new SshTarget("34.118.97.16", 22)),
-                "swozo",
-                "/home/mikolaj/.ssh/orchestrator_id_rsa",
+        ansibleRunner.runPlaybook(
+                new AnsibleConnectionDetails(
+                        List.of(new SshTarget("34.118.97.16", 22)),
+                        "swozo",
+                        "/home/mikolaj/.ssh/orchestrator_id_rsa"),
                 "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml",
                 10
         );
@@ -72,10 +76,10 @@ public class Playground implements Runnable {
 
     @Override
     public void run() {
-//        createInstance();
-//        deleteInstance();
-//        runNotebookLocally();
-//        runNotebookRemotely();
+        //        createInstance();
+        //        deleteInstance();
+        //        runNotebookLocally();
+        //        runNotebookRemotely();
         internalTaskScheduler.schedule(() -> {
             System.out.println(properties);
             return null;

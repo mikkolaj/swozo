@@ -1,4 +1,4 @@
-package com.swozo.orchestrator.cloud.software.runner;
+package com.swozo.orchestrator.cloud.software.ssh;
 
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 
