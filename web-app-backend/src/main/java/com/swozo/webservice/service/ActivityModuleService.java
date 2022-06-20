@@ -43,6 +43,7 @@ public class ActivityModuleService {
 //            orchestratorLinkResponse.links().stream().map(Link::link)
 //                    .forEach(activityModule::addLink);
             activityModule.addLink(new Link("link.pl", "instrukcja linkaaa"));
+            System.out.println("activity module with links: " + activityModule + "links: " + activityModule.getLinks().stream().toList());
         });
     }
 

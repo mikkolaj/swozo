@@ -7,7 +7,6 @@ import com.swozo.webservice.service.ActivityModuleService;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.LinkedList;
 
 @Mapper(componentModel = "spring")
 public abstract class ActivityModuleMapper {
@@ -16,7 +15,7 @@ public abstract class ActivityModuleMapper {
     @Autowired
     private ServiceModuleMapper serviceModuleMapper;
 
-    //    TODO add proper mapping in both functions
+    //    TODO add proper mapping in both functions (actually we don't use ActivityModuleDetailReq anywhere)
     public ActivityModule toPersistence(ActivityModuleDetailsReq activityModuleDetailsReq) {
         return new ActivityModule();
     }

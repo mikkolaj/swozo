@@ -21,6 +21,7 @@ public class ScheduleService {
 
             Collection<ScheduleRequest> schedules = activityToScheduleMapper
                     .getScheduleReqsFromActivity(activity);
+            //            to use when orchestrator ready
 //            orchestratorService.postScheduleRequestsList(schedules);
             activityModuleService.provideLinksForActivityModules(activity.getModules());
         }
