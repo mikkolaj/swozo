@@ -25,9 +25,9 @@ public class SshService {
     private final ApplicationProperties properties;
     private final ProcessRunner processRunner;
 
-    public void waitForConnection(SshTarget target, int times) throws ConnectionFailed {
+    public void waitForConnection(SshTarget target, int attempts) throws ConnectionFailed {
         CheckedExceptionConverter.from(() -> RetryHandler.retryExponentially(
-                () -> testConnection(target), times), ConnectionFailed::new
+                () -> testConnection(target), attempts), ConnectionFailed::new
         ).run();
     }
 

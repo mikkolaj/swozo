@@ -23,7 +23,7 @@ import java.util.List;
 public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
-    private static final int DEFAULT_CONNECTION_RETRY = 6;
+    private static final int DEFAULT_CONNECTION_ATTEMPTS = 6;
     private static final String JUPYTER_PORT = "80";
     private static final String MAIN_LINK_DESCRIPTION = "Main page.";
     private final AnsibleRunner ansibleRunner;
@@ -37,7 +37,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         try {
             logger.info("Started provisioning Jupyter on: {}", resource);
             var target = SshTarget.from(resource);
-            sshService.waitForConnection(target, DEFAULT_CONNECTION_RETRY);
+            sshService.waitForConnection(target, DEFAULT_CONNECTION_ATTEMPTS);
             logger.info("Connection successful: {}", resource);
             var targets = List.of(target);
             ansibleRunner.runNotebook(targets, resource.sshUser(), resource.sshKeyPath(), properties.jupyterPlaybookPath(), PROVISIONING_SECONDS / MINUTES_FACTOR);
