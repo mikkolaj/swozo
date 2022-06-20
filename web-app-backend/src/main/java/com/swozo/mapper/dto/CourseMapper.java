@@ -1,4 +1,4 @@
-package com.swozo.mapper;
+package com.swozo.mapper.dto;
 
 import com.swozo.databasemodel.Course;
 import com.swozo.dto.course.CourseDetailsReq;

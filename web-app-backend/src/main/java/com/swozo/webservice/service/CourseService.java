@@ -1,11 +1,12 @@
 package com.swozo.webservice.service;
 
+import com.swozo.api.orchestratorclient.ScheduleService;
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.users.User;
 import com.swozo.dto.course.CourseDetailsReq;
 import com.swozo.dto.course.CourseDetailsResp;
-import com.swozo.mapper.CourseMapper;
+import com.swozo.mapper.dto.CourseMapper;
 import com.swozo.webservice.exceptions.CourseNotFoundException;
 import com.swozo.webservice.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final UserService userService;
     private final CourseMapper courseMapper;
+    private final ScheduleService scheduleService;
 
     public Collection<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -43,6 +45,7 @@ public class CourseService {
 
     public CourseDetailsResp createCourse(CourseDetailsReq courseDetailsReq, Long teacherId) {
         var course = courseMapper.toPersistence(courseDetailsReq, teacherId);
+        scheduleService.scheduleActivities(course.getActivities());
         courseRepository.save(course);
         return courseMapper.toModel(course);
     }

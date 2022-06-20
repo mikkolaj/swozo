@@ -1,4 +1,4 @@
-package com.swozo.mapper;
+package com.swozo.mapper.dto;
 
 import com.swozo.databasemodel.Activity;
 import com.swozo.dto.activity.ActivityDetailsReq;
@@ -15,6 +15,8 @@ import java.util.List;
 public abstract class ActivityMapper {
     @Autowired
     protected ActivityModuleRepository moduleRepository;
+    @Autowired
+    protected ActivityModuleMapper activityModuleMapper;
 
     // TODO replace this when we have proper instructions format in db
     protected String getInstructions(ActivityDetailsReq activityDetailsReq) {
@@ -30,13 +32,16 @@ public abstract class ActivityMapper {
 
     // TODO proper mapping
     public ActivityDetailsResp toModel(Activity activity) {
+        System.out.println("duupa:" + activity.getModules().stream()
+                .map(activityModule -> activityModuleMapper.toModel(activityModule)).toList());
         return new ActivityDetailsResp(
                 activity.getId(),
                 activity.getName(),
                 activity.getDescription(),
                 activity.getStartTime(),
                 activity.getEndTime(),
-                List.of(new ActivityInstruction("some header", activity.getInstructionsFromTeacher()))
-        );
+                List.of(new ActivityInstruction("some header", activity.getInstructionsFromTeacher())),
+                activity.getModules().stream()
+                        .map(activityModule -> activityModuleMapper.toModel(activityModule)).toList());
     }
 }

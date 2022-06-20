@@ -2,12 +2,15 @@ package com.swozo.util;
 
 import com.swozo.api.auth.dto.AppRole;
 import com.swozo.databasemodel.Activity;
+import com.swozo.databasemodel.ActivityModule;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.ServiceModule;
 import com.swozo.databasemodel.users.Role;
 import com.swozo.databasemodel.users.User;
+import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.repository.RoleRepository;
 import com.swozo.repository.UserRepository;
+import com.swozo.webservice.repository.ActivityModuleRepository;
 import com.swozo.webservice.repository.ActivityRepository;
 import com.swozo.webservice.repository.CourseRepository;
 import com.swozo.webservice.repository.ServiceModuleRepository;
@@ -22,6 +25,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -33,15 +37,17 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final CourseRepository courseRepository;
     private final ActivityRepository activityRepository;
     private final ServiceModuleRepository serviceModuleRepository;
+    private final ActivityModuleRepository activityModuleRepository;
     private boolean alreadySetup;
 
     @Autowired
-    public DbBootstrapper(RoleRepository roleRepository, UserRepository userRepository, CourseRepository courseRepository, ActivityRepository activityRepository, ServiceModuleRepository serviceModuleRepository) {
+    public DbBootstrapper(RoleRepository roleRepository, UserRepository userRepository, CourseRepository courseRepository, ActivityRepository activityRepository, ServiceModuleRepository serviceModuleRepository, ActivityModuleRepository activityModuleRepository) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.activityRepository = activityRepository;
         this.serviceModuleRepository = serviceModuleRepository;
+        this.activityModuleRepository = activityModuleRepository;
         this.alreadySetup = false;
     }
 
@@ -108,13 +114,25 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
 //        ServiceModule
         ServiceModule serviceModule = new ServiceModule();
-        serviceModule.setName("Jupiter");
+        serviceModule.setName("Jupyter Notebook");
         serviceModule.setInstructionsFromTechnicalTeacher("instrukcja");
         serviceModule.setCreatorName("Boleslaw");
         serviceModule.setSubject("INFORMATYKA");
+        serviceModule.setScheduleType(ScheduleType.JUPYTER);
         serviceModule.setCreationTime(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule);
+
+//        ActivityModule
+        ActivityModule activityModule = new ActivityModule(
+                serviceModule,
+                activity,
+                "instrukcja",
+                new LinkedList<>()
+        );
+        activityModuleRepository.save(activityModule);
+
+
 
 
 

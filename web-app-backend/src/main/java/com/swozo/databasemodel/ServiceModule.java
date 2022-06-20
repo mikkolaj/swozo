@@ -1,5 +1,6 @@
 package com.swozo.databasemodel;
 
+import com.swozo.model.scheduling.properties.ScheduleType;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -18,6 +19,7 @@ public class ServiceModule extends BaseEntity {
     private String instructionsFromTechnicalTeacher;
     private String creatorName;
     private String subject;
+    private ScheduleType scheduleType;
     private LocalDateTime creationTime = LocalDateTime.now();
 
     /*

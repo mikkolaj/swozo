@@ -24,7 +24,7 @@ public class Activity extends BaseEntity {
     private LocalDateTime endTime;
     private String instructionsFromTeacher;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "activity_module_id")
     private Collection<ActivityModule> modules = new LinkedList<>();
 

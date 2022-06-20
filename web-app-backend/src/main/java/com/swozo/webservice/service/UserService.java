@@ -3,7 +3,7 @@ package com.swozo.webservice.service;
 import com.swozo.databasemodel.users.Role;
 import com.swozo.databasemodel.users.User;
 import com.swozo.dto.user.UserDetailsResp;
-import com.swozo.mapper.UserMapper;
+import com.swozo.mapper.dto.UserMapper;
 import com.swozo.repository.UserRepository;
 import com.swozo.webservice.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;

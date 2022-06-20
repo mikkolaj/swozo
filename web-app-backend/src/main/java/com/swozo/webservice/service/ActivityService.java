@@ -3,9 +3,7 @@ package com.swozo.webservice.service;
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.ActivityModule;
 import com.swozo.databasemodel.Course;
-import com.swozo.webservice.exceptions.ActivityModuleNotFoundException;
 import com.swozo.webservice.exceptions.ActivityNotFoundException;
-import com.swozo.webservice.repository.ActivityModuleRepository;
 import com.swozo.webservice.repository.ActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,7 @@ import java.util.Collection;
 public class ActivityService {
     private final CourseService courseService;
     private final ActivityRepository activityRepository;
-    private final ActivityModuleRepository activityModuleRepository;
+    private final ActivityModuleService activityModuleService;
 
     public Activity getActivity(Long id) {
         return activityRepository.findById(id)
@@ -60,11 +58,7 @@ public class ActivityService {
 
     public Activity addModuleToActivity(Long activityId, Long activityModuleId) {
         Activity activity = getActivity(activityId);
-
-        //TODO replace with activityModuleService.get(id) when is ready
-        ActivityModule activityModule = activityModuleRepository.findById(activityModuleId)
-                .orElseThrow(() -> new ActivityModuleNotFoundException(activityModuleId));
-
+        ActivityModule activityModule = activityModuleService.getActivityModule(activityModuleId);
         activity.addActivityModule(activityModule);
         activityRepository.save(activity);
         return activity;
@@ -72,8 +66,7 @@ public class ActivityService {
 
     public Activity deleteModuleFromActivity(Long activityId, Long activityModuleId) {
         Activity activity = getActivity(activityId);
-        ActivityModule activityModule = activityModuleRepository.findById(activityModuleId)
-                .orElseThrow(() -> new ActivityModuleNotFoundException(activityModuleId));
+        ActivityModule activityModule = activityModuleService.getActivityModule(activityModuleId);
         activity.removeActivityModule(activityModule);
         activityRepository.save(activity);
         return activity;

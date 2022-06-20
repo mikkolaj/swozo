@@ -6,6 +6,8 @@ import com.swozo.model.scheduling.ScheduleRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 @Service
 public class OrchestratorService {
     private final OrchestratorRequestSender requestSender;
@@ -21,6 +23,12 @@ public class OrchestratorService {
 
     public void postScheduleRequest(ScheduleRequest scheduleRequest) throws IllegalArgumentException {
         requestSender.postScheduleRequest(scheduleRequest);
+    }
+
+    public void postScheduleRequestsList(Collection<ScheduleRequest> schedules){
+        for(ScheduleRequest scheduleRequest: schedules){
+            postScheduleRequest(scheduleRequest);
+        }
     }
 
 }
