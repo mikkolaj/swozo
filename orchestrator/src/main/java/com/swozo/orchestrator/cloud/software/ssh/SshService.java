@@ -22,6 +22,8 @@ public class SshService {
     private final ApplicationProperties properties;
     private final ProcessRunner processRunner;
 
+    // TODO: make it async, this way multiple subsequent calls might slow things down
+    // explanation: https://github.com/mikkolaj/swozo/pull/13
     public void waitForConnection(SshTarget target, int attempts) throws ConnectionFailed {
         CheckedExceptionConverter.from(() -> RetryHandler.retryExponentially(
                 () -> testConnection(target), attempts), ConnectionFailed::new
