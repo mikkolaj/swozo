@@ -52,7 +52,7 @@ public class Playground implements Runnable {
     }
 
     public void runNotebookLocally() throws InterruptedException {
-        ansibleRunner.runNotebook(
+        ansibleRunner.runPlaybook(
                 List.of(new SshTarget("localhost", 2222)),
                 "vagrant",
                 "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/local/.vagrant/machines/default/virtualbox/private_key",
@@ -62,7 +62,7 @@ public class Playground implements Runnable {
     }
 
     public void runNotebookRemotely() throws InterruptedException {
-        ansibleRunner.runNotebook(List.of(new SshTarget("34.118.97.16", 22)),
+        ansibleRunner.runPlaybook(List.of(new SshTarget("34.118.97.16", 22)),
                 "swozo",
                 "/home/mikolaj/.ssh/orchestrator_id_rsa",
                 "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml",

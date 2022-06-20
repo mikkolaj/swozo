@@ -26,23 +26,24 @@ public class AnsibleRunner {
     private static final String INVENTORY_DELIMITER = ",";
     private static final String EXTRA_VARS_DELIMITER = " ";
     private static final String INPUT_BOUNDARY = "\\A";
+    private static final int DEFAULT_CONNECTION_ATTEMPTS = 6;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ProcessRunner processRunner;
     private final SshService sshService;
 
 
-    public void runNotebook(
+    public void runPlaybook(
             List<SshTarget> sshTargets,
             String sshUser,
             String sshKeyPath,
             String playbookPath,
             int timeoutMinutes
     ) throws InterruptedException, NotebookFailed {
-        runNotebook(sshTargets, sshUser, sshKeyPath, playbookPath, Collections.emptyList(), timeoutMinutes);
+        runPlaybook(sshTargets, sshUser, sshKeyPath, playbookPath, Collections.emptyList(), timeoutMinutes);
     }
 
-    public void runNotebook(
+    public void runPlaybook(
             List<SshTarget> sshTargets,
             String sshUser,
             String sshKeyPath,
@@ -51,6 +52,7 @@ public class AnsibleRunner {
             int timeoutMinutes
     ) throws InterruptedException, NotebookFailed {
         try {
+            sshTargets.forEach(this::waitForConnection);
             var command = createAnsibleCommand(sshTargets, sshKeyPath, sshUser, playbookPath, userVars);
             sshService.clearAllSshHostEntries(sshTargets);
             var process = processRunner.createProcess(command);
@@ -70,6 +72,11 @@ public class AnsibleRunner {
         } catch (ProcessFailed e) {
             throw new NotebookFailed(e);
         }
+    }
+
+    private void waitForConnection(SshTarget target) {
+        sshService.waitForConnection(target, DEFAULT_CONNECTION_ATTEMPTS);
+        logger.info("Connection successful: {}", target);
     }
 
     private String[] createAnsibleCommand(
@@ -101,4 +108,5 @@ public class AnsibleRunner {
         extraVars.addAll(userVars);
         return String.join(EXTRA_VARS_DELIMITER, extraVars);
     }
+
 }
