@@ -1,5 +1,6 @@
 package com.swozo.orchestrator.cloud.software.runner;
 
+import com.swozo.exceptions.ConnectionFailed;
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessFailed;
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessRunner;
 import com.swozo.orchestrator.cloud.software.ssh.SshService;
@@ -69,7 +70,7 @@ public class AnsibleRunner {
                     throw new NotebookFailed(errors);
                 }
             }
-        } catch (ProcessFailed e) {
+        } catch (ProcessFailed | ConnectionFailed e) {
             throw new NotebookFailed(e);
         }
     }

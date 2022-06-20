@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
-import com.swozo.exceptions.ConnectionFailed;
 import com.swozo.model.links.Link;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
@@ -37,7 +36,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
             ansibleRunner.runPlaybook(targets, resource.sshUser(), resource.sshKeyPath(), properties.jupyterPlaybookPath(), PROVISIONING_SECONDS / MINUTES_FACTOR);
             logger.info("Successfully provisioned Jupyter on resource: {}", resource);
             return createLinks(resource);
-        } catch (NotebookFailed | ConnectionFailed e) {
+        } catch (NotebookFailed e) {
             throw new ProvisioningFailed(e);
         }
     }
