@@ -19,7 +19,7 @@ public class ActivityToScheduleMapper {
         return new JupyterScheduleRequest(
                 "/tmp",
                 new ServiceLifespan(startTime, endTime),
-                new Psm("micro", 10),
+                new Psm("e2-medium", 10),
                 activityModule.getId());
     }
 
