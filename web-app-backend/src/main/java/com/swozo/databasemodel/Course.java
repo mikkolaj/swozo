@@ -34,11 +34,6 @@ public class Course extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     private User teacher;
 
-    //constructor for testing
-    public Course(String name) {
-        this.name = name;
-    }
-
     public void addActivity(Activity activity) {
         activities.add(activity);
     }

@@ -20,21 +20,21 @@ public class ActivityModuleService {
     ActivityModuleMapper activityModuleMapper;
     OrchestratorService orchestratorService;
 
-    public ActivityModule getActivityModule(Long activityModuleId){
+    public ActivityModule getActivityModule(Long activityModuleId) {
         return activityModuleRepository.findById(activityModuleId)
                 .orElseThrow(() -> new ActivityModuleNotFoundException(activityModuleId));
     }
 
-    public Collection<ActivityModuleDetailsResp> getActivityModuleList(){
+    public Collection<ActivityModuleDetailsResp> getActivityModuleList() {
         return new LinkedList<>();
     }
 
-    public ActivityModuleDetailsResp getActivityModuleInfo(Long activityModuleId){
+    public ActivityModuleDetailsResp getActivityModuleInfo(Long activityModuleId) {
         ActivityModule activityModule = getActivityModule(activityModuleId);
         return activityModuleMapper.toModel(activityModule);
     }
 
-    public void provideLinksForActivityModules(Collection<ActivityModule> activityModules){
+    public void provideLinksForActivityModules(Collection<ActivityModule> activityModules) {
         activityModules.forEach(activityModule -> {
             Long activityModuleId = activityModule.getId();
 //            to use when orchestrator ready

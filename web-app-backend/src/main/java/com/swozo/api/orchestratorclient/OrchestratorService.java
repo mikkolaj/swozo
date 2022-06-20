@@ -25,8 +25,8 @@ public class OrchestratorService {
         requestSender.postScheduleRequest(scheduleRequest);
     }
 
-    public void postScheduleRequestsList(Collection<ScheduleRequest> schedules){
-        for(ScheduleRequest scheduleRequest: schedules){
+    public void postScheduleRequestsList(Collection<ScheduleRequest> schedules) {
+        for (ScheduleRequest scheduleRequest : schedules) {
             postScheduleRequest(scheduleRequest);
         }
     }

@@ -2,6 +2,7 @@ package com.swozo.webservice.service;
 
 import com.swozo.api.orchestratorclient.ScheduleService;
 import com.swozo.databasemodel.Activity;
+import com.swozo.databasemodel.ActivityModule;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.users.User;
 import com.swozo.dto.course.CourseDetailsReq;
@@ -45,6 +46,11 @@ public class CourseService {
 
     public CourseDetailsResp createCourse(CourseDetailsReq courseDetailsReq, Long teacherId) {
         var course = courseMapper.toPersistence(courseDetailsReq, teacherId);
+
+        for (Activity activity : course.getActivities()) {
+            activity.addActivityModule(new ActivityModule());
+        }
+
         scheduleService.scheduleActivities(course.getActivities());
         courseRepository.save(course);
         return courseMapper.toModel(course);

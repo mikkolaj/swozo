@@ -26,6 +26,7 @@ public class Activity extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "activity_module_id")
+    @ToString.Exclude
     private Collection<ActivityModule> modules = new LinkedList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)

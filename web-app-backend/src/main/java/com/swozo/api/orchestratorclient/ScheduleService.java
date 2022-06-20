@@ -16,8 +16,8 @@ public class ScheduleService {
     private final OrchestratorService orchestratorService;
     private final ActivityModuleService activityModuleService;
 
-    public void scheduleActivities(Collection<Activity> activities){
-        for(Activity activity: activities){
+    public void scheduleActivities(Collection<Activity> activities) {
+        for (Activity activity : activities) {
 
             Collection<ScheduleRequest> schedules = activityToScheduleMapper
                     .getScheduleReqsFromActivity(activity);

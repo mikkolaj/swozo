@@ -32,7 +32,7 @@ public abstract class ActivityMapper {
 
     // TODO proper mapping
     public ActivityDetailsResp toModel(Activity activity) {
-        System.out.println("duupa:" + activity.getModules().stream()
+        System.out.println("help me: " + activity.getModules().stream()
                 .map(activityModule -> activityModuleMapper.toModel(activityModule)).toList());
         return new ActivityDetailsResp(
                 activity.getId(),

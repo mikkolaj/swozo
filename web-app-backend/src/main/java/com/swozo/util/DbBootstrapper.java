@@ -133,8 +133,5 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activityModuleRepository.save(activityModule);
 
 
-
-
-
     }
 }

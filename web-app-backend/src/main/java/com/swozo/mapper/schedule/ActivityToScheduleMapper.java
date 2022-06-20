@@ -15,18 +15,18 @@ import java.util.LinkedList;
 @Component
 public class ActivityToScheduleMapper {
 
-    private ScheduleRequest createJupyter(ActivityModule activityModule, LocalDateTime startTime, LocalDateTime endTime){
+    private ScheduleRequest createJupyter(ActivityModule activityModule, LocalDateTime startTime, LocalDateTime endTime) {
         return new JupyterScheduleRequest(
-                "dupa",
+                "/tmp",
                 new ServiceLifespan(startTime, endTime),
                 new Psm("micro", 10),
                 activityModule.getId());
     }
 
-    public Collection<ScheduleRequest> getScheduleReqsFromActivity(Activity activity){
+    public Collection<ScheduleRequest> getScheduleReqsFromActivity(Activity activity) {
 ////        to change while adding new schedule requests - choose which schedule creation method use based on schedule type
-        Collection<ScheduleRequest> schedules = new LinkedList();
-        for(ActivityModule activityModule: activity.getModules()){
+        Collection<ScheduleRequest> schedules = new LinkedList<>();
+        for (ActivityModule activityModule : activity.getModules()) {
             schedules.add(createJupyter(activityModule, activity.getStartTime(), activity.getEndTime()));
         }
         return schedules;

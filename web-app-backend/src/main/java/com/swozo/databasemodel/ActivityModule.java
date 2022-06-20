@@ -27,6 +27,7 @@ public class ActivityModule extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "link_id")
+    @ToString.Exclude
     private Collection<Link> links = new ArrayList<>();
 
     /*
