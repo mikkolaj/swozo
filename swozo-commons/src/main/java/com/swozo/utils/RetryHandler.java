@@ -9,16 +9,16 @@ public class RetryHandler {
     private RetryHandler() {
     }
 
-    public static <V> V retryExponentially(Callable<V> operation, int times) throws Exception {
-        if (times < 1) {
+    public static <V> V retryExponentially(Callable<V> operation, int attempts) throws Exception {
+        if (attempts < 1) {
             throw new IllegalArgumentException("Can't retry less than 1 time.");
         }
 
-        var failCounter = 1;
-        var backoff = 1000;
+        var failCounter = 0;
+        var backoffPeriod = 1000;
         Exception lastException = null;
 
-        while (failCounter <= times) {
+        while (failCounter < attempts) {
             try {
                 return operation.call();
             } catch (InterruptedException e) {
@@ -28,8 +28,8 @@ public class RetryHandler {
             }
             try {
                 failCounter += 1;
-                backoff *= 2;
-                Thread.sleep(backoff);
+                backoffPeriod *= 2;
+                Thread.sleep(backoffPeriod);
             } catch (InterruptedException e) {
                 handleInterrupt(e);
             }
