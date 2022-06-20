@@ -5,9 +5,9 @@ import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
+import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.NotebookFailed;
-import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
 import com.swozo.orchestrator.configuration.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -32,8 +32,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     public List<Link> provision(VMResourceDetails resource) throws InterruptedException, ProvisioningFailed {
         try {
             logger.info("Started provisioning Jupyter on: {}", resource);
-            var targets = List.of(SshTarget.from(resource));
-            ansibleRunner.runPlaybook(targets, resource.sshUser(), resource.sshKeyPath(), properties.jupyterPlaybookPath(), PROVISIONING_SECONDS / MINUTES_FACTOR);
+            runPlaybook(resource);
             logger.info("Successfully provisioned Jupyter on resource: {}", resource);
             return createLinks(resource);
         } catch (NotebookFailed e) {
@@ -44,6 +43,14 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     @Override
     public int getProvisioningSeconds() {
         return PROVISIONING_SECONDS;
+    }
+
+    private void runPlaybook(VMResourceDetails resource) throws InterruptedException {
+        ansibleRunner.runPlaybook(
+                AnsibleConnectionDetails.from(resource),
+                properties.jupyterPlaybookPath(),
+                PROVISIONING_SECONDS / MINUTES_FACTOR
+        );
     }
 
     private List<Link> createLinks(VMResourceDetails vmResourceDetails) {

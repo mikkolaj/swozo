@@ -10,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,68 +32,71 @@ public class AnsibleRunner {
 
 
     public void runPlaybook(
-            List<SshTarget> sshTargets,
-            String sshUser,
-            String sshKeyPath,
+            AnsibleConnectionDetails connectionDetails,
             String playbookPath,
             int timeoutMinutes
     ) throws InterruptedException, NotebookFailed {
-        runPlaybook(sshTargets, sshUser, sshKeyPath, playbookPath, Collections.emptyList(), timeoutMinutes);
+        runPlaybook(connectionDetails, playbookPath, Collections.emptyList(), timeoutMinutes);
     }
 
     public void runPlaybook(
-            List<SshTarget> sshTargets,
-            String sshUser,
-            String sshKeyPath,
+            AnsibleConnectionDetails connectionDetails,
             String playbookPath,
             List<String> userVars,
             int timeoutMinutes
     ) throws InterruptedException, NotebookFailed {
         try {
-            sshTargets.forEach(this::waitForConnection);
-            var command = createAnsibleCommand(sshTargets, sshKeyPath, sshUser, playbookPath, userVars);
-            sshService.clearAllSshHostEntries(sshTargets);
-            var process = processRunner.createProcess(command);
-            try (var outputScanner = new Scanner(process.getInputStream()).useDelimiter(INPUT_BOUNDARY);
-                 var errorScanner = new Scanner(process.getErrorStream()).useDelimiter(INPUT_BOUNDARY)
-            ) {
-                processRunner.waitFor(process, timeoutMinutes);
-                var output = outputScanner.hasNext() ? outputScanner.next() : "";
-                var errors = errorScanner.hasNext() ? errorScanner.next() : "";
-
-                if (process.exitValue() != ProcessRunner.SUCCESS_CODE) {
-                    logger.info(output);
-                    logger.error(errors);
-                    throw new NotebookFailed(errors);
-                }
-            }
+            handleSshStartup(connectionDetails.targets());
+            var process = createAnsibleProcess(connectionDetails, playbookPath, userVars);
+            waitForResult(process, timeoutMinutes);
         } catch (ProcessFailed | ConnectionFailed e) {
             throw new NotebookFailed(e);
         }
     }
 
-    private void waitForConnection(SshTarget target) {
+    private void handleSshStartup(Collection<SshTarget> sshTargets) throws ConnectionFailed {
+        sshService.clearAllSshHostEntries(sshTargets);
+        sshTargets.forEach(this::waitForConnection);
+    }
+
+    private Process createAnsibleProcess(AnsibleConnectionDetails connectionDetails, String playbookPath, List<String> userVars)
+            throws ProcessFailed {
+        var command = createAnsibleCommand(connectionDetails, playbookPath, userVars);
+        return processRunner.createProcess(command);
+    }
+
+    private void waitForConnection(SshTarget target) throws ConnectionFailed {
         sshService.waitForConnection(target, DEFAULT_CONNECTION_ATTEMPTS);
         logger.info("Connection successful: {}", target);
     }
 
-    private String[] createAnsibleCommand(
-            List<SshTarget> hosts,
-            String sshKeyPath,
-            String sshUser,
-            String playbookPath,
-            List<String> userVars
-    ) {
-        var hostParams = hosts.stream().map(SshTarget::toString).toList();
+    private void waitForResult(Process process, int timeoutMinutes) throws InterruptedException, NotebookFailed {
+        try (var outputScanner = new Scanner(process.getInputStream()).useDelimiter(INPUT_BOUNDARY);
+             var errorScanner = new Scanner(process.getErrorStream()).useDelimiter(INPUT_BOUNDARY)
+        ) {
+            processRunner.waitFor(process, timeoutMinutes);
+            var output = outputScanner.hasNext() ? outputScanner.next() : "";
+            var errors = errorScanner.hasNext() ? errorScanner.next() : "";
+
+            if (process.exitValue() != ProcessRunner.SUCCESS_CODE) {
+                logger.info(output);
+                logger.error(errors);
+                throw new NotebookFailed(errors);
+            }
+        }
+    }
+
+    private String[] createAnsibleCommand(AnsibleConnectionDetails connectionDetails, String playbookPath, List<String> userVars) {
+        var hostParams = connectionDetails.targets().stream().map(SshTarget::toString).toList();
         var inventory = String.join(INVENTORY_DELIMITER, hostParams) + INVENTORY_DELIMITER;
-        var extraVarsArgument = buildExtraVarsArgument(sshUser, userVars);
+        var extraVarsArgument = buildExtraVarsArgument(connectionDetails.sshUser(), userVars);
 
         return new String[]{
                 PLAYBOOK_COMMAND,
                 INVENTORY_ARG_NAME,
                 inventory,
                 PRIVATE_KEY_ARG_NAME,
-                sshKeyPath,
+                connectionDetails.sshKeyPath(),
                 EXTRA_VARS_ARG_NAME,
                 extraVarsArgument,
                 playbookPath
