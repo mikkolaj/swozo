@@ -13,7 +13,9 @@ import java.util.LinkedList;
 public abstract class ActivityModuleMapper {
     @Autowired
     protected ActivityModuleService activityModuleService;
+    @Autowired
     private ServiceModuleMapper serviceModuleMapper;
+    @Autowired
     private ActivityMapper activityMapper;
 
 //    TODO add proper mapping in both functions

@@ -3,12 +3,14 @@ package com.swozo.util;
 import com.swozo.api.auth.dto.AppRole;
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
+import com.swozo.databasemodel.ServiceModule;
 import com.swozo.databasemodel.users.Role;
 import com.swozo.databasemodel.users.User;
 import com.swozo.repository.RoleRepository;
 import com.swozo.repository.UserRepository;
 import com.swozo.webservice.repository.ActivityRepository;
 import com.swozo.webservice.repository.CourseRepository;
+import com.swozo.webservice.repository.ServiceModuleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +32,16 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
     private final ActivityRepository activityRepository;
+    private final ServiceModuleRepository serviceModuleRepository;
     private boolean alreadySetup;
 
     @Autowired
-    public DbBootstrapper(RoleRepository roleRepository, UserRepository userRepository, CourseRepository courseRepository, ActivityRepository activityRepository) {
+    public DbBootstrapper(RoleRepository roleRepository, UserRepository userRepository, CourseRepository courseRepository, ActivityRepository activityRepository, ServiceModuleRepository serviceModuleRepository) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.activityRepository = activityRepository;
+        this.serviceModuleRepository = serviceModuleRepository;
         this.alreadySetup = false;
     }
 
@@ -101,6 +105,17 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activity.setCourse(course);
         course.addActivity(activity);
         activityRepository.save(activity);
+
+//        ServiceModule
+        ServiceModule serviceModule = new ServiceModule();
+        serviceModule.setName("Jupiter");
+        serviceModule.setInstructionsFromTechnicalTeacher("instrukcja");
+        serviceModule.setCreatorName("Boleslaw");
+        serviceModule.setSubject("INFORMATYKA");
+        serviceModule.setCreationTime(LocalDateTime.of(2022,
+                Month.MAY, 29, 21, 30, 40));
+        serviceModuleRepository.save(serviceModule);
+
 
 
     }
