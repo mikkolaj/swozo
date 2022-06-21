@@ -20,6 +20,12 @@ import {
     ActivityToJSON,
 } from './Activity';
 import {
+    Link,
+    LinkFromJSON,
+    LinkFromJSONTyped,
+    LinkToJSON,
+} from './Link';
+import {
     ServiceModule,
     ServiceModuleFromJSON,
     ServiceModuleFromJSONTyped,
@@ -58,10 +64,10 @@ export interface ActivityModule {
     instruction?: string;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Array<Link>}
      * @memberof ActivityModule
      */
-    links?: Array<string>;
+    links?: Array<Link>;
 }
 
 export function ActivityModuleFromJSON(json: any): ActivityModule {
@@ -78,7 +84,7 @@ export function ActivityModuleFromJSONTyped(json: any, ignoreDiscriminator: bool
         'module': !exists(json, 'module') ? undefined : ServiceModuleFromJSON(json['module']),
         'activity': !exists(json, 'activity') ? undefined : ActivityFromJSON(json['activity']),
         'instruction': !exists(json, 'instruction') ? undefined : json['instruction'],
-        'links': !exists(json, 'links') ? undefined : json['links'],
+        'links': !exists(json, 'links') ? undefined : ((json['links'] as Array<any>).map(LinkFromJSON)),
     };
 }
 
@@ -95,7 +101,7 @@ export function ActivityModuleToJSON(value?: ActivityModule | null): any {
         'module': ServiceModuleToJSON(value.module),
         'activity': ActivityToJSON(value.activity),
         'instruction': value.instruction,
-        'links': value.links,
+        'links': value.links === undefined ? undefined : ((value.links as Array<any>).map(LinkToJSON)),
     };
 }
 

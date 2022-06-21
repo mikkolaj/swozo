@@ -8,5 +8,13 @@ type Props = {
 
 export const Summary = ({ course, activities }: Props) => {
     // TODO: display this somehow
-    return <Box> to tyle</Box>;
+    return (
+        <Box>
+            {' '}
+            Tu kiedyś będzie podsumowanie dla kursu {course.name} z aktywnościami{' '}
+            {activities.map((activity) => (
+                <Box key={activity.name}>-{activity.name}</Box>
+            ))}{' '}
+        </Box>
+    );
 };

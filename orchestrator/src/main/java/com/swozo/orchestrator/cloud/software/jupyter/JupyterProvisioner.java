@@ -21,7 +21,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
-    private static final String MAIN_LINK_DESCRIPTION = "Main page.";
+    private static final String MAIN_LINK_DESCRIPTION = "Hasło: swozo123";
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
     private final String playbookPath;

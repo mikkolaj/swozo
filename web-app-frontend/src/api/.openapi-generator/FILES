@@ -13,14 +13,17 @@ models/ActivityDetailsResp.ts
 models/ActivityInstruction.ts
 models/ActivityLinkInfo.ts
 models/ActivityModule.ts
+models/ActivityModuleDetailsResp.ts
 models/AuthData.ts
 models/Course.ts
 models/CourseDetailsReq.ts
 models/CourseDetailsResp.ts
 models/ExampleModel.ts
+models/Link.ts
 models/LoginData.ts
 models/Role.ts
 models/ServiceModule.ts
+models/ServiceModuleDetailsResp.ts
 models/User.ts
 models/UserDetailsResp.ts
 models/index.ts

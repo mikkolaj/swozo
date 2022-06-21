@@ -9,25 +9,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 @Service
 @RequiredArgsConstructor
 public class ServiceModuleService {
-    ServiceModuleRepository serviceModuleRepository;
-    ServiceModuleMapper serviceModuleMapper;
+    private final ServiceModuleRepository serviceModuleRepository;
+    private final ServiceModuleMapper serviceModuleMapper;
 
-    ServiceModule getServiceModule(Long id){
+    public ServiceModule getServiceModule(Long id) {
         return serviceModuleRepository.findById(id)
                 .orElseThrow(() -> new ServiceModuleNotFoundException(id));
     }
 
-    public Collection<ServiceModuleDetailsResp> getServiceModuleList(){
+    public Collection<ServiceModuleDetailsResp> getServiceModuleList() {
 //        TODO To ma byc niby lista wszystkich dsotępnych modułów (czyli nei activity modułów tylko serwis modułów...
-        return new LinkedList<>();
+        return serviceModuleRepository.findAll().stream().map(serviceModuleMapper::toModel).toList();
     }
 
-    public ServiceModuleDetailsResp getServiceModuleInfo(Long serviceModuleId){
+    public ServiceModuleDetailsResp getServiceModuleInfo(Long serviceModuleId) {
         ServiceModule serviceModule = getServiceModule(serviceModuleId);
         return serviceModuleMapper.toModel(serviceModule);
     }

@@ -1,12 +1,11 @@
-import { ActivityDetailsReq, CourseDetailsReq } from 'api';
+import { ActivityDetailsReq, CourseDetailsReq, ServiceModuleDetailsResp } from 'api';
 import { Dayjs } from 'dayjs';
-import { ModuleSummary } from 'utils/mocks';
 
 export type ActivityValues = {
     name: string;
     description: string;
-    lessonModules: ModuleSummary[];
-    generalModules: ModuleSummary[];
+    lessonModules: ServiceModuleDetailsResp[];
+    generalModules: ServiceModuleDetailsResp[];
     instructions: string;
     startTime: Dayjs;
     endTime: Dayjs;
@@ -25,14 +24,14 @@ const buildCreateActivityRequest = (activity: ActivityValues): ActivityDetailsRe
     return {
         name: activity.name,
         description: activity.description,
-        startTime: activity.startTime.toDate(),
-        endTime: activity.endTime.toDate(),
+        startTime: activity.startTime.add(2, 'hours').toDate(), // TODO xD
+        endTime: activity.endTime.add(2, 'hours').toDate(),
         instructionsFromTeacher: [
             {
                 body: activity.instructions, //TODO
             },
         ],
-        selectedModulesIds: [...activity.lessonModules, ...activity.generalModules].map(({ id }) => id), // TODO
+        selectedModulesIds: [...activity.lessonModules /*, ...activity.generalModules*/].map(({ id }) => id), // TODO
     };
 };
 

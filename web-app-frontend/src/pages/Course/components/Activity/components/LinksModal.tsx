@@ -72,8 +72,8 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
 
                         <Grid container sx={{ p: 2 }}>
                             <Grid item xs={12}>
-                                {activity.activityLinkInfos.map((link, idx) => (
-                                    <Accordion sx={{ mb: 2, boxShadow: 3 }} key={idx}>
+                                {activity.activityModules.map((activityModule) => (
+                                    <Accordion sx={{ mb: 2, boxShadow: 3 }} key={activityModule.id}>
                                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                             <Box
                                                 sx={{ cursor: 'default', pr: 4 }}
@@ -84,11 +84,28 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                     component="h3"
                                                     variant="h6"
                                                 >
-                                                    {link.serviceName}
+                                                    {/* {activityModule.module.name} */}
+                                                    Jupyter
                                                 </Typography>
-                                                <Link target="_blank" rel="noopener" href={link.url}>
-                                                    {link.url}
-                                                </Link>
+                                                {/* TODO */}
+                                                {activityModule.links.length === 0 && (
+                                                    <Typography>
+                                                        {' '}
+                                                        Linki nie są jeszcze dostępne, odśwież stronę przed
+                                                        rozpoczęciem zajęć
+                                                    </Typography>
+                                                )}
+                                                {activityModule.links.map((link, idx) => (
+                                                    <Link
+                                                        key={idx}
+                                                        target="_blank"
+                                                        rel="noopener"
+                                                        href={link.url}
+                                                    >
+                                                        {/* TODO */}
+                                                        {link.url ?? 'Link nie jest jeszcze dostępny'}
+                                                    </Link>
+                                                ))}
                                                 <Box
                                                     sx={{
                                                         display: 'flex',
@@ -97,12 +114,16 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                         ':hover': { cursor: 'text' },
                                                     }}
                                                 >
-                                                    {/* TODO use more advanced/flexible format */}
-                                                    {link.connectionInfo?.split('\n').map((line, idx) => (
-                                                        <Box key={idx}>
-                                                            <Typography>{line}</Typography>
-                                                        </Box>
-                                                    ))}
+                                                    {/* TODO use more advanced/flexible format // fix this xD*/}
+                                                    {activityModule.links
+                                                        .flatMap(
+                                                            (link) => link.connectionInfo?.split('\n') ?? ''
+                                                        )
+                                                        .map((line, idx) => (
+                                                            <Box key={idx}>
+                                                                <Typography>{line}</Typography>
+                                                            </Box>
+                                                        ))}
                                                 </Box>
                                             </Box>
                                         </AccordionSummary>
@@ -112,11 +133,16 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                             </Typography>
                                             <Divider />
                                             <Box sx={{ mt: 1 }}>
-                                                {link.connectionInstruction.split('\n').map((line, idx) => (
-                                                    <Box key={idx}>
-                                                        <Typography variant="body2">{line}</Typography>
-                                                    </Box>
-                                                ))}
+                                                {/* TODO  */}
+                                                {activityModule.links
+                                                    .flatMap(
+                                                        (link) => link.connectionInstruction.split('\n') ?? ''
+                                                    )
+                                                    .map((line, idx) => (
+                                                        <Box key={idx}>
+                                                            <Typography variant="body2">{line}</Typography>
+                                                        </Box>
+                                                    ))}
                                             </Box>
                                         </AccordionDetails>
                                     </Accordion>

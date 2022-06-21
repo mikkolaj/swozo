@@ -20,11 +20,11 @@ import {
     ActivityInstructionToJSON,
 } from './ActivityInstruction';
 import {
-    ActivityLinkInfo,
-    ActivityLinkInfoFromJSON,
-    ActivityLinkInfoFromJSONTyped,
-    ActivityLinkInfoToJSON,
-} from './ActivityLinkInfo';
+    ActivityModuleDetailsResp,
+    ActivityModuleDetailsRespFromJSON,
+    ActivityModuleDetailsRespFromJSONTyped,
+    ActivityModuleDetailsRespToJSON,
+} from './ActivityModuleDetailsResp';
 
 /**
  * 
@@ -70,10 +70,10 @@ export interface ActivityDetailsResp {
     instructionsFromTeacher: Array<ActivityInstruction>;
     /**
      * 
-     * @type {Array<ActivityLinkInfo>}
+     * @type {Array<ActivityModuleDetailsResp>}
      * @memberof ActivityDetailsResp
      */
-    activityLinkInfos: Array<ActivityLinkInfo>;
+    activityModules: Array<ActivityModuleDetailsResp>;
 }
 
 export function ActivityDetailsRespFromJSON(json: any): ActivityDetailsResp {
@@ -92,7 +92,7 @@ export function ActivityDetailsRespFromJSONTyped(json: any, ignoreDiscriminator:
         'startTime': (new Date(json['startTime'])),
         'endTime': (new Date(json['endTime'])),
         'instructionsFromTeacher': ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionFromJSON)),
-        'activityLinkInfos': ((json['activityLinkInfos'] as Array<any>).map(ActivityLinkInfoFromJSON)),
+        'activityModules': ((json['activityModules'] as Array<any>).map(ActivityModuleDetailsRespFromJSON)),
     };
 }
 
@@ -111,7 +111,7 @@ export function ActivityDetailsRespToJSON(value?: ActivityDetailsResp | null): a
         'startTime': (value.startTime.toISOString()),
         'endTime': (value.endTime.toISOString()),
         'instructionsFromTeacher': ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionToJSON)),
-        'activityLinkInfos': ((value.activityLinkInfos as Array<any>).map(ActivityLinkInfoToJSON)),
+        'activityModules': ((value.activityModules as Array<any>).map(ActivityModuleDetailsRespToJSON)),
     };
 }
 

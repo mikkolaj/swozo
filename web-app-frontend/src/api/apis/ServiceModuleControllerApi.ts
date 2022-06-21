@@ -15,18 +15,13 @@
 
 import * as runtime from '../runtime';
 import {
-    ServiceModule,
-    ServiceModuleFromJSON,
-    ServiceModuleToJSON,
+    ServiceModuleDetailsResp,
+    ServiceModuleDetailsRespFromJSON,
+    ServiceModuleDetailsRespToJSON,
 } from '../models';
 
 export interface GetServiceModuleRequest {
     id: number;
-}
-
-export interface UpdateServiceModuleRequest {
-    moduleId: number;
-    serviceModule: ServiceModule;
 }
 
 /**
@@ -36,7 +31,7 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getModuleListRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModule>>> {
+    async getModuleListRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleDetailsResp>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -56,19 +51,19 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleDetailsRespFromJSON));
     }
 
     /**
      */
-    async getModuleList(initOverrides?: RequestInit): Promise<Array<ServiceModule>> {
+    async getModuleList(initOverrides?: RequestInit): Promise<Array<ServiceModuleDetailsResp>> {
         const response = await this.getModuleListRaw(initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async getServiceModuleRaw(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModule>> {
+    async getServiceModuleRaw(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsResp>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getServiceModule.');
         }
@@ -92,56 +87,13 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsRespFromJSON(jsonValue));
     }
 
     /**
      */
-    async getServiceModule(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModule> {
+    async getServiceModule(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsResp> {
         const response = await this.getServiceModuleRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async updateServiceModuleRaw(requestParameters: UpdateServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModule>> {
-        if (requestParameters.moduleId === null || requestParameters.moduleId === undefined) {
-            throw new runtime.RequiredError('moduleId','Required parameter requestParameters.moduleId was null or undefined when calling updateServiceModule.');
-        }
-
-        if (requestParameters.serviceModule === null || requestParameters.serviceModule === undefined) {
-            throw new runtime.RequiredError('serviceModule','Required parameter requestParameters.serviceModule was null or undefined when calling updateServiceModule.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("JWT_AUTH", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/service-modules/{moduleId}`.replace(`{${"moduleId"}}`, encodeURIComponent(String(requestParameters.moduleId))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: ServiceModuleToJSON(requestParameters.serviceModule),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleFromJSON(jsonValue));
-    }
-
-    /**
-     */
-    async updateServiceModule(requestParameters: UpdateServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModule> {
-        const response = await this.updateServiceModuleRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

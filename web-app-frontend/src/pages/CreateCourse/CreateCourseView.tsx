@@ -7,10 +7,10 @@ import { FormikProps } from 'formik';
 import _ from 'lodash';
 import { Ref, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { mockGeneralModuleSummaryList, mockModuleSummaryList } from 'utils/mocks';
+import { mockGeneralModuleSummaryList } from 'utils/mocks';
 import { PageRoutes } from 'utils/routes';
 import { ActivitiesForm } from './components/forms/ActivitiesForm';
 import { GeneralInfoForm } from './components/forms/GeneralInfoForm';
@@ -22,15 +22,18 @@ export const CreateCourseView = () => {
     const navigate = useNavigate();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [courseValues, setCourseValues] = useState({
-        name: '',
-        subject: '',
+        name: 'Wprowadzenie do Pythona',
+        subject: 'Informatyka',
         description: '',
         numberOfActivities: 1,
-        numberOfStudents: 0,
-        students: ['', ''],
+        numberOfStudents: 2,
+        students: ['student1', ''],
     });
     const [activitiesValues, setActivitiesValues] = useState<ActivityValues[]>([]);
-    const [availableLessonModules] = useState(mockModuleSummaryList);
+
+    const { data: availableLessonModules } = useQuery('modules', () =>
+        getApis().serviceModuleApi.getModuleList()
+    );
     const [availableGeneralModules] = useState(mockGeneralModuleSummaryList);
 
     const queryClient = useQueryClient();
@@ -49,6 +52,10 @@ export const CreateCourseView = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const formRef: Ref<FormikProps<any>> = useRef(null);
+    //TODO
+    if (availableLessonModules === undefined) {
+        return <>Loading</>;
+    }
 
     return (
         <SlideForm

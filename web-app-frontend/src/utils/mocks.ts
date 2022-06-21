@@ -1,3 +1,4 @@
+import { ServiceModuleDetailsResp } from 'api';
 import dayjs, { Dayjs } from 'dayjs';
 
 export type CourseSummary = {
@@ -156,14 +157,14 @@ export const mockModuleSummaryList: ModuleSummary[] = [
 ];
 
 // should have different type but will do for now
-export const mockGeneralModuleSummaryList: ModuleSummary[] = [
+export const mockGeneralModuleSummaryList: ServiceModuleDetailsResp[] = [
     {
-        id: 5,
+        id: -1,
         name: 'Wideokonferencja',
         subject: 'Programowanie',
         creatorName: 'Zbigniew Kowalski',
-        creationDate: '18.05.2022',
-        usedInActivitiesCount: 0,
+        creationTime: new Date(),
+        instructionsFromTechnicalTeacher: 'kamerka i mikrofon',
     },
 ];
 

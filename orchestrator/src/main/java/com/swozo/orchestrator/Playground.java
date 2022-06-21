@@ -78,6 +78,7 @@ public class Playground implements Runnable {
 //        runNotebookRemotely();
         internalTaskScheduler.schedule(() -> {
             System.out.println(properties);
+            System.out.println("GOOGLE_APPLICATION_CREDENTIALS=" + System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
             return null;
         }, -100000000);
     }

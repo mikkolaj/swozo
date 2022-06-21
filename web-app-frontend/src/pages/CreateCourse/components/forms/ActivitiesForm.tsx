@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { ServiceModuleDetailsResp } from 'api';
 import { AutocompleteWithChips } from 'common/SlideForm/AutocompleteWithChips';
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
@@ -8,7 +9,6 @@ import { Bar } from 'common/Styled/Bar';
 import { FieldArray, Form, Formik } from 'formik';
 import { ActivityValues } from 'pages/CreateCourse/util';
 import { useTranslation } from 'react-i18next';
-import { ModuleSummary } from 'utils/mocks';
 import * as Yup from 'yup';
 
 type Values = {
@@ -16,8 +16,8 @@ type Values = {
 };
 
 type Props = SlideProps<Values> & {
-    availableLessonModules: ModuleSummary[];
-    availableGeneralModules: ModuleSummary[];
+    availableLessonModules: ServiceModuleDetailsResp[];
+    availableGeneralModules: ServiceModuleDetailsResp[];
 };
 
 export const ActivitiesForm = ({

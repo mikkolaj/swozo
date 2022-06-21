@@ -2,7 +2,6 @@ package com.swozo.webservice.service;
 
 import com.swozo.api.orchestratorclient.ScheduleService;
 import com.swozo.databasemodel.Activity;
-import com.swozo.databasemodel.ActivityModule;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.users.User;
 import com.swozo.dto.course.CourseDetailsReq;
@@ -22,6 +21,7 @@ public class CourseService {
     private final UserService userService;
     private final CourseMapper courseMapper;
     private final ScheduleService scheduleService;
+    private final ActivityModuleService activityModuleService;
 
     public Collection<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -41,18 +41,18 @@ public class CourseService {
     }
 
     public CourseDetailsResp getCourseDetails(Long id) {
+        var course = getCourse(id);
+        // TODO this will let us check if they are present by refreshing the page MAKE IT BeTtEr
+        activityModuleService
+                .provideLinksForActivityModules(course.getActivities().stream().flatMap(x -> x.getModules().stream()).toList());
+
         return courseMapper.toModel(getCourse(id));
     }
 
     public CourseDetailsResp createCourse(CourseDetailsReq courseDetailsReq, Long teacherId) {
         var course = courseMapper.toPersistence(courseDetailsReq, teacherId);
-
-        for (Activity activity : course.getActivities()) {
-            activity.addActivityModule(new ActivityModule());
-        }
-
-        scheduleService.scheduleActivities(course.getActivities());
         courseRepository.save(course);
+        scheduleService.scheduleActivities(course.getActivities());
         return courseMapper.toModel(course);
     }
 

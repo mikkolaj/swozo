@@ -24,7 +24,7 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                         <LinkedTypography
                             variant="h4"
                             to={PageRoutes.Course(courseSummary.id)}
-                            text={_.capitalize(courseSummary.name)}
+                            text={courseSummary.name}
                         />
                         <Typography
                             variant="body1"
