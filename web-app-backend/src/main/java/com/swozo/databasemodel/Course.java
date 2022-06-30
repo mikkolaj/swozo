@@ -1,6 +1,5 @@
 package com.swozo.databasemodel;
 
-import com.swozo.databasemodel.users.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -38,11 +37,15 @@ public class Course extends BaseEntity {
         activities.add(activity);
     }
 
-    public void deleteActivity(Activity activity) { activities.remove(activity); }
+    public void deleteActivity(Activity activity) {
+        activities.remove(activity);
+    }
 
     public void addStudent(User student) {
         students.add(student);
     }
 
-    public void deleteStudent(User student){ students.remove(student); }
+    public void deleteStudent(User student) {
+        students.remove(student);
+    }
 }

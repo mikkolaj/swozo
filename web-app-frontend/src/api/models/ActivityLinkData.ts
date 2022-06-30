@@ -16,40 +16,40 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ActivityLinkInfo
+ * @interface ActivityLinkData
  */
-export interface ActivityLinkInfo {
+export interface ActivityLinkData {
     /**
      * 
      * @type {string}
-     * @memberof ActivityLinkInfo
+     * @memberof ActivityLinkData
      */
     url?: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityLinkInfo
+     * @memberof ActivityLinkData
      */
     serviceName: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityLinkInfo
+     * @memberof ActivityLinkData
      */
     connectionInstruction: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityLinkInfo
+     * @memberof ActivityLinkData
      */
     connectionInfo?: string;
 }
 
-export function ActivityLinkInfoFromJSON(json: any): ActivityLinkInfo {
-    return ActivityLinkInfoFromJSONTyped(json, false);
+export function ActivityLinkDataFromJSON(json: any): ActivityLinkData {
+    return ActivityLinkDataFromJSONTyped(json, false);
 }
 
-export function ActivityLinkInfoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityLinkInfo {
+export function ActivityLinkDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityLinkData {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -62,7 +62,7 @@ export function ActivityLinkInfoFromJSONTyped(json: any, ignoreDiscriminator: bo
     };
 }
 
-export function ActivityLinkInfoToJSON(value?: ActivityLinkInfo | null): any {
+export function ActivityLinkDataToJSON(value?: ActivityLinkData | null): any {
     if (value === undefined) {
         return undefined;
     }

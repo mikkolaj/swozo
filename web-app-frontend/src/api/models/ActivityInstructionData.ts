@@ -16,46 +16,39 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ActivityInstruction
+ * @interface ActivityInstructionData
  */
-export interface ActivityInstruction {
-    /**
-     * 
-     * @type {number}
-     * @memberof ActivityInstruction
-     */
-    id?: number;
+export interface ActivityInstructionData {
     /**
      * 
      * @type {string}
-     * @memberof ActivityInstruction
+     * @memberof ActivityInstructionData
      */
     header?: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityInstruction
+     * @memberof ActivityInstructionData
      */
-    body?: string;
+    body: string;
 }
 
-export function ActivityInstructionFromJSON(json: any): ActivityInstruction {
-    return ActivityInstructionFromJSONTyped(json, false);
+export function ActivityInstructionDataFromJSON(json: any): ActivityInstructionData {
+    return ActivityInstructionDataFromJSONTyped(json, false);
 }
 
-export function ActivityInstructionFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityInstruction {
+export function ActivityInstructionDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityInstructionData {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
         'header': !exists(json, 'header') ? undefined : json['header'],
-        'body': !exists(json, 'body') ? undefined : json['body'],
+        'body': json['body'],
     };
 }
 
-export function ActivityInstructionToJSON(value?: ActivityInstruction | null): any {
+export function ActivityInstructionDataToJSON(value?: ActivityInstructionData | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -64,7 +57,6 @@ export function ActivityInstructionToJSON(value?: ActivityInstruction | null): a
     }
     return {
         
-        'id': value.id,
         'header': value.header,
         'body': value.body,
     };

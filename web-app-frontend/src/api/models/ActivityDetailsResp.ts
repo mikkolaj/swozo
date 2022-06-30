@@ -14,11 +14,11 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    ActivityInstruction,
-    ActivityInstructionFromJSON,
-    ActivityInstructionFromJSONTyped,
-    ActivityInstructionToJSON,
-} from './ActivityInstruction';
+    ActivityInstructionData,
+    ActivityInstructionDataFromJSON,
+    ActivityInstructionDataFromJSONTyped,
+    ActivityInstructionDataToJSON,
+} from './ActivityInstructionData';
 import {
     ActivityModuleDetailsResp,
     ActivityModuleDetailsRespFromJSON,
@@ -64,10 +64,10 @@ export interface ActivityDetailsResp {
     endTime: Date;
     /**
      * 
-     * @type {Array<ActivityInstruction>}
+     * @type {Array<ActivityInstructionData>}
      * @memberof ActivityDetailsResp
      */
-    instructionsFromTeacher: Array<ActivityInstruction>;
+    instructionsFromTeacher: Array<ActivityInstructionData>;
     /**
      * 
      * @type {Array<ActivityModuleDetailsResp>}
@@ -91,7 +91,7 @@ export function ActivityDetailsRespFromJSONTyped(json: any, ignoreDiscriminator:
         'description': json['description'],
         'startTime': (new Date(json['startTime'])),
         'endTime': (new Date(json['endTime'])),
-        'instructionsFromTeacher': ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionFromJSON)),
+        'instructionsFromTeacher': ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionDataFromJSON)),
         'activityModules': ((json['activityModules'] as Array<any>).map(ActivityModuleDetailsRespFromJSON)),
     };
 }
@@ -110,7 +110,7 @@ export function ActivityDetailsRespToJSON(value?: ActivityDetailsResp | null): a
         'description': value.description,
         'startTime': (value.startTime.toISOString()),
         'endTime': (value.endTime.toISOString()),
-        'instructionsFromTeacher': ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionToJSON)),
+        'instructionsFromTeacher': ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionDataToJSON)),
         'activityModules': ((value.activityModules as Array<any>).map(ActivityModuleDetailsRespToJSON)),
     };
 }

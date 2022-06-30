@@ -230,38 +230,6 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getAllSystemCoursesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<Course>>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("JWT_AUTH", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/courses/all-system-courses`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(CourseFromJSON));
-    }
-
-    /**
-     */
-    async getAllSystemCourses(initOverrides?: RequestInit): Promise<Array<Course>> {
-        const response = await this.getAllSystemCoursesRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
     async getCourseRaw(requestParameters: GetCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsResp>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getCourse.');

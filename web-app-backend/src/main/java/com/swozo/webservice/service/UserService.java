@@ -1,11 +1,11 @@
 package com.swozo.webservice.service;
 
-import com.swozo.databasemodel.users.Role;
-import com.swozo.databasemodel.users.User;
+import com.swozo.databasemodel.Role;
+import com.swozo.databasemodel.User;
 import com.swozo.dto.user.UserDetailsResp;
-import com.swozo.mapper.dto.UserMapper;
-import com.swozo.repository.UserRepository;
+import com.swozo.mapper.UserMapper;
 import com.swozo.webservice.exceptions.UserNotFoundException;
+import com.swozo.webservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,14 +25,13 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(email));
     }
 
-    public UserDetailsResp getUserInfo(Long userId){
+    public UserDetailsResp getUserInfo(Long userId) {
         return userMapper.toModel(getUserById(userId));
     }
 
     public boolean hasUserRole(Long userId, String roleName) {
         User user = getUserById(userId);
 
-        //sorry but I love this line
         return user.getRoles().stream().map(Role::getName).toList().contains(roleName);
     }
 }

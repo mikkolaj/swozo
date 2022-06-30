@@ -1,4 +1,4 @@
-package com.swozo.mapper.dto;
+package com.swozo.mapper;
 
 import com.swozo.databasemodel.Course;
 import com.swozo.dto.course.CourseDetailsReq;
@@ -31,10 +31,4 @@ public abstract class CourseMapper {
     @Mapping(target = "students", expression = "java(course.getStudents().stream().map(userMapper::toModel).toList())")
     @Mapping(target = "activities", expression = "java(course.getActivities().stream().map(activityMapper::toModel).toList())")
     public abstract CourseDetailsResp toModel(Course course);
-
-    public Course toPersistence(CourseDetailsReq courseDetailsReq, Course oldCourse) {
-        var course = toPersistence(courseDetailsReq, oldCourse.getTeacher().getId());
-        course.setId(oldCourse.getId());
-        return course;
-    }
 }

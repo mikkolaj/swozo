@@ -1,4 +1,4 @@
-package com.swozo.mapper.dto;
+package com.swozo.mapper;
 
 import com.swozo.databasemodel.ServiceModule;
 import com.swozo.dto.servicemodule.ServiceModuleDetailsReq;

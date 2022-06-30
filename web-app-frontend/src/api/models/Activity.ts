@@ -14,6 +14,12 @@
 
 import { exists, mapValues } from '../runtime';
 import {
+    ActivityInstruction,
+    ActivityInstructionFromJSON,
+    ActivityInstructionFromJSONTyped,
+    ActivityInstructionToJSON,
+} from './ActivityInstruction';
+import {
     ActivityModule,
     ActivityModuleFromJSON,
     ActivityModuleFromJSONTyped,
@@ -58,10 +64,10 @@ export interface Activity {
     endTime?: Date;
     /**
      * 
-     * @type {string}
+     * @type {Array<ActivityInstruction>}
      * @memberof Activity
      */
-    instructionsFromTeacher?: string;
+    instructionsFromTeacher?: Array<ActivityInstruction>;
     /**
      * 
      * @type {Array<ActivityModule>}
@@ -91,7 +97,7 @@ export function ActivityFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'description': !exists(json, 'description') ? undefined : json['description'],
         'startTime': !exists(json, 'startTime') ? undefined : (new Date(json['startTime'])),
         'endTime': !exists(json, 'endTime') ? undefined : (new Date(json['endTime'])),
-        'instructionsFromTeacher': !exists(json, 'instructionsFromTeacher') ? undefined : json['instructionsFromTeacher'],
+        'instructionsFromTeacher': !exists(json, 'instructionsFromTeacher') ? undefined : ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionFromJSON)),
         'modules': !exists(json, 'modules') ? undefined : ((json['modules'] as Array<any>).map(ActivityModuleFromJSON)),
         'course': !exists(json, 'course') ? undefined : json['course'],
     };
@@ -111,7 +117,7 @@ export function ActivityToJSON(value?: Activity | null): any {
         'description': value.description,
         'startTime': value.startTime === undefined ? undefined : (value.startTime.toISOString()),
         'endTime': value.endTime === undefined ? undefined : (value.endTime.toISOString()),
-        'instructionsFromTeacher': value.instructionsFromTeacher,
+        'instructionsFromTeacher': value.instructionsFromTeacher === undefined ? undefined : ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionToJSON)),
         'modules': value.modules === undefined ? undefined : ((value.modules as Array<any>).map(ActivityModuleToJSON)),
         'course': value.course,
     };

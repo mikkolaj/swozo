@@ -16,46 +16,46 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ExampleModel
+ * @interface ActivityLink
  */
-export interface ExampleModel {
+export interface ActivityLink {
     /**
      * 
      * @type {number}
-     * @memberof ExampleModel
+     * @memberof ActivityLink
      */
     id?: number;
     /**
      * 
      * @type {string}
-     * @memberof ExampleModel
+     * @memberof ActivityLink
      */
-    name?: string;
+    url?: string;
     /**
      * 
      * @type {string}
-     * @memberof ExampleModel
+     * @memberof ActivityLink
      */
-    someBigCollection?: string;
+    connectionInfo?: string;
 }
 
-export function ExampleModelFromJSON(json: any): ExampleModel {
-    return ExampleModelFromJSONTyped(json, false);
+export function ActivityLinkFromJSON(json: any): ActivityLink {
+    return ActivityLinkFromJSONTyped(json, false);
 }
 
-export function ExampleModelFromJSONTyped(json: any, ignoreDiscriminator: boolean): ExampleModel {
+export function ActivityLinkFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityLink {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'name': !exists(json, 'name') ? undefined : json['name'],
-        'someBigCollection': !exists(json, 'someBigCollection') ? undefined : json['someBigCollection'],
+        'url': !exists(json, 'url') ? undefined : json['url'],
+        'connectionInfo': !exists(json, 'connectionInfo') ? undefined : json['connectionInfo'],
     };
 }
 
-export function ExampleModelToJSON(value?: ExampleModel | null): any {
+export function ActivityLinkToJSON(value?: ActivityLink | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -65,8 +65,8 @@ export function ExampleModelToJSON(value?: ExampleModel | null): any {
     return {
         
         'id': value.id,
-        'name': value.name,
-        'someBigCollection': value.someBigCollection,
+        'url': value.url,
+        'connectionInfo': value.connectionInfo,
     };
 }
 

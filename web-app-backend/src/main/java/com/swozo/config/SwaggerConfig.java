@@ -3,6 +3,7 @@ package com.swozo.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,6 +20,26 @@ public class SwaggerConfig {
                                 .scheme("bearer")
                                 .bearerFormat("JWT"))
         );
+    }
+
+    @Bean
+    public GroupedOpenApi webApiSpec() {
+        String[] pathsToMatch = {
+                "/auth/**",
+                "/users/**",
+                "/service-modules/**",
+                "/courses/**"
+        };
+
+        String[] pathsToExclude = {
+                "/courses/all-system-courses"
+        };
+
+        return GroupedOpenApi.builder()
+                .group("web")
+                .pathsToMatch(pathsToMatch)
+                .pathsToExclude(pathsToExclude)
+                .build();
     }
 
 }

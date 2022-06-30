@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 
-// Class implementing default equals and hash code for all entities
 @MappedSuperclass
 @Getter
 @Setter
@@ -17,7 +16,7 @@ public abstract class BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

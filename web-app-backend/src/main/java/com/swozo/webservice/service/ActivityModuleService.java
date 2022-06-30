@@ -3,8 +3,7 @@ package com.swozo.webservice.service;
 import com.swozo.api.orchestratorclient.OrchestratorService;
 import com.swozo.databasemodel.ActivityModule;
 import com.swozo.dto.activitymodule.ActivityModuleDetailsResp;
-import com.swozo.mapper.dto.ActivityModuleMapper;
-import com.swozo.model.links.OrchestratorLinkResponse;
+import com.swozo.mapper.ActivityModuleMapper;
 import com.swozo.webservice.exceptions.ActivityModuleNotFoundException;
 import com.swozo.webservice.repository.ActivityModuleRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,13 +37,10 @@ public class ActivityModuleService {
         activityModules.stream()
                 .filter(activityModule -> activityModule.getLinks().isEmpty())
                 .forEach(activityModule -> {
-                    Long activityModuleId = activityModule.getId();
-                    OrchestratorLinkResponse orchestratorLinkResponse =
-                            orchestratorService.getActivityLinks(activityModuleId);
-                    System.out.println("GOT links: " + orchestratorLinkResponse.links());
-                    orchestratorLinkResponse
-                            .links()
+                    orchestratorService.getActivityLinks(activityModule.getId()).links().stream()
+                            .map(activityModuleMapper::toPersistence)
                             .forEach(activityModule::addLink);
+
                     activityModuleRepository.save(activityModule);
                 });
     }

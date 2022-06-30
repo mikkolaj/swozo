@@ -1,6 +1,6 @@
-package com.swozo.repository;
+package com.swozo.webservice.repository;
 
-import com.swozo.databasemodel.users.User;
+import com.swozo.databasemodel.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

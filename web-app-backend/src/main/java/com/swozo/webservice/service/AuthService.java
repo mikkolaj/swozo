@@ -1,10 +1,10 @@
-package com.swozo.api.auth;
+package com.swozo.webservice.service;
 
-import com.swozo.api.auth.dto.AppRole;
-import com.swozo.api.auth.dto.AuthData;
-import com.swozo.api.auth.dto.LoginData;
-import com.swozo.repository.UserRepository;
+import com.swozo.dto.auth.AppRole;
+import com.swozo.dto.auth.AuthData;
+import com.swozo.dto.auth.LoginData;
 import com.swozo.security.TokenService;
+import com.swozo.webservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

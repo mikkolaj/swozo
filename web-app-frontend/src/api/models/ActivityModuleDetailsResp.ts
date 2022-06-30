@@ -14,11 +14,11 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    ActivityLinkInfo,
-    ActivityLinkInfoFromJSON,
-    ActivityLinkInfoFromJSONTyped,
-    ActivityLinkInfoToJSON,
-} from './ActivityLinkInfo';
+    ActivityLinkData,
+    ActivityLinkDataFromJSON,
+    ActivityLinkDataFromJSONTyped,
+    ActivityLinkDataToJSON,
+} from './ActivityLinkData';
 import {
     ServiceModuleDetailsResp,
     ServiceModuleDetailsRespFromJSON,
@@ -52,10 +52,10 @@ export interface ActivityModuleDetailsResp {
     instruction: string;
     /**
      * 
-     * @type {Array<ActivityLinkInfo>}
+     * @type {Array<ActivityLinkData>}
      * @memberof ActivityModuleDetailsResp
      */
-    links: Array<ActivityLinkInfo>;
+    links: Array<ActivityLinkData>;
 }
 
 export function ActivityModuleDetailsRespFromJSON(json: any): ActivityModuleDetailsResp {
@@ -71,7 +71,7 @@ export function ActivityModuleDetailsRespFromJSONTyped(json: any, ignoreDiscrimi
         'id': json['id'],
         'module': ServiceModuleDetailsRespFromJSON(json['module']),
         'instruction': json['instruction'],
-        'links': ((json['links'] as Array<any>).map(ActivityLinkInfoFromJSON)),
+        'links': ((json['links'] as Array<any>).map(ActivityLinkDataFromJSON)),
     };
 }
 
@@ -87,7 +87,7 @@ export function ActivityModuleDetailsRespToJSON(value?: ActivityModuleDetailsRes
         'id': value.id,
         'module': ServiceModuleDetailsRespToJSON(value.module),
         'instruction': value.instruction,
-        'links': ((value.links as Array<any>).map(ActivityLinkInfoToJSON)),
+        'links': ((value.links as Array<any>).map(ActivityLinkDataToJSON)),
     };
 }
 

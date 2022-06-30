@@ -1,4 +1,4 @@
-package com.swozo.api.auth.dto;
+package com.swozo.dto.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

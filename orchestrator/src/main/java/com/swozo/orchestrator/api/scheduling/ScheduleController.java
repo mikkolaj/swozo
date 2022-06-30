@@ -21,6 +21,6 @@ public class ScheduleController {
     @PostMapping
     public void schedule(@RequestBody ScheduleRequest request) {
         logger.info("Serving request: {}", request);
-        service.schedule(request);
+//        service.schedule(request);
     }
 }

@@ -2,7 +2,7 @@
 
 spec_file="generated-api-spec.yaml"
 
-curl http://localhost:5000/v3/api-docs.yaml > $spec_file
+curl http://localhost:5000/v3/api-docs.yaml/web > $spec_file
 
 npx openapi-generator-cli generate \
 -g typescript-fetch \

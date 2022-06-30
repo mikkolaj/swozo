@@ -2,19 +2,22 @@ package com.swozo.api.requestsender;
 
 import com.swozo.config.Config;
 import com.swozo.model.scheduling.properties.ScheduleType;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-/*
-    We might want to create links to communicate not only with orchestrator, so I placed class in this package
- */
 
 @Component
 public class UriFactory {
-    @Value("${orchestrator.server.url}")
-    private String orchestratorServerUrl;
+    private final String orchestratorServerUrl;
+
+    @Autowired
+    public UriFactory(@Value("${orchestrator.server.url}") String orchestratorServerUrl) {
+        this.orchestratorServerUrl = orchestratorServerUrl;
+    }
 
     public URI createActivityLinksURI(Long moduleActivityID) {
         return createURI(orchestratorServerUrl +
@@ -28,12 +31,8 @@ public class UriFactory {
                 Config.SCHEDULES);
     }
 
+    @SneakyThrows(URISyntaxException.class)
     private URI createURI(String uri) {
-        try {
-            return new URI(uri);
-        } catch (URISyntaxException e) {
-            //this will never be thrown :))))
-            throw new IllegalArgumentException();
-        }
+        return new URI(uri);
     }
 }

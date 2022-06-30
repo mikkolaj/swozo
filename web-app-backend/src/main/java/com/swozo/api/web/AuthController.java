@@ -1,7 +1,8 @@
-package com.swozo.api.auth;
+package com.swozo.api.web;
 
-import com.swozo.api.auth.dto.AuthData;
-import com.swozo.api.auth.dto.LoginData;
+import com.swozo.dto.auth.AuthData;
+import com.swozo.dto.auth.LoginData;
+import com.swozo.webservice.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

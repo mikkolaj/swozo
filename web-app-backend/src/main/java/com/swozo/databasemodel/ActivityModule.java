@@ -1,6 +1,5 @@
 package com.swozo.databasemodel;
 
-import com.swozo.model.links.Link;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,6 +13,7 @@ import java.util.Collection;
 @Getter
 @Setter
 @ToString
+@Builder
 public class ActivityModule extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_module_id")
@@ -28,13 +28,18 @@ public class ActivityModule extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "link_id")
     @ToString.Exclude
-    private Collection<Link> links = new ArrayList<>();
+    private Collection<ActivityLink> links = new ArrayList<>();
 
     /*
     insert some MDA info fields here
      */
 
-    public void addLink(Link link) {
+    // not sure about this, we can wrap links and instruction in optional instead
+    public ActivityModule(ServiceModule serviceModule) {
+        this.module = serviceModule;
+    }
+
+    public void addLink(ActivityLink link) {
         links.add(link);
     }
 }

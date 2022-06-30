@@ -13,7 +13,7 @@ public record ActivityDetailsResp(
         @Schema(required = true) String description,
         @Schema(required = true) LocalDateTime startTime,
         @Schema(required = true) LocalDateTime endTime,
-        @Schema(required = true) List<ActivityInstruction> instructionsFromTeacher,
+        @Schema(required = true) List<ActivityInstructionData> instructionsFromTeacher,
         @Schema(required = true) List<ActivityModuleDetailsResp> activityModules
 ) {
 }

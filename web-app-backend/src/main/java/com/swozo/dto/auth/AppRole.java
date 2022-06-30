@@ -1,7 +1,7 @@
-package com.swozo.api.auth.dto;
+package com.swozo.dto.auth;
 
 
-import com.swozo.databasemodel.users.Role;
+import com.swozo.databasemodel.Role;
 
 public enum AppRole {
     STUDENT,

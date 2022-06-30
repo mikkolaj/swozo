@@ -1,6 +1,6 @@
 package com.swozo.config;
 
-import com.swozo.api.auth.dto.AppRole;
+import com.swozo.dto.auth.AppRole;
 import com.swozo.security.AuthConstraint;
 import com.swozo.security.jwt.JwtAuthRule;
 import com.swozo.security.jwt.JwtTokenService;

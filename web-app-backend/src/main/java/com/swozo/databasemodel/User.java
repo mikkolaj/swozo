@@ -1,7 +1,6 @@
-package com.swozo.databasemodel.users;
+package com.swozo.databasemodel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.swozo.databasemodel.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;

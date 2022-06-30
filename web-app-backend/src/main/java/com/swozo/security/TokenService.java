@@ -1,6 +1,7 @@
 package com.swozo.security;
 
-import com.swozo.databasemodel.users.User;
+
+import com.swozo.databasemodel.User;
 
 public interface TokenService {
     AccessToken createAccessToken(User user);

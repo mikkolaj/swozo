@@ -2,7 +2,7 @@ package com.swozo.webservice.service;
 
 import com.swozo.databasemodel.ServiceModule;
 import com.swozo.dto.servicemodule.ServiceModuleDetailsResp;
-import com.swozo.mapper.dto.ServiceModuleMapper;
+import com.swozo.mapper.ServiceModuleMapper;
 import com.swozo.webservice.exceptions.ServiceModuleNotFoundException;
 import com.swozo.webservice.repository.ServiceModuleRepository;
 import lombok.RequiredArgsConstructor;

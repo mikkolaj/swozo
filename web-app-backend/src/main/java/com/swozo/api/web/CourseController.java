@@ -2,7 +2,7 @@ package com.swozo.api.web;
 
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
-import com.swozo.databasemodel.users.User;
+import com.swozo.databasemodel.User;
 import com.swozo.dto.course.CourseDetailsReq;
 import com.swozo.dto.course.CourseDetailsResp;
 import com.swozo.security.AccessToken;

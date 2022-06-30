@@ -69,69 +69,6 @@ paths:
           description: OK
       security:
       - JWT_AUTH: []
-  /activities/{id}:
-    get:
-      tags:
-      - activity-controller
-      operationId: getActivity
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Activity'
-      security:
-      - JWT_AUTH: []
-    put:
-      tags:
-      - activity-controller
-      operationId: updateActivity
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Activity'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Activity'
-      security:
-      - JWT_AUTH: []
-    delete:
-      tags:
-      - activity-controller
-      operationId: deleteActivity
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-      security:
-      - JWT_AUTH: []
   /courses:
     get:
       tags:
@@ -239,79 +176,6 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AuthData'
-  /activities:
-    post:
-      tags:
-      - activity-controller
-      operationId: addActivity
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Activity'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Activity'
-      security:
-      - JWT_AUTH: []
-  /activities/{activityId}/service-modules/{activityModuleId}:
-    post:
-      tags:
-      - activity-controller
-      operationId: addModuleToActivity
-      parameters:
-      - name: activityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: activityModuleId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Activity'
-      security:
-      - JWT_AUTH: []
-    delete:
-      tags:
-      - activity-controller
-      operationId: deleteModuleFromActivity
-      parameters:
-      - name: activityId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: activityModuleId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Activity'
-      security:
-      - JWT_AUTH: []
   /users/me:
     get:
       tags:
@@ -324,45 +188,6 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/UserDetailsResp'
-      security:
-      - JWT_AUTH: []
-  /students:
-    get:
-      tags:
-      - student-controller
-      operationId: getStudentList
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
-      security:
-      - JWT_AUTH: []
-  /students/{courseId}:
-    get:
-      tags:
-      - student-controller
-      operationId: getStudentListFromCourse
-      parameters:
-      - name: courseId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
       security:
       - JWT_AUTH: []
   /service-modules:
@@ -402,44 +227,6 @@ paths:
                 $ref: '#/components/schemas/ServiceModuleDetailsResp'
       security:
       - JWT_AUTH: []
-  /example:
-    get:
-      tags:
-      - example-controller
-      operationId: getExample
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
-      security:
-      - JWT_AUTH: []
-  /example/json:
-    get:
-      tags:
-      - example-controller
-      operationId: getExampleJson
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/ExampleModel'
-      security:
-      - JWT_AUTH: []
-  /example/err:
-    get:
-      tags:
-      - example-controller
-      operationId: getExampleError
-      responses:
-        "200":
-          description: OK
-      security:
-      - JWT_AUTH: []
   /courses/{id}/activities:
     get:
       tags:
@@ -461,68 +248,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Activity'
-      security:
-      - JWT_AUTH: []
-  /courses/all-system-courses:
-    get:
-      tags:
-      - course-controller
-      operationId: getAllSystemCourses
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Course'
-      security:
-      - JWT_AUTH: []
-  /activities/{id}/service-modules:
-    get:
-      tags:
-      - activity-controller
-      operationId: getCourseActivityList_1
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ActivityModule'
-      security:
-      - JWT_AUTH: []
-  /activities/{id}/links:
-    get:
-      tags:
-      - activity-controller
-      operationId: getLinks
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  type: string
       security:
       - JWT_AUTH: []
 components:
@@ -550,13 +275,13 @@ components:
         instructionsFromTeacher:
           type: array
           items:
-            $ref: '#/components/schemas/ActivityInstruction'
+            $ref: '#/components/schemas/ActivityInstructionData'
         selectedModulesIds:
           type: array
           items:
             type: integer
             format: int64
-    ActivityInstruction:
+    ActivityInstructionData:
       required:
       - body
       type: object
@@ -609,7 +334,9 @@ components:
           type: string
           format: date-time
         instructionsFromTeacher:
-          type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityInstruction'
         modules:
           type: array
           items:
@@ -617,6 +344,26 @@ components:
         course:
           type: integer
           format: int64
+    ActivityInstruction:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        header:
+          type: string
+        body:
+          type: string
+    ActivityLink:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        url:
+          type: string
+        connectionInfo:
+          type: string
     ActivityModule:
       type: object
       properties:
@@ -632,7 +379,7 @@ components:
         links:
           type: array
           items:
-            $ref: '#/components/schemas/Link'
+            $ref: '#/components/schemas/ActivityLink'
     Course:
       type: object
       properties:
@@ -658,25 +405,6 @@ components:
             $ref: '#/components/schemas/User'
         teacher:
           $ref: '#/components/schemas/User'
-    Link:
-      type: object
-      properties:
-        href:
-          type: string
-        hreflang:
-          type: string
-        title:
-          type: string
-        type:
-          type: string
-        deprecation:
-          type: string
-        profile:
-          type: string
-        name:
-          type: string
-        templated:
-          type: boolean
     Role:
       type: object
       properties:
@@ -750,12 +478,12 @@ components:
         instructionsFromTeacher:
           type: array
           items:
-            $ref: '#/components/schemas/ActivityInstruction'
+            $ref: '#/components/schemas/ActivityInstructionData'
         activityModules:
           type: array
           items:
             $ref: '#/components/schemas/ActivityModuleDetailsResp'
-    ActivityLinkInfo:
+    ActivityLinkData:
       required:
       - connectionInstruction
       - serviceName
@@ -787,7 +515,7 @@ components:
         links:
           type: array
           items:
-            $ref: '#/components/schemas/ActivityLinkInfo'
+            $ref: '#/components/schemas/ActivityLinkData'
     CourseDetailsResp:
       required:
       - activities
@@ -890,16 +618,6 @@ components:
             - TEACHER
             - TECHNICAL_TEACHER
             - ADMIN
-    ExampleModel:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        someBigCollection:
-          type: string
   securitySchemes:
     JWT_AUTH:
       type: http
