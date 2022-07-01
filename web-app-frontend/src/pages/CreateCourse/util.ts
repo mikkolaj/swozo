@@ -24,8 +24,8 @@ const buildCreateActivityRequest = (activity: ActivityValues): ActivityDetailsRe
     return {
         name: activity.name,
         description: activity.description,
-        startTime: activity.startTime.add(2, 'hours').toDate(), // TODO xD
-        endTime: activity.endTime.add(2, 'hours').toDate(),
+        startTime: activity.startTime.toDate(),
+        endTime: activity.endTime.toDate(),
         instructionsFromTeacher: [
             {
                 body: activity.instructions, //TODO

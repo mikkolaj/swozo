@@ -75,7 +75,7 @@ export const FilesListView = () => {
                     <Divider />
 
                     {/* TODO memoize this */}
-                    {sorted(files, sortKey, sortIncreasing ? 'increasing' : 'decreasing').map((file) => (
+                    {sorted(files, sortKey, sortIncreasing ? 'ASC' : 'DESC').map((file) => (
                         <Paper key={file.id} sx={{ p: 1, boxShadow: 2 }}>
                             <Grid container>
                                 <Grid

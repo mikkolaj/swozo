@@ -30,8 +30,10 @@ i18n.use(initReactI18next) // passes i18n down to react-i18next
         },
     });
 
-dayjs.locale('pl');
 dayjs.extend(isToday);
+
+// TODO navigator.language (?)
+dayjs.locale('pl');
 
 // TODO different config in prod
 const queryClient = new QueryClient({
