@@ -19,7 +19,6 @@ public class SerializationConfig {
         return builder -> builder.serializerByType(LocalDateTime.class, new DateSerializer());
     }
 
-
     private static class DateSerializer extends JsonSerializer<LocalDateTime> {
         @Override
         public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {

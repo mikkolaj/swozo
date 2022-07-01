@@ -8,6 +8,7 @@ import com.swozo.dto.course.CourseDetailsReq;
 import com.swozo.dto.course.CourseDetailsResp;
 import com.swozo.mapper.CourseMapper;
 import com.swozo.webservice.exceptions.CourseNotFoundException;
+import com.swozo.webservice.repository.ActivityRepository;
 import com.swozo.webservice.repository.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class CourseService {
     private final CourseRepository courseRepository;
+    private final ActivityRepository activityRepository;
     private final UserService userService;
     private final CourseMapper courseMapper;
     private final ScheduleService scheduleService;
@@ -51,7 +53,12 @@ public class CourseService {
 
     public CourseDetailsResp createCourse(CourseDetailsReq courseDetailsReq, Long teacherId) {
         var course = courseMapper.toPersistence(courseDetailsReq, teacherId);
+        course.getActivities().forEach(activity -> {
+            activity.setCourse(course);
+            activity.getModules().forEach(activityModule -> activityModule.setActivity(activity));
+        });
         courseRepository.save(course);
+
         scheduleService.scheduleActivities(course.getActivities());
         return courseMapper.toModel(course);
     }

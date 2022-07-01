@@ -13,7 +13,6 @@ import java.util.Collection;
 @Getter
 @Setter
 @ToString
-@Builder
 public class ActivityModule extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_module_id")

@@ -19,7 +19,9 @@ public abstract class ActivityModuleMapper {
     public abstract ActivityLink toPersistence(ActivityLinkInfo activityLinkInfo);
 
     public ActivityModule fromServiceModule(ServiceModule serviceModule) {
-        return new ActivityModule(serviceModule);
+        var activityModule = new ActivityModule(serviceModule);
+        activityModule.setInstruction("TODO");
+        return activityModule;
     }
 
     @Mapping(target = "serviceName", expression = "java(activityModule.getModule().getScheduleType().toString())")
