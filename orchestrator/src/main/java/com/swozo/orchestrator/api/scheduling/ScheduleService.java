@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.api.scheduling;
 
-import com.swozo.exceptions.PropagatingException;
 import com.swozo.function.ThrowingFunction;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.JupyterScheduleRequest;
@@ -27,7 +26,6 @@ public class ScheduleService {
     // TODO: probably will change if we decide to execute tasks (e.g. saving user's files) before deleting the instance
     private static final int CLEANUP_SECONDS = 0;
     private static final int IMMEDIATE_OFFSET = 0;
-    private static final int DEFAULT_BOOT_SECONDS = 120;
     private final InternalTaskScheduler scheduler;
     private final TimedVMProvider timedVmProvider;
     private final TimedSoftwareProvisioner jupyterProvisioner;
@@ -70,8 +68,6 @@ public class ScheduleService {
     ) {
         return resourceDetails -> {
             try {
-                // ugly fix for "connection refused", TODO: poll instance for connection
-                Thread.sleep(DEFAULT_BOOT_SECONDS * 1000L);
                 var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
                 scheduleRequestTracker.saveLinks(scheduleRequest.getActivityModuleID(), links);
                 scheduler.schedule(
@@ -80,9 +76,6 @@ public class ScheduleService {
             } catch (ProvisioningFailed e) {
                 logger.error("Provisioning software on: {} failed. Scheduling deletion.", resourceDetails, e);
                 scheduler.schedule(() -> deleteInstance(scheduleRequest, resourceDetails), IMMEDIATE_OFFSET);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new PropagatingException(e);
             }
         };
     }

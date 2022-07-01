@@ -2,12 +2,12 @@ package com.swozo.utils;
 
 import com.swozo.exceptions.PropagatingException;
 import com.swozo.function.*;
-import org.apache.logging.log4j.util.Supplier;
 
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CheckedExceptionConverter {
     private CheckedExceptionConverter() {
@@ -15,14 +15,14 @@ public class CheckedExceptionConverter {
 
     public static Runnable from(ThrowingRunnable throwingRunnable) {
         return () -> execute(
-                () -> VoidMapper.toCallableVoid(throwingRunnable),
+                VoidMapper.toCallableVoid(throwingRunnable),
                 RuntimeException::new
         );
     }
 
     public static Runnable from(ThrowingRunnable throwingRunnable, Function<Throwable, RuntimeException> converter) {
         return () -> execute(
-                () -> VoidMapper.toCallableVoid(throwingRunnable),
+                VoidMapper.toCallableVoid(throwingRunnable),
                 converter
         );
     }
@@ -43,28 +43,28 @@ public class CheckedExceptionConverter {
 
     public static <T> Consumer<T> from(ThrowingConsumer<T> throwingConsumer) {
         return (T t) -> execute(
-                () -> VoidMapper.toCallableVoid(() -> throwingConsumer.accept(t)),
+                VoidMapper.toCallableVoid(() -> throwingConsumer.accept(t)),
                 RuntimeException::new
         );
     }
 
     public static <T> Consumer<T> from(ThrowingConsumer<T> throwingConsumer, Function<Throwable, RuntimeException> converter) {
         return (T t) -> execute(
-                () -> VoidMapper.toCallableVoid(() -> throwingConsumer.accept(t)),
+                VoidMapper.toCallableVoid(() -> throwingConsumer.accept(t)),
                 converter
         );
     }
 
     public static <T, S> BiConsumer<T, S> from(ThrowingBiConsumer<T, S> throwingConsumer) {
         return (T t, S s) -> execute(
-                () -> VoidMapper.toCallableVoid(() -> throwingConsumer.accept(t, s)),
+                VoidMapper.toCallableVoid(() -> throwingConsumer.accept(t, s)),
                 RuntimeException::new
         );
     }
 
     public static <T, S> BiConsumer<T, S> from(ThrowingBiConsumer<T, S> throwingConsumer, Function<Throwable, RuntimeException> converter) {
         return (T t, S s) -> execute(
-                () -> VoidMapper.toCallableVoid(() -> throwingConsumer.accept(t, s)),
+                VoidMapper.toCallableVoid(() -> throwingConsumer.accept(t, s)),
                 converter
         );
     }
