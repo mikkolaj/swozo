@@ -2,7 +2,7 @@ package com.swozo.webservice.service;
 
 import com.swozo.databasemodel.Role;
 import com.swozo.databasemodel.User;
-import com.swozo.dto.user.UserDetailsResp;
+import com.swozo.dto.user.UserDetailsDto;
 import com.swozo.mapper.UserMapper;
 import com.swozo.webservice.exceptions.UserNotFoundException;
 import com.swozo.webservice.repository.UserRepository;
@@ -25,8 +25,8 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(email));
     }
 
-    public UserDetailsResp getUserInfo(Long userId) {
-        return userMapper.toModel(getUserById(userId));
+    public UserDetailsDto getUserInfo(Long userId) {
+        return userMapper.toDto(getUserById(userId));
     }
 
     public boolean hasUserRole(Long userId, String roleName) {

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
-public record ServiceModuleDetailsResp(
+public record ServiceModuleDetailsDto(
         @Schema(required = true) Long id,
         @Schema(required = true) String name,
         @Schema(required = true) String instructionsFromTechnicalTeacher,

@@ -81,11 +81,11 @@ public class ActivityController {
     }
 
 
-    //imo this endpoint should be removed, links are now stored in the ActivityModule, and we already have a method for getting them
+    //imo this endpoint should be removed, connectionDetails are now stored in the ActivityModule, and we already have a method for getting them
     @GetMapping("/{id}/links")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public Collection<String> getLinks(AccessToken token, @PathVariable Long id) {
-        logger.info("sending links");
+        logger.info("sending connectionDetails");
         return new LinkedList<>();
     }
 

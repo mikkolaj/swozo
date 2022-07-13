@@ -3,8 +3,8 @@ package com.swozo.mapper;
 import com.swozo.databasemodel.ActivityLink;
 import com.swozo.databasemodel.ActivityModule;
 import com.swozo.databasemodel.ServiceModule;
-import com.swozo.dto.activity.ActivityLinkData;
-import com.swozo.dto.activitymodule.ActivityModuleDetailsResp;
+import com.swozo.dto.activity.ServiceConnectionDetailsDto;
+import com.swozo.dto.activitymodule.ActivityModuleDetailsDto;
 import com.swozo.model.links.ActivityLinkInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,10 +28,10 @@ public abstract class ActivityModuleMapper {
     @Mapping(target = "connectionInstruction", source = "activityModule.instruction")
     @Mapping(target = "url", source = "activityLink.url")
     @Mapping(target = "connectionInfo", source = "activityLink.connectionInfo")
-    public abstract ActivityLinkData toModel(ActivityLink activityLink, ActivityModule activityModule);
+    public abstract ServiceConnectionDetailsDto toDto(ActivityLink activityLink, ActivityModule activityModule);
 
     @Mapping(target = "module", expression = "java(serviceModuleMapper.toModel(activityModule.getModule()))")
-    @Mapping(target = "links", expression = "java(activityModule.getLinks().stream().map(link -> toModel(link, activityModule)).toList())")
-    public abstract ActivityModuleDetailsResp toModel(ActivityModule activityModule);
+    @Mapping(target = "connectionDetails", expression = "java(activityModule.getLinks().stream().map(link -> toModel(link, activityModule)).toList())")
+    public abstract ActivityModuleDetailsDto toDto(ActivityModule activityModule);
 }
 

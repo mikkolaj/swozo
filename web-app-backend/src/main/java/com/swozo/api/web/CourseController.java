@@ -3,8 +3,8 @@ package com.swozo.api.web;
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.User;
-import com.swozo.dto.course.CourseDetailsReq;
-import com.swozo.dto.course.CourseDetailsResp;
+import com.swozo.dto.course.CourseDetailsDto;
+import com.swozo.dto.course.CreateCourseRequest;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.CourseService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -38,7 +38,7 @@ public class CourseController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
-    public Collection<CourseDetailsResp> getUserCourses(AccessToken token) {
+    public Collection<CourseDetailsDto> getUserCourses(AccessToken token) {
         // TODO we need only partial course data here to display the list, create another DTO with summary
         Long userId = token.getUserId();
         logger.info("course list for user with id: {}", userId);
@@ -47,16 +47,16 @@ public class CourseController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
-    public CourseDetailsResp getCourse(AccessToken token, @PathVariable Long id) {
+    public CourseDetailsDto getCourse(AccessToken token, @PathVariable Long id) {
         logger.info("course info getter for id: {}", id);
         return courseService.getCourseDetails(id);
     }
 
     @PostMapping()
     @PreAuthorize("hasRole('TEACHER')")
-    public CourseDetailsResp addCourse(AccessToken token, @RequestBody CourseDetailsReq courseDetailsReq) {
-        logger.info("creating new course with name: {}", courseDetailsReq.name());
-        return courseService.createCourse(courseDetailsReq, token.getUserId());
+    public CourseDetailsDto addCourse(AccessToken token, @RequestBody CreateCourseRequest createCourseRequest) {
+        logger.info("creating new course with name: {}", createCourseRequest.name());
+        return courseService.createCourse(createCourseRequest, token.getUserId());
     }
 
     @DeleteMapping("/{id}")
@@ -68,9 +68,9 @@ public class CourseController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course editCourse(AccessToken token, @PathVariable Long id, @RequestBody CourseDetailsReq courseDetailsReq) {
+    public Course editCourse(AccessToken token, @PathVariable Long id, @RequestBody CreateCourseRequest createCourseRequest) {
         logger.info("editing course with id: {}", id);
-        return courseService.updateCourse(id, token.getUserId(), courseDetailsReq);
+        return courseService.updateCourse(id, token.getUserId(), createCourseRequest);
     }
 
     @GetMapping("/{id}/activities")

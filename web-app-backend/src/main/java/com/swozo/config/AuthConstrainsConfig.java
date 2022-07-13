@@ -1,6 +1,6 @@
 package com.swozo.config;
 
-import com.swozo.dto.auth.AppRole;
+import com.swozo.dto.auth.RoleDto;
 import com.swozo.security.AuthConstraint;
 import com.swozo.security.jwt.JwtAuthRule;
 import com.swozo.security.jwt.JwtTokenService;
@@ -46,10 +46,10 @@ public class AuthConstrainsConfig {
         var roleHierarchy = new RoleHierarchyImpl();
 
         // TODO not sure about relation between teacher and technical teacher roles
-        var admin = AuthUtils.toSpringRole(AppRole.ADMIN);
+        var admin = AuthUtils.toSpringRole(RoleDto.ADMIN);
 
-        var hierarchy = Arrays.stream(AppRole.values())
-                .filter(role -> role != AppRole.ADMIN)
+        var hierarchy = Arrays.stream(RoleDto.values())
+                .filter(role -> role != RoleDto.ADMIN)
                 .map(AuthUtils::toSpringRole)
                 .map(role -> admin + " > " + role)
                 .collect(Collectors.joining("\n"));

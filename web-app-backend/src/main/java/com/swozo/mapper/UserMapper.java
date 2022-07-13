@@ -1,7 +1,7 @@
 package com.swozo.mapper;
 
 import com.swozo.databasemodel.User;
-import com.swozo.dto.user.UserDetailsResp;
+import com.swozo.dto.user.UserDetailsDto;
 import com.swozo.webservice.repository.UserRepository;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,5 +19,5 @@ public abstract class UserMapper {
         return userRepository.findById(userId).orElseThrow();
     }
 
-    public abstract UserDetailsResp toModel(User user);
+    public abstract UserDetailsDto toDto(User user);
 }

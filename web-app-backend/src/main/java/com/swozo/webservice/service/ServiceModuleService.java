@@ -1,7 +1,7 @@
 package com.swozo.webservice.service;
 
 import com.swozo.databasemodel.ServiceModule;
-import com.swozo.dto.servicemodule.ServiceModuleDetailsResp;
+import com.swozo.dto.servicemodule.ServiceModuleDetailsDto;
 import com.swozo.mapper.ServiceModuleMapper;
 import com.swozo.webservice.exceptions.ServiceModuleNotFoundException;
 import com.swozo.webservice.repository.ServiceModuleRepository;
@@ -21,13 +21,13 @@ public class ServiceModuleService {
                 .orElseThrow(() -> new ServiceModuleNotFoundException(id));
     }
 
-    public Collection<ServiceModuleDetailsResp> getServiceModuleList() {
+    public Collection<ServiceModuleDetailsDto> getServiceModuleList() {
 //        TODO To ma byc niby lista wszystkich dsotępnych modułów (czyli nei activity modułów tylko serwis modułów...
-        return serviceModuleRepository.findAll().stream().map(serviceModuleMapper::toModel).toList();
+        return serviceModuleRepository.findAll().stream().map(serviceModuleMapper::toDto).toList();
     }
 
-    public ServiceModuleDetailsResp getServiceModuleInfo(Long serviceModuleId) {
+    public ServiceModuleDetailsDto getServiceModuleInfo(Long serviceModuleId) {
         ServiceModule serviceModule = getServiceModule(serviceModuleId);
-        return serviceModuleMapper.toModel(serviceModule);
+        return serviceModuleMapper.toDto(serviceModule);
     }
 }

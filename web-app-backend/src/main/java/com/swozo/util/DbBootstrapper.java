@@ -1,7 +1,7 @@
 package com.swozo.util;
 
 import com.swozo.databasemodel.*;
-import com.swozo.dto.auth.AppRole;
+import com.swozo.dto.auth.RoleDto;
 import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.webservice.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -47,23 +47,23 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     }
 
     private void prepareRoles() {
-        Arrays.stream(AppRole.values())
-                .map(AppRole::toString)
+        Arrays.stream(RoleDto.values())
+                .map(RoleDto::toString)
                 .filter(name -> roleRepository.findByName(name) == null)
                 .forEach(name -> roleRepository.save(new Role(name)));
     }
 
     // TODO assert dev env
     private void setupTestData() {
-        var adminRole = roleRepository.findByName(AppRole.ADMIN.toString());
+        var adminRole = roleRepository.findByName(RoleDto.ADMIN.toString());
         userRepository.save(new User("Bolek", "Kowalski", "admin", "admin", List.of(adminRole)));
 
-        var teacherRole = roleRepository.findByName(AppRole.TEACHER.toString());
-        var technicalTeacherRole = roleRepository.findByName(AppRole.TECHNICAL_TEACHER.toString());
+        var teacherRole = roleRepository.findByName(RoleDto.TEACHER.toString());
+        var technicalTeacherRole = roleRepository.findByName(RoleDto.TECHNICAL_TEACHER.toString());
         User teacher = new User("Lolek", "Kowalski", "teacher", "teacher", List.of(teacherRole, technicalTeacherRole));
         userRepository.save(teacher);
 
-        var studentRole = roleRepository.findByName(AppRole.STUDENT.toString());
+        var studentRole = roleRepository.findByName(RoleDto.STUDENT.toString());
         User student1 = new User("Antoni", "Zabrzydowski", "student1", "student1", List.of(studentRole));
         userRepository.save(student1);
         User student2 = new User("Mela", "Zabrzydowska", "student2", "student2", List.of(studentRole));

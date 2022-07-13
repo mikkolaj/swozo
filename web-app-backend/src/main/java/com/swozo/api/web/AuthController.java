@@ -1,7 +1,7 @@
 package com.swozo.api.web;
 
-import com.swozo.dto.auth.AuthData;
-import com.swozo.dto.auth.LoginData;
+import com.swozo.dto.auth.AuthDetailsDto;
+import com.swozo.dto.auth.LoginRequest;
 import com.swozo.webservice.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class AuthController {
 
     @Operation(summary = "Login user")
     @PostMapping("/login")
-    public AuthData login(@RequestBody LoginData loginData) {
-        return authService.authenticateUser(loginData);
+    public AuthDetailsDto login(@RequestBody LoginRequest loginRequest) {
+        return authService.authenticateUser(loginRequest);
     }
 }

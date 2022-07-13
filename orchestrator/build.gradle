@@ -6,8 +6,8 @@ plugins {
 
 group = 'com.swozo'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = "17"
-targetCompatibility = "17"
+sourceCompatibility = "17.PREVIEW"
+targetCompatibility = "17.PREVIEW"
 
 configurations {
     compileOnly {
@@ -40,7 +40,7 @@ tasks.withType(JavaCompile) {
 }
 
 tasks.withType(JavaExec) {
-    jvmArgs += '--enable-preview'
+    jvmArgs += ['--enable-preview', '-Duser.timezone=UTC']
 }
 
 tasks.named('test') {

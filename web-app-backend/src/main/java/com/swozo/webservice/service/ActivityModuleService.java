@@ -2,7 +2,7 @@ package com.swozo.webservice.service;
 
 import com.swozo.api.orchestratorclient.OrchestratorService;
 import com.swozo.databasemodel.ActivityModule;
-import com.swozo.dto.activitymodule.ActivityModuleDetailsResp;
+import com.swozo.dto.activitymodule.ActivityModuleDetailsDto;
 import com.swozo.mapper.ActivityModuleMapper;
 import com.swozo.webservice.exceptions.ActivityModuleNotFoundException;
 import com.swozo.webservice.repository.ActivityModuleRepository;
@@ -24,13 +24,13 @@ public class ActivityModuleService {
                 .orElseThrow(() -> new ActivityModuleNotFoundException(activityModuleId));
     }
 
-    public Collection<ActivityModuleDetailsResp> getActivityModuleList() {
+    public Collection<ActivityModuleDetailsDto> getActivityModuleList() {
         return new LinkedList<>();
     }
 
-    public ActivityModuleDetailsResp getActivityModuleInfo(Long activityModuleId) {
+    public ActivityModuleDetailsDto getActivityModuleInfo(Long activityModuleId) {
         ActivityModule activityModule = getActivityModule(activityModuleId);
-        return activityModuleMapper.toModel(activityModule);
+        return activityModuleMapper.toDto(activityModule);
     }
 
     public void provideLinksForActivityModules(Collection<ActivityModule> activityModules) {

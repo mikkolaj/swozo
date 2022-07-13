@@ -1,12 +1,15 @@
 package com.swozo.api.web;
 
-import com.swozo.dto.servicemodule.ServiceModuleDetailsResp;
+import com.swozo.dto.servicemodule.ServiceModuleDetailsDto;
 import com.swozo.security.AccessToken;
 import com.swozo.webservice.service.ServiceModuleService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 
@@ -19,20 +22,20 @@ public class ServiceModuleController {
     private final ServiceModuleService serviceModuleService;
 
     @Autowired
-    public ServiceModuleController(ServiceModuleService serviceModuleService){
+    public ServiceModuleController(ServiceModuleService serviceModuleService) {
         this.serviceModuleService = serviceModuleService;
     }
 
     @GetMapping()
     @PreAuthorize("hasRole('TEACHER')")
-    public Collection<ServiceModuleDetailsResp> getModuleList(AccessToken token) {
+    public Collection<ServiceModuleDetailsDto> getModuleList(AccessToken token) {
         System.out.println("module list");
         return serviceModuleService.getServiceModuleList();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
-    public ServiceModuleDetailsResp getServiceModule(AccessToken token, @PathVariable Long id) {
+    public ServiceModuleDetailsDto getServiceModule(AccessToken token, @PathVariable Long id) {
         System.out.println("service module  info getter");
         return serviceModuleService.getServiceModuleInfo(id);
     }

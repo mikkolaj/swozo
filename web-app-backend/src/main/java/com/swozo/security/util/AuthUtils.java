@@ -2,7 +2,7 @@ package com.swozo.security.util;
 
 import com.swozo.databasemodel.Role;
 import com.swozo.databasemodel.User;
-import com.swozo.dto.auth.AppRole;
+import com.swozo.dto.auth.RoleDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -25,7 +25,7 @@ public class AuthUtils {
                 .toList();
     }
 
-    public static String toSpringRole(AppRole role) {
+    public static String toSpringRole(RoleDto role) {
         return GRANTED_AUTHORITY_PREFIX + role.toString();
     }
 }

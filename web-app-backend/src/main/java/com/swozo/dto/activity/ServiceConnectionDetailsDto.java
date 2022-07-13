@@ -2,8 +2,7 @@ package com.swozo.dto.activity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ActivityLinkData(
-        // return null if we don't have urls yet
+public record ServiceConnectionDetailsDto(
         @Schema(required = false) String url,
         @Schema(required = true) String serviceName,
         @Schema(required = true) String connectionInstruction,

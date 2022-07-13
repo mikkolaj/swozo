@@ -1,8 +1,8 @@
 package com.swozo.webservice.service;
 
-import com.swozo.dto.auth.AppRole;
-import com.swozo.dto.auth.AuthData;
-import com.swozo.dto.auth.LoginData;
+import com.swozo.dto.auth.AuthDetailsDto;
+import com.swozo.dto.auth.LoginRequest;
+import com.swozo.dto.auth.RoleDto;
 import com.swozo.security.TokenService;
 import com.swozo.webservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
-    public AuthData authenticateUser(LoginData loginData) {
+    public AuthDetailsDto authenticateUser(LoginRequest loginRequest) {
         // TODO check passwd etc
-        var user = userRepository.findByEmail(loginData.email()).orElseThrow();
+        var user = userRepository.findByEmail(loginRequest.email()).orElseThrow();
         var token = tokenService.createAccessToken(user);
-        var appRoles = user.getRoles().stream().map(AppRole::from).toList();
+        var appRoles = user.getRoles().stream().map(RoleDto::from).toList();
 
         // duplicate some data stored in token for easier access on frontend
-        return new AuthData(token.getCredentials(), token.getExpirationTime(), appRoles);
+        return new AuthDetailsDto(token.getCredentials(), token.getExpirationTime(), appRoles);
     }
 }

@@ -4,8 +4,8 @@ import com.swozo.api.orchestratorclient.ScheduleService;
 import com.swozo.databasemodel.Activity;
 import com.swozo.databasemodel.Course;
 import com.swozo.databasemodel.User;
-import com.swozo.dto.course.CourseDetailsReq;
-import com.swozo.dto.course.CourseDetailsResp;
+import com.swozo.dto.course.CourseDetailsDto;
+import com.swozo.dto.course.CreateCourseRequest;
 import com.swozo.mapper.CourseMapper;
 import com.swozo.webservice.exceptions.CourseNotFoundException;
 import com.swozo.webservice.repository.ActivityRepository;
@@ -29,12 +29,12 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public Collection<CourseDetailsResp> getUserCourses(Long userId) {
+    public Collection<CourseDetailsDto> getUserCourses(Long userId) {
         var courses = userService.hasUserRole(userId, "STUDENT") ?
                 courseRepository.getCoursesByStudentsId(userId) :
                 courseRepository.getCoursesByTeacherId(userId);
 
-        return courses.stream().map(courseMapper::toModel).toList();
+        return courses.stream().map(courseMapper::toDto).toList();
     }
 
     public Course getCourse(Long id) {
@@ -42,17 +42,17 @@ public class CourseService {
                 .orElseThrow(() -> new CourseNotFoundException(id));
     }
 
-    public CourseDetailsResp getCourseDetails(Long id) {
+    public CourseDetailsDto getCourseDetails(Long id) {
         var course = getCourse(id);
         // TODO this will let us check if they are present by refreshing the page MAKE IT BeTtEr
         activityModuleService
                 .provideLinksForActivityModules(course.getActivities().stream().flatMap(x -> x.getModules().stream()).toList());
 
-        return courseMapper.toModel(getCourse(id));
+        return courseMapper.toDto(getCourse(id));
     }
 
-    public CourseDetailsResp createCourse(CourseDetailsReq courseDetailsReq, Long teacherId) {
-        var course = courseMapper.toPersistence(courseDetailsReq, teacherId);
+    public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId) {
+        var course = courseMapper.toPersistence(createCourseRequest, teacherId);
         course.getActivities().forEach(activity -> {
             activity.setCourse(course);
             activity.getModules().forEach(activityModule -> activityModule.setActivity(activity));
@@ -60,17 +60,17 @@ public class CourseService {
         courseRepository.save(course);
 
         scheduleService.scheduleActivities(course.getActivities());
-        return courseMapper.toModel(course);
+        return courseMapper.toDto(course);
     }
 
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
     }
 
-    public Course updateCourse(Long id, Long teacherId, CourseDetailsReq courseDetailsReq) {
+    public Course updateCourse(Long id, Long teacherId, CreateCourseRequest createCourseRequest) {
         // TODO validate that teacherId = id of creator etc...
         var oldCourse = courseRepository.getById(id);
-        var course = courseMapper.toPersistence(courseDetailsReq, oldCourse.getTeacher().getId());
+        var course = courseMapper.toPersistence(createCourseRequest, oldCourse.getTeacher().getId());
         course.setId(oldCourse.getId());
 
         // TODO maybe check what should be overwritten

@@ -48,3 +48,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.withType(JavaExec) {
+    jvmArgs += ['-Duser.timezone=UTC']
+}
