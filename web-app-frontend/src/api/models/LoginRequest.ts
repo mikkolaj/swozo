@@ -16,28 +16,28 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface LoginData
+ * @interface LoginRequest
  */
-export interface LoginData {
+export interface LoginRequest {
     /**
      * 
      * @type {string}
-     * @memberof LoginData
+     * @memberof LoginRequest
      */
     email: string;
     /**
      * 
      * @type {string}
-     * @memberof LoginData
+     * @memberof LoginRequest
      */
     password: string;
 }
 
-export function LoginDataFromJSON(json: any): LoginData {
-    return LoginDataFromJSONTyped(json, false);
+export function LoginRequestFromJSON(json: any): LoginRequest {
+    return LoginRequestFromJSONTyped(json, false);
 }
 
-export function LoginDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): LoginData {
+export function LoginRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): LoginRequest {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -48,7 +48,7 @@ export function LoginDataFromJSONTyped(json: any, ignoreDiscriminator: boolean):
     };
 }
 
-export function LoginDataToJSON(value?: LoginData | null): any {
+export function LoginRequestToJSON(value?: LoginRequest | null): any {
     if (value === undefined) {
         return undefined;
     }

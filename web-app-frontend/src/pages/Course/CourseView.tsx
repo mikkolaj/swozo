@@ -1,5 +1,5 @@
 import { Box, Container, Divider, Grid, Stack, Typography } from '@mui/material';
-import { CourseDetailsResp } from 'api';
+import { CourseDetailsDto } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
@@ -10,7 +10,7 @@ import { useQuery } from 'react-query';
 import { PageRoutes } from 'utils/routes';
 import { ActivityView } from './components/Activity/ActivityView';
 
-export const CourseContext = React.createContext<CourseDetailsResp | undefined>(undefined);
+export const CourseContext = React.createContext<CourseDetailsDto | undefined>(undefined);
 
 export const CourseView = () => {
     const [courseId] = useRequiredParams(['courseId']);

@@ -14,61 +14,61 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    ActivityInstructionData,
-    ActivityInstructionDataFromJSON,
-    ActivityInstructionDataFromJSONTyped,
-    ActivityInstructionDataToJSON,
-} from './ActivityInstructionData';
+    ActivityInstructionDto,
+    ActivityInstructionDtoFromJSON,
+    ActivityInstructionDtoFromJSONTyped,
+    ActivityInstructionDtoToJSON,
+} from './ActivityInstructionDto';
 
 /**
  * 
  * @export
- * @interface ActivityDetailsReq
+ * @interface CreateActivityRequest
  */
-export interface ActivityDetailsReq {
+export interface CreateActivityRequest {
     /**
      * 
      * @type {string}
-     * @memberof ActivityDetailsReq
+     * @memberof CreateActivityRequest
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityDetailsReq
+     * @memberof CreateActivityRequest
      */
     description: string;
     /**
      * 
      * @type {Date}
-     * @memberof ActivityDetailsReq
+     * @memberof CreateActivityRequest
      */
     startTime: Date;
     /**
      * 
      * @type {Date}
-     * @memberof ActivityDetailsReq
+     * @memberof CreateActivityRequest
      */
     endTime: Date;
     /**
      * 
-     * @type {Array<ActivityInstructionData>}
-     * @memberof ActivityDetailsReq
+     * @type {Array<ActivityInstructionDto>}
+     * @memberof CreateActivityRequest
      */
-    instructionsFromTeacher: Array<ActivityInstructionData>;
+    instructionsFromTeacher: Array<ActivityInstructionDto>;
     /**
      * 
      * @type {Array<number>}
-     * @memberof ActivityDetailsReq
+     * @memberof CreateActivityRequest
      */
     selectedModulesIds: Array<number>;
 }
 
-export function ActivityDetailsReqFromJSON(json: any): ActivityDetailsReq {
-    return ActivityDetailsReqFromJSONTyped(json, false);
+export function CreateActivityRequestFromJSON(json: any): CreateActivityRequest {
+    return CreateActivityRequestFromJSONTyped(json, false);
 }
 
-export function ActivityDetailsReqFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityDetailsReq {
+export function CreateActivityRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateActivityRequest {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -78,12 +78,12 @@ export function ActivityDetailsReqFromJSONTyped(json: any, ignoreDiscriminator: 
         'description': json['description'],
         'startTime': (new Date(json['startTime'])),
         'endTime': (new Date(json['endTime'])),
-        'instructionsFromTeacher': ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionDataFromJSON)),
+        'instructionsFromTeacher': ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionDtoFromJSON)),
         'selectedModulesIds': json['selectedModulesIds'],
     };
 }
 
-export function ActivityDetailsReqToJSON(value?: ActivityDetailsReq | null): any {
+export function CreateActivityRequestToJSON(value?: CreateActivityRequest | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -96,7 +96,7 @@ export function ActivityDetailsReqToJSON(value?: ActivityDetailsReq | null): any
         'description': value.description,
         'startTime': (value.startTime.toISOString()),
         'endTime': (value.endTime.toISOString()),
-        'instructionsFromTeacher': ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionDataToJSON)),
+        'instructionsFromTeacher': ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionDtoToJSON)),
         'selectedModulesIds': value.selectedModulesIds,
     };
 }

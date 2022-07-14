@@ -16,34 +16,34 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface UserDetailsResp
+ * @interface UserDetailsDto
  */
-export interface UserDetailsResp {
+export interface UserDetailsDto {
     /**
      * 
      * @type {string}
-     * @memberof UserDetailsResp
+     * @memberof UserDetailsDto
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof UserDetailsResp
+     * @memberof UserDetailsDto
      */
     surname: string;
     /**
      * 
      * @type {string}
-     * @memberof UserDetailsResp
+     * @memberof UserDetailsDto
      */
     email: string;
 }
 
-export function UserDetailsRespFromJSON(json: any): UserDetailsResp {
-    return UserDetailsRespFromJSONTyped(json, false);
+export function UserDetailsDtoFromJSON(json: any): UserDetailsDto {
+    return UserDetailsDtoFromJSONTyped(json, false);
 }
 
-export function UserDetailsRespFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserDetailsResp {
+export function UserDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserDetailsDto {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -55,7 +55,7 @@ export function UserDetailsRespFromJSONTyped(json: any, ignoreDiscriminator: boo
     };
 }
 
-export function UserDetailsRespToJSON(value?: UserDetailsResp | null): any {
+export function UserDetailsDtoToJSON(value?: UserDetailsDto | null): any {
     if (value === undefined) {
         return undefined;
     }

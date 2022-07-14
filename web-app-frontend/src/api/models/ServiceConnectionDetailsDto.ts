@@ -16,40 +16,40 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ActivityLinkData
+ * @interface ServiceConnectionDetailsDto
  */
-export interface ActivityLinkData {
+export interface ServiceConnectionDetailsDto {
     /**
      * 
      * @type {string}
-     * @memberof ActivityLinkData
+     * @memberof ServiceConnectionDetailsDto
      */
     url?: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityLinkData
+     * @memberof ServiceConnectionDetailsDto
      */
     serviceName: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityLinkData
+     * @memberof ServiceConnectionDetailsDto
      */
     connectionInstruction: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityLinkData
+     * @memberof ServiceConnectionDetailsDto
      */
     connectionInfo?: string;
 }
 
-export function ActivityLinkDataFromJSON(json: any): ActivityLinkData {
-    return ActivityLinkDataFromJSONTyped(json, false);
+export function ServiceConnectionDetailsDtoFromJSON(json: any): ServiceConnectionDetailsDto {
+    return ServiceConnectionDetailsDtoFromJSONTyped(json, false);
 }
 
-export function ActivityLinkDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityLinkData {
+export function ServiceConnectionDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServiceConnectionDetailsDto {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -62,7 +62,7 @@ export function ActivityLinkDataFromJSONTyped(json: any, ignoreDiscriminator: bo
     };
 }
 
-export function ActivityLinkDataToJSON(value?: ActivityLinkData | null): any {
+export function ServiceConnectionDetailsDtoToJSON(value?: ServiceConnectionDetailsDto | null): any {
     if (value === undefined) {
         return undefined;
     }

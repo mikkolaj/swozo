@@ -13,14 +13,14 @@ import {
     Modal,
     Typography,
 } from '@mui/material';
-import { ActivityDetailsResp } from 'api';
+import { ActivityDetailsDto } from 'api';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
-    activity: ActivityDetailsResp;
+    activity: ActivityDetailsDto;
     open: boolean;
     onClose: () => void;
 };
@@ -88,24 +88,26 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                     Jupyter
                                                 </Typography>
                                                 {/* TODO */}
-                                                {activityModule.links.length === 0 && (
+                                                {activityModule.connectionDetails.length === 0 && (
                                                     <Typography>
                                                         {' '}
                                                         Linki nie są jeszcze dostępne, odśwież stronę przed
                                                         rozpoczęciem zajęć
                                                     </Typography>
                                                 )}
-                                                {activityModule.links.map((link, idx) => (
-                                                    <Link
-                                                        key={idx}
-                                                        target="_blank"
-                                                        rel="noopener"
-                                                        href={link.url}
-                                                    >
-                                                        {/* TODO */}
-                                                        {link.url ?? 'Link nie jest jeszcze dostępny'}
-                                                    </Link>
-                                                ))}
+                                                {activityModule.connectionDetails.map(
+                                                    ({ url, serviceName }) => (
+                                                        <Link
+                                                            key={serviceName}
+                                                            target="_blank"
+                                                            rel="noopener"
+                                                            href={url}
+                                                        >
+                                                            {/* TODO */}
+                                                            {url ?? 'Link nie jest jeszcze dostępny'}
+                                                        </Link>
+                                                    )
+                                                )}
                                                 <Box
                                                     sx={{
                                                         display: 'flex',
@@ -115,9 +117,10 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                     }}
                                                 >
                                                     {/* TODO use more advanced/flexible format // fix this xD*/}
-                                                    {activityModule.links
+                                                    {activityModule.connectionDetails
                                                         .flatMap(
-                                                            (link) => link.connectionInfo?.split('\n') ?? ''
+                                                            ({ connectionInstruction }) =>
+                                                                connectionInstruction?.split('\n') ?? ''
                                                         )
                                                         .map((line, idx) => (
                                                             <Box key={idx}>
@@ -134,9 +137,10 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                             <Divider />
                                             <Box sx={{ mt: 1 }}>
                                                 {/* TODO  */}
-                                                {activityModule.links
+                                                {activityModule.connectionDetails
                                                     .flatMap(
-                                                        (link) => link.connectionInstruction.split('\n') ?? ''
+                                                        ({ connectionInstruction }) =>
+                                                            connectionInstruction?.split('\n') ?? ''
                                                     )
                                                     .map((line, idx) => (
                                                         <Box key={idx}>

@@ -15,9 +15,9 @@
 
 import * as runtime from '../runtime';
 import {
-    UserDetailsResp,
-    UserDetailsRespFromJSON,
-    UserDetailsRespToJSON,
+    UserDetailsDto,
+    UserDetailsDtoFromJSON,
+    UserDetailsDtoToJSON,
 } from '../models';
 
 /**
@@ -27,7 +27,7 @@ export class UserControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getUserInfoRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserDetailsResp>> {
+    async getUserInfoRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserDetailsDto>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -47,12 +47,12 @@ export class UserControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserDetailsRespFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async getUserInfo(initOverrides?: RequestInit): Promise<UserDetailsResp> {
+    async getUserInfo(initOverrides?: RequestInit): Promise<UserDetailsDto> {
         const response = await this.getUserInfoRaw(initOverrides);
         return await response.value();
     }

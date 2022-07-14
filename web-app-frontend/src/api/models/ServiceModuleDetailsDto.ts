@@ -16,52 +16,52 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ServiceModuleDetailsResp
+ * @interface ServiceModuleDetailsDto
  */
-export interface ServiceModuleDetailsResp {
+export interface ServiceModuleDetailsDto {
     /**
      * 
      * @type {number}
-     * @memberof ServiceModuleDetailsResp
+     * @memberof ServiceModuleDetailsDto
      */
     id: number;
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleDetailsResp
+     * @memberof ServiceModuleDetailsDto
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleDetailsResp
+     * @memberof ServiceModuleDetailsDto
      */
     instructionsFromTechnicalTeacher: string;
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleDetailsResp
+     * @memberof ServiceModuleDetailsDto
      */
     creatorName: string;
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleDetailsResp
+     * @memberof ServiceModuleDetailsDto
      */
     subject: string;
     /**
      * 
      * @type {Date}
-     * @memberof ServiceModuleDetailsResp
+     * @memberof ServiceModuleDetailsDto
      */
     creationTime: Date;
 }
 
-export function ServiceModuleDetailsRespFromJSON(json: any): ServiceModuleDetailsResp {
-    return ServiceModuleDetailsRespFromJSONTyped(json, false);
+export function ServiceModuleDetailsDtoFromJSON(json: any): ServiceModuleDetailsDto {
+    return ServiceModuleDetailsDtoFromJSONTyped(json, false);
 }
 
-export function ServiceModuleDetailsRespFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServiceModuleDetailsResp {
+export function ServiceModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServiceModuleDetailsDto {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -76,7 +76,7 @@ export function ServiceModuleDetailsRespFromJSONTyped(json: any, ignoreDiscrimin
     };
 }
 
-export function ServiceModuleDetailsRespToJSON(value?: ServiceModuleDetailsResp | null): any {
+export function ServiceModuleDetailsDtoToJSON(value?: ServiceModuleDetailsDto | null): any {
     if (value === undefined) {
         return undefined;
     }

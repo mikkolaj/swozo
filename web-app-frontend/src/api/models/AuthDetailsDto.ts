@@ -16,45 +16,45 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface AuthData
+ * @interface AuthDetailsDto
  */
-export interface AuthData {
+export interface AuthDetailsDto {
     /**
      * 
      * @type {string}
-     * @memberof AuthData
+     * @memberof AuthDetailsDto
      */
     accessToken: string;
     /**
      * 
      * @type {number}
-     * @memberof AuthData
+     * @memberof AuthDetailsDto
      */
     expiresIn: number;
     /**
      * 
      * @type {Array<string>}
-     * @memberof AuthData
+     * @memberof AuthDetailsDto
      */
-    roles: Array<AuthDataRolesEnum>;
+    roles: Array<AuthDetailsDtoRolesEnum>;
 }
 
 /**
 * @export
 * @enum {string}
 */
-export enum AuthDataRolesEnum {
+export enum AuthDetailsDtoRolesEnum {
     Student = 'STUDENT',
     Teacher = 'TEACHER',
     TechnicalTeacher = 'TECHNICAL_TEACHER',
     Admin = 'ADMIN'
 }
 
-export function AuthDataFromJSON(json: any): AuthData {
-    return AuthDataFromJSONTyped(json, false);
+export function AuthDetailsDtoFromJSON(json: any): AuthDetailsDto {
+    return AuthDetailsDtoFromJSONTyped(json, false);
 }
 
-export function AuthDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): AuthData {
+export function AuthDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): AuthDetailsDto {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -66,7 +66,7 @@ export function AuthDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     };
 }
 
-export function AuthDataToJSON(value?: AuthData | null): any {
+export function AuthDetailsDtoToJSON(value?: AuthDetailsDto | null): any {
     if (value === undefined) {
         return undefined;
     }

@@ -1,5 +1,5 @@
 import { Button, Grid } from '@mui/material';
-import { CourseDetailsReq } from 'api';
+import { CreateCourseRequest } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { SlideForm } from 'common/SlideForm/SlideForm';
 import dayjs from 'dayjs';
@@ -39,7 +39,7 @@ export const CreateCourseView = () => {
     const queryClient = useQueryClient();
 
     const createCourseMutation = useMutation(
-        (courseDetailsReq: CourseDetailsReq) => getApis().courseApi.addCourse({ courseDetailsReq }),
+        (createCourseRequest: CreateCourseRequest) => getApis().courseApi.addCourse({ createCourseRequest }),
         {
             onSuccess: (courseDetailsResp) => {
                 // TODO update instead of invalidation

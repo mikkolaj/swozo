@@ -26,12 +26,12 @@ export function AutocompleteWithChips<T>({
                 options={options.filter((option) => !choosenOptions.includes(option)).map(optionToString)}
                 onChange={(_, val) => {
                     // TODO optimize this
-                    const opt = options
+                    const newOption = options
                         .filter((option) => !choosenOptions.includes(option))
                         .find((option) => optionToString(option) === val);
 
-                    if (opt !== undefined) {
-                        setFieldValue(name, [...choosenOptions, opt]);
+                    if (newOption !== undefined) {
+                        setFieldValue(name, [...choosenOptions, newOption]);
                     }
                 }}
                 renderInput={({ InputProps, ...params }) => (

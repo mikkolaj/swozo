@@ -1,4 +1,4 @@
-import { ServiceModuleDetailsResp } from 'api';
+import { ServiceModuleDetailsDto } from 'api';
 import dayjs, { Dayjs } from 'dayjs';
 
 export type CourseSummary = {
@@ -157,7 +157,7 @@ export const mockModuleSummaryList: ModuleSummary[] = [
 ];
 
 // should have different type but will do for now
-export const mockGeneralModuleSummaryList: ServiceModuleDetailsResp[] = [
+export const mockGeneralModuleSummaryList: ServiceModuleDetailsDto[] = [
     {
         id: -1,
         name: 'Wideokonferencja',

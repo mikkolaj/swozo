@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import { ServiceModuleDetailsResp } from 'api';
+import { ServiceModuleDetailsDto } from 'api';
 import { AutocompleteWithChips } from 'common/SlideForm/AutocompleteWithChips';
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
@@ -16,8 +16,8 @@ type Values = {
 };
 
 type Props = SlideProps<Values> & {
-    availableLessonModules: ServiceModuleDetailsResp[];
-    availableGeneralModules: ServiceModuleDetailsResp[];
+    availableLessonModules: ServiceModuleDetailsDto[];
+    availableGeneralModules: ServiceModuleDetailsDto[];
 };
 
 export const ActivitiesForm = ({

@@ -14,61 +14,61 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    ActivityDetailsReq,
-    ActivityDetailsReqFromJSON,
-    ActivityDetailsReqFromJSONTyped,
-    ActivityDetailsReqToJSON,
-} from './ActivityDetailsReq';
+    CreateActivityRequest,
+    CreateActivityRequestFromJSON,
+    CreateActivityRequestFromJSONTyped,
+    CreateActivityRequestToJSON,
+} from './CreateActivityRequest';
 
 /**
  * 
  * @export
- * @interface CourseDetailsReq
+ * @interface CreateCourseRequest
  */
-export interface CourseDetailsReq {
+export interface CreateCourseRequest {
     /**
      * 
      * @type {string}
-     * @memberof CourseDetailsReq
+     * @memberof CreateCourseRequest
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof CourseDetailsReq
+     * @memberof CreateCourseRequest
      */
     subject: string;
     /**
      * 
      * @type {string}
-     * @memberof CourseDetailsReq
+     * @memberof CreateCourseRequest
      */
     description: string;
     /**
      * 
      * @type {number}
-     * @memberof CourseDetailsReq
+     * @memberof CreateCourseRequest
      */
     expectedStudentCount: number;
     /**
      * 
-     * @type {Array<ActivityDetailsReq>}
-     * @memberof CourseDetailsReq
+     * @type {Array<CreateActivityRequest>}
+     * @memberof CreateCourseRequest
      */
-    activityDetailReqs: Array<ActivityDetailsReq>;
+    activities: Array<CreateActivityRequest>;
     /**
      * 
      * @type {Array<string>}
-     * @memberof CourseDetailsReq
+     * @memberof CreateCourseRequest
      */
     studentEmails: Array<string>;
 }
 
-export function CourseDetailsReqFromJSON(json: any): CourseDetailsReq {
-    return CourseDetailsReqFromJSONTyped(json, false);
+export function CreateCourseRequestFromJSON(json: any): CreateCourseRequest {
+    return CreateCourseRequestFromJSONTyped(json, false);
 }
 
-export function CourseDetailsReqFromJSONTyped(json: any, ignoreDiscriminator: boolean): CourseDetailsReq {
+export function CreateCourseRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): CreateCourseRequest {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -78,12 +78,12 @@ export function CourseDetailsReqFromJSONTyped(json: any, ignoreDiscriminator: bo
         'subject': json['subject'],
         'description': json['description'],
         'expectedStudentCount': json['expectedStudentCount'],
-        'activityDetailReqs': ((json['activityDetailReqs'] as Array<any>).map(ActivityDetailsReqFromJSON)),
+        'activities': ((json['activities'] as Array<any>).map(CreateActivityRequestFromJSON)),
         'studentEmails': json['studentEmails'],
     };
 }
 
-export function CourseDetailsReqToJSON(value?: CourseDetailsReq | null): any {
+export function CreateCourseRequestToJSON(value?: CreateCourseRequest | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -96,7 +96,7 @@ export function CourseDetailsReqToJSON(value?: CourseDetailsReq | null): any {
         'subject': value.subject,
         'description': value.description,
         'expectedStudentCount': value.expectedStudentCount,
-        'activityDetailReqs': ((value.activityDetailReqs as Array<any>).map(ActivityDetailsReqToJSON)),
+        'activities': ((value.activities as Array<any>).map(CreateActivityRequestToJSON)),
         'studentEmails': value.studentEmails,
     };
 }

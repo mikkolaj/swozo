@@ -15,9 +15,9 @@
 
 import * as runtime from '../runtime';
 import {
-    ServiceModuleDetailsResp,
-    ServiceModuleDetailsRespFromJSON,
-    ServiceModuleDetailsRespToJSON,
+    ServiceModuleDetailsDto,
+    ServiceModuleDetailsDtoFromJSON,
+    ServiceModuleDetailsDtoToJSON,
 } from '../models';
 
 export interface GetServiceModuleRequest {
@@ -31,7 +31,7 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getModuleListRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleDetailsResp>>> {
+    async getModuleListRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleDetailsDto>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -51,19 +51,19 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleDetailsRespFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleDetailsDtoFromJSON));
     }
 
     /**
      */
-    async getModuleList(initOverrides?: RequestInit): Promise<Array<ServiceModuleDetailsResp>> {
+    async getModuleList(initOverrides?: RequestInit): Promise<Array<ServiceModuleDetailsDto>> {
         const response = await this.getModuleListRaw(initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async getServiceModuleRaw(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsResp>> {
+    async getServiceModuleRaw(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getServiceModule.');
         }
@@ -87,12 +87,12 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsRespFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async getServiceModule(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsResp> {
+    async getServiceModule(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
         const response = await this.getServiceModuleRaw(requestParameters, initOverrides);
         return await response.value();
     }

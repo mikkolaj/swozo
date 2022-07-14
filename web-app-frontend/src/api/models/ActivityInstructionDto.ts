@@ -16,28 +16,28 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ActivityInstructionData
+ * @interface ActivityInstructionDto
  */
-export interface ActivityInstructionData {
+export interface ActivityInstructionDto {
     /**
      * 
      * @type {string}
-     * @memberof ActivityInstructionData
+     * @memberof ActivityInstructionDto
      */
     header?: string;
     /**
      * 
      * @type {string}
-     * @memberof ActivityInstructionData
+     * @memberof ActivityInstructionDto
      */
     body: string;
 }
 
-export function ActivityInstructionDataFromJSON(json: any): ActivityInstructionData {
-    return ActivityInstructionDataFromJSONTyped(json, false);
+export function ActivityInstructionDtoFromJSON(json: any): ActivityInstructionDto {
+    return ActivityInstructionDtoFromJSONTyped(json, false);
 }
 
-export function ActivityInstructionDataFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityInstructionData {
+export function ActivityInstructionDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityInstructionDto {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -48,7 +48,7 @@ export function ActivityInstructionDataFromJSONTyped(json: any, ignoreDiscrimina
     };
 }
 
-export function ActivityInstructionDataToJSON(value?: ActivityInstructionData | null): any {
+export function ActivityInstructionDtoToJSON(value?: ActivityInstructionDto | null): any {
     if (value === undefined) {
         return undefined;
     }

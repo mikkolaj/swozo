@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { Container } from '@mui/system';
-import { ActivityDetailsResp } from 'api';
+import { ActivityDetailsDto } from 'api';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { ActivityActionButton } from './components/ActivityActionButton';
 import { LinksModal } from './components/LinksModal';
 
 type Props = {
-    activity: ActivityDetailsResp;
+    activity: ActivityDetailsDto;
 };
 
 export const ActivityView = ({ activity }: Props) => {

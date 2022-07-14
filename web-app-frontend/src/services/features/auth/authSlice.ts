@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AuthData, AuthDataRolesEnum, LoginData } from 'api';
+import { AuthDetailsDto, AuthDetailsDtoRolesEnum, LoginRequest } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { AppDispatch, RootState } from 'services/store';
 import { hasRole } from 'utils/roles';
@@ -7,11 +7,11 @@ import { hasRole } from 'utils/roles';
 const LOCAL_STORAGE_AUTH_KEY = 'JWT';
 const LOCAL_STORAGE_ROLE_PREF_KEY = 'ROLE_PREF';
 
-export function isTokenExpired(authData: AuthData) {
+export function isTokenExpired(authData: AuthDetailsDto) {
     return authData.expiresIn * 1000 <= new Date().getTime();
 }
 
-function persistAuthState(auth: AuthData): void {
+function persistAuthState(auth: AuthDetailsDto): void {
     window.localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify(auth));
 }
 
@@ -19,12 +19,12 @@ function clearAuthPersistence(): void {
     window.localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
 }
 
-function getPersistedAuthState(): AuthData | undefined {
+function getPersistedAuthState(): AuthDetailsDto | undefined {
     const data = window.localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
     return data ? JSON.parse(data) : undefined;
 }
 
-function getPersistedRolePreference(): AuthDataRolesEnum | undefined {
+function getPersistedRolePreference(): AuthDetailsDtoRolesEnum | undefined {
     const data = window.localStorage.getItem(LOCAL_STORAGE_ROLE_PREF_KEY);
     return data ? JSON.parse(data) : undefined;
 }
@@ -34,20 +34,20 @@ function getPersistedRolePreference(): AuthDataRolesEnum | undefined {
 // throw every option to normal teacher, but usually normal teacher will be also a technical teacher (and always vice versa)
 
 // if we set rolePreference to teacher we can hide all these technical teacher buttons
-function canHaveRolePreference(authData: AuthData | null, pref?: AuthDataRolesEnum): boolean {
+function canHaveRolePreference(authData: AuthDetailsDto | null, pref?: AuthDetailsDtoRolesEnum): boolean {
     if (!pref) return true;
 
     return hasRole(authData, pref);
 }
 
-function getDefaultRolePreference(authData: AuthData): AuthDataRolesEnum | undefined {
-    if (hasRole(authData, AuthDataRolesEnum.Teacher, AuthDataRolesEnum.TechnicalTeacher))
-        return AuthDataRolesEnum.Teacher;
+function getDefaultRolePreference(authData: AuthDetailsDto): AuthDetailsDtoRolesEnum | undefined {
+    if (hasRole(authData, AuthDetailsDtoRolesEnum.Teacher, AuthDetailsDtoRolesEnum.TechnicalTeacher))
+        return AuthDetailsDtoRolesEnum.Teacher;
 }
 
 export type AuthState = {
-    authData: AuthData | null;
-    rolePreference?: AuthDataRolesEnum;
+    authData: AuthDetailsDto | null;
+    rolePreference?: AuthDetailsDtoRolesEnum;
     isLoggedIn: boolean;
     isFetching: boolean;
     errors?: string[];
@@ -77,7 +77,7 @@ function buildInitialState(): AuthState {
     };
 }
 
-const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthData>, { dispatch: AppDispatch }>(
+const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthDetailsDto>, { dispatch: AppDispatch }>(
     'auth/handleAuthResponse',
     async (resp, { dispatch }) => {
         dispatch(setFetching(true));
@@ -98,7 +98,7 @@ const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthData>, { dispat
                 dispatch(setRolePref(rolePreference));
             }
         } catch (err) {
-            console.log('[LOGIN ERROR]' + err);
+            console.log('[LOGIN ERROR] ' + err);
             dispatch(setAuthErrors([JSON.stringify(err)])); // TODO error handling
         } finally {
             dispatch(setFetching(false));
@@ -106,12 +106,12 @@ const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthData>, { dispat
     }
 );
 
-export const login = createAsyncThunk<unknown, LoginData, { dispatch: AppDispatch; state: RootState }>(
+export const login = createAsyncThunk<unknown, LoginRequest, { dispatch: AppDispatch; state: RootState }>(
     'auth/login',
-    async (loginData, { getState, dispatch }) => {
+    async (loginRequest, { getState, dispatch }) => {
         if (getState().auth.isFetching) return;
 
-        const resp = getApis().authApi.login({ loginData });
+        const resp = getApis().authApi.login({ loginRequest });
         dispatch(handleAuthResponse(resp));
     }
 );
@@ -124,9 +124,9 @@ export const logout = createAsyncThunk('auth/logout', (_, { dispatch }) => {
 // TODO redirect if on page not-for-that-preference?
 export const setRolePreference = createAsyncThunk<
     unknown,
-    AuthDataRolesEnum,
+    AuthDetailsDtoRolesEnum,
     { dispatch: AppDispatch; state: RootState }
->('auth/roles/preference', (role: AuthDataRolesEnum, { getState, dispatch }) => {
+>('auth/roles/preference', (role: AuthDetailsDtoRolesEnum, { getState, dispatch }) => {
     const auth = getState().auth;
     if (!auth || auth.rolePreference === role || !canHaveRolePreference(auth.authData, role)) return;
 
@@ -138,7 +138,7 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState: buildInitialState(),
     reducers: {
-        setAuthData: (state: AuthState, action: PayloadAction<AuthData>) => {
+        setAuthData: (state: AuthState, action: PayloadAction<AuthDetailsDto>) => {
             state.authData = action.payload;
             state.isLoggedIn = true;
             state.errors = undefined;
@@ -148,7 +148,7 @@ export const authSlice = createSlice({
             state.isLoggedIn = false;
             state.errors = undefined; // maybe leave it
         },
-        setRolePref: (state: AuthState, action: PayloadAction<AuthDataRolesEnum>) => {
+        setRolePref: (state: AuthState, action: PayloadAction<AuthDetailsDtoRolesEnum>) => {
             state.rolePreference = action.payload;
         },
         clearAuthErrors: (state: AuthState) => {

@@ -1,11 +1,11 @@
-import { ActivityDetailsReq, CourseDetailsReq, ServiceModuleDetailsResp } from 'api';
+import { CreateActivityRequest, CreateCourseRequest, ServiceModuleDetailsDto } from 'api';
 import { Dayjs } from 'dayjs';
 
 export type ActivityValues = {
     name: string;
     description: string;
-    lessonModules: ServiceModuleDetailsResp[];
-    generalModules: ServiceModuleDetailsResp[];
+    lessonModules: ServiceModuleDetailsDto[];
+    generalModules: ServiceModuleDetailsDto[];
     instructions: string;
     startTime: Dayjs;
     endTime: Dayjs;
@@ -20,7 +20,7 @@ export type CourseValues = {
     students: string[];
 };
 
-const buildCreateActivityRequest = (activity: ActivityValues): ActivityDetailsReq => {
+const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityRequest => {
     return {
         name: activity.name,
         description: activity.description,
@@ -41,13 +41,13 @@ const buildCreateActivityRequest = (activity: ActivityValues): ActivityDetailsRe
 export const buildCreateCourseRequest = (
     course: CourseValues,
     activities: ActivityValues[]
-): CourseDetailsReq => {
+): CreateCourseRequest => {
     return {
         name: course.name,
         description: course.description,
         subject: course.subject,
         expectedStudentCount: course.numberOfStudents,
         studentEmails: course.students.filter((email) => email !== ''), // TODO
-        activityDetailReqs: activities.map(buildCreateActivityRequest),
+        activities: activities.map(buildCreateActivityRequest),
     };
 };

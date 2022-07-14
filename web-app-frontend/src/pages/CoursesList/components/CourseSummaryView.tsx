@@ -1,5 +1,5 @@
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
-import { CourseDetailsResp } from 'api';
+import { CourseDetailsDto } from 'api';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import { PageRoutes } from 'utils/routes';
 import { formatDate } from 'utils/util';
 
 type Props = {
-    courseSummary: CourseDetailsResp;
+    courseSummary: CourseDetailsDto;
 };
 
 export const CourseSummaryView = ({ courseSummary }: Props) => {
@@ -43,7 +43,7 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                             {t('myCourses.course.lastActivity')}
                         </Typography>
                         <Typography sx={{ mt: -1 }} variant="h6" component="div">
-                            {formatDate(courseSummary.lastActivity)}
+                            {formatDate(courseSummary.lastActivityTime)}
                         </Typography>
                     </Grid>
                     <Grid item xs={8} sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>

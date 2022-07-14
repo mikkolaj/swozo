@@ -21,19 +21,19 @@ import {
     Course,
     CourseFromJSON,
     CourseToJSON,
-    CourseDetailsReq,
-    CourseDetailsReqFromJSON,
-    CourseDetailsReqToJSON,
-    CourseDetailsResp,
-    CourseDetailsRespFromJSON,
-    CourseDetailsRespToJSON,
+    CourseDetailsDto,
+    CourseDetailsDtoFromJSON,
+    CourseDetailsDtoToJSON,
+    CreateCourseRequest,
+    CreateCourseRequestFromJSON,
+    CreateCourseRequestToJSON,
     User,
     UserFromJSON,
     UserToJSON,
 } from '../models';
 
 export interface AddCourseRequest {
-    courseDetailsReq: CourseDetailsReq;
+    createCourseRequest: CreateCourseRequest;
 }
 
 export interface AddStudentToCourseRequest {
@@ -47,7 +47,7 @@ export interface DeleteCourseRequest {
 
 export interface EditCourseRequest {
     id: number;
-    courseDetailsReq: CourseDetailsReq;
+    createCourseRequest: CreateCourseRequest;
 }
 
 export interface GetCourseRequest {
@@ -70,9 +70,9 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async addCourseRaw(requestParameters: AddCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsResp>> {
-        if (requestParameters.courseDetailsReq === null || requestParameters.courseDetailsReq === undefined) {
-            throw new runtime.RequiredError('courseDetailsReq','Required parameter requestParameters.courseDetailsReq was null or undefined when calling addCourse.');
+    async addCourseRaw(requestParameters: AddCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsDto>> {
+        if (requestParameters.createCourseRequest === null || requestParameters.createCourseRequest === undefined) {
+            throw new runtime.RequiredError('createCourseRequest','Required parameter requestParameters.createCourseRequest was null or undefined when calling addCourse.');
         }
 
         const queryParameters: any = {};
@@ -94,15 +94,15 @@ export class CourseControllerApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: CourseDetailsReqToJSON(requestParameters.courseDetailsReq),
+            body: CreateCourseRequestToJSON(requestParameters.createCourseRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsRespFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async addCourse(requestParameters: AddCourseRequest, initOverrides?: RequestInit): Promise<CourseDetailsResp> {
+    async addCourse(requestParameters: AddCourseRequest, initOverrides?: RequestInit): Promise<CourseDetailsDto> {
         const response = await this.addCourseRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -192,8 +192,8 @@ export class CourseControllerApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling editCourse.');
         }
 
-        if (requestParameters.courseDetailsReq === null || requestParameters.courseDetailsReq === undefined) {
-            throw new runtime.RequiredError('courseDetailsReq','Required parameter requestParameters.courseDetailsReq was null or undefined when calling editCourse.');
+        if (requestParameters.createCourseRequest === null || requestParameters.createCourseRequest === undefined) {
+            throw new runtime.RequiredError('createCourseRequest','Required parameter requestParameters.createCourseRequest was null or undefined when calling editCourse.');
         }
 
         const queryParameters: any = {};
@@ -215,7 +215,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: CourseDetailsReqToJSON(requestParameters.courseDetailsReq),
+            body: CreateCourseRequestToJSON(requestParameters.createCourseRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CourseFromJSON(jsonValue));
@@ -230,7 +230,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getCourseRaw(requestParameters: GetCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsResp>> {
+    async getCourseRaw(requestParameters: GetCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsDto>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getCourse.');
         }
@@ -254,12 +254,12 @@ export class CourseControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsRespFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async getCourse(requestParameters: GetCourseRequest, initOverrides?: RequestInit): Promise<CourseDetailsResp> {
+    async getCourse(requestParameters: GetCourseRequest, initOverrides?: RequestInit): Promise<CourseDetailsDto> {
         const response = await this.getCourseRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -302,7 +302,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getUserCoursesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<CourseDetailsResp>>> {
+    async getUserCoursesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<CourseDetailsDto>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -322,12 +322,12 @@ export class CourseControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(CourseDetailsRespFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(CourseDetailsDtoFromJSON));
     }
 
     /**
      */
-    async getUserCourses(initOverrides?: RequestInit): Promise<Array<CourseDetailsResp>> {
+    async getUserCourses(initOverrides?: RequestInit): Promise<Array<CourseDetailsDto>> {
         const response = await this.getUserCoursesRaw(initOverrides);
         return await response.value();
     }
