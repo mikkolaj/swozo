@@ -1,8 +1,8 @@
 package com.swozo.mapper;
 
-import com.swozo.databasemodel.User;
-import com.swozo.dto.user.UserDetailsDto;
-import com.swozo.webservice.repository.UserRepository;
+import com.swozo.api.web.user.UserRepository;
+import com.swozo.api.web.user.dto.UserDetailsDto;
+import com.swozo.persistence.User;
 import org.mapstruct.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 

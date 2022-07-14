@@ -1,11 +1,11 @@
 package com.swozo.mapper;
 
-import com.swozo.databasemodel.ActivityLink;
-import com.swozo.databasemodel.ActivityModule;
-import com.swozo.databasemodel.ServiceModule;
-import com.swozo.dto.activity.ServiceConnectionDetailsDto;
-import com.swozo.dto.activitymodule.ActivityModuleDetailsDto;
+import com.swozo.api.web.activity.dto.ServiceConnectionDetailsDto;
+import com.swozo.api.web.activitymodule.dto.ActivityModuleDetailsDto;
 import com.swozo.model.links.ActivityLinkInfo;
+import com.swozo.persistence.ActivityLink;
+import com.swozo.persistence.ActivityModule;
+import com.swozo.persistence.ServiceModule;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,8 @@ public abstract class ActivityModuleMapper {
     @Mapping(target = "connectionInfo", source = "activityLink.connectionInfo")
     public abstract ServiceConnectionDetailsDto toDto(ActivityLink activityLink, ActivityModule activityModule);
 
-    @Mapping(target = "module", expression = "java(serviceModuleMapper.toModel(activityModule.getModule()))")
-    @Mapping(target = "connectionDetails", expression = "java(activityModule.getLinks().stream().map(link -> toModel(link, activityModule)).toList())")
+    @Mapping(target = "module", expression = "java(serviceModuleMapper.toDto(activityModule.getModule()))")
+    @Mapping(target = "connectionDetails", expression = "java(activityModule.getLinks().stream().map(link -> toDto(link, activityModule)).toList())")
     public abstract ActivityModuleDetailsDto toDto(ActivityModule activityModule);
 }
 

@@ -1,9 +1,14 @@
 package com.swozo.util;
 
-import com.swozo.databasemodel.*;
-import com.swozo.dto.auth.RoleDto;
+import com.swozo.api.web.activity.ActivityRepository;
+import com.swozo.api.web.activitymodule.ActivityModuleRepository;
+import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.api.web.course.CourseRepository;
+import com.swozo.api.web.servicemodule.ServiceModuleRepository;
+import com.swozo.api.web.user.RoleRepository;
+import com.swozo.api.web.user.UserRepository;
 import com.swozo.model.scheduling.properties.ScheduleType;
-import com.swozo.webservice.repository.*;
+import com.swozo.persistence.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

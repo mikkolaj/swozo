@@ -1,8 +1,8 @@
 package com.swozo.security.util;
 
-import com.swozo.databasemodel.Role;
-import com.swozo.databasemodel.User;
-import com.swozo.dto.auth.RoleDto;
+import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.persistence.Role;
+import com.swozo.persistence.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
