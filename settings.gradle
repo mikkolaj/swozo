@@ -1,0 +1,2 @@
+rootProject.name = 'swozo'
+include 'swozo-commons', 'web-app-backend', 'orchestrator'

@@ -1,13 +1,14 @@
 plugins {
     id 'org.springframework.boot' version '2.6.7'
+    id "io.freefair.lombok" version "6.5.0.2"
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
 group = 'com.swozo'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = "17.PREVIEW"
-targetCompatibility = "17.PREVIEW"
+sourceCompatibility = "18.PREVIEW"
+targetCompatibility = "18.PREVIEW"
 
 configurations {
     compileOnly {
@@ -24,13 +25,11 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'com.swozo:swozo-commons:0.0.1-SNAPSHOT'
     implementation 'com.google.cloud:google-cloud-compute:1.9.1'
     implementation 'org.jetbrains:annotations:20.1.0'
+    implementation project(":swozo-commons")
 
-    compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
@@ -44,5 +43,6 @@ tasks.withType(JavaExec) {
 }
 
 tasks.named('test') {
+    jvmArgs += '--enable-preview'
     useJUnitPlatform()
 }
