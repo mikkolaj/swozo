@@ -15,16 +15,16 @@
 
 import * as runtime from '../runtime';
 import {
-    AuthData,
-    AuthDataFromJSON,
-    AuthDataToJSON,
-    LoginData,
-    LoginDataFromJSON,
-    LoginDataToJSON,
+    AuthDetailsDto,
+    AuthDetailsDtoFromJSON,
+    AuthDetailsDtoToJSON,
+    LoginRequest,
+    LoginRequestFromJSON,
+    LoginRequestToJSON,
 } from '../models';
 
-export interface LoginRequest {
-    loginData: LoginData;
+export interface LoginOperationRequest {
+    loginRequest: LoginRequest;
 }
 
 /**
@@ -35,9 +35,9 @@ export class AuthControllerApi extends runtime.BaseAPI {
     /**
      * Login user
      */
-    async loginRaw(requestParameters: LoginRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<AuthData>> {
-        if (requestParameters.loginData === null || requestParameters.loginData === undefined) {
-            throw new runtime.RequiredError('loginData','Required parameter requestParameters.loginData was null or undefined when calling login.');
+    async loginRaw(requestParameters: LoginOperationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<AuthDetailsDto>> {
+        if (requestParameters.loginRequest === null || requestParameters.loginRequest === undefined) {
+            throw new runtime.RequiredError('loginRequest','Required parameter requestParameters.loginRequest was null or undefined when calling login.');
         }
 
         const queryParameters: any = {};
@@ -51,16 +51,16 @@ export class AuthControllerApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: LoginDataToJSON(requestParameters.loginData),
+            body: LoginRequestToJSON(requestParameters.loginRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => AuthDataFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      * Login user
      */
-    async login(requestParameters: LoginRequest, initOverrides?: RequestInit): Promise<AuthData> {
+    async login(requestParameters: LoginOperationRequest, initOverrides?: RequestInit): Promise<AuthDetailsDto> {
         const response = await this.loginRaw(requestParameters, initOverrides);
         return await response.value();
     }

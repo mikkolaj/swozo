@@ -37,6 +37,39 @@ export interface ServiceModule {
      * @memberof ServiceModule
      */
     instructionsFromTechnicalTeacher?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServiceModule
+     */
+    creatorName?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServiceModule
+     */
+    subject?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServiceModule
+     */
+    scheduleType?: ServiceModuleScheduleTypeEnum;
+    /**
+     * 
+     * @type {Date}
+     * @memberof ServiceModule
+     */
+    creationTime?: Date;
+}
+
+/**
+* @export
+* @enum {string}
+*/
+export enum ServiceModuleScheduleTypeEnum {
+    Jupyter = 'JUPYTER',
+    Docker = 'DOCKER'
 }
 
 export function ServiceModuleFromJSON(json: any): ServiceModule {
@@ -52,6 +85,10 @@ export function ServiceModuleFromJSONTyped(json: any, ignoreDiscriminator: boole
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
         'instructionsFromTechnicalTeacher': !exists(json, 'instructionsFromTechnicalTeacher') ? undefined : json['instructionsFromTechnicalTeacher'],
+        'creatorName': !exists(json, 'creatorName') ? undefined : json['creatorName'],
+        'subject': !exists(json, 'subject') ? undefined : json['subject'],
+        'scheduleType': !exists(json, 'scheduleType') ? undefined : json['scheduleType'],
+        'creationTime': !exists(json, 'creationTime') ? undefined : (new Date(json['creationTime'])),
     };
 }
 
@@ -67,6 +104,10 @@ export function ServiceModuleToJSON(value?: ServiceModule | null): any {
         'id': value.id,
         'name': value.name,
         'instructionsFromTechnicalTeacher': value.instructionsFromTechnicalTeacher,
+        'creatorName': value.creatorName,
+        'subject': value.subject,
+        'scheduleType': value.scheduleType,
+        'creationTime': value.creationTime === undefined ? undefined : (value.creationTime.toISOString()),
     };
 }
 

@@ -39,7 +39,7 @@ tasks.withType(JavaCompile) {
 }
 
 tasks.withType(JavaExec) {
-    jvmArgs += '--enable-preview'
+    jvmArgs += ['--enable-preview', '-Duser.timezone=UTC']
 }
 
 tasks.named('test') {

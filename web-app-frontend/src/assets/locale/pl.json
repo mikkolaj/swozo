@@ -34,6 +34,9 @@
                 "connectionInstruction": "Instrukcja podłączenia",
                 "closeButton": "Zamknij"
             }
+        },
+        "error": {
+            "noCourse": "Wróć do kursów"
         }
     },
     "createCourse": {
@@ -60,7 +63,11 @@
                     "activityHeader": "Zajęcia {{idx}}",
                     "name": "temat",
                     "description": "opis",
-                    "modules": "moduły",
+                    "date": "Data zajęć",
+                    "startTime": "Czas rozpoczęcia",
+                    "endTime": "Czas zakończenia",
+                    "lessonModules": "moduły lekcyjne",
+                    "generalModules": "moduły ogólne",
                     "instructions": "dodatkowe instrukcje"
                 }
             },
@@ -126,6 +133,10 @@
             "modules": {
                 "label": "Informacje o używanych modułach"
             }
+        },
+        "error": {
+            "noActivity": "Wróć do kursu",
+            "noCourse": "Wróć do kursów"
         }
     },
     "myFiles": {
@@ -133,5 +144,13 @@
         "fileName": "Nazwa pliku",
         "courseName": "Nazwa kursu",
         "creationDate": "Data utworzenia"
+    },
+    "error": {
+        "defaultMessage": "Coś poszło nie tak...",
+        "defaultNavigationBtn": "Wróć do strony głównej",
+        "refresh": "Odśwież"
+    },
+    "toast": {
+        "courseCreated": "Kurs został utworzony!"
     }
 }

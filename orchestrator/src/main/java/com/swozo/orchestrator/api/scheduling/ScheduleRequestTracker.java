@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.api.scheduling;
 
-import com.swozo.model.links.Link;
+import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
 import org.springframework.stereotype.Service;
 
@@ -8,9 +8,6 @@ import java.util.*;
 
 @Service
 public class ScheduleRequestTracker {
-    private record RequestWithLinks(ScheduleRequest scheduleRequest, List<Link> links) {
-    }
-
     // TODO: switch to storing request info in database
     private final Map<Long, RequestWithLinks> requestDb = new HashMap<>();
 
@@ -22,16 +19,19 @@ public class ScheduleRequestTracker {
         requestDb.remove(activityModuleId);
     }
 
-    public List<Link> getLinks(Long activityModuleId) {
+    public List<ActivityLinkInfo> getLinks(Long activityModuleId) {
         return Optional.ofNullable(requestDb.get(activityModuleId))
                 .map(RequestWithLinks::links)
                 .orElse(Collections.emptyList());
     }
 
-    public void saveLinks(Long activityModuleId, List<Link> links) {
+    public void saveLinks(Long activityModuleId, List<ActivityLinkInfo> links) {
         Optional.ofNullable(requestDb.get(activityModuleId))
                 .ifPresent(requestWithLinks ->
                         requestDb.put(activityModuleId, new RequestWithLinks(requestWithLinks.scheduleRequest, links))
                 );
+    }
+
+    private record RequestWithLinks(ScheduleRequest scheduleRequest, List<ActivityLinkInfo> links) {
     }
 }

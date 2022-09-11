@@ -8,7 +8,7 @@ import java.time.ZoneOffset;
 
 @Service
 public class TimingService {
-    public long getScheludingOffset(ScheduleRequest request, int schedulingSeconds) {
+    public long getSchedulingOffset(ScheduleRequest request, int schedulingSeconds) {
         return offsetTime(request.getServiceLifespan().startTime()) - schedulingSeconds;
     }
 

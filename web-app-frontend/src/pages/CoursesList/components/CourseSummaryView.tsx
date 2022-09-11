@@ -1,12 +1,15 @@
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { CourseDetailsDto } from 'api';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
+import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { CourseSummary } from 'utils/mocks';
+import { STUDENT, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
+import { formatDate } from 'utils/util';
 
 type Props = {
-    courseSummary: CourseSummary;
+    courseSummary: CourseDetailsDto;
 };
 
 export const CourseSummaryView = ({ courseSummary }: Props) => {
@@ -32,7 +35,7 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                                 borderBottom: '1px solid rgba(0,0,0, 0.3)',
                             }}
                         >
-                            #{courseSummary.subject}
+                            #{_.capitalize(courseSummary.subject)}
                         </Typography>
                     </Grid>
                     <Grid item xs={4} sx={{ textAlign: 'right' }}>
@@ -40,15 +43,19 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                             {t('myCourses.course.lastActivity')}
                         </Typography>
                         <Typography sx={{ mt: -1 }} variant="h6" component="div">
-                            {courseSummary.lastActivity}
+                            {formatDate(courseSummary.lastActivityTime)}
                         </Typography>
                     </Grid>
                     <Grid item xs={8} sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
-                        <Box display="flex" alignItems="center">
-                            <Typography variant="body2">
-                                {t('myCourses.course.teacher', { name: courseSummary.teacherName })}
-                            </Typography>
-                        </Box>
+                        <WithRole roles={[STUDENT]}>
+                            <Box display="flex" alignItems="center">
+                                <Typography variant="body2">
+                                    {t('myCourses.course.teacher', {
+                                        name: `${courseSummary.teacher.name} ${courseSummary.teacher.surname} `,
+                                    })}
+                                </Typography>
+                            </Box>
+                        </WithRole>
                     </Grid>
                     <Grid item xs={4} sx={{ mt: 2 }}>
                         <Box display="flex" justifyContent="flex-end">

@@ -24,5 +24,4 @@ public class OrchestratorApplication {
         System.out.println("Hello world, I have just started up");
         playground.run();
     }
-
 }

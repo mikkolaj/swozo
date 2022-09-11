@@ -1,42 +1,31 @@
 package com.swozo.mapper;
 
-import com.swozo.databasemodel.Activity;
-import com.swozo.dto.activity.ActivityDetailsReq;
-import com.swozo.dto.activity.ActivityDetailsResp;
-import com.swozo.dto.activity.ActivityInstruction;
-import com.swozo.webservice.repository.ActivityModuleRepository;
+import com.swozo.api.web.activity.dto.ActivityDetailsDto;
+import com.swozo.api.web.activity.dto.ActivityInstructionDto;
+import com.swozo.api.web.activity.request.CreateActivityRequest;
+import com.swozo.api.web.servicemodule.ServiceModuleRepository;
+import com.swozo.persistence.Activity;
+import com.swozo.persistence.ActivityInstruction;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public abstract class ActivityMapper {
     @Autowired
-    protected ActivityModuleRepository moduleRepository;
+    protected ServiceModuleRepository moduleRepository;
+    @Autowired
+    protected ActivityModuleMapper activityModuleMapper;
 
-    // TODO replace this when we have proper instructions format in db
-    protected String getInstructions(ActivityDetailsReq activityDetailsReq) {
-        return activityDetailsReq.instructionsFromTeacher().stream()
-                .map(activityInstruction -> activityInstruction.header() + activityInstruction.body())
-                .reduce("", (cur, prev) -> prev + cur);
-    }
+    public abstract ActivityInstruction toPersistence(ActivityInstructionDto activityInstructionDto);
 
-    // TODO store instructions properly
-    @Mapping(target = "modules", expression = "java(moduleRepository.findAllById(activityDetailsReq.selectedModulesIds()))")
-    @Mapping(target = "instructionsFromTeacher", expression = "java(getInstructions(activityDetailsReq))")
-    public abstract Activity toPersistence(ActivityDetailsReq activityDetailsReq);
+    public abstract ActivityInstructionDto toDto(ActivityInstruction activityInstruction);
 
-    // TODO proper mapping
-    public ActivityDetailsResp toModel(Activity activity) {
-        return new ActivityDetailsResp(
-                activity.getId(),
-                activity.getName(),
-                activity.getDescription(),
-                activity.getStartTime(),
-                activity.getEndTime(),
-                List.of(new ActivityInstruction("some header", activity.getInstructionsFromTeacher()))
-        );
-    }
+    @Mapping(target = "modules", expression = "java(moduleRepository.findAllById(createActivityRequest.selectedModulesIds()).stream().map(activityModuleMapper::fromServiceModule).toList())")
+    @Mapping(target = "instructionsFromTeacher", expression = "java(createActivityRequest.instructionsFromTeacher().stream().map(this::toPersistence).toList())")
+    public abstract Activity toPersistence(CreateActivityRequest createActivityRequest);
+
+    @Mapping(target = "instructionsFromTeacher", expression = "java(activity.getInstructionsFromTeacher().stream().map(this::toDto).toList())")
+    @Mapping(target = "activityModules", expression = "java(activity.getModules().stream().map(activityModuleMapper::toDto).toList())")
+    public abstract ActivityDetailsDto toDto(Activity activity);
 }

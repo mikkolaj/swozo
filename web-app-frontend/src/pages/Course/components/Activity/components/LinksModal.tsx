@@ -13,14 +13,14 @@ import {
     Modal,
     Typography,
 } from '@mui/material';
+import { ActivityDetailsDto } from 'api';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Activity } from 'utils/mocks';
 
 type Props = {
-    activity: Activity;
+    activity: ActivityDetailsDto;
     open: boolean;
     onClose: () => void;
 };
@@ -72,19 +72,42 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
 
                         <Grid container sx={{ p: 2 }}>
                             <Grid item xs={12}>
-                                {activity.links.map((link, idx) => (
-                                    <Accordion sx={{ mb: 2, boxShadow: 3 }} key={idx}>
+                                {activity.activityModules.map((activityModule) => (
+                                    <Accordion sx={{ mb: 2, boxShadow: 3 }} key={activityModule.id}>
                                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                             <Box
                                                 sx={{ cursor: 'default', pr: 4 }}
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                <Typography component="h3" variant="h6">
-                                                    {link.serviceName}
+                                                <Typography
+                                                    sx={{ textTransform: 'capitalize' }}
+                                                    component="h3"
+                                                    variant="h6"
+                                                >
+                                                    {/* {activityModule.module.name} */}
+                                                    Jupyter
                                                 </Typography>
-                                                <Link target="_blank" rel="noopener" href={link.url}>
-                                                    {link.url}
-                                                </Link>
+                                                {/* TODO */}
+                                                {activityModule.connectionDetails.length === 0 && (
+                                                    <Typography>
+                                                        {' '}
+                                                        Linki nie są jeszcze dostępne, odśwież stronę przed
+                                                        rozpoczęciem zajęć
+                                                    </Typography>
+                                                )}
+                                                {activityModule.connectionDetails.map(
+                                                    ({ url, serviceName }) => (
+                                                        <Link
+                                                            key={serviceName}
+                                                            target="_blank"
+                                                            rel="noopener"
+                                                            href={url}
+                                                        >
+                                                            {/* TODO */}
+                                                            {url ?? 'Link nie jest jeszcze dostępny'}
+                                                        </Link>
+                                                    )
+                                                )}
                                                 <Box
                                                     sx={{
                                                         display: 'flex',
@@ -93,12 +116,17 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                         ':hover': { cursor: 'text' },
                                                     }}
                                                 >
-                                                    {/* TODO use more advanced/flexible format */}
-                                                    {link.connectionInfo.split('\n').map((line, idx) => (
-                                                        <Box key={idx}>
-                                                            <Typography>{line}</Typography>
-                                                        </Box>
-                                                    ))}
+                                                    {/* TODO use more advanced/flexible format // fix this xD*/}
+                                                    {activityModule.connectionDetails
+                                                        .flatMap(
+                                                            ({ connectionInstruction }) =>
+                                                                connectionInstruction?.split('\n') ?? ''
+                                                        )
+                                                        .map((line, idx) => (
+                                                            <Box key={idx}>
+                                                                <Typography>{line}</Typography>
+                                                            </Box>
+                                                        ))}
                                                 </Box>
                                             </Box>
                                         </AccordionSummary>
@@ -107,13 +135,19 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                 {t('course.activity.linksInfo.connectionInstruction')}
                                             </Typography>
                                             <Divider />
-                                            <Typography sx={{ mt: 1 }} variant="body2">
-                                                {link.connectionInstruction.split('\n').map((line, idx) => (
-                                                    <Box key={idx}>
-                                                        <Typography>{line}</Typography>
-                                                    </Box>
-                                                ))}
-                                            </Typography>
+                                            <Box sx={{ mt: 1 }}>
+                                                {/* TODO  */}
+                                                {activityModule.connectionDetails
+                                                    .flatMap(
+                                                        ({ connectionInstruction }) =>
+                                                            connectionInstruction?.split('\n') ?? ''
+                                                    )
+                                                    .map((line, idx) => (
+                                                        <Box key={idx}>
+                                                            <Typography variant="body2">{line}</Typography>
+                                                        </Box>
+                                                    ))}
+                                            </Box>
                                         </AccordionDetails>
                                     </Accordion>
                                 ))}

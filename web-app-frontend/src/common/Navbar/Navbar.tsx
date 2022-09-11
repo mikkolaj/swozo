@@ -4,8 +4,10 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { getApis } from 'api/initialize-apis';
 import { RefObject, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
@@ -18,6 +20,7 @@ export const Navbar = () => {
     const dispatch = useAppDispatch();
     const appBarRef: RefObject<HTMLDivElement> = useRef(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const { data: me } = useQuery('me', () => getApis().userApi.getUserInfo());
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -41,7 +44,7 @@ export const Navbar = () => {
                         </WithPreference>
                         <NavbarItem textPath="navbar.myCourses" route={PageRoutes.MY_COURSES} />
                         <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
-                            <Avatar sx={{ width: 32, height: 32 }}>D</Avatar>
+                            <Avatar sx={{ width: 32, height: 32 }}>{me?.name[0] ?? '?'}</Avatar>
                         </IconButton>
                     </Box>
                 </Toolbar>
@@ -83,7 +86,7 @@ export const Navbar = () => {
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
                 <MenuItem>
-                    <Avatar /> Dominik Kowalski
+                    <Avatar /> {me?.name} {me?.surname}
                 </MenuItem>
                 <Divider />
 

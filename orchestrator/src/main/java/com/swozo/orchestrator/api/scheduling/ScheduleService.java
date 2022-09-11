@@ -1,7 +1,7 @@
 package com.swozo.orchestrator.api.scheduling;
 
 import com.swozo.function.ThrowingFunction;
-import com.swozo.model.links.Link;
+import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.JupyterScheduleRequest;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
@@ -38,14 +38,14 @@ public class ScheduleService {
         switch (request) {
             case JupyterScheduleRequest jupyterRequest -> scheduler.schedule(
                     () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision),
-                    timingService.getScheludingOffset(request, jupyterProvisioner.getProvisioningSeconds()));
+                    timingService.getSchedulingOffset(request, jupyterProvisioner.getProvisioningSeconds()));
             default -> throw new IllegalStateException("Unexpected value: " + request);
         }
     }
 
     private Void scheduleCreationAndDeletion(
             ScheduleRequest scheduleRequest,
-            ThrowingFunction<VMResourceDetails, List<Link>> provisionSoftware
+            ThrowingFunction<VMResourceDetails, List<ActivityLinkInfo>> provisionSoftware
     ) throws InterruptedException {
         try {
             timedVmProvider
@@ -64,7 +64,7 @@ public class ScheduleService {
 
     private Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
             ScheduleRequest scheduleRequest,
-            ThrowingFunction<VMResourceDetails, List<Link>> provisionSoftware
+            ThrowingFunction<VMResourceDetails, List<ActivityLinkInfo>> provisionSoftware
     ) {
         return resourceDetails -> {
             try {

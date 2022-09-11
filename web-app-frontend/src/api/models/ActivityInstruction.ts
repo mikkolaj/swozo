@@ -21,6 +21,12 @@ import { exists, mapValues } from '../runtime';
 export interface ActivityInstruction {
     /**
      * 
+     * @type {number}
+     * @memberof ActivityInstruction
+     */
+    id?: number;
+    /**
+     * 
      * @type {string}
      * @memberof ActivityInstruction
      */
@@ -30,7 +36,7 @@ export interface ActivityInstruction {
      * @type {string}
      * @memberof ActivityInstruction
      */
-    body: string;
+    body?: string;
 }
 
 export function ActivityInstructionFromJSON(json: any): ActivityInstruction {
@@ -43,8 +49,9 @@ export function ActivityInstructionFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
+        'id': !exists(json, 'id') ? undefined : json['id'],
         'header': !exists(json, 'header') ? undefined : json['header'],
-        'body': json['body'],
+        'body': !exists(json, 'body') ? undefined : json['body'],
     };
 }
 
@@ -57,6 +64,7 @@ export function ActivityInstructionToJSON(value?: ActivityInstruction | null): a
     }
     return {
         
+        'id': value.id,
         'header': value.header,
         'body': value.body,
     };
