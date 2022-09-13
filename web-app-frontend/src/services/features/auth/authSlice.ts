@@ -9,7 +9,7 @@ const LOCAL_STORAGE_AUTH_KEY = 'JWT';
 const LOCAL_STORAGE_ROLE_PREF_KEY = 'ROLE_PREF';
 
 export type AuthState = {
-    authData: AuthDetailsDto | null;
+    authData?: AuthDetailsDto;
     rolePreference?: AuthDetailsDtoRolesEnum;
     isLoggedIn: boolean;
     isFetching: boolean;
@@ -20,7 +20,7 @@ export function isTokenExpired(authData: AuthDetailsDto) {
     return authData.expiresIn * 1000 <= new Date().getTime();
 }
 
-function canHaveRolePreference(authData: AuthDetailsDto | null, pref?: AuthDetailsDtoRolesEnum): boolean {
+function canHaveRolePreference(authData?: AuthDetailsDto, pref?: AuthDetailsDtoRolesEnum): boolean {
     if (!pref) return true;
 
     return hasRole(authData, pref);
@@ -32,7 +32,7 @@ function getDefaultRolePreference(authData: AuthDetailsDto): AuthDetailsDtoRoles
 }
 
 function buildInitialState(): AuthState {
-    let authData = loadFromLocalStorage<AuthDetailsDto>(LOCAL_STORAGE_AUTH_KEY) ?? null;
+    const authData = loadFromLocalStorage<AuthDetailsDto>(LOCAL_STORAGE_AUTH_KEY);
     const rolePreference = loadFromLocalStorage<AuthDetailsDtoRolesEnum>(LOCAL_STORAGE_ROLE_PREF_KEY);
     let isLoggedIn = false;
 
@@ -42,7 +42,6 @@ function buildInitialState(): AuthState {
         } else {
             console.log('session expired');
             clearLocalStorage(LOCAL_STORAGE_AUTH_KEY);
-            authData = null;
             isLoggedIn = false;
         }
     }
@@ -60,24 +59,21 @@ const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthDetailsDto>, { 
     async (resp, { dispatch }) => {
         dispatch(setFetching(true));
         try {
-            const data = await resp;
-            // TODO error handling
-            console.log(data);
-
-            persistWithLocalStorage(LOCAL_STORAGE_AUTH_KEY, data);
-            dispatch(receiveAuthData(data));
+            const authDetails = await resp;
+            persistWithLocalStorage(LOCAL_STORAGE_AUTH_KEY, authDetails);
+            dispatch(receiveAuthData(authDetails));
 
             let rolePreference = loadFromLocalStorage<AuthDetailsDtoRolesEnum>(LOCAL_STORAGE_ROLE_PREF_KEY);
-            if (!rolePreference || !canHaveRolePreference(data, rolePreference)) {
-                rolePreference = getDefaultRolePreference(data);
+            if (!rolePreference || !canHaveRolePreference(authDetails, rolePreference)) {
+                rolePreference = getDefaultRolePreference(authDetails);
             }
 
             if (rolePreference) {
-                dispatch(setRolePref(rolePreference));
+                dispatch(receiveRolePref(rolePreference));
             }
         } catch (err) {
-            console.log('[LOGIN ERROR] ' + err);
-            dispatch(setAuthErrors([JSON.stringify(err)])); // TODO error handling
+            console.debug('[LOGIN ERROR] ' + err);
+            dispatch(receiveAuthErrors([JSON.stringify(err)])); // TODO error handling
         } finally {
             dispatch(setFetching(false));
         }
@@ -89,8 +85,7 @@ export const login = createAsyncThunk<unknown, LoginRequest, { dispatch: AppDisp
     async (loginRequest, { getState, dispatch }) => {
         if (getState().auth.isFetching) return;
 
-        const resp = getApis().authApi.login({ loginRequest });
-        dispatch(handleAuthResponse(resp));
+        dispatch(handleAuthResponse(getApis().authApi.login({ loginRequest })));
     }
 );
 
@@ -109,7 +104,7 @@ export const setRolePreference = createAsyncThunk<
     if (!auth || auth.rolePreference === role || !canHaveRolePreference(auth.authData, role)) return;
 
     persistWithLocalStorage(LOCAL_STORAGE_ROLE_PREF_KEY, role);
-    dispatch(setRolePref(role));
+    dispatch(receiveRolePref(role));
 });
 
 export const authSlice = createSlice({
@@ -122,17 +117,17 @@ export const authSlice = createSlice({
             state.errors = undefined;
         },
         resetAuthData: (state: AuthState) => {
-            state.authData = null;
+            state.authData = undefined;
             state.isLoggedIn = false;
             state.errors = undefined; // maybe leave it
         },
-        setRolePref: (state: AuthState, action: PayloadAction<AuthDetailsDtoRolesEnum>) => {
+        receiveRolePref: (state: AuthState, action: PayloadAction<AuthDetailsDtoRolesEnum>) => {
             state.rolePreference = action.payload;
         },
         clearAuthErrors: (state: AuthState) => {
             state.errors = undefined;
         },
-        setAuthErrors: (state: AuthState, action: PayloadAction<string[]>) => {
+        receiveAuthErrors: (state: AuthState, action: PayloadAction<string[]>) => {
             state.errors = action.payload;
         },
         setFetching: (state: AuthState, action: PayloadAction<boolean>) => {
@@ -141,6 +136,6 @@ export const authSlice = createSlice({
     },
 });
 
-const { receiveAuthData, resetAuthData, setAuthErrors, setFetching, setRolePref } = authSlice.actions;
+const { receiveAuthData, resetAuthData, receiveAuthErrors, setFetching, receiveRolePref } = authSlice.actions;
 
 export default authSlice.reducer;
