@@ -18,3 +18,13 @@ export const formatDateTime = (date: Date): string => {
     // TODO
     return dayjs(date).format(DATE_TIME_FORMAT);
 };
+
+export const loadFromLocalStorage = <T>(key: string): T | undefined => {
+    const data = window.localStorage.getItem(key);
+    return data ? JSON.parse(data) : undefined;
+};
+
+export const persistWithLocalStorage = <T>(key: string, data: T) =>
+    window.localStorage.setItem(key, JSON.stringify(data));
+
+export const clearLocalStorage = (key: string) => window.localStorage.removeItem(key);

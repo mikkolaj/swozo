@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { login } from 'services/features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from 'services/store';
 
-const Login = () => {
+export const Login = () => {
     const dispatch = useAppDispatch();
     const authState = useAppSelector((state) => state.auth);
     const { t } = useTranslation();
@@ -79,5 +79,3 @@ const Login = () => {
         </Container>
     );
 };
-
-export default Login;

@@ -3,37 +3,23 @@ import { AuthDetailsDto, AuthDetailsDtoRolesEnum, LoginRequest } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { AppDispatch, RootState } from 'services/store';
 import { hasRole } from 'utils/roles';
+import { clearLocalStorage, loadFromLocalStorage, persistWithLocalStorage } from 'utils/util';
 
 const LOCAL_STORAGE_AUTH_KEY = 'JWT';
 const LOCAL_STORAGE_ROLE_PREF_KEY = 'ROLE_PREF';
+
+export type AuthState = {
+    authData: AuthDetailsDto | null;
+    rolePreference?: AuthDetailsDtoRolesEnum;
+    isLoggedIn: boolean;
+    isFetching: boolean;
+    errors?: string[];
+};
 
 export function isTokenExpired(authData: AuthDetailsDto) {
     return authData.expiresIn * 1000 <= new Date().getTime();
 }
 
-function persistAuthState(auth: AuthDetailsDto): void {
-    window.localStorage.setItem(LOCAL_STORAGE_AUTH_KEY, JSON.stringify(auth));
-}
-
-function clearAuthPersistence(): void {
-    window.localStorage.removeItem(LOCAL_STORAGE_AUTH_KEY);
-}
-
-function getPersistedAuthState(): AuthDetailsDto | undefined {
-    const data = window.localStorage.getItem(LOCAL_STORAGE_AUTH_KEY);
-    return data ? JSON.parse(data) : undefined;
-}
-
-function getPersistedRolePreference(): AuthDetailsDtoRolesEnum | undefined {
-    const data = window.localStorage.getItem(LOCAL_STORAGE_ROLE_PREF_KEY);
-    return data ? JSON.parse(data) : undefined;
-}
-
-// TODO im not sure if this role preference idea wont turn out too complicated
-// its maily to distinguish between teacher and technical teacher views, we dont want to
-// throw every option to normal teacher, but usually normal teacher will be also a technical teacher (and always vice versa)
-
-// if we set rolePreference to teacher we can hide all these technical teacher buttons
 function canHaveRolePreference(authData: AuthDetailsDto | null, pref?: AuthDetailsDtoRolesEnum): boolean {
     if (!pref) return true;
 
@@ -45,17 +31,9 @@ function getDefaultRolePreference(authData: AuthDetailsDto): AuthDetailsDtoRoles
         return AuthDetailsDtoRolesEnum.Teacher;
 }
 
-export type AuthState = {
-    authData: AuthDetailsDto | null;
-    rolePreference?: AuthDetailsDtoRolesEnum;
-    isLoggedIn: boolean;
-    isFetching: boolean;
-    errors?: string[];
-};
-
 function buildInitialState(): AuthState {
-    let authData = getPersistedAuthState() ?? null;
-    const rolePreference = getPersistedRolePreference();
+    let authData = loadFromLocalStorage<AuthDetailsDto>(LOCAL_STORAGE_AUTH_KEY) ?? null;
+    const rolePreference = loadFromLocalStorage<AuthDetailsDtoRolesEnum>(LOCAL_STORAGE_ROLE_PREF_KEY);
     let isLoggedIn = false;
 
     if (authData) {
@@ -63,7 +41,7 @@ function buildInitialState(): AuthState {
             isLoggedIn = true;
         } else {
             console.log('session expired');
-            clearAuthPersistence();
+            clearLocalStorage(LOCAL_STORAGE_AUTH_KEY);
             authData = null;
             isLoggedIn = false;
         }
@@ -86,10 +64,10 @@ const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthDetailsDto>, { 
             // TODO error handling
             console.log(data);
 
-            persistAuthState(data);
-            dispatch(setAuthData(data));
+            persistWithLocalStorage(LOCAL_STORAGE_AUTH_KEY, data);
+            dispatch(receiveAuthData(data));
 
-            let rolePreference = getPersistedRolePreference();
+            let rolePreference = loadFromLocalStorage<AuthDetailsDtoRolesEnum>(LOCAL_STORAGE_ROLE_PREF_KEY);
             if (!rolePreference || !canHaveRolePreference(data, rolePreference)) {
                 rolePreference = getDefaultRolePreference(data);
             }
@@ -117,7 +95,7 @@ export const login = createAsyncThunk<unknown, LoginRequest, { dispatch: AppDisp
 );
 
 export const logout = createAsyncThunk('auth/logout', (_, { dispatch }) => {
-    clearAuthPersistence();
+    clearLocalStorage(LOCAL_STORAGE_AUTH_KEY);
     dispatch(resetAuthData());
 });
 
@@ -130,7 +108,7 @@ export const setRolePreference = createAsyncThunk<
     const auth = getState().auth;
     if (!auth || auth.rolePreference === role || !canHaveRolePreference(auth.authData, role)) return;
 
-    localStorage.setItem(LOCAL_STORAGE_ROLE_PREF_KEY, JSON.stringify(role));
+    persistWithLocalStorage(LOCAL_STORAGE_ROLE_PREF_KEY, role);
     dispatch(setRolePref(role));
 });
 
@@ -138,7 +116,7 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState: buildInitialState(),
     reducers: {
-        setAuthData: (state: AuthState, action: PayloadAction<AuthDetailsDto>) => {
+        receiveAuthData: (state: AuthState, action: PayloadAction<AuthDetailsDto>) => {
             state.authData = action.payload;
             state.isLoggedIn = true;
             state.errors = undefined;
@@ -163,6 +141,6 @@ export const authSlice = createSlice({
     },
 });
 
-const { setAuthData, resetAuthData, setAuthErrors, setFetching, setRolePref } = authSlice.actions;
+const { receiveAuthData, resetAuthData, setAuthErrors, setFetching, setRolePref } = authSlice.actions;
 
 export default authSlice.reducer;
