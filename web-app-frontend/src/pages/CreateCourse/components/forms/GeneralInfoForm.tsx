@@ -26,29 +26,29 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
                         name="name"
                         type="text"
                         textFieldProps={{ fullWidth: true }}
-                        labelPath="createCourse.slides.0.form.name"
+                        i18nLabel="createCourse.slides.0.form.name"
                     />
                     <SlideFormInputField
                         name="subject"
                         type="text"
-                        labelPath="createCourse.slides.0.form.subject"
+                        i18nLabel="createCourse.slides.0.form.subject"
                     />
                     <SlideFormInputField
                         wrapperSx={{ width: '50%' }}
                         name="description"
                         type="text"
                         textFieldProps={{ multiline: true, fullWidth: true, required: false }}
-                        labelPath="createCourse.slides.0.form.description"
+                        i18nLabel="createCourse.slides.0.form.description"
                     />
                     <SlideFormInputField
                         name="numberOfActivities"
                         type="number"
-                        labelPath="createCourse.slides.0.form.numberOfActivities"
+                        i18nLabel="createCourse.slides.0.form.numberOfActivities"
                     />
                     <SlideFormInputField
                         name="numberOfStudents"
                         type="number"
-                        labelPath="createCourse.slides.0.form.numberOfStudents"
+                        i18nLabel="createCourse.slides.0.form.numberOfStudents"
                         onChangeDecorator={() => {
                             // TODO how this value affects array below
                             // if (!isNaN(+e.target.value)) setNumberOfStudents(+e.target.value);
@@ -69,7 +69,7 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
                                             name={`students.${idx}`}
                                             wrapperSx={{ mt: 2 }}
                                             type="text"
-                                            labelPath=""
+                                            i18nLabel=""
                                             textFieldProps={{
                                                 onBlur: () => {
                                                     if (

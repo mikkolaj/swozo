@@ -6,8 +6,8 @@ import { PropsWithChildren, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
-    titlePath: string;
-    slidesPath: string;
+    titleI18n: string;
+    slidesI18n: string;
     buttons: JSX.Element;
     slideCount: number;
     currentSlide: number;
@@ -20,8 +20,8 @@ export type SlideProps<T> = {
 };
 
 export const SlideForm = ({
-    titlePath,
-    slidesPath,
+    titleI18n,
+    slidesI18n,
     buttons,
     slideCount,
     currentSlide,
@@ -37,14 +37,14 @@ export const SlideForm = ({
                 <>
                     <Grid item xs={12}>
                         <Typography variant="h4" component="div">
-                            {t(titlePath)}
+                            {t(titleI18n)}
                         </Typography>
                     </Grid>
                     <Grid item xs={12}>
                         <Stepper sx={{ mt: 2 }} activeStep={currentSlide} alternativeLabel>
                             {_.range(slideCount).map((_, idx) => (
                                 <Step key={idx}>
-                                    <StepLabel>{t(`${slidesPath}.${idx}.title`)}</StepLabel>
+                                    <StepLabel>{t(`${slidesI18n}.${idx}.title`)}</StepLabel>
                                 </Step>
                             ))}
                         </Stepper>

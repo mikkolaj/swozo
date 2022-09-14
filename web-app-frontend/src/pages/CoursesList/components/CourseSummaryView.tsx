@@ -1,6 +1,7 @@
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import { CourseDetailsDto } from 'api';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
+import { stylesColumnCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -46,9 +47,9 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                             {formatDate(courseSummary.lastActivityTime)}
                         </Typography>
                     </Grid>
-                    <Grid item xs={8} sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                    <Grid item xs={8} sx={{ ...stylesColumnCenteredVertical, mt: 2 }}>
                         <WithRole roles={[STUDENT]}>
-                            <Box display="flex" alignItems="center">
+                            <Box sx={stylesColumnCenteredVertical}>
                                 <Typography variant="body2">
                                     {t('myCourses.course.teacher', {
                                         name: `${courseSummary.teacher.name} ${courseSummary.teacher.surname} `,
@@ -58,7 +59,7 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                         </WithRole>
                     </Grid>
                     <Grid item xs={4} sx={{ mt: 2 }}>
-                        <Box display="flex" justifyContent="flex-end">
+                        <Box sx={stylesRowWithItemsAtTheEnd}>
                             <Button
                                 variant="contained"
                                 onClick={() => navigate(PageRoutes.Course(courseSummary.id))}

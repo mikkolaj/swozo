@@ -1,6 +1,7 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Button, Card, Grid, Paper, Typography } from '@mui/material';
+import { stylesRowCenteredVertical } from 'common/styles';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useState } from 'react';
@@ -20,10 +21,7 @@ export const Calendar = () => {
                     item
                     xs={12}
                     sx={{
-                        display: 'flex',
-                        alignContent: 'center',
-                        flexDirection: 'row',
-                        justifyItems: 'space-between',
+                        ...stylesRowCenteredVertical,
                         mb: 1,
                     }}
                 >
@@ -54,33 +52,29 @@ export const Calendar = () => {
                     item
                     xs={12}
                     sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
+                        ...stylesRowCenteredVertical,
                         marginBottom: '5px',
                     }}
-                    justifyContent="space-between"
-                    alignContent="center"
                 >
                     {_.range(DAYS_IN_WEEK).map((day) => (
                         <Paper
-                            sx={{ boxShadow: 2, width: '100%', textAlign: 'center', margin: '1px' }}
+                            sx={{
+                                boxShadow: 2,
+                                width: '100%',
+                                textAlign: 'center',
+                                margin: '1px',
+                                textTransform: 'capitalize',
+                            }}
                             key={day}
                         >
-                            {_.capitalize(
-                                dayjs()
-                                    .day((day + 1) % DAYS_IN_WEEK)
-                                    .format('dd')
-                            ) + '.'}
+                            {dayjs()
+                                .day((day + 1) % DAYS_IN_WEEK)
+                                .format('dd') + '.'}
                         </Paper>
                     ))}
                 </Grid>
                 {_.range(getWeeksInMonthCount(displayedDate)).map((week) => (
-                    <Grid
-                        item
-                        key={week}
-                        xs={12}
-                        sx={{ display: 'flex', alignContent: 'center', flexDirection: 'row' }}
-                    >
+                    <Grid item key={week} xs={12} sx={stylesRowCenteredVertical}>
                         {_.range(DAYS_IN_WEEK).map((day) => (
                             <CalendarDay
                                 key={day}

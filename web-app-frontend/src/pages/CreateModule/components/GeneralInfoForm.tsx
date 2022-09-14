@@ -3,6 +3,7 @@ import { Box, Button, Checkbox, Divider, FormControlLabel, MenuItem, Typography 
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
 import { SlideFormSelectField } from 'common/SlideForm/SlideFormSelectField';
+import { stylesRowCenteredVertical } from 'common/styles';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,21 +41,21 @@ export const GeneralInfoForm = ({
                         textFieldProps={{ fullWidth: true }}
                         wrapperSx={{ width: '50%' }}
                         type="text"
-                        labelPath="createModule.slides.0.form.name"
+                        i18nLabel="createModule.slides.0.form.name"
                     />
                     <SlideFormInputField
                         name="subject"
                         type="text"
-                        labelPath="createModule.slides.0.form.subject"
+                        i18nLabel="createModule.slides.0.form.subject"
                     />
                     <SlideFormInputField
                         wrapperSx={{ width: '50%' }}
                         name="description"
                         type="text"
                         textFieldProps={{ multiline: true, fullWidth: true, required: false }}
-                        labelPath="createModule.slides.0.form.description"
+                        i18nLabel="createModule.slides.0.form.description"
                     />
-                    <SlideFormSelectField name="service" labelPath="createModule.slides.0.form.service">
+                    <SlideFormSelectField name="service" i18nLabel="createModule.slides.0.form.service">
                         {services.map((service, idx) => (
                             <MenuItem key={idx} value={service}>
                                 {service}
@@ -69,11 +70,9 @@ export const GeneralInfoForm = ({
                     </Typography>
                     <Box
                         sx={{
+                            ...stylesRowCenteredVertical,
                             ml: 2,
                             mt: 2,
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
                         }}
                     >
                         <SlideFormInputField
@@ -111,7 +110,7 @@ export const GeneralInfoForm = ({
                         name="instructions"
                         type="text"
                         textFieldProps={{ multiline: true, fullWidth: true, required: false }}
-                        labelPath="createModule.slides.0.form.instructions"
+                        i18nLabel="createModule.slides.0.form.instructions"
                     />
                     <FormControlLabel
                         sx={{ mt: 2 }}

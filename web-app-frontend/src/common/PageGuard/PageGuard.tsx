@@ -4,7 +4,7 @@ import { useAppSelector } from 'services/store';
 import { AuthRequirement, hasRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 
-const getDefaultRedirectRoute = (req: AuthRequirement): string => {
+const defaultRedirectRoute = (req: AuthRequirement): string => {
     return req.loggedIn ? PageRoutes.LOGIN : PageRoutes.HOME;
 };
 
@@ -31,7 +31,7 @@ export const PageGuard = ({ authRequirement, redirectPath, children }: PropsWith
         }
 
         if (shouldNavigate) {
-            navigate(redirectPath ?? getDefaultRedirectRoute(authRequirement));
+            navigate(redirectPath ?? defaultRedirectRoute(authRequirement));
         }
     }, [authState, navigate, authRequirement, redirectPath]);
 

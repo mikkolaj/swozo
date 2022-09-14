@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { getApis } from 'api/initialize-apis';
+import { stylesRowFullyCentered } from 'common/styles';
 import { RefObject, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'react-query';
@@ -35,7 +36,7 @@ export const Navbar = () => {
                     >
                         {t('navbar.logo')}
                     </Typography>
-                    <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center">
+                    <Box sx={stylesRowFullyCentered}>
                         <WithRole roles={[STUDENT]}>
                             <NavbarItem textPath="navbar.myFiles" route={PageRoutes.FILES} />
                         </WithRole>

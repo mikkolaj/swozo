@@ -1,5 +1,6 @@
 import { Button, Grid } from '@mui/material';
 import { SlideForm } from 'common/SlideForm/SlideForm';
+import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikProps } from 'formik';
 import { Ref, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,8 +33,8 @@ export const CreateModuleView = () => {
 
     return (
         <SlideForm
-            titlePath="createModule.title"
-            slidesPath="createModule.slides"
+            titleI18n="createModule.title"
+            slidesI18n="createModule.slides"
             slideCount={3}
             currentSlide={currentSlide}
             buttons={
@@ -49,15 +50,7 @@ export const CreateModuleView = () => {
                             </Button>
                         )}
                     </Grid>
-                    <Grid
-                        item
-                        xs={6}
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                        }}
-                    >
+                    <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <Button
                             sx={{ alignSelf: 'flex-end' }}
                             onClick={() => {

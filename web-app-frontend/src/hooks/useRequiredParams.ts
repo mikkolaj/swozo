@@ -11,7 +11,7 @@ export const useRequiredParams = (paramNames: string[], navigateTo: string = '/'
             res.push(param);
         } else {
             console.error(`Required route param: ${name} not found`);
-            navigate(navigateTo);
+            navigate(navigateTo, { replace: true });
             return [];
         }
     }

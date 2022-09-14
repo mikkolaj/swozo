@@ -1,7 +1,7 @@
 import SentimentVeryDissatisfiedOutlinedIcon from '@mui/icons-material/SentimentVeryDissatisfiedOutlined';
-import { Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Box, Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
+import { stylesRowCenteredHorizontal, stylesRowWithSpaceBetweenItems } from 'common/styles';
 import useWindowDimensions from 'hooks/useWindowDimensions';
 import { ComponentProps, RefObject, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,7 @@ export const PageContainerWithError = ({
                 </Card>
             </Container>
             <AbsolutelyCentered>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 5, mt: -5 }}>
+                <Box sx={{ ...stylesRowCenteredHorizontal, mb: 5, mt: -5 }}>
                     <SentimentVeryDissatisfiedOutlinedIcon sx={{ width: 150, height: 150 }} />
                 </Box>
                 {customErrorContent ?? (
@@ -67,10 +67,8 @@ export const PageContainerWithError = ({
                             item
                             xs={12}
                             sx={{
+                                ...stylesRowWithSpaceBetweenItems,
                                 mt: 2,
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
                             }}
                         >
                             <Button onClick={() => window.location.reload()}>{t('error.refresh')}</Button>

@@ -6,6 +6,7 @@ import { AutocompleteWithChips } from 'common/SlideForm/AutocompleteWithChips';
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
 import { Bar } from 'common/Styled/Bar';
+import { FORM_INPUT_WIDTH, stylesRowWithSpaceBetweenItems } from 'common/styles';
 import { FieldArray, Form, Formik } from 'formik';
 import { ActivityValues } from 'pages/CreateCourse/util';
 import { useTranslation } from 'react-i18next';
@@ -61,14 +62,14 @@ export const ActivitiesForm = ({
                                             textFieldProps={{ fullWidth: true }}
                                             wrapperSx={{ width: '50%' }}
                                             type="text"
-                                            labelPath="createCourse.slides.1.form.name"
+                                            i18nLabel="createCourse.slides.1.form.name"
                                         />
                                         <SlideFormInputField
                                             wrapperSx={{ width: '50%' }}
                                             name={`activities.${idx}.description`}
                                             type="text"
                                             textFieldProps={{ fullWidth: true, multiline: true }}
-                                            labelPath="createCourse.slides.1.form.description"
+                                            i18nLabel="createCourse.slides.1.form.description"
                                         />
                                         <DesktopDatePicker
                                             label={t('createCourse.slides.1.form.date')}
@@ -82,7 +83,7 @@ export const ActivitiesForm = ({
                                                 <SlideFormInputField
                                                     name={`activities.${idx}.startTime`}
                                                     textFieldProps={{
-                                                        sx: { width: '230px' },
+                                                        sx: { width: FORM_INPUT_WIDTH },
                                                         ...params,
                                                     }}
                                                 />
@@ -90,10 +91,8 @@ export const ActivitiesForm = ({
                                         />
                                         <Box
                                             sx={{
-                                                display: 'flex',
-                                                flexDirection: 'row',
+                                                ...stylesRowWithSpaceBetweenItems,
                                                 width: '50%',
-                                                justifyContent: 'space-between',
                                             }}
                                         >
                                             <TimePicker
@@ -107,7 +106,7 @@ export const ActivitiesForm = ({
                                                     <SlideFormInputField
                                                         name={`activities.${idx}.startTime`}
                                                         textFieldProps={{
-                                                            sx: { width: '230px' },
+                                                            sx: { width: FORM_INPUT_WIDTH },
                                                             ...params,
                                                         }}
                                                     />
@@ -124,7 +123,7 @@ export const ActivitiesForm = ({
                                                     <SlideFormInputField
                                                         name={`activities.${idx}.endTime`}
                                                         textFieldProps={{
-                                                            sx: { width: '230px' },
+                                                            sx: { width: FORM_INPUT_WIDTH },
                                                             ...params,
                                                         }}
                                                     />
@@ -155,7 +154,7 @@ export const ActivitiesForm = ({
                                             name={`activities.${idx}.instructions`}
                                             type="text"
                                             textFieldProps={{ fullWidth: true, multiline: true }}
-                                            labelPath="createCourse.slides.1.form.instructions"
+                                            i18nLabel="createCourse.slides.1.form.instructions"
                                         />
                                         {idx < values.activities.length - 1 && <Bar sx={{ mt: 4 }} />}
                                     </Box>

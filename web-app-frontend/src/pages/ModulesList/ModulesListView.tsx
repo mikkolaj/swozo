@@ -1,5 +1,6 @@
 import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
+import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -22,15 +23,7 @@ export const ModulesListView = () => {
                             {t('myModules.header')}
                         </Typography>
                     </Grid>
-                    <Grid
-                        item
-                        xs={6}
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                        }}
-                    >
+                    <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <WithRole roles={[TECHNICAL_TEACHER]}>
                             <Button onClick={() => navigate(PageRoutes.CREATE_MODULE)}>
                                 {t('myModules.createModuleButton')}

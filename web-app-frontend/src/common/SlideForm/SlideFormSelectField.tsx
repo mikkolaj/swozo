@@ -1,3 +1,4 @@
+import { FORM_INPUT_WIDTH } from 'common/styles';
 import { ComponentProps, PropsWithChildren } from 'react';
 import { SlideFormInputField } from './SlideFormInputField';
 
@@ -9,7 +10,7 @@ export const SlideFormSelectField = ({
 
     return (
         <SlideFormInputField
-            wrapperSx={{ ...wrapperSx, width: '230px' }}
+            wrapperSx={{ ...wrapperSx, width: FORM_INPUT_WIDTH }}
             textFieldProps={{ ...textFieldProps, select: true, fullWidth: true }}
             {...sfifProps}
         >

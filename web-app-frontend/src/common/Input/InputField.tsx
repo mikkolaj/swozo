@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Props = FieldHookConfig<any> & {
-    labelPath?: string;
+    i18nLabel?: string;
     labelText?: string;
     wrapperSx?: SxProps<Theme>;
     textFieldProps?: TextFieldProps;
@@ -14,7 +14,7 @@ type Props = FieldHookConfig<any> & {
 };
 
 export const InputField = ({
-    labelPath,
+    i18nLabel,
     labelText,
     wrapperSx,
     textFieldProps,
@@ -29,7 +29,7 @@ export const InputField = ({
     return (
         <Box sx={wrapperSx}>
             <TextField
-                label={labelPath ? _.capitalize(t(labelPath)) : labelText ?? ''}
+                label={i18nLabel ? _.capitalize(t(i18nLabel)) : labelText ?? ''}
                 type={type}
                 error={!!(meta.touched && meta.error)}
                 helperText={meta.touched && meta.error}

@@ -2,10 +2,11 @@ import { Button, Grid } from '@mui/material';
 import { CreateCourseRequest } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { SlideForm } from 'common/SlideForm/SlideForm';
+import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import dayjs from 'dayjs';
 import { FormikProps } from 'formik';
 import _ from 'lodash';
-import { Ref, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
@@ -51,7 +52,7 @@ export const CreateCourseView = () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const formRef: Ref<FormikProps<any>> = useRef(null);
+    const formRef = useRef<FormikProps<any>>(null);
     //TODO
     if (availableLessonModules === undefined) {
         return <>Loading</>;
@@ -59,8 +60,8 @@ export const CreateCourseView = () => {
 
     return (
         <SlideForm
-            titlePath="createCourse.title"
-            slidesPath="createCourse.slides"
+            titleI18n="createCourse.title"
+            slidesI18n="createCourse.slides"
             slideCount={3}
             currentSlide={currentSlide}
             buttons={
@@ -79,17 +80,8 @@ export const CreateCourseView = () => {
                             </Button>
                         )}
                     </Grid>
-                    <Grid
-                        item
-                        xs={6}
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                        }}
-                    >
+                    <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <Button
-                            sx={{ alignSelf: 'flex-end' }}
                             onClick={() => {
                                 // TODO refactor this
                                 if (currentSlide === 2) {

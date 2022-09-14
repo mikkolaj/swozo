@@ -6,6 +6,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import ShareIcon from '@mui/icons-material/Share';
 import { Box, Container, Divider, Grid, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
+import { stylesRow, stylesRowCenteredVertical } from 'common/styles';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { mockFiles } from 'utils/mocks';
@@ -30,29 +31,17 @@ export const FilesListView = () => {
             <Container>
                 <Stack spacing={2} px={2}>
                     <Grid container sx={{ mb: -2 }}>
-                        <Grid
-                            item
-                            xs={5}
-                            sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
-                        >
+                        <Grid item xs={5} sx={stylesRowCenteredVertical}>
                             <Typography variant="body1" color="GrayText">
                                 {t('myFiles.fileName')}
                             </Typography>
                         </Grid>
-                        <Grid
-                            sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
-                            item
-                            xs={4}
-                        >
+                        <Grid sx={stylesRowCenteredVertical} item xs={4}>
                             <Typography variant="body1" color="GrayText">
                                 {t('myFiles.courseName')}
                             </Typography>
                         </Grid>
-                        <Grid
-                            item
-                            xs={3}
-                            sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', ml: -1 }}
-                        >
+                        <Grid item xs={3} sx={{ ...stylesRowCenteredVertical, ml: -1 }}>
                             <Typography variant="body1" color="GrayText">
                                 {t('myFiles.creationDate')}
                             </Typography>
@@ -78,26 +67,14 @@ export const FilesListView = () => {
                     {sorted(files, sortKey, sortIncreasing ? 'ASC' : 'DESC').map((file) => (
                         <Paper key={file.id} sx={{ p: 1, boxShadow: 2 }}>
                             <Grid container>
-                                <Grid
-                                    item
-                                    xs={5}
-                                    sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
-                                >
+                                <Grid item xs={5} sx={stylesRowCenteredVertical}>
                                     <InsertDriveFileIcon sx={{ height: '80%' }} />
                                     <Typography variant="body1">{file.name}</Typography>
                                 </Grid>
-                                <Grid
-                                    sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
-                                    item
-                                    xs={4}
-                                >
+                                <Grid sx={stylesRowCenteredVertical} item xs={4}>
                                     <Typography variant="body1">{file.courseName}</Typography>
                                 </Grid>
-                                <Grid
-                                    item
-                                    xs={1}
-                                    sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
-                                >
+                                <Grid item xs={1} sx={stylesRowCenteredVertical}>
                                     <Typography variant="body1">
                                         {file.createdAt.format('DD.MM.YYYY')}
                                     </Typography>
@@ -106,9 +83,8 @@ export const FilesListView = () => {
                                     item
                                     xs={1}
                                     sx={{
+                                        ...stylesRow,
                                         margin: 'auto',
-                                        display: 'flex',
-                                        flexDirection: 'row',
                                     }}
                                 >
                                     <IconButton color="primary">

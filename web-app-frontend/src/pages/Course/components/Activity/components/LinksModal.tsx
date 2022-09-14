@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { ActivityDetailsDto } from 'api';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
+import { stylesColumn } from 'common/styles';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -110,8 +111,7 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                 )}
                                                 <Box
                                                     sx={{
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
+                                                        ...stylesColumn,
                                                         userSelect: 'text',
                                                         ':hover': { cursor: 'text' },
                                                     }}

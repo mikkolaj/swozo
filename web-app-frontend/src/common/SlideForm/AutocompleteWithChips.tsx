@@ -1,4 +1,5 @@
 import { Autocomplete, Box, Chip } from '@mui/material';
+import { FORM_INPUT_WIDTH, stylesRow } from 'common/styles';
 import { SlideFormInputField } from './SlideFormInputField';
 
 type Props<T> = {
@@ -37,9 +38,9 @@ export function AutocompleteWithChips<T>({
                 renderInput={({ InputProps, ...params }) => (
                     <SlideFormInputField
                         name={'_' + name}
-                        labelPath={labelPath}
+                        i18nLabel={labelPath}
                         textFieldProps={{
-                            sx: { width: '230px' },
+                            sx: { width: FORM_INPUT_WIDTH },
                             InputProps: {
                                 ...InputProps,
                                 type: 'search',
@@ -51,11 +52,10 @@ export function AutocompleteWithChips<T>({
             />
             <Box
                 sx={{
+                    ...stylesRow,
                     mt: 1,
                     ml: 2,
                     width: '50%',
-                    display: 'flex',
-                    flexDirection: 'row',
                     flexWrap: 'wrap',
                 }}
             >

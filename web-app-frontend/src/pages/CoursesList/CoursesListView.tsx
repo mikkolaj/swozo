@@ -1,6 +1,7 @@
 import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
+import { stylesRow } from 'common/styles';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
@@ -27,8 +28,7 @@ export const CoursesListView = () => {
                         item
                         xs={6}
                         sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
+                            ...stylesRow,
                             justifyContent: 'flex-end',
                         }}
                     >
