@@ -1,5 +1,9 @@
 import { CreateActivityRequest, CreateCourseRequest, ServiceModuleDetailsDto } from 'api';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import _ from 'lodash';
+import { withDate } from 'utils/util';
+
+export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 90;
 
 export type ActivityValues = {
     name: string;
@@ -7,6 +11,7 @@ export type ActivityValues = {
     lessonModules: ServiceModuleDetailsDto[];
     generalModules: ServiceModuleDetailsDto[];
     instructions: string;
+    date: Dayjs;
     startTime: Dayjs;
     endTime: Dayjs;
 };
@@ -17,15 +22,46 @@ export type CourseValues = {
     description: string;
     numberOfActivities: number;
     numberOfStudents: number;
-    students: string[];
+};
+
+export const initialCourseValues = (): CourseValues => ({
+    name: 'Wprowadzenie do Pythona',
+    subject: 'Informatyka',
+    description: '',
+    numberOfActivities: 1,
+    numberOfStudents: 2,
+});
+
+export const initialActivityValues = (): ActivityValues => ({
+    name: '',
+    description: '',
+    lessonModules: [],
+    generalModules: [],
+    instructions: '',
+    date: dayjs(),
+    startTime: dayjs(),
+    endTime: dayjs().add(DEFAULT_ACTIVITY_LENGTH_MINUTES, 'minutes'),
+});
+
+export const resizeActivityValuesList = (
+    currentValues: ActivityValues[],
+    targetSize: number
+): ActivityValues[] => {
+    const currentSize = currentValues.length;
+
+    if (targetSize > currentSize) {
+        return [...currentValues, ..._.range(targetSize - currentSize).map((_) => initialActivityValues())];
+    }
+
+    return currentValues.slice(0, targetSize);
 };
 
 const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityRequest => {
     return {
         name: activity.name,
         description: activity.description,
-        startTime: activity.startTime.toDate(),
-        endTime: activity.endTime.toDate(),
+        startTime: withDate(activity.startTime, activity.date).toDate(),
+        endTime: withDate(activity.endTime, activity.date).toDate(),
         instructionsFromTeacher: [
             {
                 body: activity.instructions, //TODO
@@ -35,9 +71,6 @@ const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityReq
     };
 };
 
-/**
- *  Assumes validated data
- */
 export const buildCreateCourseRequest = (
     course: CourseValues,
     activities: ActivityValues[]
@@ -47,7 +80,6 @@ export const buildCreateCourseRequest = (
         description: course.description,
         subject: course.subject,
         expectedStudentCount: course.numberOfStudents,
-        studentEmails: course.students.filter((email) => email !== ''), // TODO
         activities: activities.map(buildCreateActivityRequest),
     };
 };

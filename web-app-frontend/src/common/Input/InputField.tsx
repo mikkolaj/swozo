@@ -36,7 +36,7 @@ export const InputField = ({
                 variant={textFieldProps?.variant ?? 'outlined'}
                 onChange={(e) => {
                     onChange(e);
-                    if (onChangeDecorator) onChangeDecorator(e);
+                    onChangeDecorator?.(e);
                 }}
                 {...field}
                 {...textFieldProps}

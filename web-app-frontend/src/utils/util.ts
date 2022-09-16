@@ -1,4 +1,5 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
+import _ from 'lodash';
 
 export const DATE_FORMAT = 'DD.MM.YYYY';
 
@@ -15,9 +16,14 @@ export const formatTime = (date: Date): string => {
 };
 
 export const formatDateTime = (date: Date): string => {
-    // TODO
     return dayjs(date).format(DATE_TIME_FORMAT);
 };
+
+export const withDate = (time: Dayjs, date: Dayjs): Dayjs =>
+    time.set('year', date.get('year')).set('month', date.get('month')).set('day', date.get('day'));
+
+export const formatName = (firstName?: string, lastName?: string) =>
+    _.capitalize(`${firstName ?? ''} ${lastName ?? ''}`).trim();
 
 export const loadFromLocalStorage = <T>(key: string): T | undefined => {
     const data = window.localStorage.getItem(key);

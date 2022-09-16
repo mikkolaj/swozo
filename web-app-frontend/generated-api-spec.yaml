@@ -296,7 +296,6 @@ components:
       - description
       - expectedStudentCount
       - name
-      - studentEmails
       - subject
       type: object
       properties:
@@ -313,10 +312,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CreateActivityRequest'
-        studentEmails:
-          type: array
-          items:
-            type: string
     Activity:
       type: object
       properties:

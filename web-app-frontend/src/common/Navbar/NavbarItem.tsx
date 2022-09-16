@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 type Props = {
-    textPath: string;
+    textI18n: string;
     route?: string;
     onClick?: () => unknown;
 };
 
-export const NavbarItem = ({ textPath, route, onClick }: Props) => {
+export const NavbarItem = ({ textI18n, route, onClick }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
@@ -27,7 +27,7 @@ export const NavbarItem = ({ textPath, route, onClick }: Props) => {
                 }}
             >
                 <Typography component="h1" variant="button">
-                    {t(textPath)}
+                    {t(textI18n)}
                 </Typography>
             </Box>
         </Button>

@@ -1,4 +1,6 @@
-import { Button, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
+import { NextSlideButton } from 'common/SlideForm/NextSlideButton';
+import { PreviousSlideButton } from 'common/SlideForm/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikProps } from 'formik';
@@ -7,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { GeneralInfoForm } from './components/GeneralInfoForm';
 import { ModuleSpecsForm } from './components/ModuleSpecsForm';
 import { Summary } from './components/Summary';
+
+const SLIDE_COUNT = 3;
 
 export const CreateModuleView = () => {
     const { t } = useTranslation();
@@ -35,30 +39,26 @@ export const CreateModuleView = () => {
         <SlideForm
             titleI18n="createModule.title"
             slidesI18n="createModule.slides"
-            slideCount={3}
+            slideCount={SLIDE_COUNT}
             currentSlide={currentSlide}
             buttons={
                 <Grid container>
                     <Grid item xs={6}>
-                        {currentSlide > 0 && (
-                            <Button
-                                onClick={() => {
-                                    setCurrentSlide(currentSlide - 1);
-                                }}
-                            >
-                                {t('createModule.buttons.back')}
-                            </Button>
-                        )}
+                        <PreviousSlideButton
+                            currentSlide={currentSlide}
+                            label={t('createModule.buttons.back')}
+                            goBack={(toSlide) => setCurrentSlide(toSlide)}
+                        />
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
-                        <Button
-                            sx={{ alignSelf: 'flex-end' }}
-                            onClick={() => {
-                                formRef.current?.handleSubmit();
-                            }}
-                        >
-                            {t(currentSlide === 2 ? 'createModule.finish' : 'createModule.buttons.next')}
-                        </Button>
+                        <NextSlideButton
+                            currentSlide={currentSlide}
+                            slideCount={SLIDE_COUNT}
+                            label={t('createModule.buttons.next')}
+                            lastSlideLabel={t('createModule.finish')}
+                            goNext={() => formRef.current?.handleSubmit()}
+                            finish={() => console.log('TODO')}
+                        />
                     </Grid>
                 </Grid>
             }

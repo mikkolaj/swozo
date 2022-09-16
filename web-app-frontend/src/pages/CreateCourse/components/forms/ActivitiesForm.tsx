@@ -1,12 +1,12 @@
 import { Box, Typography } from '@mui/material';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { ServiceModuleDetailsDto } from 'api';
 import { AutocompleteWithChips } from 'common/SlideForm/AutocompleteWithChips';
 import { SlideProps } from 'common/SlideForm/SlideForm';
+import { SlideFormDatePicker } from 'common/SlideForm/SlideFormDatePicker';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
+import { SlideFormTimePicker } from 'common/SlideForm/SlideFormTimePicker';
 import { Bar } from 'common/Styled/Bar';
-import { FORM_INPUT_WIDTH, stylesRowWithSpaceBetweenItems } from 'common/styles';
+import { stylesRowWithSpaceBetweenItems } from 'common/styles';
 import { FieldArray, Form, Formik } from 'formik';
 import { ActivityValues } from 'pages/CreateCourse/util';
 import { useTranslation } from 'react-i18next';
@@ -54,9 +54,10 @@ export const ActivitiesForm = ({
                                     <Box key={idx} sx={{ mt: idx > 0 ? 8 : 4 }}>
                                         <Typography sx={{ ml: -4 }} variant="h5" component="div" gutterBottom>
                                             {t('createCourse.slides.1.form.activityHeader', {
-                                                idx: idx + 1,
+                                                number: idx + 1,
                                             })}
                                         </Typography>
+
                                         <SlideFormInputField
                                             name={`activities.${idx}.name`}
                                             textFieldProps={{ fullWidth: true }}
@@ -64,6 +65,7 @@ export const ActivitiesForm = ({
                                             type="text"
                                             i18nLabel="createCourse.slides.1.form.name"
                                         />
+
                                         <SlideFormInputField
                                             wrapperSx={{ width: '50%' }}
                                             name={`activities.${idx}.description`}
@@ -71,70 +73,33 @@ export const ActivitiesForm = ({
                                             textFieldProps={{ fullWidth: true, multiline: true }}
                                             i18nLabel="createCourse.slides.1.form.description"
                                         />
-                                        <DesktopDatePicker
+
+                                        <SlideFormDatePicker
+                                            name={`activities.${idx}.startTime`}
                                             label={t('createCourse.slides.1.form.date')}
-                                            inputFormat="DD/MM/YYYY"
-                                            value={value.startTime}
-                                            onChange={(v) => {
-                                                setFieldValue(`activities.${idx}.startTime`, v);
-                                                setFieldValue(`activities.${idx}.endTime`, v);
-                                            }}
-                                            renderInput={({ name: _name, ...params }) => (
-                                                <SlideFormInputField
-                                                    name={`activities.${idx}.startTime`}
-                                                    textFieldProps={{
-                                                        sx: { width: FORM_INPUT_WIDTH },
-                                                        ...params,
-                                                    }}
-                                                />
-                                            )}
+                                            value={value.date}
+                                            setFieldValue={setFieldValue}
                                         />
-                                        <Box
-                                            sx={{
-                                                ...stylesRowWithSpaceBetweenItems,
-                                                width: '50%',
-                                            }}
-                                        >
-                                            <TimePicker
+
+                                        <Box sx={{ ...stylesRowWithSpaceBetweenItems, width: '50%' }}>
+                                            <SlideFormTimePicker
+                                                name={`activities.${idx}.startTime`}
                                                 label={t('createCourse.slides.1.form.startTime')}
                                                 value={value.startTime}
-                                                ampm={false}
-                                                onChange={(v) =>
-                                                    setFieldValue(`activities.${idx}.startTime`, v)
-                                                }
-                                                renderInput={({ name: _name, ...params }) => (
-                                                    <SlideFormInputField
-                                                        name={`activities.${idx}.startTime`}
-                                                        textFieldProps={{
-                                                            sx: { width: FORM_INPUT_WIDTH },
-                                                            ...params,
-                                                        }}
-                                                    />
-                                                )}
+                                                setFieldValue={setFieldValue}
                                             />
-                                            <TimePicker
+                                            <SlideFormTimePicker
+                                                name={`activities.${idx}.endTime`}
                                                 label={t('createCourse.slides.1.form.endTime')}
-                                                value={value.endTime}
-                                                ampm={false}
-                                                onChange={(v) =>
-                                                    setFieldValue(`activities.${idx}.endTime`, v)
-                                                }
-                                                renderInput={({ name: _name, ...params }) => (
-                                                    <SlideFormInputField
-                                                        name={`activities.${idx}.endTime`}
-                                                        textFieldProps={{
-                                                            sx: { width: FORM_INPUT_WIDTH },
-                                                            ...params,
-                                                        }}
-                                                    />
-                                                )}
+                                                value={value.startTime}
+                                                setFieldValue={setFieldValue}
                                             />
                                         </Box>
 
                                         <AutocompleteWithChips
                                             labelPath="createCourse.slides.1.form.lessonModules"
                                             name={`activities.${idx}.lessonModules`}
-                                            choosenOptions={value.lessonModules}
+                                            chosenOptions={value.lessonModules}
                                             options={availableLessonModules}
                                             optionToString={({ name }) => name}
                                             setFieldValue={setFieldValue}
@@ -143,7 +108,7 @@ export const ActivitiesForm = ({
                                         <AutocompleteWithChips
                                             labelPath="createCourse.slides.1.form.generalModules"
                                             name={`activities.${idx}.generalModules`}
-                                            choosenOptions={value.generalModules}
+                                            chosenOptions={value.generalModules}
                                             options={availableGeneralModules}
                                             optionToString={({ name }) => name}
                                             setFieldValue={setFieldValue}

@@ -1,14 +1,10 @@
-import { Divider, Grid, Typography } from '@mui/material';
-import { InputField } from 'common/Input/InputField';
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
-import { FieldArray, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { CourseValues } from 'pages/CreateCourse/util';
 import * as Yup from 'yup';
 
 export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProps<CourseValues>) => {
-    // const [numberOfStudents, setNumberOfStudents] = useState(0);
-
     return (
         <Formik
             innerRef={formRef}
@@ -19,7 +15,7 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
             })}
             onSubmit={setValues}
         >
-            {({ values }) => (
+            {() => (
                 <Form>
                     <SlideFormInputField
                         wrapperSx={{ width: '50%' }}
@@ -54,8 +50,8 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
                             // if (!isNaN(+e.target.value)) setNumberOfStudents(+e.target.value);
                         }}
                     />
-                    {/* // TODO how to style this */}
-                    <Divider sx={{ width: '75%', mt: 2, mb: 2 }} />
+                    {/* // TODO: this probably only complicates things, leaving it here just in case */}
+                    {/* <Divider sx={{ width: '75%', mt: 2, mb: 2 }} />
                     <Typography sx={{ mt: 0 }} variant="subtitle1">
                         Adresy Email uczestników
                     </Typography>
@@ -86,7 +82,7 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
                                 ))}
                             </Grid>
                         )}
-                    />
+                    /> */}
                 </Form>
             )}
         </Formik>

@@ -52,7 +52,8 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                             <Box sx={stylesColumnCenteredVertical}>
                                 <Typography variant="body2">
                                     {t('myCourses.course.teacher', {
-                                        name: `${courseSummary.teacher.name} ${courseSummary.teacher.surname} `,
+                                        firstName: courseSummary.teacher.name,
+                                        lastName: courseSummary.teacher.surname,
                                     })}
                                 </Typography>
                             </Box>
