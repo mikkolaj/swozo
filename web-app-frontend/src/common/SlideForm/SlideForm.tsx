@@ -52,11 +52,11 @@ export const SlideForm = ({
                 </>
             }
         >
-            <Box sx={{ px: 2, mt: 4, mb: 4, marginX: '5%' }}>{children}</Box>
+            <Box sx={{ px: 2, mb: 'auto', marginX: '5%' }}>{children}</Box>
 
-            <Divider />
+            <Divider sx={{ mt: 4 }} />
 
-            <Box sx={{ p: 1 }}>{buttons}</Box>
+            <Box sx={{ p: 1, justifyContent: 'flex-end' }}>{buttons}</Box>
         </PageContainer>
     );
 };

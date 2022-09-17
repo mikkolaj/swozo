@@ -7,6 +7,7 @@ import { useRequiredParams } from 'hooks/useRequiredParams';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'react-query';
+import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'utils/routes';
 
@@ -43,6 +44,9 @@ export const ActivityInstructionsView = () => {
             />
         );
     }
+
+    const quillHtml =
+        '<p><strong>sdfsd</strong></p><p><strong>&lt;</strong><a href="script" rel="noopener noreferrer" target="_blank"><strong>script</strong></a><strong>&gt;&lt;/script&gt;</strong></p><ol><li><strong>tak</strong></li><li><strong>nie</strong></li><li><strong>byc moze</strong></li></ol><h1>Halo</h1><p><br></p><p><br></p>';
 
     return (
         <PageContainer sx={{ p: 0, position: 'relative' }}>
@@ -88,7 +92,12 @@ export const ActivityInstructionsView = () => {
                             >
                                 <Typography variant="h5">{header}</Typography>
                                 <Divider sx={{ mb: 2 }} />
-                                <Typography variant="body1">{body}</Typography>
+                                <Typography variant="body1">
+                                    <span
+                                        className="ql-editor"
+                                        dangerouslySetInnerHTML={{ __html: quillHtml }}
+                                    />
+                                </Typography>
                             </Paper>
                         ))}
                     </Grid>

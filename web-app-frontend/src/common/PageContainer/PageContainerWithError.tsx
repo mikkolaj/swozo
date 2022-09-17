@@ -2,8 +2,9 @@ import SentimentVeryDissatisfiedOutlinedIcon from '@mui/icons-material/Sentiment
 import { Box, Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { stylesRowCenteredHorizontal, stylesRowWithSpaceBetweenItems } from 'common/styles';
+import { useElementYPosition } from 'hooks/useElementYPosition';
 import useWindowDimensions from 'hooks/useWindowDimensions';
-import { ComponentProps, RefObject, useEffect, useRef, useState } from 'react';
+import { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'utils/routes';
@@ -25,13 +26,8 @@ export const PageContainerWithError = ({
 }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const containerRef: RefObject<HTMLDivElement> = useRef(null);
     const { height } = useWindowDimensions();
-    const [containerY, setContainerY] = useState(0);
-    useEffect(() => {
-        const rect = containerRef.current?.getBoundingClientRect();
-        if (rect) setContainerY(rect.y);
-    }, [containerRef]);
+    const { ref: containerRef, yPos: containerY } = useElementYPosition<HTMLDivElement>();
 
     return (
         <>

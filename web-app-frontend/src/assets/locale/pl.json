@@ -55,7 +55,8 @@
                     "subject": "tematyka",
                     "description": "opis",
                     "numberOfActivities": "liczba zajęć",
-                    "numberOfStudents": "planowana liczba uczestników"
+                    "numberOfStudents": "planowana liczba uczestników",
+                    "password": "Hasło do dołączenia"
                 }
             },
             "1": {
@@ -69,7 +70,7 @@
                     "endTime": "Czas zakończenia",
                     "lessonModules": "moduły lekcyjne",
                     "generalModules": "moduły ogólne",
-                    "instructions": "dodatkowe instrukcje"
+                    "instructions": "Instrukcje"
                 }
             },
             "2": {

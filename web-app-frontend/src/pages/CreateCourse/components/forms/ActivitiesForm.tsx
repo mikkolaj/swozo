@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import { ServiceModuleDetailsDto } from 'api';
 import { AutocompleteWithChips } from 'common/SlideForm/AutocompleteWithChips';
+import { RichTextEditor } from 'common/SlideForm/RichTextEditor';
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormDatePicker } from 'common/SlideForm/SlideFormDatePicker';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
@@ -51,7 +52,7 @@ export const ActivitiesForm = ({
                         render={(_) => (
                             <Box>
                                 {values.activities.map((value, idx) => (
-                                    <Box key={idx} sx={{ mt: idx > 0 ? 8 : 4 }}>
+                                    <Box key={idx} sx={{ mt: idx > 0 ? 8 : 0 }}>
                                         <Typography sx={{ ml: -4 }} variant="h5" component="div" gutterBottom>
                                             {t('createCourse.slides.1.form.activityHeader', {
                                                 number: idx + 1,
@@ -70,7 +71,11 @@ export const ActivitiesForm = ({
                                             wrapperSx={{ width: '50%' }}
                                             name={`activities.${idx}.description`}
                                             type="text"
-                                            textFieldProps={{ fullWidth: true, multiline: true }}
+                                            textFieldProps={{
+                                                fullWidth: true,
+                                                multiline: true,
+                                                required: false,
+                                            }}
                                             i18nLabel="createCourse.slides.1.form.description"
                                         />
 
@@ -114,12 +119,15 @@ export const ActivitiesForm = ({
                                             setFieldValue={setFieldValue}
                                         />
 
-                                        <SlideFormInputField
-                                            wrapperSx={{ width: '50%' }}
+                                        <Typography sx={{ mt: 1 }} variant="subtitle1">
+                                            {t('createCourse.slides.1.form.instructions')}
+                                        </Typography>
+
+                                        <RichTextEditor
+                                            wrapperSx={{ width: '75%' }}
                                             name={`activities.${idx}.instructions`}
-                                            type="text"
-                                            textFieldProps={{ fullWidth: true, multiline: true }}
-                                            i18nLabel="createCourse.slides.1.form.instructions"
+                                            value={value.instructions}
+                                            setFieldValue={setFieldValue}
                                         />
                                         {idx < values.activities.length - 1 && <Bar sx={{ mt: 4 }} />}
                                     </Box>

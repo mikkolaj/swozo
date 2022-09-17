@@ -1,7 +1,7 @@
 import { CssBaseline } from '@mui/material';
 import { Navbar } from 'common/Navbar/Navbar';
 import { Toaster } from 'common/Styled/Toaster';
-import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionViews';
+import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
 import { CourseView } from 'pages/Course/CourseView';
 import { CoursesListView } from 'pages/CoursesList/CoursesListView';
 import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';

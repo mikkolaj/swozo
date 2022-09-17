@@ -1,5 +1,6 @@
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
+import { SlideFormPasswordField } from 'common/SlideForm/SlideFormPasswordField';
 import { Form, Formik } from 'formik';
 import { CourseValues } from 'pages/CreateCourse/util';
 import * as Yup from 'yup';
@@ -50,6 +51,9 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
                             // if (!isNaN(+e.target.value)) setNumberOfStudents(+e.target.value);
                         }}
                     />
+
+                    <SlideFormPasswordField name="password" i18nLabel="createCourse.slides.0.form.password" />
+
                     {/* // TODO: this probably only complicates things, leaving it here just in case */}
                     {/* <Divider sx={{ width: '75%', mt: 2, mb: 2 }} />
                     <Typography sx={{ mt: 0 }} variant="subtitle1">
