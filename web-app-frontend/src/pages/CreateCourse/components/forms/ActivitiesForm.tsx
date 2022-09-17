@@ -91,7 +91,7 @@ export const ActivitiesForm = ({
                                             <SlideFormTimePicker
                                                 name={`activities.${idx}.endTime`}
                                                 label={t('createCourse.slides.1.form.endTime')}
-                                                value={value.startTime}
+                                                value={value.endTime}
                                                 setFieldValue={setFieldValue}
                                             />
                                         </Box>

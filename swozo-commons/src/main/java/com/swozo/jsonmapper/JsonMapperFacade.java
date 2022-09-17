@@ -12,18 +12,18 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class JsonMapperAdapter {
-    private static final Logger logger = LoggerFactory.getLogger(JsonMapperAdapter.class);
-    private final ObjectMapper proxy;
+public class JsonMapperFacade {
+    private static final Logger logger = LoggerFactory.getLogger(JsonMapperFacade.class);
+    private final ObjectMapper objectMapper;
 
     @SneakyThrows(JsonProcessingException.class)
     public <T> String toJson(T data) {
-        return proxy.writeValueAsString(data);
+        return objectMapper.writeValueAsString(data);
     }
 
     public <T> Optional<String> toJsonOpt(T data) {
         try {
-            return Optional.of(proxy.writeValueAsString(data));
+            return Optional.of(objectMapper.writeValueAsString(data));
         } catch (JsonProcessingException e) {
             logger.error("Failed to serialize " + data + " to json", e);
             return Optional.empty();
@@ -32,12 +32,12 @@ public class JsonMapperAdapter {
 
     @SneakyThrows({JsonProcessingException.class})
     public <T> T fromJson(String json, Class<T> type) {
-        return proxy.readValue(json, type);
+        return objectMapper.readValue(json, type);
     }
 
     public <T> Optional<T> optFromJson(String json, Class<T> type) {
         try {
-            return Optional.of(proxy.readValue(json, type));
+            return Optional.of(objectMapper.readValue(json, type));
         } catch (JsonProcessingException e) {
             logger.error("Failed to deserialize " + json + " as " + type, e);
             return Optional.empty();

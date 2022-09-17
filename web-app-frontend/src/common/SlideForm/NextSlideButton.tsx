@@ -17,17 +17,19 @@ export const NextSlideButton = ({
     goNext,
     finish,
 }: Props) => {
+    const isLastSlide = currentSlide === slideCount - 1;
+
     return (
         <Button
             onClick={() => {
-                if (currentSlide === slideCount) {
+                if (isLastSlide) {
                     finish();
                 } else {
                     goNext();
                 }
             }}
         >
-            {currentSlide < slideCount - 1 || !lastSlideLabel ? label : lastSlideLabel}
+            {!isLastSlide || !lastSlideLabel ? label : lastSlideLabel}
         </Button>
     );
 };

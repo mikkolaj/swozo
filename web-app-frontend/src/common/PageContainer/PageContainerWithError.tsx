@@ -55,7 +55,7 @@ export const PageContainerWithError = ({
                 </Card>
             </Container>
             <AbsolutelyCentered>
-                <Box sx={{ ...stylesRowCenteredHorizontal, mb: 5, mt: -5 }}>
+                <Box sx={{ ...stylesRowCenteredHorizontal, justifyContent: 'center', mb: 5, mt: -5 }}>
                     <SentimentVeryDissatisfiedOutlinedIcon sx={{ width: 150, height: 150 }} />
                 </Box>
                 {customErrorContent ?? (

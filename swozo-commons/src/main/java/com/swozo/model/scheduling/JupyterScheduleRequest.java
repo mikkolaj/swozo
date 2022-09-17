@@ -1,5 +1,7 @@
 package com.swozo.model.scheduling;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.swozo.model.scheduling.properties.Psm;
 import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
@@ -13,7 +15,12 @@ import lombok.ToString;
 public final class JupyterScheduleRequest extends ScheduleRequest {
     private final String notebookLocation;
 
-    public JupyterScheduleRequest(String notebookLocation, ServiceLifespan serviceLifespan, Psm psm, Long activityModuleID) {
+    @JsonCreator
+    public JupyterScheduleRequest(@JsonProperty("notebookLocation") String notebookLocation,
+                                  @JsonProperty("serviceLifespan") ServiceLifespan serviceLifespan,
+                                  @JsonProperty("psm") Psm psm,
+                                  @JsonProperty("activityModuleID") Long activityModuleID
+    ) {
         super(serviceLifespan, psm, activityModuleID, ScheduleType.JUPYTER);
         this.notebookLocation = notebookLocation;
     }

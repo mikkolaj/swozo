@@ -16,7 +16,6 @@ public abstract class CourseMapper {
     protected ActivityMapper activityMapper;
 
     @Mapping(target = "teacher", expression = "java(userMapper.fromId(teacherId))")
-    @Mapping(target = "students", expression = "java(createCourseRequest.studentEmails().stream().map(userMapper::fromEmail).toList())")
     @Mapping(target = "activities", expression = "java(createCourseRequest.activities().stream().map(activityMapper::toPersistence).toList())")
     public abstract Course toPersistence(CreateCourseRequest createCourseRequest, long teacherId);
 
