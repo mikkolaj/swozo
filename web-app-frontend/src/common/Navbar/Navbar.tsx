@@ -3,11 +3,10 @@ import { Avatar, Divider, IconButton, ListItemIcon, MenuItem } from '@mui/materi
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import { getApis } from 'api/initialize-apis';
 import { stylesRowFullyCentered } from 'common/styles';
+import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from 'react-query';
 import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
 import { STUDENT, TEACHER, TECHNICAL_TEACHER, WithPreference, WithRole } from 'utils/roles';
@@ -23,8 +22,7 @@ export const Navbar = () => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-    const { data: me } = useQuery('me', () => getApis().userApi.getUserInfo());
+    const { me } = useMeQuery();
 
     return (
         <Box sx={{ flexGrow: 1 }}>

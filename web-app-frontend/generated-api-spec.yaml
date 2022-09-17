@@ -254,12 +254,10 @@ components:
   schemas:
     ActivityInstructionDto:
       required:
-      - body
+      - sanitizedHtmlData
       type: object
       properties:
-        header:
-          type: string
-        body:
+        sanitizedHtmlData:
           type: string
     CreateActivityRequest:
       required:
@@ -345,9 +343,7 @@ components:
         id:
           type: integer
           format: int64
-        header:
-          type: string
-        body:
+        data:
           type: string
     ActivityLink:
       type: object

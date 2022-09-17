@@ -1,15 +1,14 @@
 import SentimentVeryDissatisfiedOutlinedIcon from '@mui/icons-material/SentimentVeryDissatisfiedOutlined';
-import { Box, Button, Card, CardContent, Container, Grid, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { stylesRowCenteredHorizontal, stylesRowWithSpaceBetweenItems } from 'common/styles';
-import { useElementYPosition } from 'hooks/useElementYPosition';
-import useWindowDimensions from 'hooks/useWindowDimensions';
 import { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'utils/routes';
+import { PageContainer } from './PageContainer';
 
-type Props = ComponentProps<typeof CardContent> & {
+type Props = ComponentProps<typeof PageContainer> & {
     errorMessage?: string;
     navButtonMessage?: string;
     navigateTo?: string;
@@ -21,35 +20,13 @@ export const PageContainerWithError = ({
     navButtonMessage,
     navigateTo,
     customErrorContent,
-    sx,
     ...props
 }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { height } = useWindowDimensions();
-    const { ref: containerRef, yPos: containerY } = useElementYPosition<HTMLDivElement>();
 
     return (
-        <>
-            <Container ref={containerRef}>
-                <Card
-                    sx={{
-                        position: 'relative',
-                        borderTopLeftRadius: 0,
-                        borderTopRightRadius: 0,
-                    }}
-                >
-                    <CardContent
-                        sx={{
-                            p: 0,
-                            width: '100%',
-                            height: height - containerY,
-                            ...sx,
-                        }}
-                        {...props}
-                    ></CardContent>
-                </Card>
-            </Container>
+        <PageContainer {...props}>
             <AbsolutelyCentered>
                 <Box sx={{ ...stylesRowCenteredHorizontal, justifyContent: 'center', mb: 5, mt: -5 }}>
                     <SentimentVeryDissatisfiedOutlinedIcon sx={{ width: 150, height: 150 }} />
@@ -77,6 +54,6 @@ export const PageContainerWithError = ({
                     </Grid>
                 )}
             </AbsolutelyCentered>
-        </>
+        </PageContainer>
     );
 };

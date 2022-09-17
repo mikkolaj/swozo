@@ -64,7 +64,7 @@ const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityReq
         endTime: withDate(activity.endTime, activity.date).toDate(),
         instructionsFromTeacher: [
             {
-                body: activity.instructions, //TODO
+                sanitizedHtmlData: activity.instructions,
             },
         ],
         selectedModulesIds: [...activity.lessonModules /*, ...activity.generalModules*/].map(({ id }) => id), // TODO

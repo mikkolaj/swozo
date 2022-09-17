@@ -24,13 +24,7 @@ export interface ActivityInstructionDto {
      * @type {string}
      * @memberof ActivityInstructionDto
      */
-    header?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivityInstructionDto
-     */
-    body: string;
+    sanitizedHtmlData: string;
 }
 
 export function ActivityInstructionDtoFromJSON(json: any): ActivityInstructionDto {
@@ -43,8 +37,7 @@ export function ActivityInstructionDtoFromJSONTyped(json: any, ignoreDiscriminat
     }
     return {
         
-        'header': !exists(json, 'header') ? undefined : json['header'],
-        'body': json['body'],
+        'sanitizedHtmlData': json['sanitizedHtmlData'],
     };
 }
 
@@ -57,8 +50,7 @@ export function ActivityInstructionDtoToJSON(value?: ActivityInstructionDto | nu
     }
     return {
         
-        'header': value.header,
-        'body': value.body,
+        'sanitizedHtmlData': value.sanitizedHtmlData,
     };
 }
 

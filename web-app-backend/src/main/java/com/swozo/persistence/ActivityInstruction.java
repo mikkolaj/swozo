@@ -13,6 +13,5 @@ import javax.persistence.Table;
 @Setter
 @ToString
 public class ActivityInstruction extends BaseEntity {
-    private String header;
-    private String body;
+    private String data;
 }

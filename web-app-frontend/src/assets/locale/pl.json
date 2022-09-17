@@ -130,7 +130,12 @@
         "goBackBtn": "Wróć do kursu",
         "tabs": {
             "teacher": {
-                "label": "Instrukcje od nauczyciela"
+                "label": {
+                    "as": {
+                        "teacher": "Moje instrukcje",
+                        "default": "Instrukcje od nauczyciela"
+                    }
+                }
             },
             "modules": {
                 "label": "Informacje o używanych modułach"

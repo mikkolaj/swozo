@@ -30,13 +30,7 @@ export interface ActivityInstruction {
      * @type {string}
      * @memberof ActivityInstruction
      */
-    header?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivityInstruction
-     */
-    body?: string;
+    data?: string;
 }
 
 export function ActivityInstructionFromJSON(json: any): ActivityInstruction {
@@ -50,8 +44,7 @@ export function ActivityInstructionFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'header': !exists(json, 'header') ? undefined : json['header'],
-        'body': !exists(json, 'body') ? undefined : json['body'],
+        'data': !exists(json, 'data') ? undefined : json['data'],
     };
 }
 
@@ -65,8 +58,7 @@ export function ActivityInstructionToJSON(value?: ActivityInstruction | null): a
     return {
         
         'id': value.id,
-        'header': value.header,
-        'body': value.body,
+        'data': value.data,
     };
 }
 

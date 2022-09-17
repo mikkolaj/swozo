@@ -16,8 +16,8 @@ export const RichTextEditor = ({ value, name, setFieldValue, wrapperSx }: Props)
             <ReactQuill
                 theme="snow"
                 value={value}
-                onChange={(v) => {
-                    setFieldValue(name, v);
+                onChange={(sanitizedHtmlData) => {
+                    setFieldValue(name, sanitizedHtmlData);
                 }}
             />
         </Box>

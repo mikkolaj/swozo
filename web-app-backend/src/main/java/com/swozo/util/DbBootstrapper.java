@@ -113,7 +113,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.JULY, 29, 17, 30, 40));
         activity.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 29, 19, 30, 40));
-        activity.setInstructionsFromTeacher(List.of(new ActivityInstruction("uwaga", "Przed zajęciami należy przeczytać dokumentacje Pythona")));
+        activity.setInstructionsFromTeacher(List.of(new ActivityInstruction( "Przed zajęciami należy przeczytać dokumentacje Pythona")));
         activity.setCourse(course);
         activity.addActivityModule(new ActivityModule(
                 serviceModule,
@@ -131,7 +131,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.JULY, 30, 15, 30, 40));
         activity2.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 30, 17, 0, 40));
-        activity2.setInstructionsFromTeacher(List.of(new ActivityInstruction("uwaga", "Przed zajęciami należy przeczytać dokumentacje Pythona")));
+        activity2.setInstructionsFromTeacher(List.of(new ActivityInstruction("Przed zajęciami należy przeczytać dokumentacje Pythona")));
         activity2.setCourse(course);
         activity2.addActivityModule(new ActivityModule(
                 serviceModule,
