@@ -34,7 +34,20 @@
                 "button": "Uczestnicy",
                 "teacher": "Prowadzący",
                 "coursePassword": "Hasło do kursu: {{password}}",
-                "students": "Studenci"
+                "editMode": "Edytuj listę",
+                "addStudent": {
+                    "button": "Dodaj studenta",
+                    "label": "Adres email",
+                    "success": "{{email}} został dodany!"
+                },
+                "students": {
+                    "label": "Studenci",
+                    "table": {
+                        "name": "Imię i nazwisko",
+                        "email": "Adres email",
+                        "joinDate": "Data dołączenia"
+                    }
+                }
             }
         },
         "activity": {

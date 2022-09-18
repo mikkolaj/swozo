@@ -1,65 +1,110 @@
-import { Box, Divider, Grid, Stack, Typography } from '@mui/material';
-import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
-import { PasswordLikeText } from 'common/Styled/PasswordLikeText';
-import { CourseContext } from 'pages/Course/CourseView';
-import { useContext } from 'react';
+/* eslint-disable react/jsx-key */
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import EditIcon from '@mui/icons-material/Edit';
+import { Box, Divider, Stack, TextField, Typography } from '@mui/material';
+import { CourseDetailsDto } from 'api';
+import { getApis } from 'api/initialize-apis';
+import { StackedList } from 'common/StackedList/StackedList';
+import { StackedListContent } from 'common/StackedList/StackedListContent';
+import { StackedListHeader } from 'common/StackedList/StackedListHeader';
+import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
+import { stylesRowCenteredVertical } from 'common/styles';
+import { useMeQuery } from 'hooks/query/useMeQuery';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TEACHER, WithRole } from 'utils/roles';
-import { formatName } from 'utils/util';
-import { ParticipantInfo } from './ParticipantInfo';
+import { useMutation, useQueryClient } from 'react-query';
+import { toast } from 'react-toastify';
+import { isSame } from 'utils/roles';
+import { formatDate, formatName } from 'utils/util';
+import { TeacherSection } from './TeacherSection';
 
-const HIDDEN_PASSWORD_PLACEHOLDER = '*****';
+type Props = {
+    course: CourseDetailsDto;
+};
 
-export const ParticipantsListView = () => {
+export const ParticipantsListView = ({ course }: Props) => {
     const { t } = useTranslation();
-    const course = useContext(CourseContext);
-
-    if (!course) {
-        return <PageContainerWithLoader />;
-    }
+    const [editMode, setEditMode] = useState(false);
+    const { me } = useMeQuery();
+    const [newStudentEmail, setNewStudentEmail] = useState('');
+    const queryClient = useQueryClient();
+    const addStudentMutation = useMutation(
+        (email: string) =>
+            getApis().courseApi.addStudentToCourse({ courseId: course.id, addStudentRequest: { email } }),
+        {
+            onSuccess: (mutatedCourse, email) => {
+                toast.success(t('course.options.participants.addStudent.success', { email }));
+                queryClient.setQueryData(['courses', `${mutatedCourse.id}`], mutatedCourse);
+            },
+            onError: () => console.log('dupa error'),
+        }
+    );
 
     return (
         <Stack>
             <Typography variant={'h5'} gutterBottom>
                 {t('course.options.participants.teacher')}
             </Typography>
-            <Box sx={{ ml: 3 }}>
-                <Grid container>
-                    <Grid item>
-                        <Typography variant="h6">
-                            {formatName(course.teacher.name, course.teacher.surname)}
-                        </Typography>
-                    </Grid>
-                    <Grid item sx={{ ml: 4 }}>
-                        <Typography variant="h6">{course.teacher.email}</Typography>
-                    </Grid>
-                </Grid>
-                <WithRole roles={[TEACHER]}>
-                    <PasswordLikeText
-                        textSupplier={(isVisible) =>
-                            t('course.options.participants.coursePassword', {
-                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                password: isVisible ? course.coursePassword! : HIDDEN_PASSWORD_PLACEHOLDER,
-                            })
-                        }
-                    />
-                </WithRole>
-            </Box>
-            <Divider />
-            <Typography variant={'h5'} gutterBottom sx={{ mt: 2 }}>
-                {t('course.options.participants.students')}
-            </Typography>
-            <Stack sx={{ ml: 3 }}>
-                {course.students.map((student) => (
-                    <ParticipantInfo
-                        key={student.participant.email}
-                        participant={student.participant}
-                        joinedAt={student.joinedAt}
-                    />
-                ))}
-            </Stack>
+            <TeacherSection course={course} />
 
-            {/* <Box sx={{ p: 1, boxShadow: 2, ml: 3 }}> */}
+            <Divider />
+
+            <Box sx={{ ...stylesRowCenteredVertical, justifyContent: 'space-between' }}>
+                <Typography variant={'h5'} gutterBottom sx={{ mt: 2 }}>
+                    {t('course.options.participants.students.label')}
+                </Typography>
+                {isSame(me, course.teacher) && (
+                    <ButtonWithIconAndText
+                        onClick={() => setEditMode((editMode) => !editMode)}
+                        textI18n="course.options.participants.editMode"
+                        Icon={EditIcon}
+                    />
+                )}
+            </Box>
+            {editMode && (
+                <Box sx={{ ...stylesRowCenteredVertical, ml: 2, mb: 4 }}>
+                    <TextField
+                        variant="standard"
+                        type="email"
+                        label={t('course.options.participants.addStudent.label')}
+                        value={newStudentEmail}
+                        onChange={(v) => setNewStudentEmail(v.target.value)}
+                    />
+                    <ButtonWithIconAndText
+                        sx={{ mt: 1.5 }}
+                        onClick={() => addStudentMutation.mutateAsync(newStudentEmail)}
+                        textI18n="course.options.participants.addStudent.button"
+                        Icon={AddCircleOutlineIcon}
+                    />
+                </Box>
+            )}
+
+            <StackedList
+                header={
+                    <StackedListHeader
+                        proportions={[3, 3, 2]}
+                        items={['name', 'email', 'joinDate'].map((label) => (
+                            <Typography variant="body1" color="GrayText">
+                                {t(`course.options.participants.students.table.${label}`)}
+                            </Typography>
+                        ))}
+                    />
+                }
+                content={
+                    <StackedListContent
+                        proportions={[3, 3, 2]}
+                        items={course.students}
+                        itemKeyExtractor={({ participant }) => participant.email}
+                        itemRenderer={({ participant, joinedAt }) => [
+                            <Typography variant="body1">
+                                {formatName(participant.name, participant.surname)}
+                            </Typography>,
+                            <Typography variant="body1">{participant.email}</Typography>,
+                            <Typography variant="body1">{formatDate(joinedAt)}</Typography>,
+                        ]}
+                    />
+                }
+            />
         </Stack>
     );
 };

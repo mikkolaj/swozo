@@ -73,6 +73,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         userRepository.save(student1);
         User student2 = new User("Mela", "Zabrzydowska", "student2@gmail.com", "student2", List.of(studentRole));
         userRepository.save(student2);
+        User student3 = new User("Rafał", "Zabrzydowski", "student3@gmail.com", "student3", List.of(studentRole));
+        userRepository.save(student3);
 
 //        COURSES:
         Course course = new Course();

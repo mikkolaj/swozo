@@ -120,7 +120,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/AddStudentRequest'
         required: true
       responses:
         "200":
@@ -128,7 +128,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/Course'
+                $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
     delete:
@@ -154,7 +154,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/Course'
+                $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
   /auth/login:
@@ -614,6 +614,13 @@ components:
           type: string
         surname:
           type: string
+        email:
+          type: string
+    AddStudentRequest:
+      required:
+      - email
+      type: object
+      properties:
         email:
           type: string
     LoginRequest:

@@ -2,6 +2,7 @@ package com.swozo.api.web.course;
 
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
+import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.persistence.Activity;
 import com.swozo.persistence.Course;
@@ -79,15 +80,14 @@ public class CourseController {
 
     @PostMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
-        // TODO email - not User in RequestBody
-        logger.info("adding student with email: {} to course with id: {}", student.getEmail(), courseId);
-        return courseService.addStudent(courseId, student.getEmail());
+    public CourseDetailsDto addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody AddStudentRequest addStudentRequest) {
+        logger.info("adding student with email: {} to course with id: {}", addStudentRequest.email(), courseId);
+        return courseService.addStudent(courseId, addStudentRequest);
     }
 
     @DeleteMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
-    public Course removeStudentFromCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
+    public CourseDetailsDto removeStudentFromCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
         // TODO email - not User in RequestBody
         logger.info("removing student with email: {} from course with id: {}", student.getEmail(), courseId);
         return courseService.deleteStudent(courseId, student.getEmail());

@@ -18,6 +18,9 @@ import {
     Activity,
     ActivityFromJSON,
     ActivityToJSON,
+    AddStudentRequest,
+    AddStudentRequestFromJSON,
+    AddStudentRequestToJSON,
     Course,
     CourseFromJSON,
     CourseToJSON,
@@ -38,7 +41,7 @@ export interface AddCourseRequest {
 
 export interface AddStudentToCourseRequest {
     courseId: number;
-    user: User;
+    addStudentRequest: AddStudentRequest;
 }
 
 export interface DeleteCourseRequest {
@@ -109,13 +112,13 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async addStudentToCourseRaw(requestParameters: AddStudentToCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Course>> {
+    async addStudentToCourseRaw(requestParameters: AddStudentToCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsDto>> {
         if (requestParameters.courseId === null || requestParameters.courseId === undefined) {
             throw new runtime.RequiredError('courseId','Required parameter requestParameters.courseId was null or undefined when calling addStudentToCourse.');
         }
 
-        if (requestParameters.user === null || requestParameters.user === undefined) {
-            throw new runtime.RequiredError('user','Required parameter requestParameters.user was null or undefined when calling addStudentToCourse.');
+        if (requestParameters.addStudentRequest === null || requestParameters.addStudentRequest === undefined) {
+            throw new runtime.RequiredError('addStudentRequest','Required parameter requestParameters.addStudentRequest was null or undefined when calling addStudentToCourse.');
         }
 
         const queryParameters: any = {};
@@ -137,15 +140,15 @@ export class CourseControllerApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToJSON(requestParameters.user),
+            body: AddStudentRequestToJSON(requestParameters.addStudentRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CourseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async addStudentToCourse(requestParameters: AddStudentToCourseRequest, initOverrides?: RequestInit): Promise<Course> {
+    async addStudentToCourse(requestParameters: AddStudentToCourseRequest, initOverrides?: RequestInit): Promise<CourseDetailsDto> {
         const response = await this.addStudentToCourseRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -334,7 +337,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async removeStudentFromCourseRaw(requestParameters: RemoveStudentFromCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Course>> {
+    async removeStudentFromCourseRaw(requestParameters: RemoveStudentFromCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsDto>> {
         if (requestParameters.courseId === null || requestParameters.courseId === undefined) {
             throw new runtime.RequiredError('courseId','Required parameter requestParameters.courseId was null or undefined when calling removeStudentFromCourse.');
         }
@@ -365,12 +368,12 @@ export class CourseControllerApi extends runtime.BaseAPI {
             body: UserToJSON(requestParameters.user),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CourseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async removeStudentFromCourse(requestParameters: RemoveStudentFromCourseRequest, initOverrides?: RequestInit): Promise<Course> {
+    async removeStudentFromCourse(requestParameters: RemoveStudentFromCourseRequest, initOverrides?: RequestInit): Promise<CourseDetailsDto> {
         const response = await this.removeStudentFromCourseRaw(requestParameters, initOverrides);
         return await response.value();
     }

@@ -7,6 +7,7 @@ export * from './ActivityInstructionDto';
 export * from './ActivityLink';
 export * from './ActivityModule';
 export * from './ActivityModuleDetailsDto';
+export * from './AddStudentRequest';
 export * from './AuthDetailsDto';
 export * from './Course';
 export * from './CourseDetailsDto';

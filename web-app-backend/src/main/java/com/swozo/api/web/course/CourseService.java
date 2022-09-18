@@ -4,20 +4,25 @@ import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
+import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.api.web.user.UserService;
 import com.swozo.mapper.CourseMapper;
 import com.swozo.persistence.Activity;
 import com.swozo.persistence.Course;
+import com.swozo.persistence.User;
 import com.swozo.persistence.UserCourseData;
 import com.swozo.security.AccessToken;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -85,22 +90,22 @@ public class CourseService {
         return course.getActivities();
     }
 
-    public Course addStudent(Long courseId, String studentEmail) {
-        var course = courseRepository.getById(courseId);
-        //TODO check if student has student role
-        var student = userRepository.getByEmail(studentEmail);
-        course.addStudent(new UserCourseData(student, course));
-        courseRepository.save(course);
-        return course;
+    public CourseDetailsDto addStudent(Long courseId, AddStudentRequest addStudentRequest) {
+        return modifyCourseParticipant(courseId, addStudentRequest.email(), (student, course) -> course.addStudent(student));
     }
 
-    public Course deleteStudent(Long courseId, String studentEmail) {
+    public CourseDetailsDto deleteStudent(Long courseId, String studentEmail) {
+        return modifyCourseParticipant(courseId, studentEmail, (student, course) -> course.deleteStudent(student));
+    }
+
+    private CourseDetailsDto modifyCourseParticipant(Long courseId, String studentEmail, BiConsumer<User, Course> modifier) {
         var course = courseRepository.getById(courseId);
-        //TODO check if student has student role
+        //TODO check if student has student role and if teacher is course creator
         var student = userRepository.getByEmail(studentEmail);
-        course.deleteStudent(new UserCourseData(student, course));
+        modifier.accept(student, course);
         courseRepository.save(course);
-        return course;
+        return courseMapper.toDto(course, course.getPassword());
+
     }
 
     private boolean isCreator(Course course, Long userId) {

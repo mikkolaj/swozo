@@ -43,11 +43,11 @@ public class Course extends BaseEntity {
         activities.remove(activity);
     }
 
-    public void addStudent(UserCourseData student) {
-        students.add(student);
+    public void addStudent(User student) {
+        students.add(new UserCourseData(student, this));
     }
 
-    public void deleteStudent(UserCourseData student) {
-        students.remove(student);
+    public void deleteStudent(User student) {
+        students.remove(new UserCourseData(student, this));
     }
 }

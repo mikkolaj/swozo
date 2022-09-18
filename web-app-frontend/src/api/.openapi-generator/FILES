@@ -11,6 +11,7 @@ models/ActivityInstructionDto.ts
 models/ActivityLink.ts
 models/ActivityModule.ts
 models/ActivityModuleDetailsDto.ts
+models/AddStudentRequest.ts
 models/AuthDetailsDto.ts
 models/Course.ts
 models/CourseDetailsDto.ts

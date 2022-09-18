@@ -3,6 +3,7 @@ import { CourseDetailsDto } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
+import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import React, { useState } from 'react';
@@ -16,21 +17,24 @@ export const CourseContext = React.createContext<CourseDetailsDto | undefined>(u
 
 type Tab = 'activities' | 'participants';
 type TabConfig = {
-    tabRenderer: (course?: CourseDetailsDto) => JSX.Element;
+    type: Tab;
+    tabRenderer: (course: CourseDetailsDto) => JSX.Element;
 };
 
 const tabs: Record<Tab, TabConfig> = {
     activities: {
+        type: 'activities',
         tabRenderer: (course) => (
             <Stack spacing={2} sx={{ px: 2 }}>
-                {course?.activities.map((activity) => (
+                {course.activities.map((activity) => (
                     <ActivityView key={activity.id} activity={activity} />
                 ))}
             </Stack>
         ),
     },
     participants: {
-        tabRenderer: () => <ParticipantsListView />,
+        type: 'participants',
+        tabRenderer: (course) => <ParticipantsListView course={course} />,
     },
 };
 
@@ -52,6 +56,10 @@ export const CourseView = () => {
         );
     }
 
+    if (!course) {
+        return <PageContainerWithLoader />;
+    }
+
     return (
         <CourseContext.Provider value={course}>
             <PageContainer
@@ -65,7 +73,12 @@ export const CourseView = () => {
                         </Grid>
                         <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                             {Object.entries(tabs).map(([type, config]) => (
-                                <Button key={type} onClick={() => setTab(config)}>
+                                <Button
+                                    key={type}
+                                    onClick={() => setTab(config)}
+                                    variant={tab.type === type ? 'contained' : 'outlined'}
+                                    sx={{ mr: 0.5 }}
+                                >
                                     {t(`course.options.${type}.button`)}
                                 </Button>
                             ))}
