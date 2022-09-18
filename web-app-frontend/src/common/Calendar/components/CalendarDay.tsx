@@ -1,6 +1,7 @@
 import SchoolIcon from '@mui/icons-material/School';
 import { Box, Grid, Paper, Popover, Typography } from '@mui/material';
 import { blue, blueGrey } from '@mui/material/colors';
+import { stylesRow } from 'common/styles';
 import { Dayjs } from 'dayjs';
 import { useState } from 'react';
 import { CalendarActivity } from 'utils/mocks';
@@ -67,10 +68,9 @@ export const CalendarDay = ({ displayedDate, day, activities }: Props) => {
                         item
                         xs={12}
                         sx={{
-                            display: 'flex',
+                            ...stylesRow,
                             mt: '12px',
                             mr: '6px',
-                            flexDirection: 'row',
                             justifyContent: 'flex-end',
                             alignItems: 'flex-end',
                         }}

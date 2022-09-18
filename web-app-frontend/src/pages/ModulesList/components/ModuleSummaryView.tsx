@@ -2,6 +2,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
+import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ModuleSummary } from 'utils/mocks';
@@ -40,7 +41,7 @@ export const ModuleSummaryView = ({ moduleSummary }: Props) => {
                             {moduleSummary.creationDate}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4} sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                    <Grid item xs={4} sx={{ ...stylesRowCenteredVertical, mt: 2 }}>
                         <Typography variant="body2">
                             {t('myModules.module.usedBy', {
                                 activitiesCount: moduleSummary.usedInActivitiesCount,
@@ -48,7 +49,7 @@ export const ModuleSummaryView = ({ moduleSummary }: Props) => {
                         </Typography>
                     </Grid>
                     <Grid item xs={8} sx={{ mt: 2 }}>
-                        <Box display="flex" justifyContent="flex-end">
+                        <Box sx={stylesRowWithItemsAtTheEnd}>
                             {moduleSummary.usedInActivitiesCount === 0 && (
                                 <Button
                                     startIcon={<DeleteIcon />}

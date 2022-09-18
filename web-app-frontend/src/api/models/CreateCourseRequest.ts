@@ -56,12 +56,6 @@ export interface CreateCourseRequest {
      * @memberof CreateCourseRequest
      */
     activities: Array<CreateActivityRequest>;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof CreateCourseRequest
-     */
-    studentEmails: Array<string>;
 }
 
 export function CreateCourseRequestFromJSON(json: any): CreateCourseRequest {
@@ -79,7 +73,6 @@ export function CreateCourseRequestFromJSONTyped(json: any, ignoreDiscriminator:
         'description': json['description'],
         'expectedStudentCount': json['expectedStudentCount'],
         'activities': ((json['activities'] as Array<any>).map(CreateActivityRequestFromJSON)),
-        'studentEmails': json['studentEmails'],
     };
 }
 
@@ -97,7 +90,6 @@ export function CreateCourseRequestToJSON(value?: CreateCourseRequest | null): a
         'description': value.description,
         'expectedStudentCount': value.expectedStudentCount,
         'activities': ((value.activities as Array<any>).map(CreateActivityRequestToJSON)),
-        'studentEmails': value.studentEmails,
     };
 }
 

@@ -2,6 +2,7 @@ import { Button, Divider, Grid, Paper, Tab, Tabs, Typography } from '@mui/materi
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
+import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -48,10 +49,8 @@ export const ActivityInstructionsView = () => {
             <Grid
                 container
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'row',
+                    ...stylesRowCenteredVertical,
                     justifyContent: 'space-between',
-                    alignItems: 'center',
                 }}
             >
                 <Grid item xs={8}>
@@ -62,11 +61,7 @@ export const ActivityInstructionsView = () => {
                         })}
                     </Typography>
                 </Grid>
-                <Grid
-                    item
-                    xs={4}
-                    sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', pr: 1 }}
-                >
+                <Grid item xs={4} sx={{ ...stylesRowWithItemsAtTheEnd, pr: 1 }}>
                     <Button onClick={() => navigate(PageRoutes.Course(course.id))}>
                         {t('activityInstructions.goBackBtn')}
                     </Button>

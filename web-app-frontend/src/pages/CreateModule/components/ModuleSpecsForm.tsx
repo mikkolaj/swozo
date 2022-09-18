@@ -23,17 +23,17 @@ export const ModuleSpecsForm = ({ formRef, initialValues, setValues }: SlideProp
                     {/* This should be dynamic, from server */}
                     <SlideFormSelectField
                         name="environment"
-                        labelPath="createModule.slides.1.form.environment"
+                        i18nLabel="createModule.slides.1.form.environment"
                     >
                         <MenuItem value={'isolated'}>Izolowane</MenuItem>
                     </SlideFormSelectField>
-                    <SlideFormSelectField name="storage" labelPath="createModule.slides.1.form.storage">
+                    <SlideFormSelectField name="storage" i18nLabel="createModule.slides.1.form.storage">
                         <MenuItem value={1}>1GB</MenuItem>
                     </SlideFormSelectField>
-                    <SlideFormSelectField name="cpu" labelPath="createModule.slides.1.form.cpu">
+                    <SlideFormSelectField name="cpu" i18nLabel="createModule.slides.1.form.cpu">
                         <MenuItem value={'big'}>Duże</MenuItem>
                     </SlideFormSelectField>
-                    <SlideFormSelectField name="ram" labelPath="createModule.slides.1.form.ram">
+                    <SlideFormSelectField name="ram" i18nLabel="createModule.slides.1.form.ram">
                         <MenuItem value={'big'}>Duże</MenuItem>
                     </SlideFormSelectField>
                 </Form>

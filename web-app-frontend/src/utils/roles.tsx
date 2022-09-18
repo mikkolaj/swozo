@@ -19,7 +19,7 @@ export const NOT_LOGGED_IN: AuthRequirement = {
 
 export const ANY_LOGGED_IN: AuthRequirement = {
     loggedIn: true,
-    roles: [...(Object.values(AuthDetailsDtoRolesEnum) as AuthDetailsDtoRolesEnum[])],
+    roles: Object.values(AuthDetailsDtoRolesEnum),
 };
 
 export const withRole = (...roles: AuthDetailsDtoRolesEnum[]): AuthRequirement => {
@@ -29,7 +29,7 @@ export const withRole = (...roles: AuthDetailsDtoRolesEnum[]): AuthRequirement =
     };
 };
 
-export const hasRole = (authData: AuthDetailsDto | null, ...roles: AuthDetailsDtoRolesEnum[]): boolean => {
+export const hasRole = (authData?: AuthDetailsDto, ...roles: AuthDetailsDtoRolesEnum[]): boolean => {
     // TODO handling admin
     if (!authData) return false;
     return roles.find((role) => authData.roles.includes(role)) !== undefined;

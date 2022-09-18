@@ -1,14 +1,10 @@
-import { Divider, Grid, Typography } from '@mui/material';
-import { InputField } from 'common/Input/InputField';
 import { SlideProps } from 'common/SlideForm/SlideForm';
 import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
-import { FieldArray, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { CourseValues } from 'pages/CreateCourse/util';
 import * as Yup from 'yup';
 
 export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProps<CourseValues>) => {
-    // const [numberOfStudents, setNumberOfStudents] = useState(0);
-
     return (
         <Formik
             innerRef={formRef}
@@ -19,43 +15,43 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
             })}
             onSubmit={setValues}
         >
-            {({ values }) => (
+            {() => (
                 <Form>
                     <SlideFormInputField
                         wrapperSx={{ width: '50%' }}
                         name="name"
                         type="text"
                         textFieldProps={{ fullWidth: true }}
-                        labelPath="createCourse.slides.0.form.name"
+                        i18nLabel="createCourse.slides.0.form.name"
                     />
                     <SlideFormInputField
                         name="subject"
                         type="text"
-                        labelPath="createCourse.slides.0.form.subject"
+                        i18nLabel="createCourse.slides.0.form.subject"
                     />
                     <SlideFormInputField
                         wrapperSx={{ width: '50%' }}
                         name="description"
                         type="text"
                         textFieldProps={{ multiline: true, fullWidth: true, required: false }}
-                        labelPath="createCourse.slides.0.form.description"
+                        i18nLabel="createCourse.slides.0.form.description"
                     />
                     <SlideFormInputField
                         name="numberOfActivities"
                         type="number"
-                        labelPath="createCourse.slides.0.form.numberOfActivities"
+                        i18nLabel="createCourse.slides.0.form.numberOfActivities"
                     />
                     <SlideFormInputField
                         name="numberOfStudents"
                         type="number"
-                        labelPath="createCourse.slides.0.form.numberOfStudents"
+                        i18nLabel="createCourse.slides.0.form.numberOfStudents"
                         onChangeDecorator={() => {
                             // TODO how this value affects array below
                             // if (!isNaN(+e.target.value)) setNumberOfStudents(+e.target.value);
                         }}
                     />
-                    {/* // TODO how to style this */}
-                    <Divider sx={{ width: '75%', mt: 2, mb: 2 }} />
+                    {/* // TODO: this probably only complicates things, leaving it here just in case */}
+                    {/* <Divider sx={{ width: '75%', mt: 2, mb: 2 }} />
                     <Typography sx={{ mt: 0 }} variant="subtitle1">
                         Adresy Email uczestników
                     </Typography>
@@ -69,7 +65,7 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
                                             name={`students.${idx}`}
                                             wrapperSx={{ mt: 2 }}
                                             type="text"
-                                            labelPath=""
+                                            i18nLabel=""
                                             textFieldProps={{
                                                 onBlur: () => {
                                                     if (
@@ -86,7 +82,7 @@ export const GeneralInfoForm = ({ formRef, initialValues, setValues }: SlideProp
                                 ))}
                             </Grid>
                         )}
-                    />
+                    /> */}
                 </Form>
             )}
         </Formik>

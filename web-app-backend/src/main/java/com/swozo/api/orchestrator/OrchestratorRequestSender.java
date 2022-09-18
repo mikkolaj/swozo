@@ -2,7 +2,7 @@ package com.swozo.api.orchestrator;
 
 import com.swozo.api.orchestrator.exceptions.InvalidStatusCodeException;
 import com.swozo.api.orchestrator.exceptions.ServiceUnavailableException;
-import com.swozo.jsonmapper.JsonMapperAdapter;
+import com.swozo.jsonmapper.JsonMapperFacade;
 import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.util.RequestSender;
@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 class OrchestratorRequestSender {
     private final RequestSender requestSender;
     private final UriFactory uriFactory;
-    private final JsonMapperAdapter mapper;
+    private final JsonMapperFacade mapper;
 
     public CompletableFuture<OrchestratorLinkResponse> getActivityLinks(Long moduleActivityID) {
         var uri = uriFactory.createActivityLinksURI(moduleActivityID);

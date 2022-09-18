@@ -1,11 +1,12 @@
 import { Box, Button, Container, Typography } from '@mui/material';
 import { InputField } from 'common/Input/InputField';
+import { stylesColumnCenteredHorizontal } from 'common/styles';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { login } from 'services/features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from 'services/store';
 
-const Login = () => {
+export const Login = () => {
     const dispatch = useAppDispatch();
     const authState = useAppSelector((state) => state.auth);
     const { t } = useTranslation();
@@ -23,9 +24,7 @@ const Login = () => {
                         <Box
                             sx={{
                                 marginTop: 8,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
+                                ...stylesColumnCenteredHorizontal,
                             }}
                         >
                             <Typography component="h1" variant="h5">
@@ -44,7 +43,7 @@ const Login = () => {
                                     mt: 3,
                                     width: '100%',
                                 }}
-                                labelPath="login.email"
+                                i18nLabel="login.email"
                             />
                             <InputField
                                 name="password"
@@ -58,7 +57,7 @@ const Login = () => {
                                     mt: 2,
                                     width: '100%',
                                 }}
-                                labelPath="login.password"
+                                i18nLabel="login.password"
                             />
 
                             <Button
@@ -79,5 +78,3 @@ const Login = () => {
         </Container>
     );
 };
-
-export default Login;

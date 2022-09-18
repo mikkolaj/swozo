@@ -21,7 +21,7 @@
         "createCourseButton": "Utwórz kurs",
         "course": {
             "lastActivity": "Ostatnia aktywność:",
-            "teacher": "Prowadzący: {{name}}",
+            "teacher": "Prowadzący: {{firstName}} {{lastName}}",
             "button": "szczegóły"
         }
     },
@@ -29,6 +29,7 @@
         "activity": {
             "links": "linki",
             "instructions": "instrukcje",
+            "timeRange": "{{startTime}} - {{endTime}}",
             "linksInfo": {
                 "info": "Linki dla: {{courseName}} - {{activityName}}",
                 "connectionInstruction": "Instrukcja podłączenia",
@@ -60,7 +61,7 @@
             "1": {
                 "title": "Planowanie zajęć",
                 "form": {
-                    "activityHeader": "Zajęcia {{idx}}",
+                    "activityHeader": "Zajęcia {{number}}",
                     "name": "temat",
                     "description": "opis",
                     "date": "Data zajęć",

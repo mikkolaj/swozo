@@ -36,10 +36,10 @@ class ErrorPreprocessorMiddleware implements Middleware {
 }
 
 export const initializeApis = (): Apis => {
-    // TODO config for dev/prod from env
     const configuration = new Configuration({
         accessToken: getAccessToken,
         middleware: [new ErrorPreprocessorMiddleware()],
+        basePath: process.env.REACT_APP_BASE_PATH,
     });
 
     return {

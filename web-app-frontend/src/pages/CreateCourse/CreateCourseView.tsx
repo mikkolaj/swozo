@@ -1,13 +1,15 @@
-import { Button, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { CreateCourseRequest } from 'api';
 import { getApis } from 'api/initialize-apis';
+import { NextSlideButton } from 'common/SlideForm/NextSlideButton';
+import { PreviousSlideButton } from 'common/SlideForm/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
-import dayjs from 'dayjs';
+import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikProps } from 'formik';
-import _ from 'lodash';
-import { Ref, useRef, useState } from 'react';
+import { useQueryWithDefaults } from 'hooks/useQueryWithDefaults';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { mockGeneralModuleSummaryList } from 'utils/mocks';
@@ -15,28 +17,31 @@ import { PageRoutes } from 'utils/routes';
 import { ActivitiesForm } from './components/forms/ActivitiesForm';
 import { GeneralInfoForm } from './components/forms/GeneralInfoForm';
 import { Summary } from './components/forms/Summary';
-import { ActivityValues, buildCreateCourseRequest } from './util';
+import {
+    ActivityValues,
+    buildCreateCourseRequest,
+    initialCourseValues,
+    resizeActivityValuesList,
+} from './util';
+
+const SLIDE_COUNT = 3;
 
 export const CreateCourseView = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [courseValues, setCourseValues] = useState({
-        name: 'Wprowadzenie do Pythona',
-        subject: 'Informatyka',
-        description: '',
-        numberOfActivities: 1,
-        numberOfStudents: 2,
-        students: ['student1', ''],
-    });
+    const [courseValues, setCourseValues] = useState(initialCourseValues());
     const [activitiesValues, setActivitiesValues] = useState<ActivityValues[]>([]);
 
-    const { data: availableLessonModules } = useQuery('modules', () =>
-        getApis().serviceModuleApi.getModuleList()
+    const { data: availableLessonModules } = useQueryWithDefaults(
+        'modules',
+        () => getApis().serviceModuleApi.getModuleList(),
+        []
     );
-    const [availableGeneralModules] = useState(mockGeneralModuleSummaryList);
 
-    const queryClient = useQueryClient();
+    // TODO: call api
+    const [availableGeneralModules] = useState(mockGeneralModuleSummaryList);
 
     const createCourseMutation = useMutation(
         (createCourseRequest: CreateCourseRequest) => getApis().courseApi.addCourse({ createCourseRequest }),
@@ -51,59 +56,43 @@ export const CreateCourseView = () => {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const formRef: Ref<FormikProps<any>> = useRef(null);
-    //TODO
-    if (availableLessonModules === undefined) {
-        return <>Loading</>;
-    }
+    const formRef = useRef<FormikProps<any>>(null);
 
     return (
         <SlideForm
-            titlePath="createCourse.title"
-            slidesPath="createCourse.slides"
-            slideCount={3}
+            titleI18n="createCourse.title"
+            slidesI18n="createCourse.slides"
+            slideCount={SLIDE_COUNT}
             currentSlide={currentSlide}
             buttons={
                 <Grid container>
                     <Grid item xs={6}>
-                        {currentSlide > 0 && (
-                            <Button
-                                onClick={() => {
-                                    if (currentSlide === 1) {
-                                        setActivitiesValues(formRef.current?.values.activities);
-                                    }
-                                    setCurrentSlide(currentSlide - 1);
-                                }}
-                            >
-                                {t('createCourse.buttons.back')}
-                            </Button>
-                        )}
-                    </Grid>
-                    <Grid
-                        item
-                        xs={6}
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                        }}
-                    >
-                        <Button
-                            sx={{ alignSelf: 'flex-end' }}
-                            onClick={() => {
-                                // TODO refactor this
-                                if (currentSlide === 2) {
-                                    // TODO assert valid
-                                    createCourseMutation.mutate(
-                                        buildCreateCourseRequest(courseValues, activitiesValues)
-                                    );
-                                } else {
-                                    formRef.current?.handleSubmit();
+                        <PreviousSlideButton
+                            currentSlide={currentSlide}
+                            label={t('createCourse.buttons.back')}
+                            goBack={(toSlide) => {
+                                if (toSlide === 0) {
+                                    setActivitiesValues(formRef.current?.values.activities);
                                 }
+
+                                setCurrentSlide(toSlide);
                             }}
-                        >
-                            {t(currentSlide === 2 ? 'createCourse.finish' : 'createCourse.buttons.next')}
-                        </Button>
+                        />
+                    </Grid>
+                    <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
+                        <NextSlideButton
+                            currentSlide={currentSlide}
+                            slideCount={SLIDE_COUNT}
+                            label={t('createCourse.buttons.next')}
+                            lastSlideLabel={t('createCourse.finish')}
+                            goNext={() => formRef.current?.handleSubmit()}
+                            finish={() => {
+                                // TODO assert valid
+                                createCourseMutation.mutate(
+                                    buildCreateCourseRequest(courseValues, activitiesValues)
+                                );
+                            }}
+                        />
                     </Grid>
                 </Grid>
             }
@@ -114,23 +103,9 @@ export const CreateCourseView = () => {
                     initialValues={courseValues}
                     setValues={(values) => {
                         setCourseValues(values);
-                        if (values.numberOfActivities > activitiesValues.length) {
-                            setActivitiesValues([
-                                ...activitiesValues,
-                                ..._.range(values.numberOfActivities - activitiesValues.length).map((_) => ({
-                                    name: '',
-                                    description: '',
-                                    lessonModules: [],
-                                    generalModules: [],
-                                    instructions: '',
-                                    startTime: dayjs(),
-                                    endTime: dayjs().add(90, 'minutes'), // TODO assert same day
-                                })),
-                            ]);
-                        } else {
-                            setActivitiesValues(activitiesValues.slice(0, values.numberOfActivities));
-                        }
-
+                        setActivitiesValues(
+                            resizeActivityValuesList(activitiesValues, values.numberOfActivities)
+                        );
                         setCurrentSlide(currentSlide + 1);
                     }}
                 />

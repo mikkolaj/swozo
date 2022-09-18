@@ -3,6 +3,7 @@ import { Container } from '@mui/system';
 import { ActivityDetailsDto } from 'api';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'utils/routes';
 import { formatDate, formatTime } from 'utils/util';
@@ -14,11 +15,12 @@ type Props = {
 };
 
 export const ActivityView = ({ activity }: Props) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const course = useContext(CourseContext);
     const [linksModalOpen, setLinksModalOpen] = useState(false);
     if (!course) {
-        navigate(PageRoutes.HOME);
+        navigate(PageRoutes.HOME, { replace: true });
         return <></>;
     }
 
@@ -47,17 +49,20 @@ export const ActivityView = ({ activity }: Props) => {
                             {formatDate(activity.startTime)}
                         </Typography>
                         <Typography component="h1" variant="h6" gutterBottom>
-                            {formatTime(activity.startTime)} - {formatTime(activity.endTime)}
+                            {t('course.activity.timeRange', {
+                                startTime: formatTime(activity.startTime),
+                                endTime: formatTime(activity.endTime),
+                            })}
                         </Typography>
                     </Box>
                     <Container>
                         <ActivityActionButton
                             onClick={() => setLinksModalOpen(true)}
-                            textPath="course.activity.links"
+                            textI18n="course.activity.links"
                         />
                         <ActivityActionButton
                             onClick={() => navigate(PageRoutes.ActivityInstructions(course.id, activity.id))}
-                            textPath="course.activity.instructions"
+                            textI18n="course.activity.instructions"
                         />
                     </Container>
                 </CardContent>
