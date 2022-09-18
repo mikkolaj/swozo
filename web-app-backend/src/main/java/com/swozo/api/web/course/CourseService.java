@@ -2,6 +2,7 @@ package com.swozo.api.web.course;
 
 import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
+import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.api.web.user.UserRepository;
@@ -9,10 +10,14 @@ import com.swozo.api.web.user.UserService;
 import com.swozo.mapper.CourseMapper;
 import com.swozo.persistence.Activity;
 import com.swozo.persistence.Course;
+import com.swozo.persistence.UserCourseData;
+import com.swozo.security.AccessToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,23 +33,26 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public Collection<CourseDetailsDto> getUserCourses(Long userId) {
-        var courses = userService.hasUserRole(userId, "STUDENT") ?
+    public Collection<CourseDetailsDto> getUserCourses(Long userId, RoleDto userRole) {
+        var courses = userRole.equals(RoleDto.STUDENT) ?
                 courseRepository.getCoursesByStudentsId(userId) :
                 courseRepository.getCoursesByTeacherId(userId);
 
-        return courses.stream().map(courseMapper::toDto).toList();
+        return courses.stream()
+                .map(course -> courseMapper.toDto(course, getCoursePasswordIfAllowed(course, userId)))
+                .toList();
     }
 
-    public CourseDetailsDto getCourseDetails(Long id) {
-        var course = courseRepository.getById(id);
+    public CourseDetailsDto getCourseDetails(Long courseId, Long userId) {
+        var course = courseRepository.getById(courseId);
         // TODO this will let us check if they are present by refreshing the page MAKE IT BeTtEr
         activityModuleService
                 .provideLinksForActivityModules(course.getActivities().stream().flatMap(x -> x.getModules().stream()).toList());
 
-        return courseMapper.toDto(course);
+        return courseMapper.toDto(course, getCoursePasswordIfAllowed(course, userId));
     }
 
+    @Transactional
     public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId) {
         var course = courseMapper.toPersistence(createCourseRequest, teacherId);
         course.getActivities().forEach(activity -> {
@@ -54,7 +62,7 @@ public class CourseService {
         courseRepository.save(course);
 
         scheduleService.scheduleActivities(course.getActivities());
-        return courseMapper.toDto(course);
+        return courseMapper.toDto(course, createCourseRequest.password());
     }
 
     public void deleteCourse(Long id) {
@@ -81,7 +89,7 @@ public class CourseService {
         var course = courseRepository.getById(courseId);
         //TODO check if student has student role
         var student = userRepository.getByEmail(studentEmail);
-        course.addStudent(student);
+        course.addStudent(new UserCourseData(student, course));
         courseRepository.save(course);
         return course;
     }
@@ -90,8 +98,16 @@ public class CourseService {
         var course = courseRepository.getById(courseId);
         //TODO check if student has student role
         var student = userRepository.getByEmail(studentEmail);
-        course.deleteStudent(student);
+        course.deleteStudent(new UserCourseData(student, course));
         courseRepository.save(course);
         return course;
+    }
+
+    private boolean isCreator(Course course, Long userId) {
+        return Objects.equals(course.getTeacher().getId(), userId);
+    }
+
+    private String getCoursePasswordIfAllowed(Course course, Long userId) {
+        return isCreator(course, userId) ? course.getPassword() : null;
     }
 }

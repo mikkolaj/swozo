@@ -23,5 +23,6 @@ public abstract class CourseMapper {
     @Mapping(target = "teacher", expression = "java(userMapper.toDto(course.getTeacher()))")
     @Mapping(target = "students", expression = "java(course.getStudents().stream().map(userMapper::toDto).toList())")
     @Mapping(target = "activities", expression = "java(course.getActivities().stream().map(activityMapper::toDto).toList())")
-    public abstract CourseDetailsDto toDto(Course course);
+    @Mapping(target = "coursePassword", source = "password")
+    public abstract CourseDetailsDto toDto(Course course, String password);
 }

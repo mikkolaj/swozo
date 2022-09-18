@@ -45,10 +45,15 @@ export const ActivityView = ({ activity }: Props) => {
                             borderBottomLeftRadius: 10,
                         }}
                     >
-                        <Typography sx={{ mb: -0.5 }} component="h1" variant="h5" gutterBottom>
+                        <Typography
+                            sx={{ mb: -0.5, fontWeight: 500 }}
+                            component="h1"
+                            variant="h4"
+                            gutterBottom
+                        >
                             {formatDate(activity.startTime)}
                         </Typography>
-                        <Typography component="h1" variant="h6" gutterBottom>
+                        <Typography component="h1" variant="h5" gutterBottom>
                             {t('course.activity.timeRange', {
                                 startTime: formatTime(activity.startTime),
                                 endTime: formatTime(activity.endTime),

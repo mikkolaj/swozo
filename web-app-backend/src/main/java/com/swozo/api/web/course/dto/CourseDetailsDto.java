@@ -14,7 +14,8 @@ public record CourseDetailsDto(
         @Schema(required = true) LocalDateTime lastActivityTime,
         @Schema(required = true) String subject,
         @Schema(required = true) String description,
-        @Schema(required = true) List<UserDetailsDto> students,
-        @Schema(required = true) List<ActivityDetailsDto> activities
+        @Schema(required = true) List<ParticipantDetailsDto> students,
+        @Schema(required = true) List<ActivityDetailsDto> activities,
+        @Schema(required = false) String coursePassword
 ) {
 }

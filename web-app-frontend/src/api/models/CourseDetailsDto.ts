@@ -20,6 +20,12 @@ import {
     ActivityDetailsDtoToJSON,
 } from './ActivityDetailsDto';
 import {
+    ParticipantDetailsDto,
+    ParticipantDetailsDtoFromJSON,
+    ParticipantDetailsDtoFromJSONTyped,
+    ParticipantDetailsDtoToJSON,
+} from './ParticipantDetailsDto';
+import {
     UserDetailsDto,
     UserDetailsDtoFromJSON,
     UserDetailsDtoFromJSONTyped,
@@ -70,16 +76,22 @@ export interface CourseDetailsDto {
     description: string;
     /**
      * 
-     * @type {Array<UserDetailsDto>}
+     * @type {Array<ParticipantDetailsDto>}
      * @memberof CourseDetailsDto
      */
-    students: Array<UserDetailsDto>;
+    students: Array<ParticipantDetailsDto>;
     /**
      * 
      * @type {Array<ActivityDetailsDto>}
      * @memberof CourseDetailsDto
      */
     activities: Array<ActivityDetailsDto>;
+    /**
+     * 
+     * @type {string}
+     * @memberof CourseDetailsDto
+     */
+    coursePassword?: string;
 }
 
 export function CourseDetailsDtoFromJSON(json: any): CourseDetailsDto {
@@ -98,8 +110,9 @@ export function CourseDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: bo
         'lastActivityTime': (new Date(json['lastActivityTime'])),
         'subject': json['subject'],
         'description': json['description'],
-        'students': ((json['students'] as Array<any>).map(UserDetailsDtoFromJSON)),
+        'students': ((json['students'] as Array<any>).map(ParticipantDetailsDtoFromJSON)),
         'activities': ((json['activities'] as Array<any>).map(ActivityDetailsDtoFromJSON)),
+        'coursePassword': !exists(json, 'coursePassword') ? undefined : json['coursePassword'],
     };
 }
 
@@ -118,8 +131,9 @@ export function CourseDetailsDtoToJSON(value?: CourseDetailsDto | null): any {
         'lastActivityTime': (value.lastActivityTime.toISOString()),
         'subject': value.subject,
         'description': value.description,
-        'students': ((value.students as Array<any>).map(UserDetailsDtoToJSON)),
+        'students': ((value.students as Array<any>).map(ParticipantDetailsDtoToJSON)),
         'activities': ((value.activities as Array<any>).map(ActivityDetailsDtoToJSON)),
+        'coursePassword': value.coursePassword,
     };
 }
 

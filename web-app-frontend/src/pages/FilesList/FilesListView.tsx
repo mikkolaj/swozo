@@ -7,12 +7,12 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { mockFiles } from 'utils/mocks';
 import { FileView } from './components/FileView';
-import { sorted, SortKey, withSortDirection } from './utils';
+import { opposite, SortDirection, sorted, SortKey, withSortDirection } from './utils';
 
 export const FilesListView = () => {
     const { t } = useTranslation();
     const [files] = useState(mockFiles);
-    const [sortIncreasing, setSortIncreasing] = useState(true);
+    const [sortDirection, setSortDirection] = useState<SortDirection>('DESC');
     const [sortKey, setSortKey] = useState<SortKey>('createdAt');
     const sortedFiles = useMemo(() => sorted(files, sortKey), [files, sortKey]);
 
@@ -47,13 +47,13 @@ export const FilesListView = () => {
                                 <IconButton
                                     onClick={() => {
                                         if (sortKey === 'createdAt') {
-                                            setSortIncreasing((sortIncreasing) => !sortIncreasing);
+                                            setSortDirection((direction) => opposite(direction));
                                         } else {
                                             setSortKey('createdAt');
                                         }
                                     }}
                                 >
-                                    {sortIncreasing ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
+                                    {sortDirection === 'DESC' ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
                                 </IconButton>
                             )}
                         </Grid>
@@ -61,7 +61,7 @@ export const FilesListView = () => {
 
                     <Divider />
 
-                    {withSortDirection(sortedFiles, sortIncreasing ? 'ASC' : 'DESC').map((file) => (
+                    {withSortDirection(sortedFiles, sortDirection).map((file) => (
                         <FileView key={file.id} file={file} />
                     ))}
                 </Stack>

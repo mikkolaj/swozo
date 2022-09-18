@@ -17,11 +17,14 @@ models/CourseDetailsDto.ts
 models/CreateActivityRequest.ts
 models/CreateCourseRequest.ts
 models/LoginRequest.ts
+models/ParticipantDetailsDto.ts
 models/Role.ts
 models/ServiceConnectionDetailsDto.ts
 models/ServiceModule.ts
 models/ServiceModuleDetailsDto.ts
 models/User.ts
+models/UserCourseData.ts
+models/UserCourseId.ts
 models/UserDetailsDto.ts
 models/index.ts
 runtime.ts

@@ -15,11 +15,4 @@ public class UserService {
     public UserDetailsDto getUserInfo(Long userId) {
         return userMapper.toDto(userRepository.getById(userId));
     }
-
-    public boolean hasUserRole(Long userId, String roleName) {
-        return userRepository.getById(userId).getRoles().stream()
-                .map(Role::getName)
-                .toList()
-                .contains(roleName);
-    }
 }

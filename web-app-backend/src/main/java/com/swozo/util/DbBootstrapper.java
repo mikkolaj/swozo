@@ -61,17 +61,17 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     // TODO assert dev env
     private void setupTestData() {
         var adminRole = roleRepository.findByName(RoleDto.ADMIN.toString());
-        userRepository.save(new User("Bolek", "Kowalski", "admin", "admin", List.of(adminRole)));
+        userRepository.save(new User("Bolek", "Kowalski", "admin@gmail.com", "admin", List.of(adminRole)));
 
         var teacherRole = roleRepository.findByName(RoleDto.TEACHER.toString());
         var technicalTeacherRole = roleRepository.findByName(RoleDto.TECHNICAL_TEACHER.toString());
-        User teacher = new User("Lolek", "Kowalski", "teacher", "teacher", List.of(teacherRole, technicalTeacherRole));
+        User teacher = new User("Lolek", "Kowalski", "teacher@gmail.com", "teacher", List.of(teacherRole, technicalTeacherRole));
         userRepository.save(teacher);
 
         var studentRole = roleRepository.findByName(RoleDto.STUDENT.toString());
-        User student1 = new User("Antoni", "Zabrzydowski", "student1", "student1", List.of(studentRole));
+        User student1 = new User("Antoni", "Zabrzydowski", "student1@gmail.com", "student1", List.of(studentRole));
         userRepository.save(student1);
-        User student2 = new User("Mela", "Zabrzydowska", "student2", "student2", List.of(studentRole));
+        User student2 = new User("Mela", "Zabrzydowska", "student2@gmail.com", "student2", List.of(studentRole));
         userRepository.save(student2);
 
 //        COURSES:
@@ -80,7 +80,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.setSubject("INFORMATYKA");
         course.setDescription("kurs o pythonie");
         course.setTeacher(teacher);
-        course.setStudents(List.of(student1, student2));
+        course.setPassword("haslo");
+        course.setStudents(List.of(new UserCourseData(student1, course), new UserCourseData(student2, course)));
 
         courseRepository.save(course);
 

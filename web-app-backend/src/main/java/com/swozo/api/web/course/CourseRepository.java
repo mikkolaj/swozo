@@ -9,6 +9,6 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> getCoursesByTeacherId(Long teacherId);
 
-    @Query("from Course course join course.students cs where cs.id = :studentId")
+    @Query("from Course course join course.students cs where cs.id.userId = :studentId")
     List<Course> getCoursesByStudentsId(Long studentId);
 }

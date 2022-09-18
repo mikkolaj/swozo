@@ -22,6 +22,7 @@ export type CourseValues = {
     description: string;
     numberOfActivities: number;
     numberOfStudents: number;
+    password?: string;
 };
 
 export const initialCourseValues = (): CourseValues => ({
@@ -30,6 +31,7 @@ export const initialCourseValues = (): CourseValues => ({
     description: '',
     numberOfActivities: 1,
     numberOfStudents: 2,
+    password: undefined,
 });
 
 export const initialActivityValues = (): ActivityValues => ({
@@ -81,5 +83,6 @@ export const buildCreateCourseRequest = (
         subject: course.subject,
         expectedStudentCount: course.numberOfStudents,
         activities: activities.map(buildCreateActivityRequest),
+        password: course.password,
     };
 };

@@ -26,6 +26,17 @@
         }
     },
     "course": {
+        "options": {
+            "activities": {
+                "button": "Aktywności"
+            },
+            "participants": {
+                "button": "Uczestnicy",
+                "teacher": "Prowadzący",
+                "coursePassword": "Hasło do kursu: {{password}}",
+                "students": "Studenci"
+            }
+        },
         "activity": {
             "links": "linki",
             "instructions": "instrukcje",

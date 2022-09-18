@@ -19,6 +19,8 @@ public class Course extends BaseEntity {
     private String name;
     private String subject;
     private String description;
+    // kept in plaintext
+    private String password;
     private LocalDateTime creationTime = LocalDateTime.now();
 
     //FetchType.LAZY - we won't need downloading classes list everytime e.g. in courses view
@@ -26,9 +28,9 @@ public class Course extends BaseEntity {
     @ToString.Exclude
     private Collection<Activity> activities = new LinkedList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "course")
     @ToString.Exclude
-    private Collection<User> students = new LinkedHashSet<>();
+    private Collection<UserCourseData> students = new LinkedHashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     private User teacher;
@@ -41,11 +43,11 @@ public class Course extends BaseEntity {
         activities.remove(activity);
     }
 
-    public void addStudent(User student) {
+    public void addStudent(UserCourseData student) {
         students.add(student);
     }
 
-    public void deleteStudent(User student) {
+    public void deleteStudent(UserCourseData student) {
         students.remove(student);
     }
 }

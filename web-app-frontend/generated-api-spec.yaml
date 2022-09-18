@@ -310,6 +310,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CreateActivityRequest'
+        password:
+          type: string
     Activity:
       type: object
       properties:
@@ -383,6 +385,8 @@ components:
           type: string
         description:
           type: string
+        password:
+          type: string
         creationTime:
           type: string
           format: date-time
@@ -393,7 +397,7 @@ components:
         students:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/UserCourseData'
         teacher:
           $ref: '#/components/schemas/User'
     Role:
@@ -442,6 +446,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Role'
+    UserCourseData:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UserCourseId'
+        user:
+          $ref: '#/components/schemas/User'
+        course:
+          $ref: '#/components/schemas/Course'
+        joinedAt:
+          type: string
+          format: date-time
+    UserCourseId:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        courseId:
+          type: integer
+          format: int64
     ActivityDetailsDto:
       required:
       - activityModules
@@ -522,11 +547,24 @@ components:
         students:
           type: array
           items:
-            $ref: '#/components/schemas/UserDetailsDto'
+            $ref: '#/components/schemas/ParticipantDetailsDto'
         activities:
           type: array
           items:
             $ref: '#/components/schemas/ActivityDetailsDto'
+        coursePassword:
+          type: string
+    ParticipantDetailsDto:
+      required:
+      - joinedAt
+      - participant
+      type: object
+      properties:
+        participant:
+          $ref: '#/components/schemas/UserDetailsDto'
+        joinedAt:
+          type: string
+          format: date-time
     ServiceConnectionDetailsDto:
       required:
       - connectionInstruction
