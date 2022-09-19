@@ -1,10 +1,15 @@
-import { Box, Grid, Typography } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { Box, Grid, IconButton, Typography } from '@mui/material';
+import { blue } from '@mui/material/colors';
 import { CourseDetailsDto } from 'api';
 import { PasswordLikeText } from 'common/Styled/PasswordLikeText';
-import { t } from 'i18next';
+import { stylesColumn, stylesRowCenteredVertical } from 'common/styles';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { TEACHER, WithRole } from 'utils/roles';
+import { PageRoutes } from 'utils/routes';
 import { formatName } from 'utils/util';
-
 type Props = {
     course: CourseDetailsDto;
 };
@@ -12,6 +17,10 @@ type Props = {
 const HIDDEN_PASSWORD_PLACEHOLDER = '*****';
 
 export const TeacherSection = ({ course }: Props) => {
+    const { t } = useTranslation();
+    const joinCourseUrl = PageRoutes.withOrigin(PageRoutes.JoinCourse(course.joinUUID));
+    console.log(joinCourseUrl);
+
     return (
         <Box sx={{ ml: 3, mb: 2 }}>
             <Grid container>
@@ -24,17 +33,36 @@ export const TeacherSection = ({ course }: Props) => {
                     <Typography variant="h6">{course.teacher.email}</Typography>
                 </Grid>
             </Grid>
-            {course.coursePassword && (
-                <WithRole roles={[TEACHER]}>
-                    <PasswordLikeText
-                        textSupplier={(isVisible) =>
-                            t('course.options.participants.coursePassword', {
-                                password: isVisible ? course.coursePassword : HIDDEN_PASSWORD_PLACEHOLDER,
-                            })
-                        }
-                    />
-                </WithRole>
-            )}
+            <Box sx={{ ...stylesColumn, mt: 2 }}>
+                <Box sx={stylesRowCenteredVertical}>
+                    <Typography>
+                        {t('course.options.participants.joinUrl')}{' '}
+                        <Link style={{ textDecoration: 'none', color: blue[800] }} to={joinCourseUrl}>
+                            {joinCourseUrl}
+                        </Link>
+                    </Typography>
+                    <IconButton
+                        color="primary"
+                        onClick={() => {
+                            navigator.clipboard.writeText(joinCourseUrl);
+                            toast.success(t('course.options.participants.copied'));
+                        }}
+                    >
+                        <ContentCopyIcon sx={{ transform: 'scale(0.9)', ml: 0.5, mt: -0.3 }} />
+                    </IconButton>
+                </Box>
+                {course.coursePassword && (
+                    <WithRole roles={[TEACHER]}>
+                        <PasswordLikeText
+                            textSupplier={(isVisible) =>
+                                t('course.options.participants.coursePassword', {
+                                    password: isVisible ? course.coursePassword : HIDDEN_PASSWORD_PLACEHOLDER,
+                                })
+                            }
+                        />
+                    </WithRole>
+                )}
+            </Box>
         </Box>
     );
 };

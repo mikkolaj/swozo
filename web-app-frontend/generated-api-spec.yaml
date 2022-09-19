@@ -385,6 +385,8 @@ components:
           type: string
         description:
           type: string
+        joinUUID:
+          type: string
         password:
           type: string
         creationTime:
@@ -523,6 +525,7 @@ components:
       - activities
       - description
       - id
+      - joinUUID
       - lastActivityTime
       - name
       - students
@@ -553,6 +556,8 @@ components:
           items:
             $ref: '#/components/schemas/ActivityDetailsDto'
         coursePassword:
+          type: string
+        joinUUID:
           type: string
     ParticipantDetailsDto:
       required:

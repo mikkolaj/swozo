@@ -22,6 +22,7 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -83,6 +84,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.setDescription("kurs o pythonie");
         course.setTeacher(teacher);
         course.setPassword("haslo");
+        course.setJoinUUID(UUID.randomUUID().toString());
         course.setStudents(List.of(new UserCourseData(student1, course), new UserCourseData(student2, course)));
 
         courseRepository.save(course);

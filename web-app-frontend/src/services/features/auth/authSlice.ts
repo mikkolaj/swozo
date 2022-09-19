@@ -85,7 +85,7 @@ export const login = createAsyncThunk<unknown, LoginRequest, { dispatch: AppDisp
     async (loginRequest, { getState, dispatch }) => {
         if (getState().auth.isFetching) return;
 
-        dispatch(handleAuthResponse(getApis().authApi.login({ loginRequest })));
+        await dispatch(handleAuthResponse(getApis().authApi.login({ loginRequest })));
     }
 );
 

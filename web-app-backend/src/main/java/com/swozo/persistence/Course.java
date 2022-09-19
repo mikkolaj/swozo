@@ -9,7 +9,9 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 @Entity
-@Table(name = "Courses")
+@Table(name = "Courses", indexes = {
+        @Index(name = "idx_course_joinuuid_unq", columnList = "joinUUID", unique = true)
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -19,6 +21,7 @@ public class Course extends BaseEntity {
     private String name;
     private String subject;
     private String description;
+    private String joinUUID;
     // kept in plaintext
     private String password;
     private LocalDateTime creationTime = LocalDateTime.now();

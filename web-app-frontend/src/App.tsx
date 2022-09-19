@@ -1,8 +1,10 @@
 import { CssBaseline } from '@mui/material';
 import { Navbar } from 'common/Navbar/Navbar';
+import { PageGuard } from 'common/PageGuard/PageGuard';
 import { Toaster } from 'common/Styled/Toaster';
 import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
 import { CourseView } from 'pages/Course/CourseView';
+import { JoinCourseView } from 'pages/Course/JoinCourseView';
 import { CoursesListView } from 'pages/CoursesList/CoursesListView';
 import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
 import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
@@ -35,6 +37,21 @@ function App() {
                 <Route path={PageRoutes.LOGIN} element={guarded(<Login />, NOT_LOGGED_IN)} />
                 <Route path={PageRoutes.MY_COURSES} element={guarded(<CoursesListView />, ANY_LOGGED_IN)} />
                 <Route path={PageRoutes.COURSE} element={guarded(<CourseView />, ANY_LOGGED_IN)} />
+                <Route
+                    path={PageRoutes.JOIN_COURSE}
+                    element={
+                        <PageGuard
+                            authRequirement={ANY_LOGGED_IN}
+                            navigationOptionsProvider={(guardedLocation) => ({
+                                state: {
+                                    redirectTo: guardedLocation.pathname,
+                                },
+                            })}
+                        >
+                            <JoinCourseView />
+                        </PageGuard>
+                    }
+                />
                 <Route
                     path={PageRoutes.CREATE_COURSE}
                     element={guarded(<CreateCourseView />, withRole(TEACHER))}

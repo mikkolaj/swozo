@@ -34,6 +34,8 @@
                 "button": "Uczestnicy",
                 "teacher": "Prowadzący",
                 "coursePassword": "Hasło do kursu: {{password}}",
+                "joinUrl": "Link do kursu:",
+                "copied": "Link został skopiowany!",
                 "editMode": "Edytuj listę",
                 "addStudent": {
                     "button": "Dodaj studenta",

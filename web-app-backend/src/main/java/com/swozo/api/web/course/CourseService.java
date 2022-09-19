@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -60,6 +61,8 @@ public class CourseService {
     @Transactional
     public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId) {
         var course = courseMapper.toPersistence(createCourseRequest, teacherId);
+        course.setJoinUUID(UUID.randomUUID().toString());
+
         course.getActivities().forEach(activity -> {
             activity.setCourse(course);
             activity.getModules().forEach(activityModule -> activityModule.setActivity(activity));

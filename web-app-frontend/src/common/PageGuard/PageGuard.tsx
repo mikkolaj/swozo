@@ -1,5 +1,5 @@
 import { PropsWithChildren, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Location, NavigateOptions, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'services/store';
 import { AuthRequirement, hasRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
@@ -11,10 +11,17 @@ const defaultRedirectRoute = (req: AuthRequirement): string => {
 type Props = {
     authRequirement: AuthRequirement;
     redirectPath?: string;
+    navigationOptionsProvider?: (guardedLocation: Location) => NavigateOptions;
 };
 
-export const PageGuard = ({ authRequirement, redirectPath, children }: PropsWithChildren<Props>) => {
+export const PageGuard = ({
+    authRequirement,
+    redirectPath,
+    navigationOptionsProvider,
+    children,
+}: PropsWithChildren<Props>) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const authState = useAppSelector((state) => state.auth);
 
     useEffect(() => {
@@ -31,9 +38,12 @@ export const PageGuard = ({ authRequirement, redirectPath, children }: PropsWith
         }
 
         if (shouldNavigate) {
-            navigate(redirectPath ?? defaultRedirectRoute(authRequirement));
+            navigate(
+                redirectPath ?? defaultRedirectRoute(authRequirement),
+                navigationOptionsProvider?.(location)
+            );
         }
-    }, [authState, navigate, authRequirement, redirectPath]);
+    }, [authState, navigate, authRequirement, redirectPath, navigationOptionsProvider, location]);
 
     return <>{children}</>;
 };

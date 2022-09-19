@@ -16,6 +16,7 @@ public record CourseDetailsDto(
         @Schema(required = true) String description,
         @Schema(required = true) List<ParticipantDetailsDto> students,
         @Schema(required = true) List<ActivityDetailsDto> activities,
-        @Schema(required = false) String coursePassword
+        @Schema(required = false) String coursePassword,
+        @Schema(required = true) String joinUUID
 ) {
 }

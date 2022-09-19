@@ -67,6 +67,12 @@ export interface Course {
      * @type {string}
      * @memberof Course
      */
+    joinUUID?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Course
+     */
     password?: string;
     /**
      * 
@@ -108,6 +114,7 @@ export function CourseFromJSONTyped(json: any, ignoreDiscriminator: boolean): Co
         'name': !exists(json, 'name') ? undefined : json['name'],
         'subject': !exists(json, 'subject') ? undefined : json['subject'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'joinUUID': !exists(json, 'joinUUID') ? undefined : json['joinUUID'],
         'password': !exists(json, 'password') ? undefined : json['password'],
         'creationTime': !exists(json, 'creationTime') ? undefined : (new Date(json['creationTime'])),
         'activities': !exists(json, 'activities') ? undefined : ((json['activities'] as Array<any>).map(ActivityFromJSON)),
@@ -129,6 +136,7 @@ export function CourseToJSON(value?: Course | null): any {
         'name': value.name,
         'subject': value.subject,
         'description': value.description,
+        'joinUUID': value.joinUUID,
         'password': value.password,
         'creationTime': value.creationTime === undefined ? undefined : (value.creationTime.toISOString()),
         'activities': value.activities === undefined ? undefined : ((value.activities as Array<any>).map(ActivityToJSON)),
