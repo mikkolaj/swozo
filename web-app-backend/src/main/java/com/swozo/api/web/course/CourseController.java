@@ -2,8 +2,10 @@ package com.swozo.api.web.course;
 
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
+import com.swozo.api.web.course.dto.CoursePublicDto;
 import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
+import com.swozo.api.web.course.request.JoinCourseRequest;
 import com.swozo.persistence.Activity;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.User;
@@ -47,6 +49,18 @@ public class CourseController {
     public CourseDetailsDto getCourse(AccessToken token, @PathVariable Long id) {
         logger.info("course info getter for id: {}", id);
         return courseService.getCourseDetails(id, token.getUserId());
+    }
+
+    @GetMapping("/summary/{uuid}")
+    @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
+    public CoursePublicDto getPublicCourseData(AccessToken token, @PathVariable String uuid) {
+        return courseService.getPublicCourseData(uuid);
+    }
+
+    @PatchMapping("/join")
+    @PreAuthorize("hasAnyRole('STUDENT')")
+    public CourseDetailsDto joinCourse(AccessToken token, @RequestBody JoinCourseRequest joinCourseRequest) {
+        return courseService.joinCourse(joinCourseRequest, token.getUserId());
     }
 
     @PostMapping()

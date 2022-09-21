@@ -176,6 +176,26 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AuthDetailsDto'
+  /courses/join:
+    patch:
+      tags:
+      - course-controller
+      operationId: joinCourse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinCourseRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
   /users/me:
     get:
       tags:
@@ -248,6 +268,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Activity'
+      security:
+      - JWT_AUTH: []
+  /courses/summary/{uuid}:
+    get:
+      tags:
+      - course-controller
+      operationId: getPublicCourseData
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CoursePublicDto'
       security:
       - JWT_AUTH: []
 components:
@@ -659,6 +699,28 @@ components:
             - TEACHER
             - TECHNICAL_TEACHER
             - ADMIN
+    JoinCourseRequest:
+      required:
+      - joinUUID
+      type: object
+      properties:
+        joinUUID:
+          type: string
+        password:
+          type: string
+    CoursePublicDto:
+      required:
+      - isPasswordProtected
+      - joinUUID
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        isPasswordProtected:
+          type: boolean
+        joinUUID:
+          type: string
   securitySchemes:
     JWT_AUTH:
       type: http

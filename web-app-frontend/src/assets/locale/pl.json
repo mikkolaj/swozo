@@ -34,7 +34,7 @@
                 "button": "Uczestnicy",
                 "teacher": "Prowadzący",
                 "coursePassword": "Hasło do kursu: {{password}}",
-                "joinUrl": "Link do kursu:",
+                "joinUrl": "Link do kursu: ",
                 "copied": "Link został skopiowany!",
                 "editMode": "Edytuj listę",
                 "addStudent": {
@@ -60,6 +60,18 @@
                 "info": "Linki dla: {{courseName}} - {{activityName}}",
                 "connectionInstruction": "Instrukcja podłączenia",
                 "closeButton": "Zamknij"
+            }
+        },
+        "join": {
+            "joinCourseInfo": "Dołącz do kursu",
+            "password": "Hasło:",
+            "joinButton": "Dołącz do kursu",
+            "cancel": "Wróć na stronę główną",
+            "joinedMessage": "Dołączono do kursu!",
+            "error": {
+                "invalidJoinUrl": "Kurs nie istnieje, upewnij się że wpisałeś poprawny link",
+                "alreadyParticipated": "Już dołączyłeś do kursu: {{name}}",
+                "goToCourse": "Przejdz do strony kursu"
             }
         },
         "error": {

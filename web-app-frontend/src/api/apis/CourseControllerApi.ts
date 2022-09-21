@@ -27,9 +27,15 @@ import {
     CourseDetailsDto,
     CourseDetailsDtoFromJSON,
     CourseDetailsDtoToJSON,
+    CoursePublicDto,
+    CoursePublicDtoFromJSON,
+    CoursePublicDtoToJSON,
     CreateCourseRequest,
     CreateCourseRequestFromJSON,
     CreateCourseRequestToJSON,
+    JoinCourseRequest,
+    JoinCourseRequestFromJSON,
+    JoinCourseRequestToJSON,
     User,
     UserFromJSON,
     UserToJSON,
@@ -59,6 +65,14 @@ export interface GetCourseRequest {
 
 export interface GetCourseActivityListRequest {
     id: number;
+}
+
+export interface GetPublicCourseDataRequest {
+    uuid: string;
+}
+
+export interface JoinCourseOperationRequest {
+    joinCourseRequest: JoinCourseRequest;
 }
 
 export interface RemoveStudentFromCourseRequest {
@@ -305,6 +319,42 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
+    async getPublicCourseDataRaw(requestParameters: GetPublicCourseDataRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CoursePublicDto>> {
+        if (requestParameters.uuid === null || requestParameters.uuid === undefined) {
+            throw new runtime.RequiredError('uuid','Required parameter requestParameters.uuid was null or undefined when calling getPublicCourseData.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/courses/summary/{uuid}`.replace(`{${"uuid"}}`, encodeURIComponent(String(requestParameters.uuid))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoursePublicDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getPublicCourseData(requestParameters: GetPublicCourseDataRequest, initOverrides?: RequestInit): Promise<CoursePublicDto> {
+        const response = await this.getPublicCourseDataRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async getUserCoursesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<CourseDetailsDto>>> {
         const queryParameters: any = {};
 
@@ -332,6 +382,45 @@ export class CourseControllerApi extends runtime.BaseAPI {
      */
     async getUserCourses(initOverrides?: RequestInit): Promise<Array<CourseDetailsDto>> {
         const response = await this.getUserCoursesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async joinCourseRaw(requestParameters: JoinCourseOperationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsDto>> {
+        if (requestParameters.joinCourseRequest === null || requestParameters.joinCourseRequest === undefined) {
+            throw new runtime.RequiredError('joinCourseRequest','Required parameter requestParameters.joinCourseRequest was null or undefined when calling joinCourse.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/courses/join`,
+            method: 'PATCH',
+            headers: headerParameters,
+            query: queryParameters,
+            body: JoinCourseRequestToJSON(requestParameters.joinCourseRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async joinCourse(requestParameters: JoinCourseOperationRequest, initOverrides?: RequestInit): Promise<CourseDetailsDto> {
+        const response = await this.joinCourseRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

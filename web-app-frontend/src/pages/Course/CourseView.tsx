@@ -41,7 +41,7 @@ const tabs: Record<Tab, TabConfig> = {
 export const CourseView = () => {
     const [courseId] = useRequiredParams(['courseId']);
     const { t } = useTranslation();
-    const [tab, setTab] = useState<TabConfig>(tabs['participants']);
+    const [tab, setTab] = useState<TabConfig>(tabs['activities']);
 
     const { data: course, isError } = useQuery(['courses', courseId], () =>
         getApis().courseApi.getCourse({ id: +courseId })

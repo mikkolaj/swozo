@@ -32,7 +32,7 @@ export const PageContainerWithError = ({
                     <SentimentVeryDissatisfiedOutlinedIcon sx={{ width: 150, height: 150 }} />
                 </Box>
                 {customErrorContent ?? (
-                    <Grid container sx={{ margin: 'auto', width: '80%' }}>
+                    <Grid container sx={{ margin: 'auto', maxWidth: '80%' }}>
                         <Grid item xs={12}>
                             <Typography variant="h3">{errorMessage ?? t('error.defaultMessage')}</Typography>
                         </Grid>

@@ -47,10 +47,10 @@ public class Course extends BaseEntity {
     }
 
     public void addStudent(User student) {
-        students.add(new UserCourseData(student, this));
+        students.add(new UserCourseData(student,  this));
     }
 
     public void deleteStudent(User student) {
-        students.remove(new UserCourseData(student, this));
+        students.remove(new UserCourseData(student,  this));
     }
 }

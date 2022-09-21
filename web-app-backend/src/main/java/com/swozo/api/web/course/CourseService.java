@@ -4,8 +4,10 @@ import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
+import com.swozo.api.web.course.dto.CoursePublicDto;
 import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
+import com.swozo.api.web.course.request.JoinCourseRequest;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.api.web.user.UserService;
 import com.swozo.mapper.CourseMapper;
@@ -30,7 +32,6 @@ import java.util.function.Function;
 public class CourseService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final CourseMapper courseMapper;
     private final ScheduleService scheduleService;
     private final ActivityModuleService activityModuleService;
@@ -56,6 +57,12 @@ public class CourseService {
                 .provideLinksForActivityModules(course.getActivities().stream().flatMap(x -> x.getModules().stream()).toList());
 
         return courseMapper.toDto(course, getCoursePasswordIfAllowed(course, userId));
+    }
+
+    public CoursePublicDto getPublicCourseData(String joinUUID) {
+       return courseRepository.getByJoinUUID(joinUUID)
+               .map(courseMapper::toDto)
+               .orElseThrow(); // TODO proper error
     }
 
     @Transactional
@@ -91,6 +98,20 @@ public class CourseService {
     public Collection<Activity> courseActivityList(Long id) {
         Course course = courseRepository.getById(id);
         return course.getActivities();
+    }
+
+    public CourseDetailsDto joinCourse(JoinCourseRequest joinCourseRequest, Long userId) {
+        // TODO validate stuff, error handling
+        var course = courseRepository.getByJoinUUID(joinCourseRequest.joinUUID()).orElseThrow();
+        var student = userRepository.findById(userId).orElseThrow();
+
+        if (!Objects.equals(joinCourseRequest.password(), course.getPassword())) {
+            throw new RuntimeException("invalid password"); // TODO
+        }
+
+        course.addStudent(student);
+        courseRepository.save(course);
+        return courseMapper.toDto(course, null);
     }
 
     public CourseDetailsDto addStudent(Long courseId, AddStudentRequest addStudentRequest) {

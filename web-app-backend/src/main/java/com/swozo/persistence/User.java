@@ -35,4 +35,3 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
     private Collection<Role> roles = new LinkedList<>();
 }
-

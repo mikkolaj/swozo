@@ -1,6 +1,7 @@
 package com.swozo.mapper;
 
 import com.swozo.api.web.course.dto.CourseDetailsDto;
+import com.swozo.api.web.course.dto.CoursePublicDto;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.persistence.Course;
 import org.mapstruct.Mapper;
@@ -21,8 +22,11 @@ public abstract class CourseMapper {
 
     @Mapping(target = "lastActivityTime", source = "course.creationTime")
     @Mapping(target = "teacher", expression = "java(userMapper.toDto(course.getTeacher()))")
-    @Mapping(target = "students", expression = "java(course.getStudents().stream().map(userMapper::toDto).toList())")
+    @Mapping(target = "students", expression = "java(course.getStudents().stream().map(user -> userMapper.toDto(user)).toList())")
     @Mapping(target = "activities", expression = "java(course.getActivities().stream().map(activityMapper::toDto).toList())")
     @Mapping(target = "coursePassword", source = "password")
     public abstract CourseDetailsDto toDto(Course course, String password);
+
+    @Mapping(target = "isPasswordProtected", expression= "java(course.getPassword() != null)")
+    public abstract CoursePublicDto toDto(Course course);
 }

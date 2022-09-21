@@ -5,11 +5,11 @@ import { CourseDetailsDto } from 'api';
 import { PasswordLikeText } from 'common/Styled/PasswordLikeText';
 import { stylesColumn, stylesRowCenteredVertical } from 'common/styles';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { TEACHER, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatName } from 'utils/util';
+
 type Props = {
     course: CourseDetailsDto;
 };
@@ -19,7 +19,6 @@ const HIDDEN_PASSWORD_PLACEHOLDER = '*****';
 export const TeacherSection = ({ course }: Props) => {
     const { t } = useTranslation();
     const joinCourseUrl = PageRoutes.withOrigin(PageRoutes.JoinCourse(course.joinUUID));
-    console.log(joinCourseUrl);
 
     return (
         <Box sx={{ ml: 3, mb: 2 }}>
@@ -36,10 +35,10 @@ export const TeacherSection = ({ course }: Props) => {
             <Box sx={{ ...stylesColumn, mt: 2 }}>
                 <Box sx={stylesRowCenteredVertical}>
                     <Typography>
-                        {t('course.options.participants.joinUrl')}{' '}
-                        <Link style={{ textDecoration: 'none', color: blue[800] }} to={joinCourseUrl}>
+                        {t('course.options.participants.joinUrl')}
+                        <a style={{ textDecoration: 'none', color: blue[800] }} href={joinCourseUrl}>
                             {joinCourseUrl}
-                        </Link>
+                        </a>
                     </Typography>
                     <IconButton
                         color="primary"
