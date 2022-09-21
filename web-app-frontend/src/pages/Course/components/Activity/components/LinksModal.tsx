@@ -31,7 +31,7 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
     const course = useContext(CourseContext);
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open} onClose={onClose} sx={{ width: '50%', margin: 'auto' }}>
             <AbsolutelyCentered>
                 <Card
                     sx={{
@@ -42,7 +42,6 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                 >
                     <CardContent
                         sx={{
-                            minWidth: '1000px',
                             minHeight: '500px',
                             maxHeight: '80vh',
                             p: 0,

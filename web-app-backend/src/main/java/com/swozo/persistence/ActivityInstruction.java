@@ -13,5 +13,5 @@ import javax.persistence.Table;
 @Setter
 @ToString
 public class ActivityInstruction extends BaseEntity {
-    private String data;
+    private String sanitizedHtmlData;
 }

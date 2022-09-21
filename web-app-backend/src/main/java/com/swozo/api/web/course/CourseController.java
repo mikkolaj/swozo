@@ -1,5 +1,6 @@
 package com.swozo.api.web.course;
 
+import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CoursePublicDto;
@@ -10,7 +11,6 @@ import com.swozo.persistence.Activity;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.User;
 import com.swozo.security.AccessToken;
-import com.swozo.security.util.AuthUtils;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,6 +29,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 public class CourseController {
     private final Logger logger = LoggerFactory.getLogger(CourseController.class);
     private final CourseService courseService;
+    private final AuthService authService;
 
     @GetMapping("/all-system-courses")
     @PreAuthorize("hasRole('ADMIN')")
@@ -41,7 +42,7 @@ public class CourseController {
     public Collection<CourseDetailsDto> getUserCourses(AccessToken token) {
         var userId = token.getUserId();
         logger.info("course list for user with id: {}", userId);
-        return courseService.getUserCourses(userId, AuthUtils.getOneOf(token, RoleDto.TEACHER, RoleDto.STUDENT));
+        return courseService.getUserCourses(userId, authService.oneOf(token, RoleDto.TEACHER, RoleDto.STUDENT));
     }
 
     @GetMapping("/{id}")

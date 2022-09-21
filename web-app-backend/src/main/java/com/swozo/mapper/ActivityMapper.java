@@ -17,10 +17,8 @@ public abstract class ActivityMapper {
     @Autowired
     protected ActivityModuleMapper activityModuleMapper;
 
-    @Mapping(target = "data", source = "sanitizedHtmlData")
     public abstract ActivityInstruction toPersistence(ActivityInstructionDto activityInstructionDto);
 
-    @Mapping(target = "sanitizedHtmlData", source = "data")
     public abstract ActivityInstructionDto toDto(ActivityInstruction activityInstruction);
 
     @Mapping(target = "modules", expression = "java(moduleRepository.findAllById(createActivityRequest.selectedModulesIds()).stream().map(activityModuleMapper::fromServiceModule).toList())")
