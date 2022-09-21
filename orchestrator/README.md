@@ -19,15 +19,13 @@ Requirements:
 
 Inside example-requests directory you'll find Postman collection you can use to test the app.
 
-## Running in Docker
-Running Orchestrator as a Docker container requires 2 phases:
-1. Building the image - run ```docker build -t swozo/orchestrator .```
-2. Running the image - you need to specify 3 environment variables, and mount one directory containing two configuration
-   files mentioned above. Example command will look like this:
-```
-docker run 
--e GCP_PROJECT=someProject
--e GCP_ZONE=someZone
--e GCP_SSH_USER=someUser
+## Running in Docker (Dev Mode)
+Running Orchestrator as a Docker container in dev mode requires 4 steps:
+1. Executing build task in Gradle
+2. Building the image - run ```docker build -t swozo/orchestrator -f Dockerfile-dev .``` in Orchestrator's top directory
+3. Placing two configuration files mentioned above in the auth directory
+4. Running docker compose - you need to specify 3 environment variables inside docker-compose-dev.yml file. 
+   Compose command: ```docker compose -f docker-compose-dev.yml up```
 
-```
+After initial setup no further image building is required. After each change in code rerun the build task and restart
+compose deployment.

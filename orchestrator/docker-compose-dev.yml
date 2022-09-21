@@ -11,14 +11,14 @@ services:
       GCP_SSH_USER: <placeholder>
     volumes:
       - type: bind
-        source: src/main/resources/provisioning/administration
-        target: provisioning/administration
+        source: ./src/main/resources/provisioning/administration
+        target: /provisioning/administration
       - type: bind
-        source: src/main/resources/provisioning/software
-        target: provisioning/software
+        source: ./src/main/resources/provisioning/software
+        target: /provisioning/software
       - type: bind
-        source: auth
-        target: auth
+        source: ./auth
+        target: /auth
       - type: bind
-        source: ./build/libs/\*.jar
-        target: app.jar
+        source: ./build/libs/orchestrator.jar
+        target: /app/orchestrator.jar

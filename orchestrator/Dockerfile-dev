@@ -1,7 +1,7 @@
-FROM openjdk:8-jdk-alpine
+FROM eclipse-temurin:18.0.2.1_1-jre
 
-ENV GCP_SSH_KEY_PATH auth/orchestrator_id_rsa
-ENV GOOGLE_APPLICATION_CREDENTIALS auth/orchestrator-key.json
-ENV JUPYTER_PLAYBOOK_PATH=playbook/software/jupyter/prepare-and-run-jupyter.yml
+ENV GCP_SSH_KEY_PATH /auth/orchestrator_id_rsa
+ENV GOOGLE_APPLICATION_CREDENTIALS /auth/orchestrator-key.json
+ENV JUPYTER_PLAYBOOK_PATH=/provisioning/software/jupyter/prepare-and-run-jupyter.yml
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","--enable-preview","-jar","/app/orchestrator.jar"]

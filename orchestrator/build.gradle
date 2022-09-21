@@ -50,3 +50,7 @@ tasks.named('test') {
 jar {
     enabled = false
 }
+
+bootJar {
+    archiveFileName = 'orchestrator.jar'
+}
