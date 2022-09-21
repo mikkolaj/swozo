@@ -18,3 +18,16 @@ Requirements:
 5. properties ending with "playbook-path" must contain paths to playbooks responsible for installing required components
 
 Inside example-requests directory you'll find Postman collection you can use to test the app.
+
+## Running in Docker
+Running Orchestrator as a Docker container requires 2 phases:
+1. Building the image - run ```docker build -t swozo/orchestrator .```
+2. Running the image - you need to specify 3 environment variables, and mount one directory containing two configuration
+   files mentioned above. Example command will look like this:
+```
+docker run 
+-e GCP_PROJECT=someProject
+-e GCP_ZONE=someZone
+-e GCP_SSH_USER=someUser
+
+```
