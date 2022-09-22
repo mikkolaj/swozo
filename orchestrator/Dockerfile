@@ -1,4 +1,12 @@
 FROM eclipse-temurin:18.0.2.1_1-jre
+
+RUN ["apt","update"]
+RUN ["apt","install","sshpass","-y"]
+RUN ["apt","install","python3","-y"]
+RUN ["curl","https://bootstrap.pypa.io/get-pip.py","-o","get-pip.py"]
+RUN ["python3","get-pip.py","--user"]
+RUN ["python3","-m","pip","install","--user","ansible"]
+
 ARG JAR_FILE=build/libs/\*.jar
 
 ENV GCP_SSH_KEY_PATH /auth/orchestrator_id_rsa
