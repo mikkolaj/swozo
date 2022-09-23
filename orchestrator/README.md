@@ -22,7 +22,7 @@ Inside example-requests directory you'll find Postman collection you can use to 
 ## Running in Docker (Dev Mode)
 Running Orchestrator as a Docker container in dev mode requires 4 steps:
 1. Executing build task in Gradle
-2. Building the image - run ```docker build -t swozo/orchestrator -f Dockerfile-dev .``` in Orchestrator's top directory
+2. Building the image - run ```docker build -t swozo/orchestrator:dev -f Dockerfile-dev .``` in Orchestrator's top directory
 3. Placing two configuration files mentioned above in the auth directory
 4. Running docker compose - you need to specify 3 environment variables inside docker-compose-dev.yml file. 
    Compose command: ```docker compose -f docker-compose-dev.yml up```

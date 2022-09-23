@@ -3,7 +3,7 @@ version: '3.7'
 services:
   swozo-orchestrator:
     container_name: swozo-orchestrator
-    image: swozo/orchestrator:latest
+    image: swozo/orchestrator:dev
     ports:
       - "8080:8080"
     environment:
