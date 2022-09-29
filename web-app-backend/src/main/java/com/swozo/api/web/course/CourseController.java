@@ -3,7 +3,7 @@ package com.swozo.api.web.course;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
-import com.swozo.api.web.course.dto.CoursePublicDto;
+import com.swozo.api.web.course.dto.CourseSummaryDto;
 import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.api.web.course.request.JoinCourseRequest;
@@ -54,7 +54,7 @@ public class CourseController {
 
     @GetMapping("/summary/{uuid}")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
-    public CoursePublicDto getPublicCourseData(AccessToken token, @PathVariable String uuid) {
+    public CourseSummaryDto getPublicCourseData(AccessToken token, @PathVariable String uuid) {
         return courseService.getPublicCourseData(uuid);
     }
 

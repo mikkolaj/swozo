@@ -11,7 +11,7 @@ export * from './AddStudentRequest';
 export * from './AuthDetailsDto';
 export * from './Course';
 export * from './CourseDetailsDto';
-export * from './CoursePublicDto';
+export * from './CourseSummaryDto';
 export * from './CreateActivityRequest';
 export * from './CreateCourseRequest';
 export * from './JoinCourseRequest';

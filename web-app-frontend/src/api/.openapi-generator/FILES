@@ -15,7 +15,7 @@ models/AddStudentRequest.ts
 models/AuthDetailsDto.ts
 models/Course.ts
 models/CourseDetailsDto.ts
-models/CoursePublicDto.ts
+models/CourseSummaryDto.ts
 models/CreateActivityRequest.ts
 models/CreateCourseRequest.ts
 models/JoinCourseRequest.ts

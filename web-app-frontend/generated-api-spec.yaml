@@ -287,7 +287,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/CoursePublicDto'
+                $ref: '#/components/schemas/CourseSummaryDto'
       security:
       - JWT_AUTH: []
 components:
@@ -595,9 +595,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ActivityDetailsDto'
-        coursePassword:
-          type: string
         joinUUID:
+          type: string
+        coursePassword:
           type: string
     ParticipantDetailsDto:
       required:
@@ -616,11 +616,11 @@ components:
       - serviceName
       type: object
       properties:
-        url:
-          type: string
         serviceName:
           type: string
         connectionInstruction:
+          type: string
+        url:
           type: string
         connectionInfo:
           type: string
@@ -708,7 +708,7 @@ components:
           type: string
         password:
           type: string
-    CoursePublicDto:
+    CourseSummaryDto:
       required:
       - isPasswordProtected
       - joinUUID

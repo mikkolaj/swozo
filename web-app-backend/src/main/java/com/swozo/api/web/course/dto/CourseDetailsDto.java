@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public record CourseDetailsDto(
         @Schema(required = true) Long id,
@@ -16,7 +17,7 @@ public record CourseDetailsDto(
         @Schema(required = true) String description,
         @Schema(required = true) List<ParticipantDetailsDto> students,
         @Schema(required = true) List<ActivityDetailsDto> activities,
-        @Schema(required = false) String coursePassword,
-        @Schema(required = true) String joinUUID
+        @Schema(required = true) String joinUUID,
+        Optional<String> coursePassword
 ) {
 }

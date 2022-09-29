@@ -91,13 +91,13 @@ export interface CourseDetailsDto {
      * @type {string}
      * @memberof CourseDetailsDto
      */
-    coursePassword?: string;
+    joinUUID: string;
     /**
      * 
      * @type {string}
      * @memberof CourseDetailsDto
      */
-    joinUUID: string;
+    coursePassword?: string;
 }
 
 export function CourseDetailsDtoFromJSON(json: any): CourseDetailsDto {
@@ -118,8 +118,8 @@ export function CourseDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: bo
         'description': json['description'],
         'students': ((json['students'] as Array<any>).map(ParticipantDetailsDtoFromJSON)),
         'activities': ((json['activities'] as Array<any>).map(ActivityDetailsDtoFromJSON)),
-        'coursePassword': !exists(json, 'coursePassword') ? undefined : json['coursePassword'],
         'joinUUID': json['joinUUID'],
+        'coursePassword': !exists(json, 'coursePassword') ? undefined : json['coursePassword'],
     };
 }
 
@@ -140,8 +140,8 @@ export function CourseDetailsDtoToJSON(value?: CourseDetailsDto | null): any {
         'description': value.description,
         'students': ((value.students as Array<any>).map(ParticipantDetailsDtoToJSON)),
         'activities': ((value.activities as Array<any>).map(ActivityDetailsDtoToJSON)),
-        'coursePassword': value.coursePassword,
         'joinUUID': value.joinUUID,
+        'coursePassword': value.coursePassword,
     };
 }
 

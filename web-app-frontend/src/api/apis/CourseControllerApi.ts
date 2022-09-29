@@ -27,9 +27,9 @@ import {
     CourseDetailsDto,
     CourseDetailsDtoFromJSON,
     CourseDetailsDtoToJSON,
-    CoursePublicDto,
-    CoursePublicDtoFromJSON,
-    CoursePublicDtoToJSON,
+    CourseSummaryDto,
+    CourseSummaryDtoFromJSON,
+    CourseSummaryDtoToJSON,
     CreateCourseRequest,
     CreateCourseRequestFromJSON,
     CreateCourseRequestToJSON,
@@ -319,7 +319,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getPublicCourseDataRaw(requestParameters: GetPublicCourseDataRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CoursePublicDto>> {
+    async getPublicCourseDataRaw(requestParameters: GetPublicCourseDataRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseSummaryDto>> {
         if (requestParameters.uuid === null || requestParameters.uuid === undefined) {
             throw new runtime.RequiredError('uuid','Required parameter requestParameters.uuid was null or undefined when calling getPublicCourseData.');
         }
@@ -343,12 +343,12 @@ export class CourseControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CoursePublicDtoFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CourseSummaryDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async getPublicCourseData(requestParameters: GetPublicCourseDataRequest, initOverrides?: RequestInit): Promise<CoursePublicDto> {
+    async getPublicCourseData(requestParameters: GetPublicCourseDataRequest, initOverrides?: RequestInit): Promise<CourseSummaryDto> {
         const response = await this.getPublicCourseDataRaw(requestParameters, initOverrides);
         return await response.value();
     }

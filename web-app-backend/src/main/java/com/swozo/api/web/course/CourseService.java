@@ -4,7 +4,7 @@ import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
-import com.swozo.api.web.course.dto.CoursePublicDto;
+import com.swozo.api.web.course.dto.CourseSummaryDto;
 import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.api.web.course.request.JoinCourseRequest;
@@ -50,7 +50,7 @@ public class CourseService {
         return courseMapper.toDto(course, getCoursePasswordIfAllowed(course, userId));
     }
 
-    public CoursePublicDto getPublicCourseData(String joinUUID) {
+    public CourseSummaryDto getPublicCourseData(String joinUUID) {
        return courseRepository.getByJoinUUID(joinUUID)
                .map(courseMapper::toDto)
                .orElseThrow(); // TODO proper error
@@ -95,13 +95,13 @@ public class CourseService {
         var course = courseRepository.getByJoinUUID(joinCourseRequest.joinUUID()).orElseThrow();
         var student = userRepository.findById(userId).orElseThrow();
 
-        if (!Objects.equals(joinCourseRequest.password(), course.getPassword())) {
+        if (!Objects.equals(joinCourseRequest.password().orElse(null), course.getPassword())) {
             throw new RuntimeException("invalid password"); // TODO
         }
 
         course.addStudent(student);
         courseRepository.save(course);
-        return courseMapper.toDto(course, null);
+        return courseMapper.toDto(course, Optional.empty());
     }
 
     public CourseDetailsDto addStudent(Long courseId, AddStudentRequest addStudentRequest) {
@@ -118,7 +118,7 @@ public class CourseService {
         var student = userRepository.getByEmail(studentEmail);
         modifier.accept(student, course);
         courseRepository.save(course);
-        return courseMapper.toDto(course, course.getPassword());
+        return courseMapper.toDto(course, Optional.of(course.getPassword()));
 
     }
 
@@ -126,7 +126,7 @@ public class CourseService {
         return Objects.equals(course.getTeacher().getId(), userId);
     }
 
-    private String getCoursePasswordIfAllowed(Course course, Long userId) {
-        return isCreator(course, userId) ? course.getPassword() : null;
+    private Optional<String> getCoursePasswordIfAllowed(Course course, Long userId) {
+        return isCreator(course, userId) ? Optional.ofNullable(course.getPassword()) : Optional.empty();
     }
 }
