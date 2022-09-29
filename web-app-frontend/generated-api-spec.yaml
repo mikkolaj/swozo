@@ -294,10 +294,10 @@ components:
   schemas:
     ActivityInstructionDto:
       required:
-      - sanitizedHtmlData
+      - untrustedPossiblyDangerousHtml
       type: object
       properties:
-        sanitizedHtmlData:
+        untrustedPossiblyDangerousHtml:
           type: string
     CreateActivityRequest:
       required:
@@ -385,7 +385,7 @@ components:
         id:
           type: integer
           format: int64
-        data:
+        untrustedPossiblyDangerousHtml:
           type: string
     ActivityLink:
       type: object

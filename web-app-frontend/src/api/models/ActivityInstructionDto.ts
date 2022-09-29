@@ -24,7 +24,7 @@ export interface ActivityInstructionDto {
      * @type {string}
      * @memberof ActivityInstructionDto
      */
-    sanitizedHtmlData: string;
+    untrustedPossiblyDangerousHtml: string;
 }
 
 export function ActivityInstructionDtoFromJSON(json: any): ActivityInstructionDto {
@@ -37,7 +37,7 @@ export function ActivityInstructionDtoFromJSONTyped(json: any, ignoreDiscriminat
     }
     return {
         
-        'sanitizedHtmlData': json['sanitizedHtmlData'],
+        'untrustedPossiblyDangerousHtml': json['untrustedPossiblyDangerousHtml'],
     };
 }
 
@@ -50,7 +50,7 @@ export function ActivityInstructionDtoToJSON(value?: ActivityInstructionDto | nu
     }
     return {
         
-        'sanitizedHtmlData': value.sanitizedHtmlData,
+        'untrustedPossiblyDangerousHtml': value.untrustedPossiblyDangerousHtml,
     };
 }
 

@@ -9,23 +9,14 @@ import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.api.web.course.request.JoinCourseRequest;
 import com.swozo.api.web.user.UserRepository;
-import com.swozo.api.web.user.UserService;
 import com.swozo.mapper.CourseMapper;
-import com.swozo.persistence.Activity;
-import com.swozo.persistence.Course;
-import com.swozo.persistence.User;
-import com.swozo.persistence.UserCourseData;
-import com.swozo.security.AccessToken;
+import com.swozo.persistence.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +60,6 @@ public class CourseService {
     public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId) {
         var course = courseMapper.toPersistence(createCourseRequest, teacherId);
         course.setJoinUUID(UUID.randomUUID().toString());
-
         course.getActivities().forEach(activity -> {
             activity.setCourse(course);
             activity.getModules().forEach(activityModule -> activityModule.setActivity(activity));

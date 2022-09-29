@@ -12,6 +12,7 @@
         "@mui/x-date-pickers": "^5.0.0-alpha.6",
         "@reduxjs/toolkit": "^1.8.1",
         "dayjs": "^1.11.3",
+        "dompurify": "^2.4.0",
         "formik": "^2.2.9",
         "i18next": "^21.8.5",
         "lodash": "^4.17.21",
@@ -48,6 +49,7 @@
     },
     "devDependencies": {
         "@openapitools/openapi-generator-cli": "^2.5.1",
+        "@types/dompurify": "^2.3.4",
         "@types/node": "^16.7.13",
         "@types/react": "^18.0.0",
         "@types/react-dom": "^18.0.0",

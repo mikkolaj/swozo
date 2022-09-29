@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.swozo.security.util.AuthUtils.GRANTED_AUTHORITY_PREFIX;
+import static com.swozo.security.util.AuthUtils.getUsersAuthorities;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final TokenService tokenService;
     private final UserRepository userRepository;
-    private final RoleHierarchy roleHierarchy;
+    private final Optional<RoleHierarchy> roleHierarchy;
 
     public AuthDetailsDto authenticateUser(LoginRequest loginRequest) {
         // TODO check passwd etc
@@ -41,7 +42,7 @@ public class AuthService {
     }
 
     public boolean hasRole(User user, RoleDto role) {
-        return user.getRoles().stream().anyMatch(userRole -> Objects.equals(RoleDto.from(userRole), role));
+        return getUserRoles(getUsersAuthorities(user)).contains(role);
     }
 
     /**
@@ -76,6 +77,6 @@ public class AuthService {
     }
 
     private Set<? extends GrantedAuthority> withUnwrappedRoleHierarchy(Collection<? extends GrantedAuthority> authorities) {
-        return new HashSet<>(roleHierarchy != null ? roleHierarchy.getReachableGrantedAuthorities(authorities) : authorities);
+        return new HashSet<>(roleHierarchy.isPresent() ? roleHierarchy.get().getReachableGrantedAuthorities(authorities) : authorities);
     }
 }

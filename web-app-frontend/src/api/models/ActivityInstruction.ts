@@ -30,7 +30,7 @@ export interface ActivityInstruction {
      * @type {string}
      * @memberof ActivityInstruction
      */
-    data?: string;
+    untrustedPossiblyDangerousHtml?: string;
 }
 
 export function ActivityInstructionFromJSON(json: any): ActivityInstruction {
@@ -44,7 +44,7 @@ export function ActivityInstructionFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'data': !exists(json, 'data') ? undefined : json['data'],
+        'untrustedPossiblyDangerousHtml': !exists(json, 'untrustedPossiblyDangerousHtml') ? undefined : json['untrustedPossiblyDangerousHtml'],
     };
 }
 
@@ -58,7 +58,7 @@ export function ActivityInstructionToJSON(value?: ActivityInstruction | null): a
     return {
         
         'id': value.id,
-        'data': value.data,
+        'untrustedPossiblyDangerousHtml': value.untrustedPossiblyDangerousHtml,
     };
 }
 

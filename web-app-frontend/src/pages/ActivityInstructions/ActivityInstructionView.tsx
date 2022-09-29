@@ -86,7 +86,7 @@ export const ActivityInstructionsView = () => {
             <Grid container sx={{ p: 2 }}>
                 {currentTab === 0 && (
                     <Grid item xs={12}>
-                        {activity.instructionsFromTeacher.map(({ sanitizedHtmlData }, idx) => (
+                        {activity.instructionsFromTeacher.map(({ untrustedPossiblyDangerousHtml }, idx) => (
                             <Paper
                                 key={idx}
                                 sx={{
@@ -95,7 +95,9 @@ export const ActivityInstructionsView = () => {
                                     p: 2,
                                 }}
                             >
-                                <RichTextViewer sanitizedHtmlData={sanitizedHtmlData} />
+                                <RichTextViewer
+                                    untrustedPossiblyDangerousHtml={untrustedPossiblyDangerousHtml}
+                                />
                             </Paper>
                         ))}
                     </Grid>
