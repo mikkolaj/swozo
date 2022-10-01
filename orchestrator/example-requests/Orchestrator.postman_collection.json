@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"@type\" : \"ScheduleJupyter\",\n  \"serviceLifespan\" : {\n    \"startTime\" : \"2022-06-14T21:44:47.4281697\",\n    \"endTime\" : \"2022-06-14T21:44:47.4291679\"\n  },\n  \"psm\" : {\n    \"machineType\" : \"e2-medium\",\n    \"discSizeGB\" : 10\n  },\n  \"activityModuleID\" : 2,\n  \"scheduleType\" : \"JUPYTER\",\n  \"notebookLocation\" : \"aaa\"\n}",
+					"raw": "{\n  \"@type\" : \"ScheduleJupyter\",\n  \"serviceLifespan\" : {\n    \"startTime\" : \"2022-06-14T21:44:47.4281697\",\n    \"endTime\" : \"2022-06-14T21:44:47.4291679\"\n  },\n  \"psm\" : {\n    \"machineType\" : \"e2-medium\",\n    \"diskSizeGb\" : 10\n  },\n  \"activityModuleID\" : 2,\n  \"scheduleType\" : \"JUPYTER\",\n  \"notebookLocation\" : \"aaa\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

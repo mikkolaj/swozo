@@ -18,8 +18,8 @@ public class LinkController {
         this.service = service;
     }
 
-    @GetMapping("/{activityModuleId}")
-    public OrchestratorLinkResponse getLinks(@PathVariable Long activityModuleId) {
-        return new OrchestratorLinkResponse(activityModuleId, service.getLinks(activityModuleId));
+    @GetMapping("/{scheduleRequestId}")
+    public OrchestratorLinkResponse getLinks(@PathVariable Long scheduleRequestId) {
+        return new OrchestratorLinkResponse(scheduleRequestId, service.getLinks(scheduleRequestId));
     }
 }

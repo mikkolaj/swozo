@@ -1,7 +1,8 @@
-package com.swozo.orchestrator.api.scheduling;
+package com.swozo.orchestrator.api.scheduling.boundary;
 
 import com.swozo.config.Config;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.orchestrator.api.scheduling.control.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +20,8 @@ public class ScheduleController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @PostMapping
-    public void schedule(@RequestBody ScheduleRequest request) {
+    public long schedule(@RequestBody ScheduleRequest request) {
         logger.info("Serving request: {}", request);
-        service.schedule(request);
+        return service.schedule(request);
     }
 }

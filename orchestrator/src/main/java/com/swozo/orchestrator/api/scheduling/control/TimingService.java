@@ -1,4 +1,4 @@
-package com.swozo.orchestrator.api.scheduling;
+package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.scheduling.ScheduleRequest;
 import org.springframework.stereotype.Service;

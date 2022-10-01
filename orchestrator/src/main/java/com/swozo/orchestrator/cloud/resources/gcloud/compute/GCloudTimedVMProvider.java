@@ -87,6 +87,6 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     }
 
     private VMSpecs getVMSpecs(Psm psm) {
-        return new VMSpecs(psm.machineType(), gCloudProperties.computeImageFamily(), psm.discSizeGB());
+        return new VMSpecs(psm.machineType(), gCloudProperties.computeImageFamily(), psm.diskSizeGb());
     }
 }

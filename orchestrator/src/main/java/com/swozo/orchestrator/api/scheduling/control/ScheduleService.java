@@ -1,4 +1,4 @@
-package com.swozo.orchestrator.api.scheduling;
+package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.function.ThrowingFunction;
 import com.swozo.model.links.ActivityLinkInfo;
@@ -33,14 +33,15 @@ public class ScheduleService {
     private final TimingService timingService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public void schedule(ScheduleRequest request) {
-        scheduleRequestTracker.persist(request);
+    public long schedule(ScheduleRequest request) {
+        var requestId = scheduleRequestTracker.persist(request);
         switch (request) {
             case JupyterScheduleRequest jupyterRequest -> scheduler.schedule(
                     () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision),
                     timingService.getSchedulingOffset(request, jupyterProvisioner.getProvisioningSeconds()));
             default -> throw new IllegalStateException("Unexpected value: " + request);
         }
+        return requestId;
     }
 
     private Void scheduleCreationAndDeletion(
@@ -69,7 +70,7 @@ public class ScheduleService {
         return resourceDetails -> {
             try {
                 var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
-                scheduleRequestTracker.saveLinks(scheduleRequest.getActivityModuleID(), links);
+                scheduleRequestTracker.saveLinks(links, scheduleRequest.getActivityModuleID());
                 scheduler.schedule(
                         () -> deleteInstance(scheduleRequest, resourceDetails),
                         timingService.getDeletionOffset(scheduleRequest, CLEANUP_SECONDS));
