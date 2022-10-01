@@ -1,9 +1,15 @@
 import { CreateActivityRequest, CreateCourseRequest, ServiceModuleDetailsDto } from 'api';
+import { SlideValues2 } from 'common/SlideForm/util';
 import dayjs, { Dayjs } from 'dayjs';
 import _ from 'lodash';
 import { withDate } from 'utils/util';
 
 export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 90;
+
+export type FormValues = SlideValues2<CourseValues, ActivitesFormValues>;
+
+export const COURSE_SLIDE = '0';
+export const ACTIVITIES_SLIDE = '1';
 
 export type ActivityValues = {
     name: string;
@@ -23,6 +29,10 @@ export type CourseValues = {
     numberOfActivities: number;
     numberOfStudents: number;
     password?: string;
+};
+
+export type ActivitesFormValues = {
+    activities: ActivityValues[];
 };
 
 export const initialCourseValues = (): CourseValues => ({

@@ -1,33 +1,38 @@
 import { Box, Divider, Grid, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { FormikProps } from 'formik';
+import { Form, Formik, FormikProps, FormikValues } from 'formik';
 import _ from 'lodash';
-import { PropsWithChildren, Ref } from 'react';
+import { ComponentProps, Ref } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SlideProps } from './util';
 
-type Props = {
+type SlideConstuctor<T extends FormikValues> = (
+    slideProps: SlideProps,
+    formikProps: FormikProps<T>
+) => JSX.Element;
+
+type Props<T extends FormikValues> = ComponentProps<typeof Formik> & {
+    initialValues: T;
+    innerRef: Ref<FormikProps<T>>;
     titleI18n: string;
     slidesI18n: string;
     buttons: JSX.Element;
-    slideCount: number;
     currentSlide: number;
+    slideConstructors: SlideConstuctor<T>[];
 };
 
-export type SlideProps<T> = {
-    formRef: Ref<FormikProps<T>>;
-    initialValues: T;
-    setValues: (values: T) => void;
-};
-
-export const SlideForm = ({
+export function SlideForm<T extends FormikValues>({
+    initialValues,
     titleI18n,
     slidesI18n,
     buttons,
-    slideCount,
+    innerRef,
     currentSlide,
-    children,
-}: PropsWithChildren<Props>) => {
+    slideConstructors,
+    ...formikProps
+}: Props<T>) {
     const { t } = useTranslation();
+    const slideCount = slideConstructors.length;
 
     return (
         // no idea what overwrites this padding bottom, but couldnt find another way
@@ -52,11 +57,25 @@ export const SlideForm = ({
                 </>
             }
         >
-            <Box sx={{ px: 2, mb: 'auto', marginX: '5%' }}>{children}</Box>
+            <Box sx={{ px: 2, mb: 'auto', marginX: '5%' }}>
+                <Formik initialValues={initialValues} innerRef={innerRef} {...formikProps}>
+                    {(formikProps) => (
+                        <Form>
+                            {slideConstructors[currentSlide](
+                                {
+                                    nameBuilder: (name) => `${currentSlide}.${name}`,
+                                },
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                formikProps as any
+                            )}
+                        </Form>
+                    )}
+                </Formik>
+            </Box>
 
             <Divider sx={{ mt: 4 }} />
 
             <Box sx={{ p: 1, justifyContent: 'flex-end' }}>{buttons}</Box>
         </PageContainer>
     );
-};
+}

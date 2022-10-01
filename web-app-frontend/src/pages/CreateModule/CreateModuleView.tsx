@@ -9,81 +9,71 @@ import { useTranslation } from 'react-i18next';
 import { GeneralInfoForm } from './components/GeneralInfoForm';
 import { ModuleSpecsForm } from './components/ModuleSpecsForm';
 import { Summary } from './components/Summary';
-
-const SLIDE_COUNT = 3;
+import { FormValues, initialModuleValues, MODULE_INFO_SLIDE, MODULE_SPECS_SLIDE } from './util';
 
 export const CreateModuleView = () => {
     const { t } = useTranslation();
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [moduleValues, setModuleValues] = useState({
-        name: '',
-        subject: '',
-        description: '',
-        service: 'Jupyter',
-        serviceFile: '',
-        instructions: '',
-        isPublic: true,
-    });
 
-    const [moduleSpec, setModuleSpecs] = useState({
-        environment: 'isolated',
-        storage: 1,
-        cpu: 'big',
-        ram: 'big',
-    });
+    const initialValues: FormValues = {
+        [MODULE_INFO_SLIDE]: initialModuleValues(),
+        [MODULE_SPECS_SLIDE]: {
+            environment: 'isolated',
+            storage: 1,
+            cpu: 'big',
+            ram: 'big',
+        },
+    };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const formRef: Ref<FormikProps<any>> = useRef(null);
+    const formRef: Ref<FormikProps<FormValues>> = useRef(null);
 
     return (
         <SlideForm
             titleI18n="createModule.title"
             slidesI18n="createModule.slides"
-            slideCount={SLIDE_COUNT}
             currentSlide={currentSlide}
+            initialValues={initialValues}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            innerRef={formRef as any}
+            slideConstructors={[
+                (slideProps, { values, setValues, handleChange }) => (
+                    <GeneralInfoForm
+                        {...slideProps}
+                        values={values[MODULE_INFO_SLIDE]}
+                        setValues={(moduleInfoValues) => {
+                            setValues({ ...values, [MODULE_INFO_SLIDE]: moduleInfoValues });
+                        }}
+                        handleChange={handleChange}
+                    />
+                ),
+                (slideProps, _) => <ModuleSpecsForm {...slideProps} />,
+                (_) => <Summary />,
+            ]}
+            onSubmit={(values) => {
+                console.log('submit');
+                console.log(values);
+            }}
             buttons={
                 <Grid container>
                     <Grid item xs={6}>
                         <PreviousSlideButton
                             currentSlide={currentSlide}
                             label={t('createModule.buttons.back')}
-                            goBack={(toSlide) => setCurrentSlide(toSlide)}
+                            onBack={setCurrentSlide}
                         />
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <NextSlideButton
                             currentSlide={currentSlide}
-                            slideCount={SLIDE_COUNT}
+                            slideCount={3}
                             label={t('createModule.buttons.next')}
                             lastSlideLabel={t('createModule.finish')}
-                            goNext={() => formRef.current?.handleSubmit()}
-                            finish={() => console.log('TODO')}
+                            onNext={setCurrentSlide}
+                            onFinish={() => console.log('TODO')}
                         />
                     </Grid>
                 </Grid>
             }
-        >
-            {currentSlide === 0 && (
-                <GeneralInfoForm
-                    formRef={formRef}
-                    initialValues={moduleValues}
-                    setValues={(values) => {
-                        setModuleValues(values);
-                        setCurrentSlide(currentSlide + 1);
-                    }}
-                />
-            )}
-            {currentSlide === 1 && (
-                <ModuleSpecsForm
-                    formRef={formRef}
-                    initialValues={moduleSpec}
-                    setValues={(values) => {
-                        setModuleSpecs(values);
-                        setCurrentSlide(currentSlide + 1);
-                    }}
-                />
-            )}
-            {currentSlide === 2 && <Summary />}
-        </SlideForm>
+        />
     );
 };

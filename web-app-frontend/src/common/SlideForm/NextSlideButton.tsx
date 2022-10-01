@@ -1,12 +1,16 @@
 import { Button } from '@mui/material';
+import { FormikProps } from 'formik';
+import { mergeNestedKeyNames, prependNamesWithSlideNum } from './util';
 
 type Props = {
     currentSlide: number;
     slideCount: number;
     label: string;
     lastSlideLabel?: string;
-    goNext: () => void;
-    finish: () => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    slideValidator?: FormikProps<any>;
+    onNext: (toSlide: number) => void;
+    onFinish: () => void;
 };
 
 export const NextSlideButton = ({
@@ -14,18 +18,35 @@ export const NextSlideButton = ({
     slideCount,
     label,
     lastSlideLabel,
-    goNext,
-    finish,
+    slideValidator,
+    onNext,
+    onFinish,
 }: Props) => {
     const isLastSlide = currentSlide === slideCount - 1;
 
     return (
         <Button
-            onClick={() => {
+            onClick={async () => {
                 if (isLastSlide) {
-                    finish();
+                    onFinish();
                 } else {
-                    goNext();
+                    if (slideValidator) {
+                        const validationErrors = await slideValidator
+                            .validateForm()
+                            .then((errors) => errors[currentSlide]);
+
+                        if (!validationErrors) {
+                            onNext(currentSlide + 1);
+                        } else {
+                            console.log(prependNamesWithSlideNum(currentSlide, validationErrors));
+                            console.log(mergeNestedKeyNames(validationErrors));
+                            Object.keys(
+                                prependNamesWithSlideNum(currentSlide, mergeNestedKeyNames(validationErrors))
+                            ).forEach((field) => slideValidator.setFieldTouched(field));
+                        }
+                    } else {
+                        onNext(currentSlide + 1);
+                    }
                 }
             }}
         >
