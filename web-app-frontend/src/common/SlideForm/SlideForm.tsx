@@ -2,7 +2,7 @@ import { Box, Divider, Grid, Step, StepLabel, Stepper, Typography } from '@mui/m
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { Form, Formik, FormikProps, FormikValues } from 'formik';
 import _ from 'lodash';
-import { ComponentProps, Ref } from 'react';
+import { ComponentProps, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SlideProps } from './util';
 
@@ -13,12 +13,13 @@ type SlideConstuctor<T extends FormikValues> = (
 
 type Props<T extends FormikValues> = ComponentProps<typeof Formik> & {
     initialValues: T;
-    innerRef: Ref<FormikProps<T>>;
+    innerRef: RefObject<FormikProps<T>>;
     titleI18n: string;
     slidesI18n: string;
     buttons: JSX.Element;
     currentSlide: number;
     slideConstructors: SlideConstuctor<T>[];
+    slidesWithErrors: number[];
 };
 
 export function SlideForm<T extends FormikValues>({
@@ -29,6 +30,7 @@ export function SlideForm<T extends FormikValues>({
     innerRef,
     currentSlide,
     slideConstructors,
+    slidesWithErrors,
     ...formikProps
 }: Props<T>) {
     const { t } = useTranslation();
@@ -49,7 +51,9 @@ export function SlideForm<T extends FormikValues>({
                         <Stepper sx={{ mt: 2 }} activeStep={currentSlide} alternativeLabel>
                             {_.range(slideCount).map((_, idx) => (
                                 <Step key={idx}>
-                                    <StepLabel>{t(`${slidesI18n}.${idx}.title`)}</StepLabel>
+                                    <StepLabel error={slidesWithErrors.includes(idx)}>
+                                        {t(`${slidesI18n}.${idx}.title`)}
+                                    </StepLabel>
                                 </Step>
                             ))}
                         </Stepper>

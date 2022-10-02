@@ -1,14 +1,16 @@
 import { Grid } from '@mui/material';
 import { CreateCourseRequest } from 'api';
-import { ApiError } from 'api/errors';
+import { ApiError, ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
 import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
+import { clearErrorsForSlide, getSortedSlidesWithErrors } from 'common/SlideForm/util';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
-import { FormikProps } from 'formik';
+import { FormikErrors, FormikProps } from 'formik';
 import { useQueryWithDefaults } from 'hooks/query/useQueryWithDefaults';
-import { useRef, useState } from 'react';
+import _ from 'lodash';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +36,7 @@ export const CreateCourseView = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [formattedApiErrors, setFormattedApiErrors] = useState<FormikErrors<FormValues>>();
     const initialValues: FormValues = {
         [COURSE_SLIDE]: initialCourseValues(),
         [ACTIVITIES_SLIDE]: {
@@ -61,10 +64,22 @@ export const CreateCourseView = () => {
                 navigate(PageRoutes.Course(courseDetailsResp.id));
             },
             onError: (error: ApiError) => {
-                formRef.current?.setErrors(formatErrors(t, error));
+                if (error.errorType === ErrorType.VALIDATION_FAILED) {
+                    const formattedErrors = formatErrors(t, error);
+                    setFormattedApiErrors(formattedErrors);
+                    setCurrentSlide(getSortedSlidesWithErrors(formattedErrors)[0]);
+                } else {
+                    // TODO
+                }
             },
         }
     );
+
+    useEffect(() => {
+        if (formattedApiErrors) {
+            formRef.current?.setErrors(formattedApiErrors);
+        }
+    }, [formattedApiErrors]);
 
     return (
         <SlideForm
@@ -74,7 +89,9 @@ export const CreateCourseView = () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             innerRef={formRef as any}
             initialValues={initialValues}
+            slidesWithErrors={getSortedSlidesWithErrors(formattedApiErrors ?? {})}
             validateOnChange={false}
+            validateOnBlur={_.isEmpty(formattedApiErrors)}
             validationSchema={Yup.object({
                 [COURSE_SLIDE]: Yup.object(courseValidationSchema),
                 [ACTIVITIES_SLIDE]: Yup.object().shape({
@@ -131,6 +148,11 @@ export const CreateCourseView = () => {
                                     });
                                 }
 
+                                if (formattedApiErrors) {
+                                    setFormattedApiErrors(
+                                        clearErrorsForSlide(formattedApiErrors, currentSlide)
+                                    );
+                                }
                                 setCurrentSlide(toSlide);
                             }}
                             onFinish={() => {

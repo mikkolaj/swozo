@@ -16,10 +16,6 @@ public abstract class ApiException extends RuntimeException {
             Optional<Map<String, Object>> additionalData
     ){}
 
-    public ApiException(ErrorType errorType) {
-        this(null, errorType, null);
-    }
-
     public ApiException(String message, ErrorType errorType) {
         this(message, errorType, null);
     }

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { FormikErrors } from 'formik';
 import _ from 'lodash';
 
 export type SlideProps = {
@@ -29,4 +30,14 @@ export const mergeNestedKeyNames = (object: any) => {
 
     Object.keys(object).forEach((key) => traverse(key));
     return result;
+};
+
+export const getSortedSlidesWithErrors = <T>(errors: FormikErrors<T>): number[] => {
+    const slidesWithErrors = Object.keys(errors ?? {}).map((key) => +key);
+    slidesWithErrors.sort((a, b) => a - b);
+    return slidesWithErrors;
+};
+
+export const clearErrorsForSlide = <T>(errors: FormikErrors<T>, slideNum: number) => {
+    return _.pickBy(errors, (_, key) => !key.startsWith(`${slideNum}`));
 };

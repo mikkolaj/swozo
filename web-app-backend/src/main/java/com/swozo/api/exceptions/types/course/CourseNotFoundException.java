@@ -8,7 +8,7 @@ public class CourseNotFoundException extends ApiException {
         super(message, ErrorType.COURSE_NOT_FOUND);
     }
 
-    public static CourseNotFoundException withUuid(String joinUuid) {
+    public static CourseNotFoundException withUUID(String joinUuid) {
         return new CourseNotFoundException("No such course with uuid: " + joinUuid);
     }
 

@@ -57,7 +57,7 @@ public class CourseService {
     public CourseSummaryDto getCourseSummary(String joinUUID) {
        return courseRepository.getByJoinUUID(joinUUID)
                .map(courseMapper::toDto)
-               .orElseThrow(() -> CourseNotFoundException.withUuid(joinUUID));
+               .orElseThrow(() -> CourseNotFoundException.withUUID(joinUUID));
     }
 
     @Transactional
@@ -100,7 +100,7 @@ public class CourseService {
     @Transactional
     public CourseDetailsDto joinCourse(JoinCourseRequest joinCourseRequest, Long userId) {
         var course = courseRepository.getByJoinUUID(joinCourseRequest.joinUUID())
-                .orElseThrow(() -> CourseNotFoundException.withUuid(joinCourseRequest.joinUUID()));
+                .orElseThrow(() -> CourseNotFoundException.withUUID(joinCourseRequest.joinUUID()));
         var student = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::ofAuthenticationOwner);
 

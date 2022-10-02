@@ -35,6 +35,7 @@ export const CreateModuleView = () => {
             initialValues={initialValues}
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             innerRef={formRef as any}
+            slidesWithErrors={[]}
             slideConstructors={[
                 (slideProps, { values, setValues, handleChange }) => (
                     <ModuleInfoForm
