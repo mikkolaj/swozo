@@ -12,3 +12,18 @@ export type ApiError = {
     message?: string;
     additionalData?: Record<string, unknown>;
 };
+
+export enum ValidationErrorType {
+    MISSING = 'MISSING',
+    NOT_UNIQUE = 'NOT_UNIQUE',
+    START_TIME_AFTER_END = 'START_TIME_AFTER_END',
+    TOO_SHORT_DURATION = 'TOO_SHORT_DURATION',
+    TOO_LONG_DURATION = 'TOO_LONG_DURATION',
+    TOO_SOON = 'TOO_SOON',
+}
+
+export type ValidationError = {
+    fieldName: string;
+    errorType: ValidationErrorType;
+    args: Record<string, string>;
+};

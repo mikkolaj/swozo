@@ -1,5 +1,6 @@
 import { Grid } from '@mui/material';
 import { CreateCourseRequest } from 'api';
+import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
 import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
@@ -22,6 +23,7 @@ import {
     ACTIVITIES_SLIDE,
     buildCreateCourseRequest,
     COURSE_SLIDE,
+    formatErrors,
     FormValues,
     initialCourseValues,
     resizeActivityValuesList,
@@ -58,6 +60,9 @@ export const CreateCourseView = () => {
                 toast(t('toast.courseCreated'));
                 navigate(PageRoutes.Course(courseDetailsResp.id));
             },
+            onError: (error: ApiError) => {
+                formRef.current?.setErrors(formatErrors(t, error));
+            },
         }
     );
 
@@ -91,11 +96,7 @@ export const CreateCourseView = () => {
                     <Summary course={values[COURSE_SLIDE]} activities={values[ACTIVITIES_SLIDE].activities} />
                 ),
             ]}
-            onSubmit={() => {
-                console.log('submit');
-                const values = formRef.current?.values;
-                if (!values) return;
-
+            onSubmit={(values) => {
                 createCourseMutation.mutate(
                     buildCreateCourseRequest(values[COURSE_SLIDE], values[ACTIVITIES_SLIDE].activities)
                 );

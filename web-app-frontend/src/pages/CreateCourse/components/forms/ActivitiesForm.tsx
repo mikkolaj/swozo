@@ -70,7 +70,7 @@ export const ActivitiesForm = ({
                                 />
 
                                 <FormDatePicker
-                                    name={nameBuilder(`activities.${idx}.startTime`)}
+                                    name={nameBuilder(`activities.${idx}.date`)}
                                     label={t('createCourse.slides.1.form.date')}
                                     value={value.date}
                                     setFieldValue={setFieldValue}

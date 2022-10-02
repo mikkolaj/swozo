@@ -16,6 +16,10 @@ public abstract class ApiException extends RuntimeException {
             Optional<Map<String, Object>> additionalData
     ){}
 
+    public ApiException(ErrorType errorType) {
+        this(null, errorType, null);
+    }
+
     public ApiException(String message, ErrorType errorType) {
         this(message, errorType, null);
     }
@@ -23,7 +27,7 @@ public abstract class ApiException extends RuntimeException {
     public ApiException(String message, ErrorType errorType, Map<String, Object> additionalData) {
         super(message);
         this.errorType = errorType;
-        this.additionalData = additionalData;
+        this.additionalData =  additionalData;
     }
 
     public SerializableError toSerializable() {

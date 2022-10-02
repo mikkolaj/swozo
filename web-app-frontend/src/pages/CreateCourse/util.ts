@@ -1,12 +1,19 @@
 import { CreateActivityRequest, CreateCourseRequest, ServiceModuleDetailsDto } from 'api';
+import { ApiError } from 'api/errors';
 import { SlideValues2 } from 'common/SlideForm/util';
 import dayjs, { Dayjs } from 'dayjs';
+import { FormikErrors } from 'formik';
 import _ from 'lodash';
-import { withDate } from 'utils/util';
+import { TFunction } from 'react-i18next';
+import { formatDateTime, prepareErrorForDisplay, prepareFormikValidationErrors, withDate } from 'utils/util';
 
 export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 90;
+export const DEFAULT_MIN_TIME_OFFSET = 30;
 
 export type FormValues = SlideValues2<CourseValues, ActivitesFormValues>;
+
+const COURSE_SLIDE_DATA_NAME = 'course';
+const FIELD_SEPARATOR = '.';
 
 export const COURSE_SLIDE = '0';
 export const ACTIVITIES_SLIDE = '1';
@@ -51,8 +58,8 @@ export const initialActivityValues = (): ActivityValues => ({
     generalModules: [],
     instructions: '',
     date: dayjs(),
-    startTime: dayjs(),
-    endTime: dayjs().add(DEFAULT_ACTIVITY_LENGTH_MINUTES, 'minutes'),
+    startTime: dayjs().add(DEFAULT_MIN_TIME_OFFSET, 'minutes'),
+    endTime: dayjs().add(DEFAULT_ACTIVITY_LENGTH_MINUTES + DEFAULT_MIN_TIME_OFFSET, 'minutes'),
 });
 
 export const resizeActivityValuesList = (
@@ -81,6 +88,28 @@ const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityReq
         ],
         selectedModulesIds: [...activity.lessonModules /*, ...activity.generalModules*/].map(({ id }) => id), // TODO
     };
+};
+
+const argFormatter = (argName: string, argVal: string) => {
+    switch (argName) {
+        case 'minStartTime':
+            return formatDateTime(new Date(argVal));
+        default:
+            return argVal;
+    }
+};
+
+export const formatErrors = (t: TFunction, error: ApiError): FormikErrors<FormValues> => {
+    const coursePrefix = COURSE_SLIDE_DATA_NAME + FIELD_SEPARATOR;
+
+    return prepareFormikValidationErrors(
+        error,
+        (key) =>
+            key.startsWith(coursePrefix)
+                ? key.replace(COURSE_SLIDE_DATA_NAME, COURSE_SLIDE)
+                : `${ACTIVITIES_SLIDE}${FIELD_SEPARATOR}${key}`,
+        (error) => prepareErrorForDisplay(t, 'createCourse', error, argFormatter)
+    );
 };
 
 export const buildCreateCourseRequest = (

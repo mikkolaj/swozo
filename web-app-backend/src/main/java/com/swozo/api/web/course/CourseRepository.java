@@ -14,4 +14,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> getCoursesByStudentsId(Long studentId);
 
     Optional<Course> getByJoinUUID(String joinUUID);
+
+    Optional<Course> findByName(String name);
 }

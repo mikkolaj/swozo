@@ -8,10 +8,7 @@ import java.util.Map;
 
 @Getter
 public class ValidationException extends ApiException {
-    private final Map<String, String> fieldErrors;
-
-    public ValidationException(String message, ErrorType errorType, Map<String, String> fieldErrors) {
-        super(message, errorType);
-        this.fieldErrors = fieldErrors;
+    public ValidationException(String message, Map<String, ValidationError> fieldErrors) {
+        super(message, ErrorType.VALIDATION_FAILED, Map.copyOf(fieldErrors));
     }
 }
