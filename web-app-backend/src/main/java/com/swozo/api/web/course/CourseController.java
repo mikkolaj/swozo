@@ -55,7 +55,7 @@ public class CourseController {
     @GetMapping("/summary/{uuid}")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public CourseSummaryDto getPublicCourseData(AccessToken token, @PathVariable String uuid) {
-        return courseService.getPublicCourseData(uuid);
+        return courseService.getCourseSummary(uuid);
     }
 
     @PatchMapping("/join")
@@ -97,7 +97,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public CourseDetailsDto addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody AddStudentRequest addStudentRequest) {
         logger.info("adding student with email: {} to course with id: {}", addStudentRequest.email(), courseId);
-        return courseService.addStudent(courseId, addStudentRequest);
+        return courseService.addStudent(token.getUserId(), courseId, addStudentRequest);
     }
 
     @DeleteMapping("/{courseId}/students")
@@ -105,7 +105,7 @@ public class CourseController {
     public CourseDetailsDto removeStudentFromCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
         // TODO email - not User in RequestBody
         logger.info("removing student with email: {} from course with id: {}", student.getEmail(), courseId);
-        return courseService.deleteStudent(courseId, student.getEmail());
+        return courseService.deleteStudent(token.getUserId(), courseId, student.getEmail());
     }
 
 }

@@ -11,6 +11,8 @@ import java.util.LinkedList;
 @Entity
 @Table(name = "Courses", indexes = {
         @Index(name = "idx_course_joinuuid_unq", columnList = "joinUUID", unique = true)
+}, uniqueConstraints = {
+        @UniqueConstraint(name = "uc_course_name", columnNames = {"name"})
 })
 @NoArgsConstructor
 @AllArgsConstructor

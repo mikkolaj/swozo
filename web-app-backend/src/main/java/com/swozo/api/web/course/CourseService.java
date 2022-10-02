@@ -1,5 +1,8 @@
 package com.swozo.api.web.course;
 
+import com.swozo.api.exceptions.types.CourseNotFoundException;
+import com.swozo.api.exceptions.types.InvalidCoursePasswordException;
+import com.swozo.api.exceptions.types.UserNotFoundException;
 import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.dto.RoleDto;
@@ -26,12 +29,13 @@ public class CourseService {
     private final CourseMapper courseMapper;
     private final ScheduleService scheduleService;
     private final ActivityModuleService activityModuleService;
+    private final CourseValidator courseValidator;
 
-    public Collection<Course> getAllCourses() {
+    public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
 
-    public Collection<CourseDetailsDto> getUserCourses(Long userId, RoleDto userRole) {
+    public List<CourseDetailsDto> getUserCourses(Long userId, RoleDto userRole) {
         var courses = userRole.equals(RoleDto.STUDENT) ?
                 courseRepository.getCoursesByStudentsId(userId) :
                 courseRepository.getCoursesByTeacherId(userId);
@@ -50,20 +54,23 @@ public class CourseService {
         return courseMapper.toDto(course, getCoursePasswordIfAllowed(course, userId));
     }
 
-    public CourseSummaryDto getPublicCourseData(String joinUUID) {
+    public CourseSummaryDto getCourseSummary(String joinUUID) {
        return courseRepository.getByJoinUUID(joinUUID)
                .map(courseMapper::toDto)
-               .orElseThrow(); // TODO proper error
+               .orElseThrow(() -> CourseNotFoundException.withUuid(joinUUID));
     }
 
     @Transactional
     public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId) {
+        courseValidator.validateNewCourse(createCourseRequest);
+
         var course = courseMapper.toPersistence(createCourseRequest, teacherId);
         course.setJoinUUID(UUID.randomUUID().toString());
         course.getActivities().forEach(activity -> {
             activity.setCourse(course);
             activity.getModules().forEach(activityModule -> activityModule.setActivity(activity));
         });
+
         courseRepository.save(course);
 
         scheduleService.scheduleActivities(course.getActivities());
@@ -90,13 +97,17 @@ public class CourseService {
         return course.getActivities();
     }
 
+    @Transactional
     public CourseDetailsDto joinCourse(JoinCourseRequest joinCourseRequest, Long userId) {
-        // TODO validate stuff, error handling
-        var course = courseRepository.getByJoinUUID(joinCourseRequest.joinUUID()).orElseThrow();
-        var student = userRepository.findById(userId).orElseThrow();
+        var course = courseRepository.getByJoinUUID(joinCourseRequest.joinUUID())
+                .orElseThrow(() -> CourseNotFoundException.withUuid(joinCourseRequest.joinUUID()));
+        var student = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::ofAuthenticationOwner);
+
+        courseValidator.validateJoinCourseRequest(student, course);
 
         if (!Objects.equals(joinCourseRequest.password().orElse(null), course.getPassword())) {
-            throw new RuntimeException("invalid password"); // TODO
+            throw new InvalidCoursePasswordException();
         }
 
         course.addStudent(student);
@@ -104,18 +115,25 @@ public class CourseService {
         return courseMapper.toDto(course, Optional.empty());
     }
 
-    public CourseDetailsDto addStudent(Long courseId, AddStudentRequest addStudentRequest) {
-        return modifyCourseParticipant(courseId, addStudentRequest.email(), (student, course) -> course.addStudent(student));
+    @Transactional
+    public CourseDetailsDto addStudent(Long teacherId, Long courseId, AddStudentRequest addStudentRequest) {
+        return modifyCourseParticipant(courseId, addStudentRequest.email(), (student, course) -> {
+            courseValidator.validateAddStudentRequest(student, teacherId, course);
+            course.addStudent(student);
+        });
     }
 
-    public CourseDetailsDto deleteStudent(Long courseId, String studentEmail) {
+    @Transactional
+    public CourseDetailsDto deleteStudent(Long teacherId, Long courseId, String studentEmail) {
         return modifyCourseParticipant(courseId, studentEmail, (student, course) -> course.deleteStudent(student));
     }
 
     private CourseDetailsDto modifyCourseParticipant(Long courseId, String studentEmail, BiConsumer<User, Course> modifier) {
-        var course = courseRepository.getById(courseId);
-        //TODO check if student has student role and if teacher is course creator
-        var student = userRepository.getByEmail(studentEmail);
+        var course = courseRepository.findById(courseId)
+                .orElseThrow(() -> CourseNotFoundException.withId(courseId));
+        var student = userRepository.findByEmail(studentEmail)
+                .orElseThrow(() -> UserNotFoundException.withEmail(studentEmail));
+
         modifier.accept(student, course);
         courseRepository.save(course);
         return courseMapper.toDto(course, Optional.of(course.getPassword()));

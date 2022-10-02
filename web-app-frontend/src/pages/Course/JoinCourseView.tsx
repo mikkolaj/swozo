@@ -1,8 +1,8 @@
 import SchoolIcon from '@mui/icons-material/School';
 import { Box, Button, Grid, TextField, Typography } from '@mui/material';
+import { ApiError, ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import {
@@ -11,24 +11,35 @@ import {
     stylesRowCenteredVertical,
     stylesRowWithSpaceBetweenItems,
 } from 'common/styles';
+import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
+import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useRequiredParams } from 'hooks/useRequiredParams';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { PageRoutes } from 'utils/routes';
+import { AlreadyJoinedError, InvalidJoinUUidError } from './ErrorHandlers';
 
 export const JoinCourseView = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [joinUUID] = useRequiredParams(['joinUUID']);
+    const [password, setPassword] = useState('');
+    const [errorHandlers, setErrorHandlers] = useState<HandlerConfig>({
+        [ErrorType.COURSE_NOT_FOUND]: () => <InvalidJoinUUidError />,
+    });
+
+    const { isApiError, errorHandler, setApiError, apiError } = useApiErrorHandling(errorHandlers);
     const { data: userCourses } = useQuery(['courses'], () => getApis().courseApi.getUserCourses());
 
-    const [password, setPassword] = useState('');
-    const queryClient = useQueryClient();
-    const { data: course, isError } = useQuery(['courses', 'public', joinUUID], () =>
-        getApis().courseApi.getPublicCourseData({ uuid: joinUUID })
+    const { data: course } = useErrorHandledQuery(
+        ['courses', 'public', joinUUID],
+        () => getApis().courseApi.getPublicCourseData({ uuid: joinUUID }),
+        apiError,
+        setApiError
     );
 
     const joinCourseMutation = useMutation(
@@ -42,26 +53,27 @@ export const JoinCourseView = () => {
                 toast.success(t('course.join.joinedMessage'));
                 navigate(PageRoutes.Course(course.id));
             },
+            onError: (error) => {
+                setApiError(error as ApiError);
+            },
         }
     );
 
-    if (isError) {
-        return <PageContainerWithError errorMessage={t('course.join.error.invalidJoinUrl')} />;
-    }
+    useEffect(() => {
+        const sameCourseDetails = userCourses?.find((course) => course.joinUUID === joinUUID);
+        if (sameCourseDetails) {
+            setErrorHandlers((handlers) => ({
+                ...handlers,
+                [ErrorType.ALREADY_A_MEMBER]: () => <AlreadyJoinedError courseDetails={sameCourseDetails} />,
+            }));
+            if (!isApiError) {
+                setApiError({ errorType: ErrorType.ALREADY_A_MEMBER });
+            }
+        }
+    }, [userCourses, joinUUID, isApiError, setErrorHandlers, setApiError]);
 
-    if (userCourses && userCourses.find((course) => course.joinUUID === joinUUID)) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const courseDetails = userCourses.find((course) => course.joinUUID === joinUUID)!;
-
-        return (
-            <PageContainerWithError
-                navigateTo={PageRoutes.Course(courseDetails.id)}
-                navButtonMessage={t('course.join.error.goToCourse')}
-                errorMessage={t('course.join.error.alreadyParticipated', {
-                    name: courseDetails.name,
-                })}
-            />
-        );
+    if (isApiError) {
+        return errorHandler?.() ?? <></>;
     }
 
     if (!course) {

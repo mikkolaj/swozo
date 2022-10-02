@@ -6,7 +6,7 @@ import { PreviousSlideButton } from 'common/SlideForm/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikProps } from 'formik';
-import { useQueryWithDefaults } from 'hooks/useQueryWithDefaults';
+import { useQueryWithDefaults } from 'hooks/query/useQueryWithDefaults';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
