@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 import { FormikProps } from 'formik';
-import { mergeNestedKeyNames, prependNamesWithSlideNum } from './util';
+import { mergeNestedKeyNames, prependNamesWithSlideNum } from '../util';
 
 type Props = {
     currentSlide: number;

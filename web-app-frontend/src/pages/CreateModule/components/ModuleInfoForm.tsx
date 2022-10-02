@@ -1,7 +1,7 @@
 import UploadIcon from '@mui/icons-material/Upload';
 import { Box, Button, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
-import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
-import { SlideFormSelectField } from 'common/SlideForm/SlideFormSelectField';
+import { FormInputField } from 'common/Input/FormInputField';
+import { FormSelectField } from 'common/Input/FormSelectField';
 import { SlideProps } from 'common/SlideForm/util';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { ChangeEvent, useState } from 'react';
@@ -16,41 +16,38 @@ type Props = SlideProps & {
     handleChange: (e: ChangeEvent<any>) => void;
 };
 
-export const GeneralInfoForm = ({ nameBuilder, values, setValues, handleChange }: Props) => {
+export const ModuleInfoForm = ({ nameBuilder, values, setValues, handleChange }: Props) => {
     const [services] = useState(mockServices);
     const { t } = useTranslation();
 
     return (
         <>
-            <SlideFormInputField
+            <FormInputField
                 name={nameBuilder('name')}
                 textFieldProps={{ fullWidth: true }}
                 wrapperSx={{ width: '50%' }}
                 type="text"
                 i18nLabel="createModule.slides.0.form.name"
             />
-            <SlideFormInputField
+            <FormInputField
                 name={nameBuilder('subject')}
                 type="text"
                 i18nLabel="createModule.slides.0.form.subject"
             />
-            <SlideFormInputField
+            <FormInputField
                 wrapperSx={{ width: '50%' }}
                 name={nameBuilder('description')}
                 type="text"
                 textFieldProps={{ multiline: true, fullWidth: true, required: false }}
                 i18nLabel="createModule.slides.0.form.description"
             />
-            <SlideFormSelectField
-                name={nameBuilder('service')}
-                i18nLabel="createModule.slides.0.form.service"
-            >
+            <FormSelectField name={nameBuilder('service')} i18nLabel="createModule.slides.0.form.service">
                 {services.map((service, idx) => (
                     <MenuItem key={idx} value={service}>
                         {service}
                     </MenuItem>
                 ))}
-            </SlideFormSelectField>
+            </FormSelectField>
 
             <Divider sx={{ width: '75%', mt: 2 }} />
             {/* TODO this should probably be dynamic from server */}
@@ -64,7 +61,7 @@ export const GeneralInfoForm = ({ nameBuilder, values, setValues, handleChange }
                     mt: 2,
                 }}
             >
-                <SlideFormInputField
+                <FormInputField
                     name={nameBuilder('serviceFile')}
                     wrapperSx={{ mt: 0 }}
                     type="text"
@@ -94,7 +91,7 @@ export const GeneralInfoForm = ({ nameBuilder, values, setValues, handleChange }
 
             <Divider sx={{ width: '75%', mt: 2 }} />
 
-            <SlideFormInputField
+            <FormInputField
                 wrapperSx={{ width: '50%' }}
                 name={nameBuilder('instructions')}
                 type="text"

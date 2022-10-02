@@ -1,42 +1,42 @@
-import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
-import { SlideFormPasswordField } from 'common/SlideForm/SlideFormPasswordField';
+import { FormInputField } from 'common/Input/FormInputField';
+import { FormPasswordField } from 'common/Input/FormPasswordField';
 import { SlideProps } from 'common/SlideForm/util';
 import { CourseValues } from 'pages/CreateCourse/util';
 import { ValidationSchema } from 'utils/types';
 import * as Yup from 'yup';
 
 export const courseValidationSchema: ValidationSchema<CourseValues> = {
-    name: Yup.string().max(10, 'e1').required('e2'),
+    name: Yup.string().max(1000, 'e1').required('e2'),
 };
 
-export const GeneralInfoForm = ({ nameBuilder }: SlideProps) => {
+export const CourseInfoForm = ({ nameBuilder }: SlideProps) => {
     return (
         <>
-            <SlideFormInputField
+            <FormInputField
                 wrapperSx={{ width: '50%' }}
                 name={nameBuilder('name')}
                 type="text"
                 textFieldProps={{ fullWidth: true }}
                 i18nLabel="createCourse.slides.0.form.name"
             />
-            <SlideFormInputField
+            <FormInputField
                 name={nameBuilder('subject')}
                 type="text"
                 i18nLabel="createCourse.slides.0.form.subject"
             />
-            <SlideFormInputField
+            <FormInputField
                 wrapperSx={{ width: '50%' }}
                 name={nameBuilder('description')}
                 type="text"
                 textFieldProps={{ multiline: true, fullWidth: true, required: false }}
                 i18nLabel="createCourse.slides.0.form.description"
             />
-            <SlideFormInputField
+            <FormInputField
                 name={nameBuilder('numberOfActivities')}
                 type="number"
                 i18nLabel="createCourse.slides.0.form.numberOfActivities"
             />
-            <SlideFormInputField
+            <FormInputField
                 name={nameBuilder('numberOfStudents')}
                 type="number"
                 i18nLabel="createCourse.slides.0.form.numberOfStudents"
@@ -46,7 +46,7 @@ export const GeneralInfoForm = ({ nameBuilder }: SlideProps) => {
                 }}
             />
 
-            <SlideFormPasswordField
+            <FormPasswordField
                 name={nameBuilder('password')}
                 i18nLabel="createCourse.slides.0.form.password"
             />

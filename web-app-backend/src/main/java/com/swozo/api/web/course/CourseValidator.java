@@ -1,7 +1,7 @@
 package com.swozo.api.web.course;
 
-import com.swozo.api.exceptions.types.AlreadyAMemberException;
-import com.swozo.api.exceptions.types.NotACreatorException;
+import com.swozo.api.exceptions.types.course.AlreadyAMemberException;
+import com.swozo.api.exceptions.types.course.NotACreatorException;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.User;

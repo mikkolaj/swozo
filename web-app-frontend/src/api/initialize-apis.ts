@@ -23,21 +23,24 @@ class ErrorPreprocessorMiddleware implements Middleware {
     async post({ response, url }: ResponseContext): Promise<Response | void> {
         if (!response.ok) {
             console.error(`Request for: ${url} failed with status: ${response.status}`);
+            const fallbackError: ApiError = {
+                message: 'Unexpected server error',
+                errorType: ErrorType.INTERNAL_SERVER_ERROR,
+            };
+
             if (is4xxFailure(response)) {
                 let errorBody;
                 try {
                     // TODO check Content-Type if correct body might not be json
                     errorBody = await response.json();
                 } catch (err) {
-                    throw new Error('Failed to parse error body');
+                    console.error('Failed to parse error body');
+                    throw fallbackError;
                 }
 
                 throw errorBody as ApiError;
             } else {
-                throw {
-                    message: 'Unexpected server error',
-                    errorType: ErrorType.INTERNAL_SERVER_ERROR,
-                };
+                throw fallbackError;
             }
         }
 

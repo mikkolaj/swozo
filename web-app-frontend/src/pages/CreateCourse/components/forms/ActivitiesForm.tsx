@@ -1,10 +1,10 @@
 import { Box, Typography } from '@mui/material';
 import { ServiceModuleDetailsDto } from 'api';
-import { AutocompleteWithChips } from 'common/SlideForm/AutocompleteWithChips';
-import { RichTextEditor } from 'common/SlideForm/RichTextEditor';
-import { SlideFormDatePicker } from 'common/SlideForm/SlideFormDatePicker';
-import { SlideFormInputField } from 'common/SlideForm/SlideFormInputField';
-import { SlideFormTimePicker } from 'common/SlideForm/SlideFormTimePicker';
+import { AutocompleteWithChips } from 'common/Input/AutocompleteWithChips';
+import { FormDatePicker } from 'common/Input/FormDatePicker';
+import { FormInputField } from 'common/Input/FormInputField';
+import { FormTimePicker } from 'common/Input/FormTimePicker';
+import { RichTextEditor } from 'common/Input/RichTextEditor';
 import { SlideProps } from 'common/SlideForm/util';
 import { Bar } from 'common/Styled/Bar';
 import { stylesRowWithSpaceBetweenItems } from 'common/styles';
@@ -49,7 +49,7 @@ export const ActivitiesForm = ({
                                     })}
                                 </Typography>
 
-                                <SlideFormInputField
+                                <FormInputField
                                     name={nameBuilder(`activities.${idx}.name`)}
                                     textFieldProps={{ fullWidth: true }}
                                     wrapperSx={{ width: '50%' }}
@@ -57,7 +57,7 @@ export const ActivitiesForm = ({
                                     i18nLabel="createCourse.slides.1.form.name"
                                 />
 
-                                <SlideFormInputField
+                                <FormInputField
                                     wrapperSx={{ width: '50%' }}
                                     name={nameBuilder(`activities.${idx}.description`)}
                                     type="text"
@@ -69,7 +69,7 @@ export const ActivitiesForm = ({
                                     i18nLabel="createCourse.slides.1.form.description"
                                 />
 
-                                <SlideFormDatePicker
+                                <FormDatePicker
                                     name={nameBuilder(`activities.${idx}.startTime`)}
                                     label={t('createCourse.slides.1.form.date')}
                                     value={value.date}
@@ -77,13 +77,13 @@ export const ActivitiesForm = ({
                                 />
 
                                 <Box sx={{ ...stylesRowWithSpaceBetweenItems, width: '50%' }}>
-                                    <SlideFormTimePicker
+                                    <FormTimePicker
                                         name={nameBuilder(`activities.${idx}.startTime`)}
                                         label={t('createCourse.slides.1.form.startTime')}
                                         value={value.startTime}
                                         setFieldValue={setFieldValue}
                                     />
-                                    <SlideFormTimePicker
+                                    <FormTimePicker
                                         name={nameBuilder(`activities.${idx}.endTime`)}
                                         label={t('createCourse.slides.1.form.endTime')}
                                         value={value.endTime}

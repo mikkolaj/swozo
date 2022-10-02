@@ -3,17 +3,14 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { Box, IconButton } from '@mui/material';
 import { stylesRow } from 'common/styles';
 import { ComponentProps, useState } from 'react';
-import { SlideFormInputField } from './SlideFormInputField';
+import { FormInputField } from './FormInputField';
 
-export const SlideFormPasswordField = ({
-    textFieldProps,
-    ...props
-}: ComponentProps<typeof SlideFormInputField>) => {
+export const FormPasswordField = ({ textFieldProps, ...props }: ComponentProps<typeof FormInputField>) => {
     const [isVisible, setVisible] = useState(false);
 
     return (
         <Box sx={stylesRow}>
-            <SlideFormInputField
+            <FormInputField
                 {...props}
                 type={isVisible ? 'text' : 'password'}
                 textFieldProps={{ ...textFieldProps, required: false }}

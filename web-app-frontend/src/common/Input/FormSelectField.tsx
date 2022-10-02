@@ -1,20 +1,20 @@
 import { FORM_INPUT_WIDTH } from 'common/styles';
 import { ComponentProps, PropsWithChildren } from 'react';
-import { SlideFormInputField } from './SlideFormInputField';
+import { FormInputField } from './FormInputField';
 
-export const SlideFormSelectField = ({
+export const FormSelectField = ({
     children,
     ...props
-}: PropsWithChildren<ComponentProps<typeof SlideFormInputField>>) => {
+}: PropsWithChildren<ComponentProps<typeof FormInputField>>) => {
     const { wrapperSx, textFieldProps, ...sfifProps } = props;
 
     return (
-        <SlideFormInputField
+        <FormInputField
             wrapperSx={{ ...wrapperSx, width: FORM_INPUT_WIDTH }}
             textFieldProps={{ ...textFieldProps, select: true, fullWidth: true }}
             {...sfifProps}
         >
             {children}
-        </SlideFormInputField>
+        </FormInputField>
     );
 };

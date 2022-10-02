@@ -1,12 +1,12 @@
 import { Grid } from '@mui/material';
-import { NextSlideButton } from 'common/SlideForm/NextSlideButton';
-import { PreviousSlideButton } from 'common/SlideForm/PreviousSlideButton';
+import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
+import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikProps } from 'formik';
 import { Ref, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GeneralInfoForm } from './components/GeneralInfoForm';
+import { ModuleInfoForm } from './components/ModuleInfoForm';
 import { ModuleSpecsForm } from './components/ModuleSpecsForm';
 import { Summary } from './components/Summary';
 import { FormValues, initialModuleValues, MODULE_INFO_SLIDE, MODULE_SPECS_SLIDE } from './util';
@@ -37,7 +37,7 @@ export const CreateModuleView = () => {
             innerRef={formRef as any}
             slideConstructors={[
                 (slideProps, { values, setValues, handleChange }) => (
-                    <GeneralInfoForm
+                    <ModuleInfoForm
                         {...slideProps}
                         values={values[MODULE_INFO_SLIDE]}
                         setValues={(moduleInfoValues) => {

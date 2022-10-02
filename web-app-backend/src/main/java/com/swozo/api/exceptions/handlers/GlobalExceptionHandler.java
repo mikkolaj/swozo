@@ -12,13 +12,12 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-@RequiredArgsConstructor
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ApiException.class)
     private ResponseEntity<Object> handleApiException(ApiException apiException, WebRequest request) {
-
+        logger.debug("Handling Api Error", apiException);
         return handleExceptionInternal(
                 apiException,
                 apiException.toSerializable(),

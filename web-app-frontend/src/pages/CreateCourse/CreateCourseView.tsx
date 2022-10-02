@@ -1,8 +1,8 @@
 import { Grid } from '@mui/material';
 import { CreateCourseRequest } from 'api';
 import { getApis } from 'api/initialize-apis';
-import { NextSlideButton } from 'common/SlideForm/NextSlideButton';
-import { PreviousSlideButton } from 'common/SlideForm/PreviousSlideButton';
+import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
+import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikProps } from 'formik';
@@ -16,7 +16,7 @@ import { mockGeneralModuleSummaryList } from 'utils/mocks';
 import { PageRoutes } from 'utils/routes';
 import * as Yup from 'yup';
 import { ActivitiesForm, activityValidationSchema } from './components/forms/ActivitiesForm';
-import { courseValidationSchema, GeneralInfoForm } from './components/forms/GeneralInfoForm';
+import { CourseInfoForm, courseValidationSchema } from './components/forms/CourseInfoForm';
 import { Summary } from './components/forms/Summary';
 import {
     ACTIVITIES_SLIDE,
@@ -77,7 +77,7 @@ export const CreateCourseView = () => {
                 }),
             })}
             slideConstructors={[
-                (slideProps) => <GeneralInfoForm {...slideProps} />,
+                (slideProps) => <CourseInfoForm {...slideProps} />,
                 (slideProps, { values, setFieldValue }) => (
                     <ActivitiesForm
                         {...slideProps}

@@ -1,4 +1,4 @@
-package com.swozo.api.exceptions.types;
+package com.swozo.api.exceptions.types.course;
 
 import com.swozo.api.exceptions.ApiException;
 import com.swozo.api.exceptions.ErrorType;
