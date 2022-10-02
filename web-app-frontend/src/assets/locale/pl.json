@@ -71,7 +71,8 @@
             "error": {
                 "invalidJoinUrl": "Kurs nie istnieje, upewnij się że wpisałeś poprawny link",
                 "alreadyParticipated": "Już dołączyłeś do kursu: {{name}}",
-                "goToCourse": "Przejdz do strony kursu"
+                "goToCourse": "Przejdz do strony kursu",
+                "invalidPassword": "Błędne hasło"
             }
         },
         "error": {

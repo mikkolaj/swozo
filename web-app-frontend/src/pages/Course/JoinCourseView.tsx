@@ -12,7 +12,7 @@ import {
     stylesRowWithSpaceBetweenItems,
 } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
-import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { buildErrorHandler, HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,25 +28,34 @@ export const JoinCourseView = () => {
     const queryClient = useQueryClient();
     const [joinUUID] = useRequiredParams(['joinUUID']);
     const [password, setPassword] = useState('');
+    const [invalidPasswordError, setInvalidPasswordError] = useState(false);
+
     const [errorHandlers, setErrorHandlers] = useState<HandlerConfig>({
-        [ErrorType.COURSE_NOT_FOUND]: () => <InvalidJoinUUidError />,
+        [ErrorType.COURSE_NOT_FOUND]: buildErrorHandler(() => <InvalidJoinUUidError />),
+        [ErrorType.INVALID_COURSE_PASSWORD]: buildErrorHandler(() => setInvalidPasswordError(true), false),
     });
 
-    const { isApiError, errorHandler, setApiError, apiError } = useApiErrorHandling(errorHandlers);
+    const { isApiError, errorHandler, isApiErrorSet, consumeErrorAction, pushApiError, removeApiError } =
+        useApiErrorHandling(errorHandlers);
     const { data: userCourses } = useQuery(['courses'], () => getApis().courseApi.getUserCourses());
 
     const { data: course } = useErrorHandledQuery(
         ['courses', 'public', joinUUID],
         () => getApis().courseApi.getPublicCourseData({ uuid: joinUUID }),
-        apiError,
-        setApiError
+        pushApiError,
+        removeApiError
     );
 
     const joinCourseMutation = useMutation(
-        () =>
-            getApis().courseApi.joinCourse({
+        () => {
+            if (invalidPasswordError) {
+                setInvalidPasswordError(false);
+            }
+
+            return getApis().courseApi.joinCourse({
                 joinCourseRequest: { joinUUID, password: course?.isPasswordProtected ? password : undefined },
-            }),
+            });
+        },
         {
             onSuccess: (course) => {
                 queryClient.setQueryData(['courses', `${course.id}`], course);
@@ -54,26 +63,31 @@ export const JoinCourseView = () => {
                 navigate(PageRoutes.Course(course.id));
             },
             onError: (error) => {
-                setApiError(error as ApiError);
+                pushApiError(error as ApiError);
             },
         }
     );
 
     useEffect(() => {
+        const newError = { errorType: ErrorType.ALREADY_A_MEMBER };
         const sameCourseDetails = userCourses?.find((course) => course.joinUUID === joinUUID);
-        if (sameCourseDetails) {
+
+        if (sameCourseDetails && !isApiErrorSet(newError)) {
             setErrorHandlers((handlers) => ({
                 ...handlers,
-                [ErrorType.ALREADY_A_MEMBER]: () => <AlreadyJoinedError courseDetails={sameCourseDetails} />,
+                [ErrorType.ALREADY_A_MEMBER]: buildErrorHandler(() => (
+                    <AlreadyJoinedError courseDetails={sameCourseDetails} />
+                )),
             }));
-            if (!isApiError) {
-                setApiError({ errorType: ErrorType.ALREADY_A_MEMBER });
-            }
+            pushApiError(newError);
         }
-    }, [userCourses, joinUUID, isApiError, setErrorHandlers, setApiError]);
+    }, [userCourses, joinUUID, setErrorHandlers, isApiErrorSet, pushApiError]);
 
     if (isApiError) {
-        return errorHandler?.() ?? <></>;
+        if (errorHandler?.shouldTerminateRendering) {
+            return consumeErrorAction() ?? <></>;
+        }
+        consumeErrorAction();
     }
 
     if (!course) {
@@ -102,12 +116,16 @@ export const JoinCourseView = () => {
                                 variant="standard"
                                 type="password"
                                 autoFocus
+                                error={invalidPasswordError}
+                                helperText={
+                                    invalidPasswordError ? t('course.join.error.invalidPassword') : ''
+                                }
                                 onKeyDown={(e) => {
                                     if (e.nativeEvent.key === 'Enter' && password) {
                                         joinCourseMutation.mutate();
                                     }
                                 }}
-                                sx={{ width: 180, mt: 3 }}
+                                sx={{ width: 180, mt: 5 }}
                                 inputProps={{
                                     style: {
                                         fontSize: 30,

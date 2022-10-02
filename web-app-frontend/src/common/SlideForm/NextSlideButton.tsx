@@ -38,8 +38,6 @@ export const NextSlideButton = ({
                         if (!validationErrors) {
                             onNext(currentSlide + 1);
                         } else {
-                            console.log(prependNamesWithSlideNum(currentSlide, validationErrors));
-                            console.log(mergeNestedKeyNames(validationErrors));
                             Object.keys(
                                 prependNamesWithSlideNum(currentSlide, mergeNestedKeyNames(validationErrors))
                             ).forEach((field) => slideValidator.setFieldTouched(field));
