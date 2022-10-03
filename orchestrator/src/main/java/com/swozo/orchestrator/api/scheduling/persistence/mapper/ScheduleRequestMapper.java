@@ -9,7 +9,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ScheduleRequestMapper {
-
     default ScheduleRequestEntity toPersistence(ScheduleRequest scheduleRequest) {
         return switch (scheduleRequest) {
             case JupyterScheduleRequest jupyterScheduleRequest -> toPersistence(jupyterScheduleRequest);
