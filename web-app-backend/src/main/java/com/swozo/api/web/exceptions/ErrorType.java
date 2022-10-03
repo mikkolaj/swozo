@@ -1,4 +1,4 @@
-package com.swozo.api.exceptions;
+package com.swozo.api.web.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;

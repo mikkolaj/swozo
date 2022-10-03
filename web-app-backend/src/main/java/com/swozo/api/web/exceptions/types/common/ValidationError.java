@@ -1,4 +1,4 @@
-package com.swozo.api.exceptions.types.common;
+package com.swozo.api.web.exceptions.types.common;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,5 +25,4 @@ public class ValidationError {
         args.put(argName, value);
         return this;
     }
-
 }

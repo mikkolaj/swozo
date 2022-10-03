@@ -1,8 +1,8 @@
 package com.swozo.api.web.course;
 
-import com.swozo.api.exceptions.types.course.CourseNotFoundException;
-import com.swozo.api.exceptions.types.course.InvalidCoursePasswordException;
-import com.swozo.api.exceptions.types.user.UserNotFoundException;
+import com.swozo.api.web.exceptions.types.course.CourseNotFoundException;
+import com.swozo.api.web.exceptions.types.course.InvalidCoursePasswordException;
+import com.swozo.api.web.exceptions.types.user.UserNotFoundException;
 import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.dto.RoleDto;

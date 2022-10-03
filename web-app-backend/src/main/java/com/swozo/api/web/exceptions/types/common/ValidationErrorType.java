@@ -1,4 +1,4 @@
-package com.swozo.api.exceptions.types.common;
+package com.swozo.api.web.exceptions.types.common;
 
 public enum ValidationErrorType {
     MISSING,
@@ -6,7 +6,9 @@ public enum ValidationErrorType {
     START_TIME_AFTER_END,
     TOO_SHORT_DURATION,
     TOO_LONG_DURATION,
-    TOO_SOON
+    TOO_SOON,
+    TOO_SHORT_PERIOD_BETWEEN,
+    NOT_IN_BOUNDS
     ;
 
     public ValidationError forField(String fieldName) {

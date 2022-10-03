@@ -1,6 +1,5 @@
-package com.swozo.api.exceptions;
+package com.swozo.api.web.exceptions;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,5 @@ public enum ApiError {
     ILLEGAL_STATE(HttpStatus.BAD_REQUEST),
     VALIDATION_FAILED(HttpStatus.CONFLICT);
 
-    @JsonIgnore
     private final HttpStatus statusCode;
 }

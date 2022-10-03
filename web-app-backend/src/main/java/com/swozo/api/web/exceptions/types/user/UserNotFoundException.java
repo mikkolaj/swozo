@@ -1,7 +1,7 @@
-package com.swozo.api.exceptions.types.user;
+package com.swozo.api.web.exceptions.types.user;
 
-import com.swozo.api.exceptions.ApiException;
-import com.swozo.api.exceptions.ErrorType;
+import com.swozo.api.web.exceptions.ApiException;
+import com.swozo.api.web.exceptions.ErrorType;
 
 import java.util.Map;
 

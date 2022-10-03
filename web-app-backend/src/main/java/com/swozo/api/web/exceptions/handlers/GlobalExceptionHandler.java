@@ -1,7 +1,6 @@
-package com.swozo.api.exceptions.handlers;
+package com.swozo.api.web.exceptions.handlers;
 
-import com.swozo.api.exceptions.ApiException;
-import lombok.RequiredArgsConstructor;
+import com.swozo.api.web.exceptions.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -26,5 +25,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 request
         );
     }
-
 }

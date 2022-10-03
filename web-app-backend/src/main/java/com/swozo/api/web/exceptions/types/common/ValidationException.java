@@ -1,7 +1,7 @@
-package com.swozo.api.exceptions.types.common;
+package com.swozo.api.web.exceptions.types.common;
 
-import com.swozo.api.exceptions.ApiException;
-import com.swozo.api.exceptions.ErrorType;
+import com.swozo.api.web.exceptions.ApiException;
+import com.swozo.api.web.exceptions.ErrorType;
 import lombok.Getter;
 
 import java.util.Map;

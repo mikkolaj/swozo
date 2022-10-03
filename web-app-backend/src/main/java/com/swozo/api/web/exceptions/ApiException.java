@@ -1,4 +1,4 @@
-package com.swozo.api.exceptions;
+package com.swozo.api.web.exceptions;
 
 import lombok.Getter;
 
@@ -29,5 +29,4 @@ public abstract class ApiException extends RuntimeException {
     public SerializableError toSerializable() {
         return new SerializableError(errorType, getMessage(), Optional.ofNullable(additionalData));
     }
-
 }

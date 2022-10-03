@@ -1,9 +1,6 @@
-package com.swozo.api.exceptions.types.common;
+package com.swozo.api.web.exceptions.types.common;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class ValidationErrors {
@@ -33,6 +30,11 @@ public class ValidationErrors {
 
         public Builder putIfFails(Optional<ValidationError> validationError) {
             validationError.ifPresent(error -> errors.put(error.getFieldName(), error));
+            return this;
+        }
+
+        public Builder putEachFailed(List<ValidationError> validationErrors) {
+            validationErrors.forEach(error -> errors.put(error.getFieldName(), error));
             return this;
         }
 
