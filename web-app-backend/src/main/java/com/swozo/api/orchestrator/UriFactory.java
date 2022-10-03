@@ -1,7 +1,6 @@
 package com.swozo.api.orchestrator;
 
 import com.swozo.config.Config;
-import com.swozo.model.scheduling.properties.ScheduleType;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +25,14 @@ public class UriFactory {
                 moduleActivityID);
     }
 
-    public URI createSchedulesUri(ScheduleType scheduleType) {
+    public URI createSchedulesUri() {
         return createURI(orchestratorServerUrl +
                 Config.SCHEDULES);
+    }
+
+    public URI createAggregatedSchedulesUri() {
+        return createURI(orchestratorServerUrl +
+                Config.SCHEDULES + Config.AGGREGATED);
     }
 
     @SneakyThrows(URISyntaxException.class)

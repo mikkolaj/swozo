@@ -1,8 +1,10 @@
 package com.swozo.api.orchestrator;
 
 import com.swozo.api.orchestrator.exceptions.ServiceUnavailableException;
+import com.swozo.jsonmapper.JsonMapperFacade;
 import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.model.scheduling.ScheduleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,18 +14,18 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class OrchestratorService {
     private final OrchestratorRequestSender requestSender;
+    private final JsonMapperFacade mapper;
 
-    public OrchestratorLinkResponse getActivityLinks(Long activityModuleID) throws ServiceUnavailableException {
-        return requestSender.getActivityLinks(activityModuleID).join();
+    public OrchestratorLinkResponse getActivityLinks(Long scheduleRequestId) throws ServiceUnavailableException {
+        return requestSender.getActivityLinks(scheduleRequestId).join();
     }
 
-    public void sendScheduleRequest(ScheduleRequest scheduleRequest) {
-        requestSender.sendScheduleRequest(scheduleRequest).join();
+    public ScheduleResponse sendScheduleRequest(ScheduleRequest scheduleRequest) {
+        return requestSender.sendScheduleRequest(scheduleRequest).join();
     }
 
-    public void sendScheduleRequest(Collection<ScheduleRequest> schedules) {
-        // TODO in one request or all async
-        schedules.forEach(this::sendScheduleRequest);
+    public Collection<ScheduleResponse> sendScheduleRequests(Collection<ScheduleRequest> scheduleRequests) {
+        return requestSender.sendScheduleRequests(scheduleRequests).join();
     }
 
 }

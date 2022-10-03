@@ -4,6 +4,7 @@ import com.swozo.function.ThrowingFunction;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.JupyterScheduleRequest;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
@@ -33,7 +34,7 @@ public class ScheduleService {
     private final TimingService timingService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public long schedule(ScheduleRequest request) {
+    public ScheduleResponse schedule(ScheduleRequest request) {
         var requestId = scheduleRequestTracker.persist(request).getId();
         switch (request) {
             case JupyterScheduleRequest jupyterRequest -> scheduler.schedule(
@@ -41,7 +42,7 @@ public class ScheduleService {
                     timingService.getSchedulingOffset(request, jupyterProvisioner.getProvisioningSeconds()));
             default -> throw new IllegalStateException("Unexpected value: " + request);
         }
-        return requestId;
+        return new ScheduleResponse(requestId);
     }
 
     private Void scheduleCreationAndDeletion(

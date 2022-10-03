@@ -1,7 +1,9 @@
 package com.swozo.api.orchestrator;
 
+import com.swozo.api.web.activitymodule.ActivityModuleRepository;
 import com.swozo.model.scheduling.JupyterScheduleRequest;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.properties.Psm;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
 import com.swozo.persistence.Activity;
@@ -10,23 +12,48 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.function.BiConsumer;
 
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
     private final OrchestratorService orchestratorService;
+    private final ActivityModuleRepository moduleRepository;
 
-    // TODO: persist requestIds from orchestrator
     public void scheduleActivities(Collection<Activity> activities) {
-        for (Activity activity : activities) {
-            var scheduleRequests = activity.getModules().stream()
-                    .map(activityModule -> buildScheduleServiceRequest(activity, activityModule))
-                    .toList();
+        var activitiesWithModules = activities
+                .stream()
+                .flatMap(activity -> activity.getModules().stream().map(module -> new ActivityWithModule(activity, module)))
+                .toList();
 
-            // TODO aggregate scheduleRequests for every activity in one POST
-            // both for communication performance and maybe for better scheduling possibilities
-            orchestratorService.sendScheduleRequest(scheduleRequests);
+        var scheduleRequests = activitiesWithModules.stream()
+                .map(this::buildScheduleServiceRequest)
+                .toList();
+
+        var requestIds = orchestratorService.sendScheduleRequests(scheduleRequests).stream()
+                .map(ScheduleResponse::requestId)
+                .toList();
+
+        var allActivityModules = activitiesWithModules.stream()
+                .map(ActivityWithModule::module)
+                .toList();
+
+        iterateSimultaneously(allActivityModules, requestIds, this::updateActivityModule);
+    }
+
+    private <S, T> void iterateSimultaneously(Collection<S> col1, Collection<T> col2, BiConsumer<S, T> consumer) {
+        var it1 = col1.iterator();
+        var it2 = col2.iterator();
+        while (it1.hasNext() && it2.hasNext()) {
+            var var1 = it1.next();
+            var var2 = it2.next();
+            consumer.accept(var1, var2);
         }
+    }
+
+    private void updateActivityModule(ActivityModule module, Long requestId) {
+        module.setRequestId(requestId);
+        moduleRepository.save(module);
     }
 
     private Psm providePsm(Activity activity) {
@@ -37,12 +64,14 @@ public class ScheduleService {
         return new ServiceLifespan(activity.getStartTime(), activity.getEndTime());
     }
 
-    private ScheduleRequest buildScheduleServiceRequest(Activity activity, ActivityModule activityModule) {
+    private ScheduleRequest buildScheduleServiceRequest(ActivityWithModule activityWithModule) {
         return new JupyterScheduleRequest(
                 "TODO",
-                provideServiceLifespan(activity),
-                providePsm(activity)
+                provideServiceLifespan(activityWithModule.activity()),
+                providePsm(activityWithModule.activity())
         );
     }
 
+    private record ActivityWithModule(Activity activity, ActivityModule module) {
+    }
 }
