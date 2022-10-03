@@ -34,7 +34,7 @@ export type CourseValues = {
     subject: string;
     description: string;
     numberOfActivities: number;
-    numberOfStudents: number;
+    expectedStudentCount: number;
     password?: string;
 };
 
@@ -47,12 +47,12 @@ export const initialCourseValues = (): CourseValues => ({
     subject: 'Informatyka',
     description: '',
     numberOfActivities: 1,
-    numberOfStudents: 2,
+    expectedStudentCount: 2,
     password: undefined,
 });
 
 export const initialActivityValues = (): ActivityValues => ({
-    name: '',
+    name: 'x',
     description: '',
     lessonModules: [],
     generalModules: [],
@@ -120,7 +120,7 @@ export const buildCreateCourseRequest = (
         name: course.name,
         description: course.description,
         subject: course.subject,
-        expectedStudentCount: course.numberOfStudents,
+        expectedStudentCount: course.expectedStudentCount,
         activities: activities.map(buildCreateActivityRequest),
         password: course.password,
     };

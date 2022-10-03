@@ -94,7 +94,7 @@
                     "subject": "tematyka",
                     "description": "opis",
                     "numberOfActivities": "liczba zajęć",
-                    "numberOfStudents": "planowana liczba uczestników",
+                    "expectedStudentCount": "planowana liczba uczestników",
                     "password": "Hasło do dołączenia"
                 }
             },
@@ -122,7 +122,9 @@
             "START_TIME_AFTER_END": "Czas początku musi poprzedać czas końca",
             "TOO_SHORT_DURATION": "Minimalny czas trwania aktywności to {{minDuration}} minut",
             "TOO_LONG_DURATION": "Maksymalny czas trwania aktywności to {{maxDuration}} minut",
-            "TOO_SOON": "Minimalny czas rozpoczęcia aktywności to {{minStartTime}}"
+            "TOO_SOON": "Minimalny czas rozpoczęcia aktywności to {{minStartTime}}",
+            "TOO_SHORT_PERIOD_BETWEEN": "Minimalny czas między aktywnościami to {{minTimeBetween}} minut",
+            "NOT_IN_BOUNDS": "Liczba musi być w zakresie {{min}} - {{max}}"
         }
     },
     "myModules": {

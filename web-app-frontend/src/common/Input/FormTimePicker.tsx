@@ -19,7 +19,7 @@ export const FormTimePicker = ({ label, name, value, setFieldValue }: Props) => 
             onChange={(v) => {
                 if (v && v.isValid()) setFieldValue(name, v);
             }}
-            renderInput={({ name: _name, ...params }) => (
+            renderInput={({ name: _name, error: _error, ...params }) => (
                 <FormInputField
                     name={name}
                     textFieldProps={{

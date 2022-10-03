@@ -31,18 +31,19 @@ import {
     resizeActivityValuesList,
 } from './util';
 
+const initialValues: FormValues = {
+    [COURSE_SLIDE]: initialCourseValues(),
+    [ACTIVITIES_SLIDE]: {
+        activities: [],
+    },
+};
+
 export const CreateCourseView = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [formattedApiErrors, setFormattedApiErrors] = useState<FormikErrors<FormValues>>();
-    const initialValues: FormValues = {
-        [COURSE_SLIDE]: initialCourseValues(),
-        [ACTIVITIES_SLIDE]: {
-            activities: [],
-        },
-    };
 
     const formRef = useRef<FormikProps<FormValues>>(null);
     const { data: availableLessonModules } = useQueryWithDefaults(

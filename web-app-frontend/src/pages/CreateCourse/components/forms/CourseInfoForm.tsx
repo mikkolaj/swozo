@@ -37,9 +37,9 @@ export const CourseInfoForm = ({ nameBuilder }: SlideProps) => {
                 i18nLabel="createCourse.slides.0.form.numberOfActivities"
             />
             <FormInputField
-                name={nameBuilder('numberOfStudents')}
+                name={nameBuilder('expectedStudentCount')}
                 type="number"
-                i18nLabel="createCourse.slides.0.form.numberOfStudents"
+                i18nLabel="createCourse.slides.0.form.expectedStudentCount"
                 onChangeDecorator={() => {
                     // TODO how this value affects array below
                     // if (!isNaN(+e.target.value)) setNumberOfStudents(+e.target.value);

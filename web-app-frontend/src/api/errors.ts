@@ -21,6 +21,8 @@ export enum ValidationErrorType {
     TOO_SHORT_DURATION = 'TOO_SHORT_DURATION',
     TOO_LONG_DURATION = 'TOO_LONG_DURATION',
     TOO_SOON = 'TOO_SOON',
+    TOO_SHORT_PERIOD_BETWEEN = 'TOO_SHORT_PERIOD_BETWEEN',
+    NOT_IN_BOUNDS = 'NOT_IN_BOUNDS',
 }
 
 export type ValidationError = {
