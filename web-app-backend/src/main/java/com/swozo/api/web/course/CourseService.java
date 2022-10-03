@@ -41,7 +41,7 @@ public class CourseService {
                 courseRepository.getCoursesByTeacherId(userId);
 
         return courses.stream()
-                .map(course -> courseMapper.toDto(course, getCoursePasswordIfAllowed(course, userId)))
+                .map(course -> courseMapper.toDto(course, isCreator(course, userId)))
                 .toList();
     }
 
@@ -51,7 +51,7 @@ public class CourseService {
         activityModuleService
                 .provideLinksForActivityModules(course.getActivities().stream().flatMap(x -> x.getModules().stream()).toList());
 
-        return courseMapper.toDto(course, getCoursePasswordIfAllowed(course, userId));
+        return courseMapper.toDto(course, isCreator(course, userId));
     }
 
     public CourseSummaryDto getCourseSummary(String joinUUID) {
@@ -74,7 +74,7 @@ public class CourseService {
         courseRepository.save(course);
 
         scheduleService.scheduleActivities(course.getActivities());
-        return courseMapper.toDto(course, createCourseRequest.password());
+        return courseMapper.toDto(course, true);
     }
 
     public void deleteCourse(Long id) {
@@ -106,13 +106,13 @@ public class CourseService {
 
         courseValidator.validateJoinCourseRequest(student, course);
 
-        if (!Objects.equals(joinCourseRequest.password().orElse(null), course.getPassword())) {
+        if (!course.getPassword().equals(joinCourseRequest.password())) {
             throw new InvalidCoursePasswordException();
         }
 
         course.addStudent(student);
         courseRepository.save(course);
-        return courseMapper.toDto(course, Optional.empty());
+        return courseMapper.toDto(course, false);
     }
 
     @Transactional
@@ -136,15 +136,10 @@ public class CourseService {
 
         modifier.accept(student, course);
         courseRepository.save(course);
-        return courseMapper.toDto(course, Optional.of(course.getPassword()));
-
+        return courseMapper.toDto(course, true);
     }
 
     private boolean isCreator(Course course, Long userId) {
         return Objects.equals(course.getTeacher().getId(), userId);
-    }
-
-    private Optional<String> getCoursePasswordIfAllowed(Course course, Long userId) {
-        return isCreator(course, userId) ? Optional.ofNullable(course.getPassword()) : Optional.empty();
     }
 }

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Optional;
 
 @Entity
 @Table(name = "Courses", indexes = {
@@ -54,5 +55,9 @@ public class Course extends BaseEntity {
 
     public void deleteStudent(User student) {
         students.remove(new UserCourseData(student,  this));
+    }
+
+    public Optional<String> getPassword() {
+        return Optional.ofNullable(password);
     }
 }

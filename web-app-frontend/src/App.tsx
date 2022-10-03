@@ -13,6 +13,7 @@ import { Home } from 'pages/Home/Home';
 import { Login } from 'pages/Login/Login';
 import { ModulesListView } from 'pages/ModulesList/ModulesListView';
 import { Route, Routes } from 'react-router-dom';
+import { PopupError } from 'services/features/error/PopupError';
 import { useAppSelector } from 'services/store';
 import {
     ANY_LOGGED_IN,
@@ -73,6 +74,7 @@ function App() {
             </Routes>
 
             <Toaster />
+            <PopupError />
         </>
     );
 }

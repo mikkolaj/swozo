@@ -40,7 +40,11 @@
                 "addStudent": {
                     "button": "Dodaj studenta",
                     "label": "Adres email",
-                    "success": "{{email}} został dodany!"
+                    "success": "{{email}} został dodany!",
+                    "error": {
+                        "ALREADY_A_MEMBER": "Student już należy do kursu!",
+                        "USER_NOT_FOUND": "Student o tym adresie email nie istnieje!"
+                    }
                 },
                 "students": {
                     "label": "Studenci",

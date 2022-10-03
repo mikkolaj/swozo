@@ -68,6 +68,12 @@ export const useApiErrorHandling = (
         }
     }, [handlerConfig, apiErrors, useFallbackHandler, fallbackErrorHandler]);
 
+    useEffect(() => {
+        if (apiErrors.length > 0 && !errorHandler?.shouldTerminateRendering) {
+            consumeErrorAction();
+        }
+    }, [errorHandler, apiErrors.length, consumeErrorAction]);
+
     return {
         apiErrors,
         isApiError: apiErrors.length > 0,

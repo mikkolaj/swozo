@@ -83,11 +83,8 @@ export const JoinCourseView = () => {
         }
     }, [userCourses, joinUUID, setErrorHandlers, isApiErrorSet, pushApiError]);
 
-    if (isApiError) {
-        if (errorHandler?.shouldTerminateRendering) {
-            return consumeErrorAction() ?? <></>;
-        }
-        consumeErrorAction();
+    if (isApiError && errorHandler?.shouldTerminateRendering) {
+        return consumeErrorAction() ?? <></>;
     }
 
     if (!course) {

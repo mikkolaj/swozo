@@ -27,9 +27,9 @@ public abstract class CourseMapper {
     @Mapping(target = "teacher", expression = "java(userMapper.toDto(course.getTeacher()))")
     @Mapping(target = "students", expression = "java(course.getStudents().stream().map(user -> userMapper.toDto(user)).toList())")
     @Mapping(target = "activities", expression = "java(course.getActivities().stream().map(activityMapper::toDto).toList())")
-    @Mapping(target = "coursePassword", source = "password")
-    public abstract CourseDetailsDto toDto(Course course, Optional<String> password);
+    @Mapping(target = "coursePassword", expression = "java(shouldUsePassword ? course.getPassword() : Optional.empty())")
+    public abstract CourseDetailsDto toDto(Course course, boolean shouldUsePassword);
 
-    @Mapping(target = "isPasswordProtected", expression= "java(course.getPassword() != null)")
+    @Mapping(target = "isPasswordProtected", expression= "java(course.getPassword().isPresent())")
     public abstract CourseSummaryDto toDto(Course course);
 }
