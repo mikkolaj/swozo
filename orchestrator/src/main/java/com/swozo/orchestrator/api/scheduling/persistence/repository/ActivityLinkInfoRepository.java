@@ -8,6 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ActivityLinkInfoRepository extends JpaRepository<ActivityLinkInfoEntity, Long> {
-    @Query("SELECT a FROM activity_links a where a.scheduleRequest = :scheduleRequestId")
+    @Query("SELECT a FROM ActivityLinkInfoEntity a where a.scheduleRequest = :scheduleRequestId")
     List<ActivityLinkInfoEntity> findAllByScheduleRequestId(@Param("scheduleRequestId") Long scheduleRequestId);
 }

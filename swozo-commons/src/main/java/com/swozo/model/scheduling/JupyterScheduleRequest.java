@@ -18,10 +18,9 @@ public final class JupyterScheduleRequest extends ScheduleRequest {
     @JsonCreator
     public JupyterScheduleRequest(@JsonProperty("notebookLocation") String notebookLocation,
                                   @JsonProperty("serviceLifespan") ServiceLifespan serviceLifespan,
-                                  @JsonProperty("psm") Psm psm,
-                                  @JsonProperty("activityModuleID") Long activityModuleID
+                                  @JsonProperty("psm") Psm psm
     ) {
-        super(serviceLifespan, psm, activityModuleID, ScheduleType.JUPYTER);
+        super(serviceLifespan, psm, ScheduleType.JUPYTER);
         this.notebookLocation = notebookLocation;
     }
 }

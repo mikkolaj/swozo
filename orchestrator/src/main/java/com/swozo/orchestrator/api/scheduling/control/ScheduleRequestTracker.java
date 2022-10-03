@@ -2,6 +2,7 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ActivityLinkInfoMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ActivityLinkInfoRepository;
@@ -14,14 +15,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ScheduleRequestTracker {
-    private ScheduleRequestRepository requestRepository;
-    private ActivityLinkInfoRepository linkRepository;
-    private ScheduleRequestMapper requestMapper;
-    private ActivityLinkInfoMapper linkMapper;
+    private final ScheduleRequestRepository requestRepository;
+    private final ActivityLinkInfoRepository linkRepository;
+    private final ScheduleRequestMapper requestMapper;
+    private final ActivityLinkInfoMapper linkMapper;
 
-    public long persist(ScheduleRequest scheduleRequest) {
-        var result = requestRepository.save(requestMapper.toPersistence(scheduleRequest));
-        return result.getId();
+    public ScheduleRequestEntity persist(ScheduleRequest scheduleRequest) {
+        return requestRepository.save(requestMapper.toPersistence(scheduleRequest));
     }
 
     public void unpersist(Long scheduleRequestId) {
@@ -33,10 +33,8 @@ public class ScheduleRequestTracker {
     }
 
     public void saveLinks(List<ActivityLinkInfo> links, Long scheduleRequestId) {
-        var linkEntities = links.stream().map(link -> linkMapper.toPersistence(link, scheduleRequestId)).toList();
+        var requestEntity = requestRepository.getById(scheduleRequestId);
+        var linkEntities = links.stream().map(link -> linkMapper.toPersistence(link, requestEntity)).toList();
         linkRepository.saveAll(linkEntities);
-    }
-
-    private record RequestWithLinks(ScheduleRequest scheduleRequest, List<ActivityLinkInfo> links) {
     }
 }

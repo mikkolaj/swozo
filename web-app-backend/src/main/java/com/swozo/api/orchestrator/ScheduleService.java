@@ -16,6 +16,7 @@ import java.util.Collection;
 public class ScheduleService {
     private final OrchestratorService orchestratorService;
 
+    // TODO: persist requestIds from orchestrator
     public void scheduleActivities(Collection<Activity> activities) {
         for (Activity activity : activities) {
             var scheduleRequests = activity.getModules().stream()
@@ -40,8 +41,7 @@ public class ScheduleService {
         return new JupyterScheduleRequest(
                 "TODO",
                 provideServiceLifespan(activity),
-                providePsm(activity),
-                activityModule.getId()
+                providePsm(activity)
         );
     }
 

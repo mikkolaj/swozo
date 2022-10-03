@@ -34,10 +34,10 @@ public class ScheduleService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public long schedule(ScheduleRequest request) {
-        var requestId = scheduleRequestTracker.persist(request);
+        var requestId = scheduleRequestTracker.persist(request).getId();
         switch (request) {
             case JupyterScheduleRequest jupyterRequest -> scheduler.schedule(
-                    () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision),
+                    () -> scheduleCreationAndDeletion(new ScheduleRequestWithId(jupyterRequest, requestId), jupyterProvisioner::provision),
                     timingService.getSchedulingOffset(request, jupyterProvisioner.getProvisioningSeconds()));
             default -> throw new IllegalStateException("Unexpected value: " + request);
         }
@@ -45,46 +45,46 @@ public class ScheduleService {
     }
 
     private Void scheduleCreationAndDeletion(
-            ScheduleRequest scheduleRequest,
+            ScheduleRequestWithId requestWithId,
             ThrowingFunction<VMResourceDetails, List<ActivityLinkInfo>> provisionSoftware
     ) throws InterruptedException {
         try {
             timedVmProvider
-                    .createInstance(scheduleRequest.getPsm())
-                    .thenAccept(provisionSoftwareAndScheduleDeletion(scheduleRequest, provisionSoftware))
+                    .createInstance(requestWithId.getPsm())
+                    .thenAccept(provisionSoftwareAndScheduleDeletion(requestWithId, provisionSoftware))
                     .get();
         } catch (ExecutionException e) {
             switch (e.getCause()) {
                 case VMOperationFailed ex ->
-                        logger.error("Error while creating instance. Request: {}", scheduleRequest, ex);
-                default -> logger.error("Unexpected exception. Request: {}", scheduleRequest, e);
+                        logger.error("Error while creating instance. Request: {}", requestWithId, ex);
+                default -> logger.error("Unexpected exception. Request: {}", requestWithId, e);
             }
         }
         return null;
     }
 
     private Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
-            ScheduleRequest scheduleRequest,
+            ScheduleRequestWithId requestWithId,
             ThrowingFunction<VMResourceDetails, List<ActivityLinkInfo>> provisionSoftware
     ) {
         return resourceDetails -> {
             try {
                 var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
-                scheduleRequestTracker.saveLinks(links, scheduleRequest.getActivityModuleID());
+                scheduleRequestTracker.saveLinks(links, requestWithId.requestId());
                 scheduler.schedule(
-                        () -> deleteInstance(scheduleRequest, resourceDetails),
-                        timingService.getDeletionOffset(scheduleRequest, CLEANUP_SECONDS));
+                        () -> deleteInstance(requestWithId, resourceDetails),
+                        timingService.getDeletionOffset(requestWithId.request(), CLEANUP_SECONDS));
             } catch (ProvisioningFailed e) {
                 logger.error("Provisioning software on: {} failed. Scheduling deletion.", resourceDetails, e);
-                scheduler.schedule(() -> deleteInstance(scheduleRequest, resourceDetails), IMMEDIATE_OFFSET);
+                scheduler.schedule(() -> deleteInstance(requestWithId, resourceDetails), IMMEDIATE_OFFSET);
             }
         };
     }
 
-    private Void deleteInstance(ScheduleRequest scheduleRequest, VMResourceDetails connectionDetails) throws InterruptedException {
+    private Void deleteInstance(ScheduleRequestWithId requestWithId, VMResourceDetails connectionDetails) throws InterruptedException {
         try {
             timedVmProvider.deleteInstance(connectionDetails.internalResourceId())
-                    .thenRun(() -> scheduleRequestTracker.unpersist(scheduleRequest.getActivityModuleID()));
+                    .thenRun(() -> scheduleRequestTracker.unpersist(requestWithId.requestId()));
         } catch (VMOperationFailed e) {
             logger.error("Deleting instance failed!", e);
         }

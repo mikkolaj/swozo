@@ -20,6 +20,5 @@ import lombok.*;
 public abstract sealed class ScheduleRequest permits JupyterScheduleRequest {
     private final ServiceLifespan serviceLifespan;
     private final Psm psm;
-    private final Long activityModuleID;
     private final ScheduleType scheduleType;
 }
