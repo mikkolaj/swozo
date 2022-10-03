@@ -34,6 +34,7 @@ public class ScheduleService {
     private final TimingService timingService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    // TODO: add retrying and cleaning of received, but not fulfilled requests
     public ScheduleResponse schedule(ScheduleRequest request) {
         var requestId = scheduleRequestTracker.persist(request).getId();
         switch (request) {
