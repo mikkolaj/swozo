@@ -113,7 +113,20 @@
                 }
             },
             "2": {
-                "title": "Podsumowanie"
+                "title": "Podsumowanie",
+                "form": {
+                    "activityName": "Nazwa aktywności",
+                    "modules": "Wybrane moduły",
+                    "at": "Data aktywności"
+                },
+                "disclaimer": {
+                    "title": "Pamiętaj",
+                    "lines": [
+                        "- Tworzenie kursu może trochę potrwać",
+                        "- Po utworzeniu kursu będziesz mógł dodawać nowe aktywności oraz modyfikować jeszcze nieprzeprowadzone",
+                        "- Po utworzeniu kursu w zakładce \"Uczestnicy\" będziesz mógł dodawać studentów"
+                    ]
+                }
             }
         },
         "validationErrors": {
