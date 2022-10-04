@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.Entity;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @NoArgsConstructor
@@ -18,4 +19,9 @@ public abstract class ScheduleRequestEntity extends BaseEntity {
     private String machineType;
     private int diskSizeGb;
     private ScheduleTypeEntity scheduleType;
+    private Long vmResourceId;
+
+    public Optional<Long> getVmResourceId() {
+        return Optional.ofNullable(vmResourceId);
+    }
 }

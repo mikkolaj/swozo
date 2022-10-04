@@ -12,6 +12,7 @@ import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.configuration.conditions.GCloudCondition;
+import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -78,6 +80,16 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     public int getVMCreationTime(Psm psm) {
         // TODO: creation time based on machine type
         return VM_CREATION_SECONDS;
+    }
+
+    public Optional<VMResourceDetails> getVMResourceDetails(Long internalId) throws VMOperationFailed {
+        var vmAddress = vmRepository.findById(internalId).map(vmMapper::toDto);
+        var publicIPAddress = vmAddress.map(
+                CheckedExceptionConverter.from(manager::getInstanceExternalIP, VMOperationFailed::new)
+        );
+        return publicIPAddress.map(address ->
+                new VMResourceDetails(internalId, address, gCloudProperties.sshUser(), DEFAULT_SSH_PORT, gCloudProperties.sshKeyPath())
+        );
     }
 
     private VMResourceDetails getVMResourceDetails(String publicIPAddress, Long internalId) {

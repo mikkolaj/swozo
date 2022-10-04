@@ -3,9 +3,9 @@ package com.swozo.orchestrator.api.scheduling.control;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
-import com.swozo.orchestrator.api.scheduling.persistence.mapper.ActivityLinkInfoMapper;
+import com.swozo.orchestrator.api.links.persistence.mapper.ActivityLinkInfoMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
-import com.swozo.orchestrator.api.scheduling.persistence.repository.ActivityLinkInfoRepository;
+import com.swozo.orchestrator.api.links.persistence.repository.ActivityLinkInfoRepository;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ScheduleRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +22,13 @@ public class ScheduleRequestTracker {
 
     public ScheduleRequestEntity persist(ScheduleRequest scheduleRequest) {
         return requestRepository.save(requestMapper.toPersistence(scheduleRequest));
+    }
+
+    public ScheduleRequestEntity persistVmResourceId(long scheduleRequestId, long vmResourceId) {
+        var scheduleRequestEntity = requestRepository.getById(scheduleRequestId);
+        scheduleRequestEntity.setVmResourceId(vmResourceId);
+        requestRepository.save(scheduleRequestEntity);
+        return scheduleRequestEntity;
     }
 
     public void unpersist(Long scheduleRequestId) {

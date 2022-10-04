@@ -16,6 +16,7 @@ public interface ScheduleRequestMapper {
     }
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "vmResourceId", ignore = true)
     @Mapping(target = "startTime", expression = "java(request.getServiceLifespan().startTime())")
     @Mapping(target = "endTime", expression = "java(request.getServiceLifespan().endTime())")
     @Mapping(target = "machineType", expression = "java(request.getPsm().machineType())")

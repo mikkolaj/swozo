@@ -1,7 +1,8 @@
-package com.swozo.orchestrator.api.links;
+package com.swozo.orchestrator.api.links.boundary;
 
 import com.swozo.config.Config;
 import com.swozo.model.links.OrchestratorLinkResponse;
+import com.swozo.orchestrator.api.links.control.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

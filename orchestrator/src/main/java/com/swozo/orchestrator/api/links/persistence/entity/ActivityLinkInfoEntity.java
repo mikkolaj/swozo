@@ -1,5 +1,6 @@
-package com.swozo.orchestrator.api.scheduling.persistence.entity;
+package com.swozo.orchestrator.api.links.persistence.entity;
 
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.persistence.BaseEntity;
 import lombok.*;
 

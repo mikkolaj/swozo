@@ -71,6 +71,7 @@ public class ScheduleService {
     ) {
         return resourceDetails -> {
             try {
+                scheduleRequestTracker.persistVmResourceId(requestWithId.requestId(), resourceDetails.internalResourceId());
                 var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
                 scheduleRequestTracker.saveLinks(links, requestWithId.requestId());
                 scheduler.schedule(

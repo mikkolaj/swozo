@@ -1,6 +1,6 @@
-package com.swozo.orchestrator.api.scheduling.persistence.repository;
+package com.swozo.orchestrator.api.links.persistence.repository;
 
-import com.swozo.orchestrator.api.scheduling.persistence.entity.ActivityLinkInfoEntity;
+import com.swozo.orchestrator.api.links.persistence.entity.ActivityLinkInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,4 +1,4 @@
-package com.swozo.orchestrator.api.links;
+package com.swozo.orchestrator.api.links.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.orchestrator.api.scheduling.control.ScheduleRequestTracker;
