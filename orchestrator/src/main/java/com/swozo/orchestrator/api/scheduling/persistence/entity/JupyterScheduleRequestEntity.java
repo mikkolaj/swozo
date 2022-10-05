@@ -10,6 +10,6 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class JupyterScheduleRequestEntity extends ScheduleRequestEntity {
+public final class JupyterScheduleRequestEntity extends ScheduleRequestEntity {
     private String notebookLocation;
 }

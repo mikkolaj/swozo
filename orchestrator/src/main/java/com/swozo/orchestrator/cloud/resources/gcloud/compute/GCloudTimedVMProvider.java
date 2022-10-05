@@ -61,6 +61,19 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
 
     @Async
     @Override
+    public CompletableFuture<Optional<VMResourceDetails>> getVMResourceDetails(Long internalId) throws VMOperationFailed {
+        var vmAddress = vmRepository.findById(internalId).map(vmMapper::toDto);
+        var publicIPAddress = vmAddress.map(
+                CheckedExceptionConverter.from(manager::getInstanceExternalIP, VMOperationFailed::new)
+        );
+        var resourceDetails = publicIPAddress.map(address ->
+                new VMResourceDetails(internalId, address, gCloudProperties.sshUser(), DEFAULT_SSH_PORT, gCloudProperties.sshKeyPath())
+        );
+        return CompletableFuture.completedFuture(resourceDetails);
+    }
+
+    @Async
+    @Override
     public CompletableFuture<Void> deleteInstance(long internalId) throws InterruptedException, VMOperationFailed {
         try {
             var vmEntity = vmRepository
@@ -82,15 +95,6 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
         return VM_CREATION_SECONDS;
     }
 
-    public Optional<VMResourceDetails> getVMResourceDetails(Long internalId) throws VMOperationFailed {
-        var vmAddress = vmRepository.findById(internalId).map(vmMapper::toDto);
-        var publicIPAddress = vmAddress.map(
-                CheckedExceptionConverter.from(manager::getInstanceExternalIP, VMOperationFailed::new)
-        );
-        return publicIPAddress.map(address ->
-                new VMResourceDetails(internalId, address, gCloudProperties.sshUser(), DEFAULT_SSH_PORT, gCloudProperties.sshKeyPath())
-        );
-    }
 
     private VMResourceDetails getVMResourceDetails(String publicIPAddress, Long internalId) {
         return new VMResourceDetails(internalId, publicIPAddress, gCloudProperties.sshUser(), DEFAULT_SSH_PORT, gCloudProperties.sshKeyPath());

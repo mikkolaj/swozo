@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface VMMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", expression = "java(com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMStatus.CREATING)")
+    @Mapping(target = "status", ignore = true)
     VMEntity toPersistence(VMAddress dto);
 
     VMAddress toDto(VMEntity entity);

@@ -2,9 +2,11 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.function.ThrowingFunction;
 import com.swozo.model.links.ActivityLinkInfo;
-import com.swozo.model.scheduling.JupyterScheduleRequest;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.JupyterScheduleRequestEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
@@ -21,73 +23,90 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
+import static com.swozo.orchestrator.api.scheduling.persistence.entity.RequestStatus.*;
+
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
     // TODO: probably will change if we decide to execute tasks (e.g. saving user's files) before deleting the instance
     private static final int CLEANUP_SECONDS = 0;
-    private static final int IMMEDIATE_OFFSET = 0;
     private final InternalTaskScheduler scheduler;
     private final TimedVMProvider timedVmProvider;
     private final TimedSoftwareProvisioner jupyterProvisioner;
     private final ScheduleRequestTracker scheduleRequestTracker;
+    private final ScheduleRequestMapper requestMapper;
     private final TimingService timingService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     // TODO: add retrying and cleaning of received, but not fulfilled requests
     public ScheduleResponse schedule(ScheduleRequest request) {
-        var requestId = scheduleRequestTracker.persist(request).getId();
-        switch (request) {
-            case JupyterScheduleRequest jupyterRequest -> scheduler.schedule(
-                    () -> scheduleCreationAndDeletion(new ScheduleRequestWithId(jupyterRequest, requestId), jupyterProvisioner::provision),
+        var requestEntity = scheduleRequestTracker.persist(request);
+        switch (requestEntity) {
+            case JupyterScheduleRequestEntity jupyterRequest -> scheduler.schedule(
+                    () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision),
                     timingService.getSchedulingOffset(request, jupyterProvisioner.getProvisioningSeconds()));
             default -> throw new IllegalStateException("Unexpected value: " + request);
         }
-        return new ScheduleResponse(requestId);
+        return new ScheduleResponse(requestEntity.getId());
     }
 
     private Void scheduleCreationAndDeletion(
-            ScheduleRequestWithId requestWithId,
+            ScheduleRequestEntity request,
             ThrowingFunction<VMResourceDetails, List<ActivityLinkInfo>> provisionSoftware
     ) throws InterruptedException {
         try {
+            scheduleRequestTracker.updateStatus(request.getId(), VM_CREATING);
             timedVmProvider
-                    .createInstance(requestWithId.getPsm())
-                    .thenAccept(provisionSoftwareAndScheduleDeletion(requestWithId, provisionSoftware))
+                    .createInstance(requestMapper.toDto(request).getPsm())
+                    .thenAccept(provisionSoftwareAndScheduleDeletion(request, provisionSoftware))
                     .get();
         } catch (ExecutionException e) {
             switch (e.getCause()) {
-                case VMOperationFailed ex ->
-                        logger.error("Error while creating instance. Request: {}", requestWithId, ex);
-                default -> logger.error("Unexpected exception. Request: {}", requestWithId, e);
+                case VMOperationFailed ex -> handleFailedVmCreation(request, ex);
+                default -> handleUnexpectedException(request, e.getCause());
             }
         }
         return null;
     }
 
+    private void handleFailedVmCreation(ScheduleRequestEntity request, VMOperationFailed ex) {
+        logger.error("Error while creating instance. Request: {}", request, ex);
+        scheduleRequestTracker.updateStatus(request.getId(), VM_CREATION_FAILED);
+    }
+
+    private void handleUnexpectedException(ScheduleRequestEntity request, Throwable ex) {
+        logger.error("Unexpected exception. Request: {}", request, ex);
+        scheduleRequestTracker.updateStatus(request.getId(), VM_CREATION_FAILED);
+    }
+
     private Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
-            ScheduleRequestWithId requestWithId,
+            ScheduleRequestEntity request,
             ThrowingFunction<VMResourceDetails, List<ActivityLinkInfo>> provisionSoftware
     ) {
         return resourceDetails -> {
             try {
-                scheduleRequestTracker.persistVmResourceId(requestWithId.requestId(), resourceDetails.internalResourceId());
+                scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING);
+                scheduleRequestTracker.persistVmResourceId(request.getId(), resourceDetails.internalResourceId());
                 var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
-                scheduleRequestTracker.saveLinks(links, requestWithId.requestId());
+                var updatedRequest = scheduleRequestTracker.updateStatus(request.getId(), READY);
+                scheduleRequestTracker.saveLinks(request.getId(), links);
                 scheduler.schedule(
-                        () -> deleteInstance(requestWithId, resourceDetails),
-                        timingService.getDeletionOffset(requestWithId.request(), CLEANUP_SECONDS));
+                        () -> deleteInstance(updatedRequest, resourceDetails),
+                        timingService.getDeletionOffset(requestMapper.toDto(updatedRequest), CLEANUP_SECONDS));
             } catch (ProvisioningFailed e) {
                 logger.error("Provisioning software on: {} failed. Scheduling deletion.", resourceDetails, e);
-                scheduler.schedule(() -> deleteInstance(requestWithId, resourceDetails), IMMEDIATE_OFFSET);
+                scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING_FAILED);
+            } catch (Exception e) {
+                scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING_FAILED);
+                throw e;
             }
         };
     }
 
-    private Void deleteInstance(ScheduleRequestWithId requestWithId, VMResourceDetails connectionDetails) throws InterruptedException {
+    private Void deleteInstance(ScheduleRequestEntity request, VMResourceDetails connectionDetails) throws InterruptedException {
         try {
             timedVmProvider.deleteInstance(connectionDetails.internalResourceId())
-                    .thenRun(() -> scheduleRequestTracker.unpersist(requestWithId.requestId()));
+                    .thenRun(() -> scheduleRequestTracker.updateStatus(request.getId(), DELETED));
         } catch (VMOperationFailed e) {
             logger.error("Deleting instance failed!", e);
         }

@@ -13,12 +13,13 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
-public abstract class ScheduleRequestEntity extends BaseEntity {
+public abstract sealed class ScheduleRequestEntity extends BaseEntity permits JupyterScheduleRequestEntity {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String machineType;
     private int diskSizeGb;
     private ScheduleTypeEntity scheduleType;
+    private RequestStatus status = RequestStatus.SUBMITTED;
     private Long vmResourceId;
 
     public Optional<Long> getVmResourceId() {

@@ -15,12 +15,19 @@ public interface ScheduleRequestMapper {
         };
     }
 
+    default ScheduleRequest toDto(ScheduleRequestEntity scheduleRequestEntity) {
+        return switch (scheduleRequestEntity) {
+            case JupyterScheduleRequestEntity jupyterScheduleRequest -> toDto(jupyterScheduleRequest);
+        };
+    }
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "vmResourceId", ignore = true)
     @Mapping(target = "startTime", expression = "java(request.getServiceLifespan().startTime())")
     @Mapping(target = "endTime", expression = "java(request.getServiceLifespan().endTime())")
     @Mapping(target = "machineType", expression = "java(request.getPsm().machineType())")
     @Mapping(target = "diskSizeGb", expression = "java(request.getPsm().diskSizeGb())")
+    @Mapping(target = "status", ignore = true)
     JupyterScheduleRequestEntity toPersistence(JupyterScheduleRequest request);
 
     @Mapping(target = "serviceLifespan", expression = "java(new ServiceLifespan(request.getStartTime(), request.getEndTime()))")
