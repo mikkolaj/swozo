@@ -18,6 +18,7 @@ public interface ScheduleRequestMapper {
     default ScheduleRequest toDto(ScheduleRequestEntity scheduleRequestEntity) {
         return switch (scheduleRequestEntity) {
             case JupyterScheduleRequestEntity jupyterScheduleRequest -> toDto(jupyterScheduleRequest);
+            default -> throw new IllegalStateException("Unexpected value: " + scheduleRequestEntity);
         };
     }
 

@@ -21,7 +21,7 @@ public class ScheduleRequestTracker {
     private final ScheduleRequestMapper requestMapper;
     private final ActivityLinkInfoMapper linkMapper;
 
-    public ScheduleRequestEntity persist(ScheduleRequest scheduleRequest) {
+    public ScheduleRequestEntity startTracking(ScheduleRequest scheduleRequest) {
         return requestRepository.save(requestMapper.toPersistence(scheduleRequest));
     }
 
@@ -32,14 +32,14 @@ public class ScheduleRequestTracker {
         return scheduleRequestEntity;
     }
 
-    public ScheduleRequestEntity persistVmResourceId(long scheduleRequestId, long vmResourceId) {
+    public ScheduleRequestEntity fillVmResourceId(long scheduleRequestId, long vmResourceId) {
         var scheduleRequestEntity = requestRepository.getById(scheduleRequestId);
         scheduleRequestEntity.setVmResourceId(vmResourceId);
         requestRepository.save(scheduleRequestEntity);
         return scheduleRequestEntity;
     }
 
-    public void unpersist(Long scheduleRequestId) {
+    public void stopTracking(Long scheduleRequestId) {
         requestRepository.deleteById(scheduleRequestId);
     }
 

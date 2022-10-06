@@ -20,8 +20,6 @@ import java.util.concurrent.CompletableFuture;
 @Component
 @RequiredArgsConstructor
 class OrchestratorRequestSender {
-    private static final TypeReference<Collection<ScheduleResponse>> aggregatedResponseType = new TypeReference<>() {
-    };
     private final RequestSender requestSender;
     private final UriFactory uriFactory;
     private final JsonMapperFacade mapper;
@@ -43,7 +41,7 @@ class OrchestratorRequestSender {
     public CompletableFuture<Collection<ScheduleResponse>> sendScheduleRequests(Collection<ScheduleRequest> scheduleRequests) {
         var uri = uriFactory.createAggregatedSchedulesUri();
         return withOkStatusAssertion(requestSender.sendPost(uri, mapper.toJson(scheduleRequests)))
-                .thenApply(response -> mapper.fromJson(response.body(), aggregatedResponseType));
+                .thenApply(response -> mapper.fromJson(response.body(), new TypeReference<>() {}));
     }
 
     private <T> CompletableFuture<HttpResponse<T>> withOkStatusAssertion(CompletableFuture<HttpResponse<T>> response) {

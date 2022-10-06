@@ -40,7 +40,7 @@ public class ScheduleService {
 
     // TODO: add retrying and cleaning of received, but not fulfilled requests
     public ScheduleResponse schedule(ScheduleRequest request) {
-        var requestEntity = scheduleRequestTracker.persist(request);
+        var requestEntity = scheduleRequestTracker.startTracking(request);
         switch (requestEntity) {
             case JupyterScheduleRequestEntity jupyterRequest -> scheduler.schedule(
                     () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision),
@@ -86,7 +86,7 @@ public class ScheduleService {
         return resourceDetails -> {
             try {
                 scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING);
-                scheduleRequestTracker.persistVmResourceId(request.getId(), resourceDetails.internalResourceId());
+                scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
                 var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
                 var updatedRequest = scheduleRequestTracker.updateStatus(request.getId(), READY);
                 scheduleRequestTracker.saveLinks(request.getId(), links);

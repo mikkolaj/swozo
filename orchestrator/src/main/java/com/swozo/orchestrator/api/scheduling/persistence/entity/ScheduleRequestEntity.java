@@ -13,7 +13,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
-public abstract sealed class ScheduleRequestEntity extends BaseEntity permits JupyterScheduleRequestEntity {
+public abstract class ScheduleRequestEntity extends BaseEntity {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String machineType;

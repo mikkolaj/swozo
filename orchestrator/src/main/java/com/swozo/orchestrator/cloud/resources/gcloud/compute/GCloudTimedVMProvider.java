@@ -62,14 +62,12 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     @Async
     @Override
     public CompletableFuture<Optional<VMResourceDetails>> getVMResourceDetails(Long internalId) throws VMOperationFailed {
-        var vmAddress = vmRepository.findById(internalId).map(vmMapper::toDto);
-        var publicIPAddress = vmAddress.map(
-                CheckedExceptionConverter.from(manager::getInstanceExternalIP, VMOperationFailed::new)
+        return CompletableFuture.completedFuture(vmRepository.findById(internalId)
+                .map(vmMapper::toDto)
+                .map(CheckedExceptionConverter.from(manager::getInstanceExternalIP, VMOperationFailed::new))
+                .map(address ->
+                        new VMResourceDetails(internalId, address, gCloudProperties.sshUser(), DEFAULT_SSH_PORT, gCloudProperties.sshKeyPath()))
         );
-        var resourceDetails = publicIPAddress.map(address ->
-                new VMResourceDetails(internalId, address, gCloudProperties.sshUser(), DEFAULT_SSH_PORT, gCloudProperties.sshKeyPath())
-        );
-        return CompletableFuture.completedFuture(resourceDetails);
     }
 
     @Async

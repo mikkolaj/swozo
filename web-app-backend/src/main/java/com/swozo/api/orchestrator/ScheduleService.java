@@ -12,7 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.function.BiConsumer;
+
+import static com.swozo.util.CollectionUtils.iterateSimultaneously;
 
 @Service
 @RequiredArgsConstructor
@@ -38,22 +39,8 @@ public class ScheduleService {
                 .map(ActivityWithModule::module)
                 .toList();
 
-        iterateSimultaneously(allActivityModules, requestIds, this::updateActivityModule);
-    }
-
-    private <S, T> void iterateSimultaneously(Collection<S> col1, Collection<T> col2, BiConsumer<S, T> consumer) {
-        var it1 = col1.iterator();
-        var it2 = col2.iterator();
-        while (it1.hasNext() && it2.hasNext()) {
-            var var1 = it1.next();
-            var var2 = it2.next();
-            consumer.accept(var1, var2);
-        }
-    }
-
-    private void updateActivityModule(ActivityModule module, Long requestId) {
-        module.setRequestId(requestId);
-        moduleRepository.save(module);
+        iterateSimultaneously(allActivityModules, requestIds, ActivityModule::setRequestId);
+        moduleRepository.saveAll(allActivityModules);
     }
 
     private Psm providePsm(Activity activity) {
