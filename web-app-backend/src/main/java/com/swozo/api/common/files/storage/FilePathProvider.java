@@ -2,6 +2,7 @@ package com.swozo.api.common.files.storage;
 
 
 import com.swozo.api.common.files.util.FilePathGenerator;
+import com.swozo.persistence.Activity;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -12,8 +13,8 @@ public class FilePathProvider {
     private static final String COURSES = "courses";
     private static final String ACTIVITIES = "activities";
 
-    public FilePathGenerator publicActivityFilePath(Long courseId, Long activityId) {
-        return withFilename(COURSES, courseId, ACTIVITIES, activityId);
+    public FilePathGenerator publicActivityFilePath(Activity activity) {
+        return withFilename(COURSES, activity.getCourse().getId(), ACTIVITIES, activity.getId());
     }
 
     public String getFilename(String path) {

@@ -4,6 +4,8 @@ import com.swozo.api.common.files.request.StorageAccessRequest;
 import com.swozo.config.CloudProvider;
 import org.springframework.scheduling.annotation.Async;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface StorageProvider {
     StorageAccessRequest createAuthorizedUploadRequest(String storageObjectName, long maxFileSizeBytes);
 
@@ -17,5 +19,5 @@ public interface StorageProvider {
     CloudProvider getProviderType();
 
     @Async
-    void cleanup(String storageObjectName);
+    CompletableFuture<Void> cleanup(String storageObjectName);
 }

@@ -30,7 +30,7 @@ public class ActivityService {
 
         return fileService.prepareUpload(
                 initFileUploadRequest,
-                filePathProvider.publicActivityFilePath(activity.getCourse().getId(), activityId),
+                filePathProvider.publicActivityFilePath(activity),
                 () -> activityValidator.validateAddActivityFileRequest(activity, teacherId, initFileUploadRequest)
         );
     }

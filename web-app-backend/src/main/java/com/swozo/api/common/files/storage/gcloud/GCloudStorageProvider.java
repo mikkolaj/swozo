@@ -16,10 +16,8 @@ import org.springframework.stereotype.Service;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -40,12 +38,10 @@ public class GCloudStorageProvider implements StorageProvider {
 
     private void initBuckets() {
         var bucketName = properties.webBucket().name();
-        var bucket = storage.get(bucketName);
-        if (bucket == null) {
-            logger.info("Bucket: " + bucketName + " not found, trying to create it");
-            bucket = storage.create(BucketInfo.of(bucketName));
-            logger.info("Bucket created successfully");
-        }
+        var bucket = Optional.ofNullable(storage.get(bucketName)).orElseGet(() -> {
+            logger.warn("Bucket: " + bucketName + " not found, trying to create it");
+            return createBucket(bucketName);
+        });
 
         logger.debug("updating bucket CORS settings");
         var cors = Cors.newBuilder()
@@ -65,7 +61,7 @@ public class GCloudStorageProvider implements StorageProvider {
     @Override
     public StorageAccessRequest createAuthorizedUploadRequest(String storageObjectName, long maxFileSizeBytes) {
         var extensionHeaders = Map.of(
-                "X-Goog-Content-Length-Range", String.format("%d,%d", 0, maxFileSizeBytes)
+                SIZE_VALIDATION_HEADER, String.format("%d,%d", 0, maxFileSizeBytes)
         );
 
         return buildStorageAccessRequest(
@@ -100,8 +96,15 @@ public class GCloudStorageProvider implements StorageProvider {
     }
 
     @Override
-    public void cleanup(String storageObjectName) {
+    public CompletableFuture<Void> cleanup(String storageObjectName) {
         // TODO
+        return CompletableFuture.completedFuture(null);
+    }
+
+    private Bucket createBucket(String bucketName) {
+        var createdBucket = storage.create(BucketInfo.of(bucketName));
+        logger.info("Bucket created successfully");
+        return createdBucket;
     }
 
     private URL buildSignedUrl(

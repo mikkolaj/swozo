@@ -1,4 +1,4 @@
-package com.swozo.orchestrator.configuration.conditions;
+package com.swozo.config;
 
 public enum CloudProvider {
     GCLOUD;
