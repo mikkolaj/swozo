@@ -6,7 +6,7 @@ RUN ["apt","install","python3","-y"]
 RUN ["curl","https://bootstrap.pypa.io/get-pip.py","-o","get-pip.py"]
 RUN ["python3","get-pip.py","--user"]
 RUN ["python3","-m","pip","install","--user","ansible"]
-RUN ["python3","-m","pip","uninstall","pip"]
+RUN ["python3","-m","pip","uninstall","-y","pip"]
 
 ARG JAR_FILE=build/libs/\*.jar
 ENV PATH="${PATH}:~/.local/bin"
