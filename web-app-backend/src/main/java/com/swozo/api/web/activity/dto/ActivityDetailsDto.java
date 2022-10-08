@@ -1,5 +1,6 @@
 package com.swozo.api.web.activity.dto;
 
+import com.swozo.api.common.files.dto.FileDto;
 import com.swozo.api.web.activitymodule.dto.ActivityModuleDetailsDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -14,6 +15,7 @@ public record ActivityDetailsDto(
         @Schema(required = true) LocalDateTime startTime,
         @Schema(required = true) LocalDateTime endTime,
         @Schema(required = true) List<ActivityInstructionDto> instructionsFromTeacher,
-        @Schema(required = true) List<ActivityModuleDetailsDto> activityModules
+        @Schema(required = true) List<ActivityModuleDetailsDto> activityModules,
+        @Schema(required = true) List<FileDto> publicFiles
 ) {
 }
