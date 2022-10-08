@@ -26,6 +26,6 @@ public class FilePathProvider {
     }
 
     private FilePathGenerator withFilename(Object ...partialPath) {
-        return filename -> join(partialPath, filename);
+        return filename -> join(join(partialPath), filename);
     }
 }
