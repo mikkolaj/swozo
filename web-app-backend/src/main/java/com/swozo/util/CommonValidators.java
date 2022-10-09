@@ -47,8 +47,8 @@ public class CommonValidators {
                 .toList();
     }
 
-    public static Optional<ValidationError> unique(String fieldName, Supplier<Optional<?>> checker) {
-        return checker.get().map(val -> ValidationErrorType.NOT_UNIQUE.forField(fieldName));
+    public static Optional<ValidationError> unique(String fieldName, Optional<?> repeatedValue) {
+        return repeatedValue.map(val -> ValidationErrorType.NOT_UNIQUE.forField(fieldName));
     }
 
     public static Optional<ValidationError> timeDeltaInBounds(

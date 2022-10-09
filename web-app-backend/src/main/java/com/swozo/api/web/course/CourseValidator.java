@@ -2,6 +2,7 @@ package com.swozo.api.web.course;
 
 import com.swozo.api.web.exceptions.types.common.ValidationError;
 import com.swozo.api.web.exceptions.types.common.ValidationErrors;
+import com.swozo.api.web.exceptions.types.common.ValidationNames;
 import com.swozo.api.web.exceptions.types.course.AlreadyAMemberException;
 import com.swozo.api.web.exceptions.types.course.NotACreatorException;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
@@ -40,8 +41,8 @@ public class CourseValidator {
                     .collect(Collectors.toCollection(ArrayList::new));
 
         ValidationErrors.builder()
-            .combineWith(courseErrors, "course")
-            .combineWithIndices(activityErrors, "activities")
+            .combineWith(courseErrors, ValidationNames.Fields.COURSE)
+            .combineWithIndices(activityErrors, ValidationNames.Fields.ACTIVITIES)
             .build()
             .throwIfAnyPresent("Invalid course data");
     }
@@ -49,15 +50,18 @@ public class CourseValidator {
     private ValidationErrors.Builder validateCourseData(CreateCourseRequest createCourseRequest) {
         return ValidationErrors.builder()
                 .putEachFailed(allSchemaRequiredFieldsPresent(createCourseRequest))
-                .putIfFails(presentAndNotEmpty("name", createCourseRequest.name()))
+                .putIfFails(presentAndNotEmpty(ValidationNames.Fields.NAME, createCourseRequest.name()))
                 .putIfFails(
                         numberInBounds(
-                            "expectedStudentCount", createCourseRequest.expectedStudentCount(),
+                            ValidationNames.Fields.EXPECTED_STUDENT_COUNT, createCourseRequest.expectedStudentCount(),
                             MIN_STUDENT_COUNT, MAX_STUDENT_COUNT
                         )
-                        .map(error -> error.withArg("min", MIN_STUDENT_COUNT).withArg("max", MAX_STUDENT_COUNT))
+                        .map(error -> error
+                                .withArg(ValidationNames.Errors.MIN, MIN_STUDENT_COUNT)
+                                .withArg(ValidationNames.Errors.MAX, MAX_STUDENT_COUNT)
+                        )
                 )
-                .putIfFails(unique("name", () -> courseRepository.findByName(createCourseRequest.name())));
+                .putIfFails(unique(ValidationNames.Fields.NAME, courseRepository.findByName(createCourseRequest.name())));
     }
 
     private ValidationErrors.Builder validateActivityData(CreateActivityRequest createActivityRequest, List<CreateActivityRequest> allActivities) {
@@ -70,26 +74,28 @@ public class CourseValidator {
         return ValidationErrors.builder()
             .putEachFailed(allSchemaRequiredFieldsPresent(createActivityRequest))
             .putIfFails(isAUniqueActivity(createActivityRequest, allActivities))
-            .putIfFails(presentAndNotEmpty("name", createActivityRequest.name()))
-            .putIfFails(unique("name",
-                    () -> otherActivities.stream().filter(activity -> createActivityRequest.name().equals(activity.name())).findAny())
+            .putIfFails(presentAndNotEmpty(ValidationNames.Fields.NAME, createActivityRequest.name()))
+            .putIfFails(unique(ValidationNames.Fields.NAME,
+                     otherActivities.stream().filter(activity -> createActivityRequest.name().equals(activity.name())).findAny())
             )
             .putIfFails(
-                    isInFuture("startTime", createActivityRequest.startTime(), minTimeBeforeActivityStart)
+                    isInFuture(ValidationNames.Fields.START_TIME, createActivityRequest.startTime(), minTimeBeforeActivityStart)
                         .map(error -> error.withArg(
-                                "minStartTime", LocalDateTime.now().plus(minTimeBeforeActivityStart))
+                                ValidationNames.Errors.MIN_START_TIME, LocalDateTime.now().plus(minTimeBeforeActivityStart))
                         )
             )
             .putIfFails(
                     timeDeltaInBounds(
-                    "endTime",
+                        ValidationNames.Fields.END_TIME,
                         createActivityRequest.startTime(),
                         createActivityRequest.endTime(),
                         minActivityDuration,
                         maxActivityDuration
                     )
-                    .map(error -> error.withArg("minDuration", minActivityDuration.toMinutes()))
-                    .map(error -> error.withArg("maxDuration", maxActivityDuration.toMinutes()))
+                    .map(error -> error
+                            .withArg(ValidationNames.Errors.MIN_DURATION, minActivityDuration.toMinutes())
+                            .withArg(ValidationNames.Errors.MAX_DURATION, maxActivityDuration.toMinutes())
+                    )
             )
             .putIfFails(notOverlappingWithOtherActivities(createActivityRequest, otherActivities));
     }
@@ -113,7 +119,7 @@ public class CourseValidator {
             CreateActivityRequest createActivityRequest,
             List<CreateActivityRequest> allActivities
     ) {
-        return unique("name", () ->
+        return unique(ValidationNames.Fields.NAME,
                 allActivities.stream().filter(activity -> activity.equals(createActivityRequest)).count() > 1 ?
                         Optional.of(createActivityRequest) : Optional.empty()
         );
@@ -125,7 +131,7 @@ public class CourseValidator {
     ) {
         return otherActivities.stream()
                 .map(activity -> notOverlapping(
-                                "startTime",
+                                ValidationNames.Fields.START_TIME,
                                 activity.startTime(), activity.endTime(),
                                 createActivityRequest.startTime(), createActivityRequest.endTime(),
                                 minTimeBetweenActivities
@@ -134,6 +140,6 @@ public class CourseValidator {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findAny()
-                .map(error -> error.withArg("minTimeBetween", minTimeBetweenActivities.toMinutes()));
+                .map(error -> error.withArg(ValidationNames.Errors.MIN_TIME_BETWEEN, minTimeBetweenActivities.toMinutes()));
     }
 }
