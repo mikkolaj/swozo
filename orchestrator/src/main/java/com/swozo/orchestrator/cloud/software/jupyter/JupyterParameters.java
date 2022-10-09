@@ -14,7 +14,7 @@ public class JupyterParameters {
     private static final String NOTEBOOK_LOCATION_PARAM = "notebookLocation";
     private final String notebookLocation;
 
-    public static JupyterParameters from(Map<String, String> dynamicParameters) {
+    public static JupyterParameters from(Map<String, String> dynamicParameters) throws InvalidParametersException {
         var notebookLocation = Optional.ofNullable(dynamicParameters.get(NOTEBOOK_LOCATION_PARAM))
                 .orElseThrow(() -> new InvalidParametersException("Parameter \"notebookLocation\" must be present"));
         return new JupyterParameters(notebookLocation);

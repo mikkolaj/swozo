@@ -3,6 +3,7 @@ package com.swozo.orchestrator.cloud.software.jupyter;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
@@ -44,12 +45,12 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
-    public void validateParameters(Map<String, String> dynamicParameters) throws IllegalArgumentException {
+    public void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException {
         JupyterParameters.from(dynamicParameters);
     }
 
     @Override
-    public List<ParameterDescription> getParameterDescriptions() throws IllegalArgumentException {
+    public List<ParameterDescription> getParameterDescriptions() {
         return JupyterParameters.getParameterDescriptions();
     }
 
