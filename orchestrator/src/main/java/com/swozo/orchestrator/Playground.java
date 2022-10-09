@@ -18,7 +18,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class Playground implements Runnable {
-    private static final String project = "hybrid-text-350213";
     private static final String zone = "europe-central2-a";
     private static final String networkName = "default";
     private static final String vmName = "super-instancja";
@@ -32,7 +31,7 @@ public class Playground implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void createInstance() {
-        var vmAddress = new VMAddress(project, zone, networkName, vmName);
+        var vmAddress = new VMAddress(properties.project(), zone, networkName, vmName);
         var vmSpecs = new VMSpecs(machineType, imageFamily, diskSizeGb);
 
         try {
@@ -43,7 +42,7 @@ public class Playground implements Runnable {
     }
 
     public void deleteInstance() {
-        var vmAddress = new VMAddress(project, zone, networkName, vmName);
+        var vmAddress = new VMAddress(properties.project(), zone, networkName, vmName);
 
         try {
             gCloudVmLifecycleManager.deleteInstance(vmAddress);

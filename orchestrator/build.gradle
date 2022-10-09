@@ -46,3 +46,11 @@ tasks.named('test') {
     jvmArgs += '--enable-preview'
     useJUnitPlatform()
 }
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    archiveFileName = 'orchestrator.jar'
+}
