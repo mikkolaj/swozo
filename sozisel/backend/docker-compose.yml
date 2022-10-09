@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:12.2
+    environment:
+      - POSTGRES_DB=sozisel_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PORT=5432
+    volumes:
+      - "sozisel-postgres-data:/var/lib/postgresql/data"
+    ports:
+      - "5432:5432"
+
+volumes:
+  sozisel-postgres-data:
+
+
