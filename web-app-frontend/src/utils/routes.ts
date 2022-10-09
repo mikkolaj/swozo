@@ -10,6 +10,7 @@ export class PageRoutes {
     static readonly ACTIVITIES = `${this.COURSE}/activities`;
     static readonly ACTIVITY = `${this.ACTIVITIES}/:activityId`;
     static readonly ACTIVITY_INSTRUCTIONS = `${this.ACTIVITY}/instructions`;
+    static readonly ACTIVITY_FILES = `${this.ACTIVITY}/files`;
     static readonly FILES = '/files';
 
     static Course(courseId: string | number): string {
@@ -27,6 +28,10 @@ export class PageRoutes {
         return RouteBuilder.of(this.ACTIVITY_INSTRUCTIONS)
             .withPrefix(this.Activity(courseId, activityId))
             .build();
+    }
+
+    static ActivityFiles(courseId: string | number, activityId: string | number): string {
+        return RouteBuilder.of(this.ACTIVITY_FILES).withPrefix(this.Activity(courseId, activityId)).build();
     }
 
     static JoinCourse(joinUUID: string): string {

@@ -1,5 +1,5 @@
-import UploadIcon from '@mui/icons-material/Upload';
-import { Box, Button, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
+import { Box, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
+import { FileInputButton } from 'common/Input/FileInputButton';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormSelectField } from 'common/Input/FormSelectField';
 import { SlideProps } from 'common/SlideForm/util';
@@ -68,25 +68,16 @@ export const ModuleInfoForm = ({ nameBuilder, values, setValues, handleChange }:
                     labelText="Startowy notebook"
                     textFieldProps={{ inputProps: { readOnly: true } }}
                 />
-                <Button
-                    sx={{ ml: 2, height: 56 }}
-                    endIcon={<UploadIcon />}
-                    variant="contained"
-                    component="label"
-                >
-                    Wybierz plik
-                    <input
-                        type="file"
-                        hidden
-                        onChange={(v) => {
-                            console.log(values);
-                            setValues({
-                                ...values,
-                                serviceFile: v.target.files?.item(0)?.name ?? '',
-                            });
-                        }}
-                    />
-                </Button>
+                <FileInputButton
+                    text="Wybierz plik"
+                    onFilesSelected={(files) => {
+                        console.log(files);
+                        setValues({
+                            ...values,
+                            serviceFile: files[0]?.name ?? '',
+                        });
+                    }}
+                />
             </Box>
 
             <Divider sx={{ width: '75%', mt: 2 }} />

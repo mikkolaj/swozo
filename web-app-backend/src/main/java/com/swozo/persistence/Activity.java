@@ -36,7 +36,7 @@ public class Activity extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "file.id")
     @ToString.Exclude
-    private Collection<File> publicFiles = new LinkedList<>();
+    private Collection<RemoteFile> publicFiles = new LinkedList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
@@ -52,7 +52,7 @@ public class Activity extends BaseEntity {
         modules.remove(activityModule);
     }
 
-    public void addPublicFile(File file) {
+    public void addPublicFile(RemoteFile file) {
         publicFiles.add(file);
     }
 }

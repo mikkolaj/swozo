@@ -6,7 +6,7 @@ import com.swozo.api.common.files.request.StorageAccessRequest;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.api.common.files.util.FilePathGenerator;
 import com.swozo.api.common.files.util.UploadValidationStrategy;
-import com.swozo.persistence.File;
+import com.swozo.persistence.RemoteFile;
 import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -49,13 +49,13 @@ public class FileService {
     public <T> T acknowledgeUpload(
             UploadAccessDto uploadAccessDto,
             Supplier<T> initialResourceSupplier,
-            BiFunction<File, T, T> fileConsumer
+            BiFunction<RemoteFile, T, T> fileConsumer
     ) {
         var storageAccessRequest = uploadAccessDto.storageAccessRequest();
         if (!storageProvider.isValid(storageAccessRequest)) {
             // we enter here iff storageAccessRequest was spoofed (i.e. it wasn't received from prepareUpload request)
-            // in this case we don't have to do anything with remote storage, because file couldn't have been uploaded
-            // but because of that we shouldn't corrupt local database with info about a file that doesn't exist
+            // in this case we don't have to do anything with remote storage, because file couldn't have been uploaded,
+            // and thus we shouldn't corrupt local database with info about a file that doesn't exist
             logger.warn("Verification failed for " + storageAccessRequest);
             throw new UnauthorizedException("Failed to verify upload response");
         }
@@ -64,7 +64,7 @@ public class FileService {
             return initialResourceSupplier.get();
         }
 
-        var file = fileRepository.save(new File(
+        var file = fileRepository.save(new RemoteFile(
                 storageAccessRequest.filePath(),
                 uploadAccessDto.initFileUploadRequest().sizeBytes(),
                 LocalDateTime.now()
@@ -79,7 +79,7 @@ public class FileService {
         }
     }
 
-    public StorageAccessRequest createDownloadRequest(File file) {
+    public StorageAccessRequest createDownloadRequest(RemoteFile file) {
         return storageProvider.createAuthorizedDownloadRequest(file.getPath());
     }
 }

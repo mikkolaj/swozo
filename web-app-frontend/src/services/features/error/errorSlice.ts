@@ -20,14 +20,6 @@ const initialState = (): ErrorState => ({
     },
 });
 
-// export const triggerError = createAsyncThunk<
-//     unknown,
-//     ErrorOptions,
-//     { dispatch: AppDispatch; state: RootState }
-// >('error/trigger', (options, { getState, dispatch }) => {
-//     dispatch(set)
-// });
-
 export const errorSlice = createSlice({
     name: 'error',
     initialState: initialState(),

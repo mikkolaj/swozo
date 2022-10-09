@@ -58,6 +58,7 @@
         },
         "activity": {
             "links": "linki",
+            "files": "pliki",
             "instructions": "instrukcje",
             "timeRange": "{{startTime}} - {{endTime}}",
             "linksInfo": {
@@ -212,6 +213,23 @@
             "noCourse": "Wróć do kursów"
         }
     },
+    "activityFiles": {
+        "header": "Pliki dla: {{courseName}} - {{activityName}}",
+        "goBackBtn": "Wróć do kursu",
+        "tabs": {
+            "public": {
+                "label": "Publiczne pliki",
+                "uploadBtn": "Prześlij plik"
+            },
+            "users": {
+                "label": "Moje pliki"
+            }
+        },
+        "error": {
+            "noActivity": "Wróć do kursu",
+            "noCourse": "Wróć do kursów"
+        }
+    },
     "myFiles": {
         "header": "Moje pliki",
         "fileName": "Nazwa pliku",
@@ -224,6 +242,7 @@
         "refresh": "Odśwież"
     },
     "toast": {
-        "courseCreated": "Kurs został utworzony!"
+        "courseCreated": "Kurs został utworzony!",
+        "fileUploaded": "Plik został przesłany!"
     }
 }

@@ -18,7 +18,7 @@ public class ActivityValidator {
             throw new NotACreatorException("Only course creator can add public activity files");
         }
         if (activity.getPublicFiles().stream()
-                .anyMatch(file -> filePathProvider.getFilename(file.getPath()).equals(initFileUploadRequest.filename()))
+                .anyMatch(file -> filePathProvider.isSameName(file, initFileUploadRequest))
         ) {
             throw DuplicateFileException.withName(initFileUploadRequest.filename());
         }

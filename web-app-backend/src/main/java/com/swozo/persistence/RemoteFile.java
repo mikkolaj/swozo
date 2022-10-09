@@ -7,13 +7,13 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Files")
+@Table(name = "RemoteFiles")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class File extends BaseEntity {
+public class RemoteFile extends BaseEntity {
     private String path;
     private Long sizeBytes;
     private LocalDateTime createdAt = LocalDateTime.now();
