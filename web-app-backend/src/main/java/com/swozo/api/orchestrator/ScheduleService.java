@@ -1,10 +1,10 @@
 package com.swozo.api.orchestrator;
 
 import com.swozo.api.web.activitymodule.ActivityModuleRepository;
-import com.swozo.model.scheduling.JupyterScheduleRequest;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.properties.Psm;
+import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
 import com.swozo.persistence.Activity;
 import com.swozo.persistence.ActivityModule;
@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 import static com.swozo.util.CollectionUtils.iterateSimultaneously;
 
@@ -52,10 +53,13 @@ public class ScheduleService {
     }
 
     private ScheduleRequest buildScheduleServiceRequest(ActivityWithModule activityWithModule) {
-        return new JupyterScheduleRequest(
-                "TODO",
+        var hardcodedParameters = new HashMap<String, String>();
+        hardcodedParameters.put("notebookLocation", "somewhereOverTheRainbow");
+        return new ScheduleRequest(
                 provideServiceLifespan(activityWithModule.activity()),
-                providePsm(activityWithModule.activity())
+                providePsm(activityWithModule.activity()),
+                ScheduleType.JUPYTER,
+                hardcodedParameters
         );
     }
 

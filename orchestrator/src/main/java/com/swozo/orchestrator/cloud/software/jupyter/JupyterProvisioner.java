@@ -1,6 +1,7 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
 import com.swozo.model.links.ActivityLinkInfo;
+import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,8 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public List<ActivityLinkInfo> provision(VMResourceDetails resource) throws InterruptedException, ProvisioningFailed {
+    // TODO: getting notebook from specified location
+    public List<ActivityLinkInfo> provision(VMResourceDetails resource, Map<String, String> parameters) throws InterruptedException, ProvisioningFailed {
         try {
             logger.info("Started provisioning Jupyter on: {}", resource);
             runPlaybook(resource);
@@ -38,6 +41,16 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         } catch (NotebookFailed e) {
             throw new ProvisioningFailed(e);
         }
+    }
+
+    @Override
+    public void validateParameters(Map<String, String> dynamicParameters) throws IllegalArgumentException {
+        JupyterParameters.from(dynamicParameters);
+    }
+
+    @Override
+    public List<ParameterDescription> getParameterDescriptions() throws IllegalArgumentException {
+        return JupyterParameters.getParameterDescriptions();
     }
 
     @Override

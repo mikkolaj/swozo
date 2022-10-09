@@ -1,10 +1,10 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
-import com.swozo.function.ThrowingFunction;
 import com.swozo.model.links.ActivityLinkInfo;
+import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
-import com.swozo.orchestrator.api.scheduling.persistence.entity.JupyterScheduleRequestEntity;
+import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
@@ -12,6 +12,7 @@ import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
+import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
 import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
 import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class ScheduleService {
     private static final int CLEANUP_SECONDS = 0;
     private final InternalTaskScheduler scheduler;
     private final TimedVMProvider timedVmProvider;
-    private final TimedSoftwareProvisioner jupyterProvisioner;
+    private final TimedSoftwareProvisionerFactory provisionerFactory;
     private final ScheduleRequestTracker scheduleRequestTracker;
     private final ScheduleRequestMapper requestMapper;
     private final TimingService timingService;
@@ -41,24 +42,29 @@ public class ScheduleService {
     // TODO: add retrying and cleaning of received, but not fulfilled requests
     public ScheduleResponse schedule(ScheduleRequest request) {
         var requestEntity = scheduleRequestTracker.startTracking(request);
-        switch (requestEntity) {
-            case JupyterScheduleRequestEntity jupyterRequest -> scheduler.schedule(
-                    () -> scheduleCreationAndDeletion(jupyterRequest, jupyterProvisioner::provision),
-                    timingService.getSchedulingOffset(request, jupyterProvisioner.getProvisioningSeconds()));
-            default -> throw new IllegalStateException("Unexpected value: " + request);
-        }
+        var provisioner = provisionerFactory.getProvisioner(request.scheduleType());
+        provisioner.validateParameters(request.dynamicProperties());
+        scheduler.schedule(
+                () -> scheduleCreationAndDeletion(requestEntity, provisioner),
+                timingService.getSchedulingOffset(request, provisioner.getProvisioningSeconds()));
         return new ScheduleResponse(requestEntity.getId());
+    }
+
+
+    public List<ParameterDescription> getParameterDescriptions(ScheduleType type) {
+        var provisioner = provisionerFactory.getProvisioner(type);
+        return provisioner.getParameterDescriptions();
     }
 
     private Void scheduleCreationAndDeletion(
             ScheduleRequestEntity request,
-            ThrowingFunction<VMResourceDetails, List<ActivityLinkInfo>> provisionSoftware
+            TimedSoftwareProvisioner provisioner
     ) throws InterruptedException {
         try {
             scheduleRequestTracker.updateStatus(request.getId(), VM_CREATING);
             timedVmProvider
-                    .createInstance(requestMapper.toDto(request).getPsm())
-                    .thenAccept(provisionSoftwareAndScheduleDeletion(request, provisionSoftware))
+                    .createInstance(requestMapper.toDto(request).psm())
+                    .thenAccept(provisionSoftwareAndScheduleDeletion(request, provisioner))
                     .get();
         } catch (ExecutionException e) {
             switch (e.getCause()) {
@@ -81,26 +87,30 @@ public class ScheduleService {
 
     private Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
             ScheduleRequestEntity request,
-            ThrowingFunction<VMResourceDetails, List<ActivityLinkInfo>> provisionSoftware
+            TimedSoftwareProvisioner provisioner
     ) {
         return resourceDetails -> {
             try {
                 scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING);
                 scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
-                var links = CheckedExceptionConverter.from(provisionSoftware).apply(resourceDetails);
+                var links = delegateProvisioning(request, provisioner, resourceDetails);
                 var updatedRequest = scheduleRequestTracker.updateStatus(request.getId(), READY);
                 scheduleRequestTracker.saveLinks(request.getId(), links);
                 scheduler.schedule(
                         () -> deleteInstance(updatedRequest, resourceDetails),
                         timingService.getDeletionOffset(requestMapper.toDto(updatedRequest), CLEANUP_SECONDS));
             } catch (ProvisioningFailed e) {
-                logger.error("Provisioning software on: {} failed. Scheduling deletion.", resourceDetails, e);
+                logger.error("Provisioning software on: {} failed.", resourceDetails, e);
                 scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING_FAILED);
-            } catch (Exception e) {
-                scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING_FAILED);
-                throw e;
             }
         };
+    }
+
+    private static List<ActivityLinkInfo> delegateProvisioning(ScheduleRequestEntity request, TimedSoftwareProvisioner provisioner, VMResourceDetails resourceDetails) {
+        return CheckedExceptionConverter.from(
+                () -> provisioner.provision(resourceDetails, request.getDynamicProperties()),
+                ProvisioningFailed::new
+        ).get();
     }
 
     private Void deleteInstance(ScheduleRequestEntity request, VMResourceDetails connectionDetails) throws InterruptedException {

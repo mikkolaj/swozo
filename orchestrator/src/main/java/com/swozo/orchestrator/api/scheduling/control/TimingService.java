@@ -9,11 +9,11 @@ import java.time.ZoneOffset;
 @Service
 public class TimingService {
     public long getSchedulingOffset(ScheduleRequest request, int schedulingSeconds) {
-        return offsetTime(request.getServiceLifespan().startTime()) - schedulingSeconds;
+        return offsetTime(request.serviceLifespan().startTime()) - schedulingSeconds;
     }
 
     public long getDeletionOffset(ScheduleRequest request, int cleanupSeconds) {
-        return offsetTime(request.getServiceLifespan().endTime()) + cleanupSeconds;
+        return offsetTime(request.serviceLifespan().endTime()) + cleanupSeconds;
     }
 
     private long offsetTime(LocalDateTime targetTime) {
