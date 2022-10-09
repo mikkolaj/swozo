@@ -4,6 +4,8 @@ import { FileSummary } from 'utils/mocks';
 export type SortKey = 'name' | 'courseName' | 'createdAt';
 export type SortDirection = 'ASC' | 'DESC';
 
+export const opposite = (direction: SortDirection): SortDirection => (direction === 'ASC' ? 'DESC' : 'ASC');
+
 export const sorted = (files: FileSummary[], _: SortKey): FileSummary[] => {
     // TODO: proper sorting
     return files.sort((f1, f2) => f1.createdAt.diff(f2.createdAt));

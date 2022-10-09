@@ -1,18 +1,26 @@
+/* eslint-disable react/jsx-key */
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { Box, Container, Divider, Grid, IconButton, Stack, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import ShareIcon from '@mui/icons-material/Share';
+import { Container, Grid, IconButton, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { stylesRowCenteredVertical } from 'common/styles';
+import { StackedList } from 'common/StackedList/StackedList';
+import { StackedListContent } from 'common/StackedList/StackedListContent';
+import { StackedListHeader } from 'common/StackedList/StackedListHeader';
+import { stylesRow, stylesRowCenteredVertical } from 'common/styles';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { mockFiles } from 'utils/mocks';
-import { FileView } from './components/FileView';
-import { sorted, SortKey, withSortDirection } from './utils';
+import { formatDate } from 'utils/util';
+import { opposite, SortDirection, sorted, SortKey, withSortDirection } from './utils';
 
 export const FilesListView = () => {
     const { t } = useTranslation();
     const [files] = useState(mockFiles);
-    const [sortIncreasing, setSortIncreasing] = useState(true);
+    const [sortDirection, setSortDirection] = useState<SortDirection>('DESC');
     const [sortKey, setSortKey] = useState<SortKey>('createdAt');
     const sortedFiles = useMemo(() => sorted(files, sortKey), [files, sortKey]);
 
@@ -27,45 +35,87 @@ export const FilesListView = () => {
             }
         >
             <Container>
-                <Stack spacing={2} px={2}>
-                    <Grid container sx={{ mb: -2 }}>
-                        <Grid item xs={5} sx={stylesRowCenteredVertical}>
-                            <Typography variant="body1" color="GrayText">
-                                {t('myFiles.fileName')}
-                            </Typography>
-                        </Grid>
-                        <Grid sx={stylesRowCenteredVertical} item xs={4}>
-                            <Typography variant="body1" color="GrayText">
-                                {t('myFiles.courseName')}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={3} sx={{ ...stylesRowCenteredVertical, ml: -1 }}>
-                            <Typography variant="body1" color="GrayText">
-                                {t('myFiles.creationDate')}
-                            </Typography>
-                            {sortKey === 'createdAt' && (
-                                <IconButton
-                                    onClick={() => {
-                                        if (sortKey === 'createdAt') {
-                                            setSortIncreasing((sortIncreasing) => !sortIncreasing);
-                                        } else {
-                                            setSortKey('createdAt');
-                                        }
-                                    }}
-                                >
-                                    {sortIncreasing ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
-                                </IconButton>
-                            )}
-                        </Grid>
-                    </Grid>
-
-                    <Divider />
-
-                    {withSortDirection(sortedFiles, sortIncreasing ? 'ASC' : 'DESC').map((file) => (
-                        <FileView key={file.id} file={file} />
-                    ))}
-                </Stack>
-                <Box sx={{ height: 1000 }} />
+                <StackedList
+                    header={
+                        <StackedListHeader
+                            proportions={[5, 4, 3]}
+                            itemWrapperSxProvider={(idx) => {
+                                if (idx === 2) {
+                                    return {
+                                        ...stylesRowCenteredVertical,
+                                        ml: -1,
+                                    };
+                                }
+                            }}
+                            items={[
+                                <Typography variant="body1" color="GrayText">
+                                    {t('myFiles.fileName')}
+                                </Typography>,
+                                <Typography variant="body1" color="GrayText">
+                                    {t('myFiles.courseName')}
+                                </Typography>,
+                                <>
+                                    <Typography variant="body1" color="GrayText">
+                                        {t('myFiles.creationDate')}
+                                    </Typography>
+                                    {sortKey === 'createdAt' && (
+                                        <IconButton
+                                            onClick={() => {
+                                                if (sortKey === 'createdAt') {
+                                                    setSortDirection((direction) => opposite(direction));
+                                                } else {
+                                                    setSortKey('createdAt');
+                                                }
+                                            }}
+                                        >
+                                            {sortDirection === 'DESC' ? (
+                                                <ArrowDownwardIcon />
+                                            ) : (
+                                                <ArrowUpwardIcon />
+                                            )}
+                                        </IconButton>
+                                    )}
+                                </>,
+                            ]}
+                        />
+                    }
+                    content={
+                        <StackedListContent
+                            proportions={[5, 4, 1, 1]}
+                            items={withSortDirection(sortedFiles, sortDirection)}
+                            itemKeyExtractor={(file) => file.id}
+                            itemWraperSxProvider={(idx) => {
+                                if (idx === 3) {
+                                    return {
+                                        ...stylesRow,
+                                        margin: 'auto',
+                                    };
+                                }
+                            }}
+                            itemRenderer={(file) => [
+                                <>
+                                    <InsertDriveFileIcon sx={{ height: '80%' }} />
+                                    <Typography variant="body1">{file.name}</Typography>
+                                </>,
+                                <Typography variant="body1">{file.courseName}</Typography>,
+                                <Typography variant="body1">
+                                    {formatDate(file.createdAt.toDate())}
+                                </Typography>,
+                                <>
+                                    <IconButton color="primary">
+                                        <DownloadIcon />
+                                    </IconButton>
+                                    <IconButton color="primary">
+                                        <ShareIcon />
+                                    </IconButton>
+                                    <IconButton color="primary">
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </>,
+                            ]}
+                        />
+                    }
+                />
             </Container>
         </PageContainer>
     );

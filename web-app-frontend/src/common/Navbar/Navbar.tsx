@@ -3,11 +3,10 @@ import { Avatar, Divider, IconButton, ListItemIcon, MenuItem } from '@mui/materi
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import { getApis } from 'api/initialize-apis';
 import { stylesRowFullyCentered } from 'common/styles';
-import { useRef, useState } from 'react';
+import { useMeQuery } from 'hooks/query/useMeQuery';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from 'react-query';
 import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
 import { STUDENT, TEACHER, TECHNICAL_TEACHER, WithPreference, WithRole } from 'utils/roles';
@@ -17,16 +16,17 @@ import { Logo } from './components/Logo';
 import { AVATAR_HEIGHT, AVATAR_WIDTH, MenuPopup } from './components/MenuPopup';
 import { NavbarItem } from './NavbarItem';
 
+export const HEIGHT = 64;
+
 export const Navbar = () => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
-    const appBarRef = useRef<HTMLDivElement>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { data: me } = useQuery('me', () => getApis().userApi.getUserInfo());
+    const { me } = useMeQuery();
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar ref={appBarRef} position="fixed">
+            <AppBar position="fixed" sx={{ height: HEIGHT, top: 0, left: 0 }}>
                 <Toolbar sx={{ mr: 1 }}>
                     <Logo />
                     <Box sx={stylesRowFullyCentered}>
@@ -45,7 +45,7 @@ export const Navbar = () => {
                     </Box>
                 </Toolbar>
             </AppBar>
-            <Box sx={{ height: appBarRef.current?.clientHeight }} />
+            <Box sx={{ height: HEIGHT, width: '100%' }} />
 
             <MenuPopup anchorEl={anchorEl} onHide={() => setAnchorEl(null)}>
                 <MenuItem>

@@ -2,6 +2,7 @@ export class PageRoutes {
     static readonly HOME = '/';
     static readonly LOGIN = '/login';
     static readonly MY_COURSES = '/my-courses';
+    static readonly JOIN_COURSE = `${this.MY_COURSES}/join/:joinUUID`;
     static readonly COURSE = `${this.MY_COURSES}/:courseId`;
     static readonly CREATE_COURSE = `${this.MY_COURSES}/creator`;
     static readonly MY_MODULES = '/my-modules';
@@ -26,6 +27,14 @@ export class PageRoutes {
         return RouteBuilder.of(this.ACTIVITY_INSTRUCTIONS)
             .withPrefix(this.Activity(courseId, activityId))
             .build();
+    }
+
+    static JoinCourse(joinUUID: string): string {
+        return RouteBuilder.of(this.JOIN_COURSE).withReplaced('joinUUID', joinUUID).build();
+    }
+
+    static withOrigin(route: string): string {
+        return `${window.location.origin}${route}`;
     }
 }
 

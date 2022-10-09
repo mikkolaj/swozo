@@ -1,8 +1,10 @@
 import { CssBaseline } from '@mui/material';
 import { Navbar } from 'common/Navbar/Navbar';
+import { PageGuard } from 'common/PageGuard/PageGuard';
 import { Toaster } from 'common/Styled/Toaster';
-import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionViews';
+import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
 import { CourseView } from 'pages/Course/CourseView';
+import { JoinCourseView } from 'pages/Course/JoinCourseView';
 import { CoursesListView } from 'pages/CoursesList/CoursesListView';
 import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
 import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
@@ -11,6 +13,7 @@ import { Home } from 'pages/Home/Home';
 import { Login } from 'pages/Login/Login';
 import { ModulesListView } from 'pages/ModulesList/ModulesListView';
 import { Route, Routes } from 'react-router-dom';
+import { PopupError } from 'services/features/error/PopupError';
 import { useAppSelector } from 'services/store';
 import {
     ANY_LOGGED_IN,
@@ -36,6 +39,21 @@ function App() {
                 <Route path={PageRoutes.MY_COURSES} element={guarded(<CoursesListView />, ANY_LOGGED_IN)} />
                 <Route path={PageRoutes.COURSE} element={guarded(<CourseView />, ANY_LOGGED_IN)} />
                 <Route
+                    path={PageRoutes.JOIN_COURSE}
+                    element={
+                        <PageGuard
+                            authRequirement={ANY_LOGGED_IN}
+                            navigationOptionsProvider={(guardedLocation) => ({
+                                state: {
+                                    redirectTo: guardedLocation.pathname,
+                                },
+                            })}
+                        >
+                            <JoinCourseView />
+                        </PageGuard>
+                    }
+                />
+                <Route
                     path={PageRoutes.CREATE_COURSE}
                     element={guarded(<CreateCourseView />, withRole(TEACHER))}
                 />
@@ -56,6 +74,7 @@ function App() {
             </Routes>
 
             <Toaster />
+            <PopupError />
         </>
     );
 }

@@ -120,7 +120,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/AddStudentRequest'
         required: true
       responses:
         "200":
@@ -128,7 +128,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/Course'
+                $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
     delete:
@@ -154,7 +154,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/Course'
+                $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
   /auth/login:
@@ -176,6 +176,26 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AuthDetailsDto'
+  /courses/join:
+    patch:
+      tags:
+      - course-controller
+      operationId: joinCourse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinCourseRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
   /users/me:
     get:
       tags:
@@ -250,16 +270,34 @@ paths:
                   $ref: '#/components/schemas/Activity'
       security:
       - JWT_AUTH: []
+  /courses/summary/{uuid}:
+    get:
+      tags:
+      - course-controller
+      operationId: getPublicCourseData
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseSummaryDto'
+      security:
+      - JWT_AUTH: []
 components:
   schemas:
     ActivityInstructionDto:
       required:
-      - body
+      - untrustedPossiblyDangerousHtml
       type: object
       properties:
-        header:
-          type: string
-        body:
+        untrustedPossiblyDangerousHtml:
           type: string
     CreateActivityRequest:
       required:
@@ -312,6 +350,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CreateActivityRequest'
+        password:
+          type: string
     Activity:
       type: object
       properties:
@@ -345,9 +385,7 @@ components:
         id:
           type: integer
           format: int64
-        header:
-          type: string
-        body:
+        untrustedPossiblyDangerousHtml:
           type: string
     ActivityLink:
       type: object
@@ -387,6 +425,10 @@ components:
           type: string
         description:
           type: string
+        joinUUID:
+          type: string
+        password:
+          type: string
         creationTime:
           type: string
           format: date-time
@@ -397,7 +439,7 @@ components:
         students:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: '#/components/schemas/UserCourseData'
         teacher:
           $ref: '#/components/schemas/User'
     Role:
@@ -446,6 +488,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Role'
+    UserCourseData:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UserCourseId'
+        user:
+          $ref: '#/components/schemas/User'
+        course:
+          $ref: '#/components/schemas/Course'
+        joinedAt:
+          type: string
+          format: date-time
+    UserCourseId:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        courseId:
+          type: integer
+          format: int64
     ActivityDetailsDto:
       required:
       - activityModules
@@ -502,6 +565,7 @@ components:
       - activities
       - description
       - id
+      - joinUUID
       - lastActivityTime
       - name
       - students
@@ -526,22 +590,37 @@ components:
         students:
           type: array
           items:
-            $ref: '#/components/schemas/UserDetailsDto'
+            $ref: '#/components/schemas/ParticipantDetailsDto'
         activities:
           type: array
           items:
             $ref: '#/components/schemas/ActivityDetailsDto'
+        joinUUID:
+          type: string
+        coursePassword:
+          type: string
+    ParticipantDetailsDto:
+      required:
+      - joinedAt
+      - participant
+      type: object
+      properties:
+        participant:
+          $ref: '#/components/schemas/UserDetailsDto'
+        joinedAt:
+          type: string
+          format: date-time
     ServiceConnectionDetailsDto:
       required:
       - connectionInstruction
       - serviceName
       type: object
       properties:
-        url:
-          type: string
         serviceName:
           type: string
         connectionInstruction:
+          type: string
+        url:
           type: string
         connectionInfo:
           type: string
@@ -582,6 +661,13 @@ components:
           type: string
         email:
           type: string
+    AddStudentRequest:
+      required:
+      - email
+      type: object
+      properties:
+        email:
+          type: string
     LoginRequest:
       required:
       - email
@@ -613,6 +699,28 @@ components:
             - TEACHER
             - TECHNICAL_TEACHER
             - ADMIN
+    JoinCourseRequest:
+      required:
+      - joinUUID
+      type: object
+      properties:
+        joinUUID:
+          type: string
+        password:
+          type: string
+    CourseSummaryDto:
+      required:
+      - isPasswordProtected
+      - joinUUID
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+        isPasswordProtected:
+          type: boolean
+        joinUUID:
+          type: string
   securitySchemes:
     JWT_AUTH:
       type: http

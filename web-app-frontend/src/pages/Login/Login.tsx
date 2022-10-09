@@ -3,20 +3,28 @@ import { InputField } from 'common/Input/InputField';
 import { stylesColumnCenteredHorizontal } from 'common/styles';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { login } from 'services/features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from 'services/store';
+import { RedirectState } from 'utils/types';
 
 export const Login = () => {
+    const { t } = useTranslation();
+    const location = useLocation();
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const authState = useAppSelector((state) => state.auth);
-    const { t } = useTranslation();
 
     return (
         <Container component="main" maxWidth="xs">
             <Formik
                 initialValues={{ email: '', password: '' }}
-                onSubmit={(values) => {
-                    dispatch(login(values));
+                onSubmit={async (values) => {
+                    await dispatch(login(values));
+                    const { redirectTo } = location.state as RedirectState;
+                    if (redirectTo) {
+                        navigate(redirectTo);
+                    }
                 }}
             >
                 {() => (

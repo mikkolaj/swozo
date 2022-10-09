@@ -22,6 +22,7 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -61,18 +62,20 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     // TODO assert dev env
     private void setupTestData() {
         var adminRole = roleRepository.findByName(RoleDto.ADMIN.toString());
-        userRepository.save(new User("Bolek", "Kowalski", "admin", "admin", List.of(adminRole)));
+        userRepository.save(new User("Bolek", "Kowalski", "admin@gmail.com", "admin", List.of(adminRole)));
 
         var teacherRole = roleRepository.findByName(RoleDto.TEACHER.toString());
         var technicalTeacherRole = roleRepository.findByName(RoleDto.TECHNICAL_TEACHER.toString());
-        User teacher = new User("Lolek", "Kowalski", "teacher", "teacher", List.of(teacherRole, technicalTeacherRole));
+        User teacher = new User("Lolek", "Kowalski", "teacher@gmail.com", "teacher", List.of(teacherRole, technicalTeacherRole));
         userRepository.save(teacher);
 
         var studentRole = roleRepository.findByName(RoleDto.STUDENT.toString());
-        User student1 = new User("Antoni", "Zabrzydowski", "student1", "student1", List.of(studentRole));
+        User student1 = new User("Antoni", "Zabrzydowski", "student1@gmail.com", "student1", List.of(studentRole));
         userRepository.save(student1);
-        User student2 = new User("Mela", "Zabrzydowska", "student2", "student2", List.of(studentRole));
+        User student2 = new User("Mela", "Zabrzydowska", "student2@gmail.com", "student2", List.of(studentRole));
         userRepository.save(student2);
+        User student3 = new User("Rafał", "Zabrzydowski", "student3@gmail.com", "student3", List.of(studentRole));
+        userRepository.save(student3);
 
 //        COURSES:
         Course course = new Course();
@@ -80,7 +83,9 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.setSubject("INFORMATYKA");
         course.setDescription("kurs o pythonie");
         course.setTeacher(teacher);
-        course.setStudents(List.of(student1, student2));
+        course.setPassword("haslo");
+        course.setJoinUUID(UUID.randomUUID().toString());
+        course.setStudents(List.of(new UserCourseData(student1, course), new UserCourseData(student2, course)));
 
         courseRepository.save(course);
 
@@ -113,7 +118,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.JULY, 29, 17, 30, 40));
         activity.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 29, 19, 30, 40));
-        activity.setInstructionsFromTeacher(List.of(new ActivityInstruction("uwaga", "Przed zajęciami należy przeczytać dokumentacje Pythona")));
+        activity.setInstructionsFromTeacher(List.of(new ActivityInstruction( "Przed zajęciami należy przeczytać dokumentacje Pythona")));
         activity.setCourse(course);
         activity.addActivityModule(new ActivityModule(
                 serviceModule,
@@ -131,7 +136,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.JULY, 30, 15, 30, 40));
         activity2.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 30, 17, 0, 40));
-        activity2.setInstructionsFromTeacher(List.of(new ActivityInstruction("uwaga", "Przed zajęciami należy przeczytać dokumentacje Pythona")));
+        activity2.setInstructionsFromTeacher(List.of(new ActivityInstruction("Przed zajęciami należy przeczytać dokumentacje Pythona")));
         activity2.setCourse(course);
         activity2.addActivityModule(new ActivityModule(
                 serviceModule,

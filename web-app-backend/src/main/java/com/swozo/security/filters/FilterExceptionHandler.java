@@ -42,7 +42,7 @@ public class FilterExceptionHandler extends OncePerRequestFilter {
             logger.warn("Unexpected filter exception", ex);
 
             response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
         addCorsHeaders(request, response);

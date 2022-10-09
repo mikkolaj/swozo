@@ -1,4 +1,4 @@
-import { AuthDetailsDto, AuthDetailsDtoRolesEnum } from 'api';
+import { AuthDetailsDto, AuthDetailsDtoRolesEnum, UserDetailsDto } from 'api';
 import { PageGuard } from 'common/PageGuard/PageGuard';
 import { useAppSelector } from 'services/store';
 
@@ -53,4 +53,14 @@ export const WithPreference = ({
 
 export const guarded = (element: JSX.Element, authRequirement: AuthRequirement): JSX.Element => {
     return <PageGuard authRequirement={authRequirement}>{element}</PageGuard>;
+};
+
+export const useRoles = () => {
+    const auth = useAppSelector((state) => state.auth);
+    return auth.isLoggedIn && auth.authData ? auth.authData.roles : [];
+};
+
+export const isSame = (user1?: UserDetailsDto, user2?: UserDetailsDto) => {
+    if (!user1 || !user2) return false;
+    return user1.email === user2.email && user1.name === user2.name && user1.surname === user2.surname;
 };
