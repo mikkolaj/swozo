@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface TimedSoftwareProvisioner {
     List<ActivityLinkInfo> provision(VMResourceDetails resourceDetails, Map<String, String> dynamicParameters) throws InterruptedException, ProvisioningFailed;
-    void validateParameters(Map<String, String> dynamicParameters) throws IllegalArgumentException;
+    void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException;
     List<ParameterDescription> getParameterDescriptions();
 
     int getProvisioningSeconds();

@@ -1,14 +1,13 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
 import com.swozo.model.scheduling.ParameterDescription;
+import com.swozo.model.scheduling.properties.FieldType;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static com.swozo.model.scheduling.properties.FieldType.FILE;
 
 @RequiredArgsConstructor
 public class JupyterParameters {
@@ -22,6 +21,6 @@ public class JupyterParameters {
     }
 
     public static List<ParameterDescription> getParameterDescriptions() {
-        return List.of(new ParameterDescription(NOTEBOOK_LOCATION_PARAM, true, FILE));
+        return List.of(new ParameterDescription(NOTEBOOK_LOCATION_PARAM, true, FieldType.FILE));
     }
 }
