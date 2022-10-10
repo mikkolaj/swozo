@@ -8,7 +8,9 @@ import {
     ServiceModuleControllerApi,
     UserControllerApi,
 } from 'api';
+import { appConfig } from 'index';
 import { getAccessToken } from 'services/features/auth/auth';
+import { withExponentialBackoff } from 'utils/util';
 import { ApiError, ErrorType } from './errors';
 
 type Apis = {
@@ -54,6 +56,13 @@ export const initializeApis = (): Apis => {
     const configuration = new Configuration({
         accessToken: getAccessToken,
         middleware: [new ErrorPreprocessorMiddleware()],
+        fetchApi: (input, init) => {
+            return withExponentialBackoff(
+                () => fetch(input, init),
+                appConfig.fetchConfig.retries,
+                appConfig.fetchConfig.maxTimeMillis
+            );
+        },
         basePath: process.env.REACT_APP_BASE_PATH,
     });
 

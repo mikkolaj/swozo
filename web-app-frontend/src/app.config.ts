@@ -8,14 +8,28 @@ import { QueryClient } from 'react-query';
 
 export type AppConfig = {
     queryClient: QueryClient;
+    fetchConfig: {
+        retries: number;
+        maxTimeMillis: number;
+    };
 };
 
 export const IS_PROD = process.env.REACT_APP_ENV === 'prod';
 export const DEFAULT_LANG = 'pl';
 
+// We don't use react-query on-error-retrying mechanism because
+// we use convenient error preprocessing middleware that throws an error
+// when response.ok is false, in such cases we wouldn't want to do any auto-retries,
+// retries are configured on the fetch-api itself, and are performed only in case of real network errors
 function configureQueryClient() {
     return IS_PROD
-        ? new QueryClient()
+        ? new QueryClient({
+              defaultOptions: {
+                  queries: {
+                      retry: 0,
+                  },
+              },
+          })
         : new QueryClient({
               defaultOptions: {
                   queries: {
@@ -25,6 +39,11 @@ function configureQueryClient() {
               },
           });
 }
+
+export const fetchConfig = {
+    retries: 5,
+    maxTimeMillis: 3000,
+};
 
 function configureLogger() {
     const noop = () => undefined;
@@ -64,5 +83,9 @@ export function configureEnvironment(): AppConfig {
 
     return {
         queryClient: configureQueryClient(),
+        fetchConfig: {
+            retries: IS_PROD ? 5 : 0,
+            maxTimeMillis: 3000,
+        },
     };
 }

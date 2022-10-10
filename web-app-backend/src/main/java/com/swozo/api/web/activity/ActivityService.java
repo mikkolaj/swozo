@@ -7,6 +7,8 @@ import com.swozo.api.common.files.request.InitFileUploadRequest;
 import com.swozo.api.common.files.request.StorageAccessRequest;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.api.web.exceptions.types.course.ActivityNotFoundException;
+import com.swozo.api.web.exceptions.types.files.FileNotFoundException;
 import com.swozo.mapper.ActivityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,10 +59,11 @@ public class ActivityService {
             Long fileId,
             RoleDto userRole
     ) {
-        var activity = activityRepository.findById(activityId).orElseThrow();
-        var file = activity.getPublicFiles().stream().filter(f -> f.getId().equals(fileId)).findAny().orElseThrow();
+        var activity = activityRepository.findById(activityId).orElseThrow(() -> ActivityNotFoundException.withId(activityId));
+        var file = activity.getPublicFiles().stream().filter(f -> f.getId().equals(fileId))
+                .findAny().orElseThrow(() -> FileNotFoundException.inContext("public activity files", fileId));
 
-        activityValidator.validateDownloadPublicActivityFileRequest();
+        activityValidator.validateDownloadPublicActivityFileRequest(userId, activity, userRole);
 
         return fileService.createDownloadRequest(file);
     }

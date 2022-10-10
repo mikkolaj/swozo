@@ -5,16 +5,18 @@ import { AppDispatch, RootState } from 'services/store';
 import { FileHandler } from './FileHandler';
 import { GCloudFileHandler } from './GCloudFileHandler';
 
-type Filename = string;
+type FileStateKey = string;
 
 type UploadState = {
-    filename: Filename;
+    filename: string;
+    uploadContext: string;
     isUploading: boolean;
     startTimestamp: number;
 };
 
 export type UploadRequest<T> = {
     file: File;
+    uploadContext: string;
     preparator: (initFileUploadRequest: InitFileUploadRequest) => Promise<StorageAccessRequest>;
     acker: (uploadAccessDto: UploadAccessDto) => Promise<T>;
     onSuccess: (data: T) => void;
@@ -26,11 +28,14 @@ export type DownloadRequest = {
     fetcher: () => Promise<StorageAccessRequest>;
 };
 
-export type FileHandlerState = Record<Filename, UploadState>;
+export type FileHandlerState = Record<FileStateKey, UploadState>;
 
 const buildInitialState = (): FileHandlerState => ({});
 
-const getFileHandler = (_storageRequest: StorageAccessRequest): FileHandler => {
+export const buildFileStateKey = (context: string, filename: string): FileStateKey =>
+    `${context}/${filename}`;
+
+export const getFileHandler = (_storageRequest: StorageAccessRequest): FileHandler => {
     // if (storageRequest.provider === StorageAccessRequestProviderEnum.Gcloud) {
     //     return new GCloudFileHandler();
     // }
@@ -43,36 +48,30 @@ export const upload = createAsyncThunk<
     unknown,
     UploadRequest<unknown>,
     { dispatch: AppDispatch; state: RootState }
->('files/upload', async ({ file, preparator, acker, onSuccess, onError }, { getState, dispatch }) => {
-    if (getState().files[file.name]?.isUploading) return;
+>(
+    'files/upload',
+    async ({ file, uploadContext, preparator, acker, onSuccess, onError }, { getState, dispatch }) => {
+        if (getState().files[buildFileStateKey(uploadContext, file.name)]?.isUploading) return;
 
-    dispatch(receiveStartUpload(file.name));
-    const initFileUploadRequest: InitFileUploadRequest = { filename: file.name, sizeBytes: file.size };
+        dispatch(receiveStartUpload({ filename: file.name, uploadContext }));
 
-    try {
-        const storageAccessRequest = await preparator(initFileUploadRequest);
+        const initFileUploadRequest: InitFileUploadRequest = { filename: file.name, sizeBytes: file.size };
 
-        const fileHandler = getFileHandler(storageAccessRequest);
+        try {
+            const storageAccessRequest = await preparator(initFileUploadRequest);
 
-        await fileHandler.upload(file, storageAccessRequest);
+            const fileHandler = getFileHandler(storageAccessRequest);
 
-        const result = await acker({ initFileUploadRequest, storageAccessRequest });
+            await fileHandler.upload(file, storageAccessRequest);
 
-        onSuccess(result);
-    } catch (err) {
-        onError(err as ApiError);
-    } finally {
-        dispatch(receiveFinishUpload(file.name));
-    }
-});
+            const result = await acker({ initFileUploadRequest, storageAccessRequest });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const download = createAsyncThunk<unknown, DownloadRequest, any>(
-    'files/download',
-    async ({ file, fetcher }) => {
-        const storageAccessRequest = await fetcher();
-        const fileHandler = getFileHandler(storageAccessRequest);
-        await fileHandler.download(file.name, storageAccessRequest);
+            onSuccess(result);
+        } catch (err) {
+            onError(err as ApiError);
+        } finally {
+            dispatch(receiveFinishUpload({ filename: file.name, uploadContext }));
+        }
     }
 );
 
@@ -80,16 +79,24 @@ export const fileSlice = createSlice({
     name: 'files',
     initialState: buildInitialState(),
     reducers: {
-        receiveStartUpload: (state: FileHandlerState, action: PayloadAction<Filename>) => {
-            state[action.payload] = {
-                filename: action.payload,
+        receiveStartUpload: (
+            state: FileHandlerState,
+            action: PayloadAction<{ filename: string; uploadContext: string }>
+        ) => {
+            state[buildFileStateKey(action.payload.uploadContext, action.payload.filename)] = {
+                filename: action.payload.filename,
+                uploadContext: action.payload.uploadContext,
                 isUploading: true,
                 startTimestamp: new Date().getTime(),
             };
         },
-        receiveFinishUpload: (state: FileHandlerState, action: PayloadAction<Filename>) => {
-            state[action.payload] = {
-                ...state[action.payload],
+        receiveFinishUpload: (
+            state: FileHandlerState,
+            action: PayloadAction<{ filename: string; uploadContext: string }>
+        ) => {
+            const key = buildFileStateKey(action.payload.filename, action.payload.uploadContext);
+            state[key] = {
+                ...state[key],
                 isUploading: false,
             };
         },

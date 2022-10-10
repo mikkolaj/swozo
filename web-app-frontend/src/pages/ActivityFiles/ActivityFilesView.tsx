@@ -1,10 +1,12 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import { Box, Button, Container, Divider, Grid, IconButton, Tab, Tabs, Typography } from '@mui/material';
 import { ActivityDetailsDto } from 'api';
+import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { FileInputButton } from 'common/Input/FileInputButton';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
+import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import {
@@ -12,15 +14,18 @@ import {
     stylesRowCenteredVertical,
     stylesRowWithItemsAtTheEnd,
 } from 'common/styles';
+import { useDownload } from 'hooks/query/useDownload';
+import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useUpload } from 'hooks/query/useUpload';
+import { buildErrorHandler, HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { download } from 'services/features/files/fileSlice';
+import { triggerError } from 'services/features/error/errorSlice';
 import { useAppDispatch } from 'services/store';
 import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
@@ -28,14 +33,42 @@ import { formatDateTime } from 'utils/util';
 
 export const ActivityFilesView = () => {
     const [activityId, courseId] = useRequiredParams(['activityId', 'courseId']);
-    const dispatch = useAppDispatch();
     const { t } = useTranslation();
     const { me } = useMeQuery();
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
     const [currentTab, setCurrentTab] = useState(0);
-    const { data: course } = useQuery(['courses', courseId], () =>
-        getApis().courseApi.getCourse({ id: +courseId })
+    const [errorHandlers] = useState<HandlerConfig>({
+        [ErrorType.COURSE_NOT_FOUND]: buildErrorHandler(() => (
+            <PageContainerWithError
+                navButtonMessage={t('activityInstructions.error.noCourse')}
+                navigateTo={PageRoutes.MY_COURSES}
+            />
+        )),
+        [ErrorType.ACTIVITY_NOT_FOUND]: buildErrorHandler(() => (
+            <PageContainerWithError
+                navButtonMessage={t('activityInstructions.error.noActivity')}
+                navigateTo={PageRoutes.Course(courseId)}
+            />
+        )),
+        ...Object.fromEntries(
+            [ErrorType.THIRD_PARTY_ERROR, ErrorType.FILE_NOT_FOUND, ErrorType.DUPLICATE_FILE].map((err) => [
+                err,
+                buildErrorHandler(() => {
+                    dispatch(triggerError({ message: t(`commonErrors.${err}`) }));
+                }, false),
+            ])
+        ),
+    });
+    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+        useApiErrorHandling(errorHandlers);
+
+    const { data: course } = useErrorHandledQuery(
+        ['courses', courseId],
+        () => getApis().courseApi.getCourse({ id: +courseId }),
+        pushApiError,
+        removeApiError
     );
     const [activity, setActivity] = useState<ActivityDetailsDto>();
 
@@ -43,10 +76,22 @@ export const ActivityFilesView = () => {
         const activity = course?.activities.find((activity) => activity.id === +activityId);
         if (activity) {
             setActivity(activity);
+        } else if (course) {
+            pushApiError({ errorType: ErrorType.ACTIVITY_NOT_FOUND });
         }
-    }, [course, activityId]);
+    }, [course, activityId, pushApiError]);
+
+    const { download } = useDownload({
+        fetcher: (file) =>
+            getApis().activitiesApi.getPublicActivityFileDownloadRequest({
+                activityId: +activityId,
+                fileId: file.id,
+            }),
+        onError: pushApiError,
+    });
 
     const { upload, isUploading } = useUpload<ActivityDetailsDto>({
+        uploadContext: PageRoutes.ACTIVITY_FILES,
         preparator: (initFileUploadRequest) =>
             getApis().activitiesApi.preparePublicActivityFileUpload({
                 activityId: +activityId,
@@ -67,24 +112,17 @@ export const ActivityFilesView = () => {
             });
             toast.success(t('toast.fileUploaded'));
         },
-        onError: (err) => {
-            console.log('err');
-            console.log(err);
-        },
+        onError: pushApiError,
     });
 
-    if (!course) {
-        return <PageContainerWithError />;
+    if (isApiError && errorHandler?.shouldTerminateRendering) {
+        return consumeErrorAction() ?? <></>;
     }
 
-    if (!activity) {
-        return (
-            <PageContainerWithError
-                navButtonMessage={t('activityInstructions.error.noActivity')}
-                navigateTo={PageRoutes.Course(courseId)}
-            />
-        );
+    if (!course || !activity) {
+        return <PageContainerWithLoader />;
     }
+
     return (
         <PageContainer>
             <Grid
@@ -127,23 +165,7 @@ export const ActivityFilesView = () => {
                                         /* eslint-disable react/jsx-key */
                                         <Typography>{file.name}</Typography>,
                                         <Typography>{formatDateTime(file.createdAt)}</Typography>,
-                                        <IconButton
-                                            color="primary"
-                                            onClick={() => {
-                                                dispatch(
-                                                    download({
-                                                        fetcher: () =>
-                                                            getApis().activitiesApi.getPublicActivityFileDownloadRequest(
-                                                                {
-                                                                    activityId: +activityId,
-                                                                    fileId: file.id,
-                                                                }
-                                                            ),
-                                                        file,
-                                                    })
-                                                );
-                                            }}
-                                        >
+                                        <IconButton color="primary" onClick={() => download(file)}>
                                             <DownloadIcon />
                                         </IconButton>,
                                         /* eslint-enable react/jsx-key */
@@ -151,7 +173,7 @@ export const ActivityFilesView = () => {
                                 />
                             }
                         />
-                        {me && isSame(me, course.teacher) && (
+                        {isSame(me, course.teacher) && (
                             <Box sx={{ ...stylesRowCenteredHorizontal, justifyContent: 'center', mt: 4 }}>
                                 <FileInputButton
                                     disabled={isUploading}
