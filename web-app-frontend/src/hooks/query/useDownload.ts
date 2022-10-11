@@ -1,17 +1,18 @@
 import { FileDto, StorageAccessRequest } from 'api';
 import { ApiError } from 'api/errors';
 import _ from 'lodash';
-import { useCallback, useState } from 'react';
+import { DependencyList, useCallback, useMemo, useState } from 'react';
 import { getFileHandler } from 'services/features/files/fileSlice';
 
 type Props = {
     fetcher: (file: FileDto) => Promise<StorageAccessRequest>;
     onError: (error: ApiError) => void;
+    deps: DependencyList;
 };
 
-const DOWNLOAD_DEBOUNCE_MILLIS = 500;
+const DOWNLOAD_DEBOUNCE_MILLIS = 1000;
 
-export const useDownload = ({ fetcher, onError }: Props) => {
+export const useDownload = ({ fetcher, onError, deps }: Props) => {
     const [isDownloading, setDownloading] = useState(true);
 
     const download = useCallback(
@@ -31,8 +32,13 @@ export const useDownload = ({ fetcher, onError }: Props) => {
                 setDownloading(false);
             }
         },
-        [fetcher, onError]
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        deps
     );
 
-    return { download: _.debounce(download, DOWNLOAD_DEBOUNCE_MILLIS), isDownloading };
+    const throttledDownload = useMemo(() => {
+        return _.throttle(download, DOWNLOAD_DEBOUNCE_MILLIS);
+    }, [download]);
+
+    return { download: throttledDownload, isDownloading };
 };

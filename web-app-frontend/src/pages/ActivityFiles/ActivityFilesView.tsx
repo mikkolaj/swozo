@@ -5,7 +5,6 @@ import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { FileInputButton } from 'common/Input/FileInputButton';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
@@ -18,15 +17,14 @@ import { useDownload } from 'hooks/query/useDownload';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useUpload } from 'hooks/query/useUpload';
-import { buildErrorHandler, HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { buildErrorPageHandler, useFileErrorHandlers } from 'hooks/useCommonErrorHandlers';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { triggerError } from 'services/features/error/errorSlice';
-import { useAppDispatch } from 'services/store';
 import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatDateTime } from 'utils/util';
@@ -36,32 +34,22 @@ export const ActivityFilesView = () => {
     const { t } = useTranslation();
     const { me } = useMeQuery();
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
+
     const [currentTab, setCurrentTab] = useState(0);
+    const [activity, setActivity] = useState<ActivityDetailsDto>();
     const [errorHandlers] = useState<HandlerConfig>({
-        [ErrorType.COURSE_NOT_FOUND]: buildErrorHandler(() => (
-            <PageContainerWithError
-                navButtonMessage={t('activityInstructions.error.noCourse')}
-                navigateTo={PageRoutes.MY_COURSES}
-            />
-        )),
-        [ErrorType.ACTIVITY_NOT_FOUND]: buildErrorHandler(() => (
-            <PageContainerWithError
-                navButtonMessage={t('activityInstructions.error.noActivity')}
-                navigateTo={PageRoutes.Course(courseId)}
-            />
-        )),
-        ...Object.fromEntries(
-            [ErrorType.THIRD_PARTY_ERROR, ErrorType.FILE_NOT_FOUND, ErrorType.DUPLICATE_FILE].map((err) => [
-                err,
-                buildErrorHandler(() => {
-                    dispatch(triggerError({ message: t(`commonErrors.${err}`) }));
-                }, false),
-            ])
+        [ErrorType.COURSE_NOT_FOUND]: buildErrorPageHandler(
+            t('activityInstructions.error.noCourse'),
+            PageRoutes.MY_COURSES
         ),
+        [ErrorType.ACTIVITY_NOT_FOUND]: buildErrorPageHandler(
+            t('activityInstructions.error.noActivity'),
+            PageRoutes.Course(courseId)
+        ),
+        ...useFileErrorHandlers(),
     });
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, isApiErrorSet, consumeErrorAction, pushApiError, removeApiError } =
         useApiErrorHandling(errorHandlers);
 
     const { data: course } = useErrorHandledQuery(
@@ -70,16 +58,20 @@ export const ActivityFilesView = () => {
         pushApiError,
         removeApiError
     );
-    const [activity, setActivity] = useState<ActivityDetailsDto>();
 
     useEffect(() => {
         const activity = course?.activities.find((activity) => activity.id === +activityId);
+        const activityNotFoundError = { errorType: ErrorType.ACTIVITY_NOT_FOUND };
+
         if (activity) {
             setActivity(activity);
+            if (isApiErrorSet(activityNotFoundError)) {
+                removeApiError(activityNotFoundError);
+            }
         } else if (course) {
-            pushApiError({ errorType: ErrorType.ACTIVITY_NOT_FOUND });
+            pushApiError(activityNotFoundError);
         }
-    }, [course, activityId, pushApiError]);
+    }, [course, activityId, pushApiError, removeApiError, isApiErrorSet]);
 
     const { download } = useDownload({
         fetcher: (file) =>
@@ -88,6 +80,7 @@ export const ActivityFilesView = () => {
                 fileId: file.id,
             }),
         onError: pushApiError,
+        deps: [activityId],
     });
 
     const { upload, isUploading } = useUpload<ActivityDetailsDto>({
@@ -113,6 +106,7 @@ export const ActivityFilesView = () => {
             toast.success(t('toast.fileUploaded'));
         },
         onError: pushApiError,
+        deps: [activityId, course, courseId, queryClient],
     });
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {
