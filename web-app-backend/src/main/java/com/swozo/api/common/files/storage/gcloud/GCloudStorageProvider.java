@@ -8,7 +8,7 @@ import com.swozo.api.common.files.request.StorageAccessRequest;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.config.CloudProvider;
 import com.swozo.config.cloud.gcloud.storage.GCloudStorageProperties;
-import com.swozo.config.conditions.GCloudStorageCondition;
+import com.swozo.config.cloud.gcloud.storage.GCloudStorageCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
@@ -27,30 +27,33 @@ import java.util.concurrent.TimeUnit;
 public class GCloudStorageProvider implements StorageProvider {
     public static final String SIZE_VALIDATION_HEADER = "X-Goog-Content-Length-Range";
 
-    private final GCloudStorageProperties properties;
     private final Storage storage;
 
     @Override
-    public StorageAccessRequest createAuthorizedUploadRequest(String storageObjectName, long maxFileSizeBytes) {
+    public StorageAccessRequest createAuthorizedUploadRequest(
+            String bucketName, String storageObjectName, long maxFileSizeBytes, Duration validity
+    ) {
         var extensionHeaders = Map.of(
                 SIZE_VALIDATION_HEADER, String.format("%d,%d", 0, maxFileSizeBytes)
         );
 
         return buildStorageAccessRequest(
-                properties.webBucket().name(),
+                bucketName,
                 storageObjectName,
-                Duration.ofMinutes(properties.uploadUrlExpirationMinutes()),
+                validity,
                 HttpMethod.PUT,
                 extensionHeaders
         );
     }
 
     @Override
-    public StorageAccessRequest createAuthorizedDownloadRequest(String storageObjectName) {
+    public StorageAccessRequest createAuthorizedDownloadRequest(
+            String bucketName, String storageObjectName, Duration validity
+    ) {
         return buildStorageAccessRequest(
-                properties.webBucket().name(),
+                bucketName,
                 storageObjectName,
-                Duration.ofMinutes(properties.downloadUrlExpirationMinutes()),
+                validity,
                 HttpMethod.GET,
                 Map.of()
         );
@@ -68,7 +71,7 @@ public class GCloudStorageProvider implements StorageProvider {
     }
 
     @Override
-    public CompletableFuture<Void> cleanup(String storageObjectName) {
+    public CompletableFuture<Void> cleanup(String bucketName, String storageObjectName) {
         // TODO
         return CompletableFuture.completedFuture(null);
     }

@@ -6,6 +6,7 @@ import com.swozo.api.common.files.request.StorageAccessRequest;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.api.common.files.util.FilePathGenerator;
 import com.swozo.api.common.files.util.UploadValidationStrategy;
+import com.swozo.config.properties.StorageProperties;
 import com.swozo.persistence.RemoteFile;
 import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,9 @@ public class FileService {
 
     private final StorageProvider storageProvider;
     private final FileRepository fileRepository;
+    private final StorageProperties storageProperties;
 
-    public StorageAccessRequest prepareUpload(
+    public StorageAccessRequest prepareExternalUpload(
             InitFileUploadRequest initFileUploadRequest,
             FilePathGenerator filePathGenerator,
             UploadValidationStrategy validationStrategy
@@ -34,7 +36,12 @@ public class FileService {
         validationStrategy.validate();
         var filePath = filePathGenerator.generate(initFileUploadRequest.filename());
 
-        return storageProvider.createAuthorizedUploadRequest(filePath, initFileUploadRequest.sizeBytes());
+        return storageProvider.createAuthorizedUploadRequest(
+                storageProperties.webBucket().name(),
+                filePath,
+                initFileUploadRequest.sizeBytes(),
+                storageProperties.externalUploadValidity()
+        );
     }
 
     /**
@@ -46,7 +53,7 @@ public class FileService {
      *                       throw an exception, causing transaction rollback and deletion of remotely stored file
      */
     @Transactional
-    public <T> T acknowledgeUpload(
+    public <T> T acknowledgeExternalUpload(
             UploadAccessDto uploadAccessDto,
             Supplier<T> initialResourceSupplier,
             BiFunction<RemoteFile, T, T> fileConsumer
@@ -74,12 +81,16 @@ public class FileService {
         try {
             return fileConsumer.apply(file, initialResourceSupplier.get());
         } catch (Exception exception) {
-            storageProvider.cleanup(storageAccessRequest.filePath());
+            storageProvider.cleanup(storageProperties.webBucket().name(), storageAccessRequest.filePath());
             throw exception;
         }
     }
 
-    public StorageAccessRequest createDownloadRequest(RemoteFile file) {
-        return storageProvider.createAuthorizedDownloadRequest(file.getPath());
+    public StorageAccessRequest createExternalDownloadRequest(RemoteFile file) {
+        return storageProvider.createAuthorizedDownloadRequest(
+                storageProperties.webBucket().name(),
+                file.getPath(),
+                storageProperties.externalDownloadValidity()
+        );
     }
 }

@@ -1,4 +1,4 @@
-package com.swozo.config.conditions;
+package com.swozo.config.cloud.gcloud.storage;
 
 import com.swozo.config.CloudProvider;
 import com.swozo.config.CloudProviderCondition;

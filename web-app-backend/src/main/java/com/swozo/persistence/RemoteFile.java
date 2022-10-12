@@ -18,5 +18,5 @@ public class RemoteFile extends BaseEntity {
     private Long sizeBytes;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // TODO: keep metadata?
+    // TODO: keep other metadata?
 }

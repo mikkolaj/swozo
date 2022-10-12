@@ -30,7 +30,7 @@ public class ActivityService {
     ) {
         var activity = activityRepository.findById(activityId).orElseThrow();
 
-        return fileService.prepareUpload(
+        return fileService.prepareExternalUpload(
                 initFileUploadRequest,
                 filePathProvider.publicActivityFilePath(activity),
                 () -> activityValidator.validateAddActivityFileRequest(activity, teacherId, initFileUploadRequest)
@@ -42,7 +42,7 @@ public class ActivityService {
             UploadAccessDto uploadAccessDto
     ) {
         return activityMapper.toDto(
-                fileService.acknowledgeUpload(
+                fileService.acknowledgeExternalUpload(
                     uploadAccessDto,
                     () -> activityRepository.findById(activityId).orElseThrow(),
                     (file, activity) -> {
@@ -65,7 +65,7 @@ public class ActivityService {
 
         activityValidator.validateDownloadPublicActivityFileRequest(userId, activity, userRole);
 
-        return fileService.createDownloadRequest(file);
+        return fileService.createExternalDownloadRequest(file);
     }
 
 
