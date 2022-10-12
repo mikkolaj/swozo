@@ -25,6 +25,12 @@ import {
     UserFromJSONTyped,
     UserToJSON,
 } from './User';
+import {
+    UserCourseData,
+    UserCourseDataFromJSON,
+    UserCourseDataFromJSONTyped,
+    UserCourseDataToJSON,
+} from './UserCourseData';
 
 /**
  * 
@@ -58,6 +64,18 @@ export interface Course {
     description?: string;
     /**
      * 
+     * @type {string}
+     * @memberof Course
+     */
+    joinUUID?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Course
+     */
+    password?: string;
+    /**
+     * 
      * @type {Date}
      * @memberof Course
      */
@@ -70,10 +88,10 @@ export interface Course {
     activities?: Array<Activity>;
     /**
      * 
-     * @type {Array<User>}
+     * @type {Array<UserCourseData>}
      * @memberof Course
      */
-    students?: Array<User>;
+    students?: Array<UserCourseData>;
     /**
      * 
      * @type {User}
@@ -96,9 +114,11 @@ export function CourseFromJSONTyped(json: any, ignoreDiscriminator: boolean): Co
         'name': !exists(json, 'name') ? undefined : json['name'],
         'subject': !exists(json, 'subject') ? undefined : json['subject'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'joinUUID': !exists(json, 'joinUUID') ? undefined : json['joinUUID'],
+        'password': !exists(json, 'password') ? undefined : json['password'],
         'creationTime': !exists(json, 'creationTime') ? undefined : (new Date(json['creationTime'])),
         'activities': !exists(json, 'activities') ? undefined : ((json['activities'] as Array<any>).map(ActivityFromJSON)),
-        'students': !exists(json, 'students') ? undefined : ((json['students'] as Array<any>).map(UserFromJSON)),
+        'students': !exists(json, 'students') ? undefined : ((json['students'] as Array<any>).map(UserCourseDataFromJSON)),
         'teacher': !exists(json, 'teacher') ? undefined : UserFromJSON(json['teacher']),
     };
 }
@@ -116,9 +136,11 @@ export function CourseToJSON(value?: Course | null): any {
         'name': value.name,
         'subject': value.subject,
         'description': value.description,
+        'joinUUID': value.joinUUID,
+        'password': value.password,
         'creationTime': value.creationTime === undefined ? undefined : (value.creationTime.toISOString()),
         'activities': value.activities === undefined ? undefined : ((value.activities as Array<any>).map(ActivityToJSON)),
-        'students': value.students === undefined ? undefined : ((value.students as Array<any>).map(UserToJSON)),
+        'students': value.students === undefined ? undefined : ((value.students as Array<any>).map(UserCourseDataToJSON)),
         'teacher': UserToJSON(value.teacher),
     };
 }

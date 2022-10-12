@@ -1,7 +1,7 @@
 import { Autocomplete, Box, Chip } from '@mui/material';
 import { FORM_INPUT_WIDTH, stylesRow } from 'common/styles';
 import { useMemo } from 'react';
-import { SlideFormInputField } from './SlideFormInputField';
+import { FormInputField } from './FormInputField';
 
 type Props<T> = {
     labelPath: string;
@@ -37,7 +37,7 @@ export function AutocompleteWithChips<T>({
                         setFieldValue(name, [...chosenOptions, selectedOption]);
                 }}
                 renderInput={({ InputProps, ...params }) => (
-                    <SlideFormInputField
+                    <FormInputField
                         name={'_' + name}
                         i18nLabel={labelPath}
                         textFieldProps={{

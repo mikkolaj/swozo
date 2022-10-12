@@ -26,6 +26,36 @@
         }
     },
     "course": {
+        "options": {
+            "activities": {
+                "button": "Aktywności"
+            },
+            "participants": {
+                "button": "Uczestnicy",
+                "teacher": "Prowadzący",
+                "coursePassword": "Hasło do kursu: {{password}}",
+                "joinUrl": "Link do kursu: ",
+                "copied": "Link został skopiowany!",
+                "editMode": "Edytuj listę",
+                "addStudent": {
+                    "button": "Dodaj studenta",
+                    "label": "Adres email",
+                    "success": "{{email}} został dodany!",
+                    "error": {
+                        "ALREADY_A_MEMBER": "Student już należy do kursu!",
+                        "USER_NOT_FOUND": "Student o tym adresie email nie istnieje!"
+                    }
+                },
+                "students": {
+                    "label": "Studenci",
+                    "table": {
+                        "name": "Imię i nazwisko",
+                        "email": "Adres email",
+                        "joinDate": "Data dołączenia"
+                    }
+                }
+            }
+        },
         "activity": {
             "links": "linki",
             "instructions": "instrukcje",
@@ -34,6 +64,19 @@
                 "info": "Linki dla: {{courseName}} - {{activityName}}",
                 "connectionInstruction": "Instrukcja podłączenia",
                 "closeButton": "Zamknij"
+            }
+        },
+        "join": {
+            "joinCourseInfo": "Dołącz do kursu",
+            "password": "Hasło:",
+            "joinButton": "Dołącz do kursu",
+            "cancel": "Wróć na stronę główną",
+            "joinedMessage": "Dołączono do kursu!",
+            "error": {
+                "invalidJoinUrl": "Kurs nie istnieje, upewnij się że wpisałeś poprawny link",
+                "alreadyParticipated": "Już dołączyłeś do kursu: {{name}}",
+                "goToCourse": "Przejdz do strony kursu",
+                "invalidPassword": "Błędne hasło"
             }
         },
         "error": {
@@ -55,7 +98,8 @@
                     "subject": "tematyka",
                     "description": "opis",
                     "numberOfActivities": "liczba zajęć",
-                    "numberOfStudents": "planowana liczba uczestników"
+                    "expectedStudentCount": "planowana liczba uczestników",
+                    "password": "Hasło do dołączenia"
                 }
             },
             "1": {
@@ -69,12 +113,35 @@
                     "endTime": "Czas zakończenia",
                     "lessonModules": "moduły lekcyjne",
                     "generalModules": "moduły ogólne",
-                    "instructions": "dodatkowe instrukcje"
+                    "instructions": "Instrukcje"
                 }
             },
             "2": {
-                "title": "Podsumowanie"
+                "title": "Podsumowanie",
+                "form": {
+                    "activityName": "Nazwa aktywności",
+                    "modules": "Wybrane moduły",
+                    "at": "Data aktywności"
+                },
+                "disclaimer": {
+                    "title": "Pamiętaj",
+                    "lines": [
+                        "- Tworzenie kursu może trochę potrwać",
+                        "- Po utworzeniu kursu będziesz mógł dodawać nowe aktywności oraz modyfikować jeszcze nieprzeprowadzone",
+                        "- Po utworzeniu kursu w zakładce \"Uczestnicy\" będziesz mógł dodawać studentów"
+                    ]
+                }
             }
+        },
+        "validationErrors": {
+            "MISSING": "Pole jest wymagane",
+            "NOT_UNIQUE": "Nazwa jest już zajęta",
+            "START_TIME_AFTER_END": "Czas początku musi poprzedać czas końca",
+            "TOO_SHORT_DURATION": "Minimalny czas trwania aktywności to {{minDuration}} minut",
+            "TOO_LONG_DURATION": "Maksymalny czas trwania aktywności to {{maxDuration}} minut",
+            "TOO_SOON": "Minimalny czas rozpoczęcia aktywności to {{minStartTime}}",
+            "TOO_SHORT_PERIOD_BETWEEN": "Minimalny czas między aktywnościami to {{minTimeBetween}} minut",
+            "NOT_IN_BOUNDS": "Liczba musi być w zakresie {{min}} - {{max}}"
         }
     },
     "myModules": {
@@ -129,7 +196,12 @@
         "goBackBtn": "Wróć do kursu",
         "tabs": {
             "teacher": {
-                "label": "Instrukcje od nauczyciela"
+                "label": {
+                    "as": {
+                        "teacher": "Moje instrukcje",
+                        "default": "Instrukcje od nauczyciela"
+                    }
+                }
             },
             "modules": {
                 "label": "Informacje o używanych modułach"

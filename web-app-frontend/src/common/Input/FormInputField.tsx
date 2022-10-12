@@ -1,7 +1,7 @@
 import { InputField } from 'common/Input/InputField';
 import { ComponentProps } from 'react';
 
-export const SlideFormInputField = ({
+export const FormInputField = ({
     wrapperSx,
     textFieldProps,
     children,

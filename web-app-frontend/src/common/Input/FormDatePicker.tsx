@@ -1,7 +1,7 @@
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { FORM_INPUT_WIDTH } from 'common/styles';
 import { Dayjs } from 'dayjs';
-import { SlideFormInputField } from './SlideFormInputField';
+import { FormInputField } from './FormInputField';
 
 type Props = {
     label: string;
@@ -10,17 +10,17 @@ type Props = {
     setFieldValue: (name: string, val: Dayjs) => void;
 };
 
-export const SlideFormTimePicker = ({ label, name, value, setFieldValue }: Props) => {
+export const FormDatePicker = ({ label, name, value, setFieldValue }: Props) => {
     return (
-        <TimePicker
+        <DesktopDatePicker
             label={label}
+            inputFormat="DD/MM/YYYY"
             value={value}
-            ampm={false}
             onChange={(v) => {
                 if (v && v.isValid()) setFieldValue(name, v);
             }}
-            renderInput={({ name: _name, ...params }) => (
-                <SlideFormInputField
+            renderInput={({ name: _name, error: _error, ...params }) => (
+                <FormInputField
                     name={name}
                     textFieldProps={{
                         sx: { width: FORM_INPUT_WIDTH },

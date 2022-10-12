@@ -2,7 +2,6 @@ package com.swozo.api.web.user;
 
 import com.swozo.api.web.user.dto.UserDetailsDto;
 import com.swozo.mapper.UserMapper;
-import com.swozo.persistence.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +12,7 @@ public class UserService {
     private final UserMapper userMapper;
 
     public UserDetailsDto getUserInfo(Long userId) {
-        return userMapper.toDto(userRepository.getById(userId));
-    }
-
-    public boolean hasUserRole(Long userId, String roleName) {
-        return userRepository.getById(userId).getRoles().stream()
-                .map(Role::getName)
-                .toList()
-                .contains(roleName);
+        var user = userRepository.findById(userId).orElseThrow();
+        return userMapper.toDto(user);
     }
 }

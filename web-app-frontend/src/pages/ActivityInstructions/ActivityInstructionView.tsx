@@ -2,16 +2,21 @@ import { Button, Divider, Grid, Paper, Tab, Tabs, Typography } from '@mui/materi
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
+import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
+import { RichTextViewer } from 'common/Styled/RichTextViewer';
 import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
+import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
+import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 
 export const ActivityInstructionsView = () => {
     const [activityId, courseId] = useRequiredParams(['activityId', 'courseId']);
+    const { me } = useMeQuery();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [currentTab, setCurrentTab] = useState(0);
@@ -28,9 +33,8 @@ export const ActivityInstructionsView = () => {
         );
     }
 
-    // TODO
     if (!course) {
-        return <>loading</>;
+        return <PageContainerWithLoader />;
     }
 
     const activity = course.activities.find((activity) => activity.id === +activityId);
@@ -69,15 +73,20 @@ export const ActivityInstructionsView = () => {
             </Grid>
             <Divider />
             <Tabs value={currentTab} onChange={(_, tab) => setCurrentTab(tab)} centered variant="fullWidth">
-                {/* /TODO diffrerent name if viewed as teacher? */}
-                <Tab label={t('activityInstructions.tabs.teacher.label')} />
+                <Tab
+                    label={t(
+                        `activityInstructions.tabs.teacher.label.as.${
+                            isSame(me, course.teacher) ? 'teacher' : 'default'
+                        }`
+                    )}
+                />
                 <Tab label={t('activityInstructions.tabs.modules.label')} />
             </Tabs>
 
             <Grid container sx={{ p: 2 }}>
                 {currentTab === 0 && (
                     <Grid item xs={12}>
-                        {activity.instructionsFromTeacher.map(({ header, body }, idx) => (
+                        {activity.instructionsFromTeacher.map(({ untrustedPossiblyDangerousHtml }, idx) => (
                             <Paper
                                 key={idx}
                                 sx={{
@@ -86,9 +95,9 @@ export const ActivityInstructionsView = () => {
                                     p: 2,
                                 }}
                             >
-                                <Typography variant="h5">{header}</Typography>
-                                <Divider sx={{ mb: 2 }} />
-                                <Typography variant="body1">{body}</Typography>
+                                <RichTextViewer
+                                    untrustedPossiblyDangerousHtml={untrustedPossiblyDangerousHtml}
+                                />
                             </Paper>
                         ))}
                     </Grid>

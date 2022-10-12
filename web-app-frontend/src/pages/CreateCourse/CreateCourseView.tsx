@@ -1,39 +1,51 @@
 import { Grid } from '@mui/material';
 import { CreateCourseRequest } from 'api';
+import { ApiError, ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
-import { NextSlideButton } from 'common/SlideForm/NextSlideButton';
-import { PreviousSlideButton } from 'common/SlideForm/PreviousSlideButton';
+import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
+import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
+import { clearErrorsForSlide, getSortedSlidesWithErrors } from 'common/SlideForm/util';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
-import { FormikProps } from 'formik';
-import { useQueryWithDefaults } from 'hooks/useQueryWithDefaults';
-import { useRef, useState } from 'react';
+import { FormikErrors, FormikProps } from 'formik';
+import { useQueryWithDefaults } from 'hooks/query/useQueryWithDefaults';
+import _ from 'lodash';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { mockGeneralModuleSummaryList } from 'utils/mocks';
 import { PageRoutes } from 'utils/routes';
-import { ActivitiesForm } from './components/forms/ActivitiesForm';
-import { GeneralInfoForm } from './components/forms/GeneralInfoForm';
+import * as Yup from 'yup';
+import { ActivitiesForm, activityValidationSchema } from './components/forms/ActivitiesForm';
+import { CourseInfoForm, courseValidationSchema } from './components/forms/CourseInfoForm';
 import { Summary } from './components/forms/Summary';
 import {
-    ActivityValues,
+    ACTIVITIES_SLIDE,
     buildCreateCourseRequest,
+    COURSE_SLIDE,
+    formatErrors,
+    FormValues,
     initialCourseValues,
     resizeActivityValuesList,
 } from './util';
 
-const SLIDE_COUNT = 3;
+const initialValues: FormValues = {
+    [COURSE_SLIDE]: initialCourseValues(),
+    [ACTIVITIES_SLIDE]: {
+        activities: [],
+    },
+};
 
 export const CreateCourseView = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [courseValues, setCourseValues] = useState(initialCourseValues());
-    const [activitiesValues, setActivitiesValues] = useState<ActivityValues[]>([]);
+    const [formattedApiErrors, setFormattedApiErrors] = useState<FormikErrors<FormValues>>();
 
+    const formRef = useRef<FormikProps<FormValues>>(null);
     const { data: availableLessonModules } = useQueryWithDefaults(
         'modules',
         () => getApis().serviceModuleApi.getModuleList(),
@@ -52,77 +64,105 @@ export const CreateCourseView = () => {
                 toast(t('toast.courseCreated'));
                 navigate(PageRoutes.Course(courseDetailsResp.id));
             },
+            onError: (error: ApiError) => {
+                if (error.errorType === ErrorType.VALIDATION_FAILED) {
+                    const formattedErrors = formatErrors(t, error);
+                    setFormattedApiErrors(formattedErrors);
+                    setCurrentSlide(getSortedSlidesWithErrors(formattedErrors)[0]);
+                } else {
+                    // TODO
+                }
+            },
         }
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const formRef = useRef<FormikProps<any>>(null);
+    useEffect(() => {
+        if (formattedApiErrors) {
+            formRef.current?.setErrors(formattedApiErrors);
+        }
+    }, [formattedApiErrors]);
 
     return (
         <SlideForm
             titleI18n="createCourse.title"
             slidesI18n="createCourse.slides"
-            slideCount={SLIDE_COUNT}
             currentSlide={currentSlide}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            innerRef={formRef as any}
+            initialValues={initialValues}
+            slidesWithErrors={getSortedSlidesWithErrors(formattedApiErrors ?? {})}
+            validateOnChange={false}
+            validateOnBlur={_.isEmpty(formattedApiErrors)}
+            validationSchema={Yup.object({
+                [COURSE_SLIDE]: Yup.object(courseValidationSchema),
+                [ACTIVITIES_SLIDE]: Yup.object().shape({
+                    activities: Yup.array().of(Yup.object(activityValidationSchema)),
+                }),
+            })}
+            slideConstructors={[
+                (slideProps) => <CourseInfoForm {...slideProps} />,
+                (slideProps, { values, setFieldValue }) => (
+                    <ActivitiesForm
+                        {...slideProps}
+                        values={values[ACTIVITIES_SLIDE]}
+                        setFieldValue={setFieldValue}
+                        availableLessonModules={availableLessonModules}
+                        availableGeneralModules={availableGeneralModules}
+                    />
+                ),
+                (_, { values }) => (
+                    <Summary course={values[COURSE_SLIDE]} activities={values[ACTIVITIES_SLIDE].activities} />
+                ),
+            ]}
+            onSubmit={(values) => {
+                createCourseMutation.mutate(
+                    buildCreateCourseRequest(values[COURSE_SLIDE], values[ACTIVITIES_SLIDE].activities)
+                );
+            }}
             buttons={
                 <Grid container>
                     <Grid item xs={6}>
                         <PreviousSlideButton
                             currentSlide={currentSlide}
                             label={t('createCourse.buttons.back')}
-                            goBack={(toSlide) => {
-                                if (toSlide === 0) {
-                                    setActivitiesValues(formRef.current?.values.activities);
-                                }
-
-                                setCurrentSlide(toSlide);
-                            }}
+                            onBack={setCurrentSlide}
                         />
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <NextSlideButton
                             currentSlide={currentSlide}
-                            slideCount={SLIDE_COUNT}
+                            slideCount={3}
                             label={t('createCourse.buttons.next')}
                             lastSlideLabel={t('createCourse.finish')}
-                            goNext={() => formRef.current?.handleSubmit()}
-                            finish={() => {
-                                // TODO assert valid
-                                createCourseMutation.mutate(
-                                    buildCreateCourseRequest(courseValues, activitiesValues)
-                                );
+                            slideValidator={formRef.current ?? undefined}
+                            onNext={(toSlide) => {
+                                const values = formRef.current?.values;
+                                if (values && toSlide === 1) {
+                                    formRef.current?.setValues({
+                                        ...values,
+                                        [ACTIVITIES_SLIDE]: {
+                                            activities: resizeActivityValuesList(
+                                                values[ACTIVITIES_SLIDE].activities,
+                                                values[COURSE_SLIDE].numberOfActivities
+                                            ),
+                                        },
+                                    });
+                                }
+
+                                if (formattedApiErrors) {
+                                    setFormattedApiErrors(
+                                        clearErrorsForSlide(formattedApiErrors, currentSlide)
+                                    );
+                                }
+                                setCurrentSlide(toSlide);
+                            }}
+                            onFinish={() => {
+                                formRef.current?.handleSubmit();
                             }}
                         />
                     </Grid>
                 </Grid>
             }
-        >
-            {currentSlide === 0 && (
-                <GeneralInfoForm
-                    formRef={formRef}
-                    initialValues={courseValues}
-                    setValues={(values) => {
-                        setCourseValues(values);
-                        setActivitiesValues(
-                            resizeActivityValuesList(activitiesValues, values.numberOfActivities)
-                        );
-                        setCurrentSlide(currentSlide + 1);
-                    }}
-                />
-            )}
-            {currentSlide === 1 && (
-                <ActivitiesForm
-                    formRef={formRef}
-                    availableLessonModules={availableLessonModules}
-                    availableGeneralModules={availableGeneralModules}
-                    initialValues={{ activities: activitiesValues }}
-                    setValues={(values) => {
-                        setActivitiesValues(values.activities);
-                        setCurrentSlide(currentSlide + 1);
-                    }}
-                />
-            )}
-            {currentSlide === 2 && <Summary course={courseValues} activities={activitiesValues} />}
-        </SlideForm>
+        />
     );
 };

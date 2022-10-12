@@ -6,8 +6,7 @@ import com.swozo.persistence.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class AuthUtils {
     public static String GRANTED_AUTHORITY_PREFIX = "ROLE_";
