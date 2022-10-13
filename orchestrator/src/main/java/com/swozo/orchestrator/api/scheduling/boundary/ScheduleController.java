@@ -1,10 +1,9 @@
 package com.swozo.orchestrator.api.scheduling.boundary;
 
 import com.swozo.config.Config;
-import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
-import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.orchestrator.api.scheduling.control.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,9 +29,9 @@ public class ScheduleController {
     }
 
     @GetMapping(Config.CONFIGURATION)
-    public List<ParameterDescription> getParameterDescriptions(@RequestParam ScheduleType scheduleType) {
-        logger.info("Serving config request: {}", scheduleType);
-        return service.getParameterDescriptions(scheduleType);
+    public List<ServiceConfig> getSupportedServices() {
+        logger.info("Serving config request.");
+        return service.getSupportedServices();
     }
 
     @PostMapping(Config.AGGREGATED)

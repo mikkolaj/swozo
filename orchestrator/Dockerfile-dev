@@ -8,9 +8,27 @@ RUN ["python3","get-pip.py","--user"]
 RUN ["python3","-m","pip","install","--user","ansible"]
 RUN ["python3","-m","pip","uninstall","-y","pip"]
 
-ENV PATH="${PATH}:~/.local/bin"
-ENV GCP_SSH_KEY_PATH /auth/orchestrator_id_rsa
-ENV GOOGLE_APPLICATION_CREDENTIALS /auth/orchestrator-key.json
+ENV GCP_SSH_KEY_PATH=/auth/orchestrator_id_rsa
+ENV GOOGLE_APPLICATION_CREDENTIALS=/auth/orchestrator-key.json
 ENV JUPYTER_PLAYBOOK_PATH=/provisioning/software/jupyter/prepare-and-run-jupyter.yml
+ENV ANSIBLE_PLAYBOOK_EXECUTABLE_PATH=/root/.local/bin/ansible-playbook
+ENV LOG_LEVEL=INFO
 
-ENTRYPOINT ["java","--enable-preview","-jar","/app/orchestrator.jar"]
+EXPOSE 8080
+EXPOSE 22000
+EXPOSE 24000
+
+ENTRYPOINT [ \
+    "java", \
+    "--enable-preview", \
+    "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:22000", \
+    "-Djava.rmi.server.hostname=127.0.0.1", \
+    "-Dcom.sun.management.jmxremote", \
+    "-Dcom.sun.management.jmxremote.port=24000", \
+    "-Dcom.sun.management.jmxremote.rmi.port=24000", \
+    "-Dcom.sun.management.jmxremote.local.only=false", \
+    "-Dcom.sun.management.jmxremote.authenticate=false", \
+    "-Dcom.sun.management.jmxremote.ssl=false", \
+    '-Duser.timezone=UTC', \
+    "-jar","/app/orchestrator.jar" \
+]

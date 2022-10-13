@@ -23,9 +23,9 @@ public class ScheduleRequestEntity extends BaseEntity {
     private ScheduleTypeEntity scheduleType;
 
     @ElementCollection
-    @MapKeyColumn(name = "name")
-    @Column(name = "value")
-    @CollectionTable(name = "dynamic_properties", joinColumns = @JoinColumn(name = "example_id"))
+    @MapKeyColumn(name = "property_name")
+    @Column(name = "property_value")
+    @CollectionTable(name = "dynamic_properties", joinColumns = @JoinColumn(name = "schedule_request_id"))
     private Map<String, String> dynamicProperties = new HashMap<>();
 
     private RequestStatus status = RequestStatus.SUBMITTED;

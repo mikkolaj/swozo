@@ -5,6 +5,7 @@ import com.swozo.orchestrator.cloud.software.runner.process.ProcessFailed;
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessRunner;
 import com.swozo.orchestrator.cloud.software.ssh.SshService;
 import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
+import com.swozo.orchestrator.configuration.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class AnsibleRunner {
-    private static final String PLAYBOOK_COMMAND = "ansible-playbook";
     private static final String INVENTORY_ARG_NAME = "-i";
     private static final String PRIVATE_KEY_ARG_NAME = "--private-key";
     private static final String EXTRA_VARS_ARG_NAME = "--extra-vars";
@@ -29,6 +29,7 @@ public class AnsibleRunner {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ProcessRunner processRunner;
     private final SshService sshService;
+    private final ApplicationProperties properties;
 
 
     public void runPlaybook(
@@ -92,7 +93,7 @@ public class AnsibleRunner {
         var extraVarsArgument = buildExtraVarsArgument(connectionDetails.sshUser(), userVars);
 
         return new String[]{
-                PLAYBOOK_COMMAND,
+                properties.ansiblePlaybookExecutablePath(),
                 INVENTORY_ARG_NAME,
                 inventory,
                 PRIVATE_KEY_ARG_NAME,

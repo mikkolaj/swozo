@@ -1,7 +1,8 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
 import com.swozo.model.links.ActivityLinkInfo;
-import com.swozo.model.scheduling.ParameterDescription;
+import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
@@ -22,6 +23,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class JupyterProvisioner implements TimedSoftwareProvisioner {
+    private static final ScheduleType SUPPORTED_SCHEDULE = ScheduleType.JUPYTER;
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
@@ -30,6 +32,11 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private final LinkFormatter linkFormatter;
     private final ApplicationProperties properties;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Override
+    public ServiceConfig getServiceConfig() {
+        return new ServiceConfig(SUPPORTED_SCHEDULE, JupyterParameters.getParameterDescriptions());
+    }
 
     @Override
     // TODO: getting notebook from specified location
@@ -47,11 +54,6 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     @Override
     public void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException {
         JupyterParameters.from(dynamicParameters);
-    }
-
-    @Override
-    public List<ParameterDescription> getParameterDescriptions() {
-        return JupyterParameters.getParameterDescriptions();
     }
 
     @Override

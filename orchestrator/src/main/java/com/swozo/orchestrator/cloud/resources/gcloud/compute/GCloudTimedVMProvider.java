@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -42,6 +43,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
 
     @Async
     @Override
+    @Transactional
     public CompletableFuture<VMResourceDetails> createInstance(Psm psm) throws InterruptedException, VMOperationFailed {
         try {
             // TODO: create unique name
@@ -72,6 +74,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
 
     @Async
     @Override
+    @Transactional
     public CompletableFuture<Void> deleteInstance(long internalId) throws InterruptedException, VMOperationFailed {
         try {
             var vmEntity = vmRepository

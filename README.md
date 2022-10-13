@@ -1,15 +1,17 @@
 # SWOZO
 
-## Setting up the database
+### Running both database and Orchestrator
 
-In ./database directory run:
+In the uppermost directory run:
 
 ```shell
-./build.sh (Linux)
-or
-.\build.bat (Windows)
+docker-compose up
 ```
-then
+
+### Running only database
+
+It might be enough if you want to run orchestrator from Intellij. In the database directory run:
+
 ```shell
 docker-compose up
 ```
@@ -18,14 +20,23 @@ docker-compose up
 
 ### Alternatively you can run dependencies individually:
 
-#### Running database:
+#### Creating common network for DB and other Docker containers
+
+```shell
+docker network create -d bridge swozo
+```
+
+#### Running database without compose:
 
 ```shell
 docker run -d \
     -p 5432:5432 \
     --name swozo-db \
+    --network swozo
     -e POSTGRES_DB=swozo-web-db \
     -e POSTGRES_PASSWORD=mysecretpassword \
     -e ORCHESTRATOR_PASSWORD=mysecretpassword2 \
     swozo/postgres:latest
+    
+
 ```

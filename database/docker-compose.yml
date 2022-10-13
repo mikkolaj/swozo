@@ -1,8 +1,8 @@
-version: '3.7'
-
 services:
   swozo-web-postgres:
     image: swozo/postgres:latest
+    build:
+      context: .
     container_name: swozo-db
     ports:
       - "5432:5432"
