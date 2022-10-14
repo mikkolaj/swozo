@@ -40,7 +40,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
 
     @Override
     // TODO: getting notebook from specified location
-    public List<ActivityLinkInfo> provision(VMResourceDetails resource, Map<String, String> parameters) throws InterruptedException, ProvisioningFailed {
+    public List<ActivityLinkInfo> provision(VMResourceDetails resource, Map<String, String> parameters) throws ProvisioningFailed {
         try {
             logger.info("Started provisioning Jupyter on: {}", resource);
             runPlaybook(resource);
@@ -61,7 +61,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return PROVISIONING_SECONDS;
     }
 
-    private void runPlaybook(VMResourceDetails resource) throws InterruptedException {
+    private void runPlaybook(VMResourceDetails resource) {
         ansibleRunner.runPlaybook(
                 AnsibleConnectionDetails.from(resource),
                 properties.jupyterPlaybookPath(),

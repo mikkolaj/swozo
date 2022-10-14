@@ -1,17 +1,21 @@
 package com.swozo.orchestrator.cloud.software.runner;
 
 import com.swozo.exceptions.ConnectionFailed;
+import com.swozo.exceptions.PropagatingException;
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessFailed;
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessRunner;
 import com.swozo.orchestrator.cloud.software.ssh.SshService;
 import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
 import com.swozo.orchestrator.configuration.ApplicationProperties;
+import com.swozo.utils.CheckedExceptionConverter;
+import com.swozo.utils.RetryHandler;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class AnsibleRunner {
     private static final String EXTRA_VARS_DELIMITER = " ";
     private static final String INPUT_BOUNDARY = "\\A";
     private static final int DEFAULT_CONNECTION_ATTEMPTS = 6;
+    private static final int PLAYBOOK_EXECUTION_ATTEMPTS = 3;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ProcessRunner processRunner;
@@ -36,7 +41,7 @@ public class AnsibleRunner {
             AnsibleConnectionDetails connectionDetails,
             String playbookPath,
             int timeoutMinutes
-    ) throws InterruptedException, NotebookFailed {
+    ) throws PropagatingException, NotebookFailed {
         runPlaybook(connectionDetails, playbookPath, Collections.emptyList(), timeoutMinutes);
     }
 
@@ -45,14 +50,21 @@ public class AnsibleRunner {
             String playbookPath,
             List<String> userVars,
             int timeoutMinutes
-    ) throws InterruptedException, NotebookFailed {
+    ) throws PropagatingException, NotebookFailed {
         try {
             handleSshStartup(connectionDetails.targets());
-            var process = createAnsibleProcess(connectionDetails, playbookPath, userVars);
-            waitForResult(process, timeoutMinutes);
+            tryExecutingPlaybook(() -> createAnsibleProcess(connectionDetails, playbookPath, userVars), timeoutMinutes);
         } catch (ProcessFailed | ConnectionFailed e) {
             throw new NotebookFailed(e);
         }
+    }
+
+    private void tryExecutingPlaybook(Supplier<Process> processCreator, int timeoutMinutes) {
+        CheckedExceptionConverter.from(
+                () -> RetryHandler.retryExponentially(
+                        () -> waitForResult(processCreator.get(), timeoutMinutes), PLAYBOOK_EXECUTION_ATTEMPTS
+                )
+        ).run();
     }
 
     private void handleSshStartup(Collection<SshTarget> sshTargets) throws ConnectionFailed {
@@ -110,5 +122,4 @@ public class AnsibleRunner {
         extraVars.addAll(userVars);
         return String.join(EXTRA_VARS_DELIMITER, extraVars);
     }
-
 }
