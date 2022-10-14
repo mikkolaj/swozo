@@ -2,18 +2,23 @@ package com.swozo.config;
 
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.security.AuthConstraint;
-import com.swozo.security.jwt.JwtAuthRule;
-import com.swozo.security.jwt.JwtTokenService;
+import com.swozo.security.keys.KeyProvider;
+import com.swozo.security.rules.jwt.JwtAuthRule;
+import com.swozo.security.rules.jwt.JwtTokenService;
+import com.swozo.security.rules.secret.services.ServiceSecretKeyRule;
 import com.swozo.security.util.AllExceptEndpointMatcher;
 import com.swozo.security.util.AuthUtils;
+import com.swozo.security.util.EndpointMatcher;
+import com.swozo.security.util.EndpointsConfig;
+import com.swozo.util.ServiceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,20 +26,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthConstrainsConfig {
     private final JwtTokenService jwtTokenService;
+    private final KeyProvider keyProvider;
 
     @Bean
     public List<AuthConstraint> authConstraints() {
-        var constraints = new LinkedList<AuthConstraint>();
-
-        var jwtRoutes = AllExceptEndpointMatcher.of(
-                "/auth/**", // auth
-                "/v3/**",               // swagger
-                "/swagger-ui/**"      // swagger UI
+        var orchestratorMatcher = EndpointMatcher.of(
+                EndpointsConfig.of("/orchestrator-test", HttpMethod.GET)
         );
 
-        constraints.add(new AuthConstraint(new JwtAuthRule(jwtTokenService), jwtRoutes));
+        var jwtMatcher = AllExceptEndpointMatcher.of(
+                EndpointsConfig.of("/auth/**"),             // auth
+                EndpointsConfig.of("/v3/**"),               // swagger
+                EndpointsConfig.of("/swagger-ui/**")        // swagger UI
+        ).andWithoutMatchedBy(orchestratorMatcher);
 
-        return constraints;
+        return List.of(
+                new AuthConstraint(new JwtAuthRule(jwtTokenService), jwtMatcher),
+                new AuthConstraint(new ServiceSecretKeyRule(keyProvider, ServiceType.ORCHESTRATOR), orchestratorMatcher)
+        );
     }
 
     @Bean

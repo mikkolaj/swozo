@@ -1,4 +1,4 @@
-package com.swozo.security.jwt;
+package com.swozo.security.rules.jwt;
 
 import com.swozo.security.AccessToken;
 import org.springframework.security.core.GrantedAuthority;
