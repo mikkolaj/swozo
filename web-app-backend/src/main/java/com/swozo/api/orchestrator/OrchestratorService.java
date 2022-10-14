@@ -1,6 +1,6 @@
 package com.swozo.api.orchestrator;
 
-import com.swozo.api.orchestrator.exceptions.ServiceUnavailableException;
+import com.swozo.exceptions.ServiceUnavailableException;
 import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
 import lombok.RequiredArgsConstructor;

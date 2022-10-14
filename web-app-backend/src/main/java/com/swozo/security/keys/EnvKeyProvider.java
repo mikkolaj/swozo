@@ -1,7 +1,7 @@
 package com.swozo.security.keys;
 
 import com.swozo.config.EnvNames;
-import com.swozo.util.ServiceType;
+import com.swozo.utils.ServiceType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
