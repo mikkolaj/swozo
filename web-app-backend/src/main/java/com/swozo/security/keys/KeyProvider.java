@@ -1,6 +1,6 @@
 package com.swozo.security.keys;
 
-import com.swozo.util.ServiceType;
+import com.swozo.utils.ServiceType;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;

@@ -10,7 +10,7 @@ import com.swozo.security.util.AllExceptEndpointMatcher;
 import com.swozo.security.util.AuthUtils;
 import com.swozo.security.util.EndpointMatcher;
 import com.swozo.security.util.EndpointsConfig;
-import com.swozo.util.ServiceType;
+import com.swozo.utils.ServiceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

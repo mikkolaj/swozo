@@ -1,7 +1,7 @@
 package com.swozo.api.orchestrator;
 
 import com.swozo.security.rules.secret.SecretKeyAuthentication;
-import com.swozo.util.ServiceType;
+import com.swozo.utils.ServiceType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

@@ -3,7 +3,7 @@ package com.swozo.config;
 
 import com.swozo.security.keys.EnvKeyProvider;
 import com.swozo.security.keys.KeyProvider;
-import com.swozo.util.ServiceType;
+import com.swozo.utils.ServiceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

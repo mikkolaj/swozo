@@ -2,7 +2,7 @@ package com.swozo.security.rules.secret.services;
 
 import com.swozo.security.keys.KeyProvider;
 import com.swozo.security.rules.secret.SecretKeyRule;
-import com.swozo.util.ServiceType;
+import com.swozo.utils.ServiceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 
