@@ -10,9 +10,13 @@ public class RetryHandler {
     }
 
     public static <V> V retryExponentially(Callable<V> operation, int attempts) throws Exception {
+        if (attempts < 1) {
+            throw new IllegalArgumentException("Can't attempt less than 1 time.");
+        }
+
         var retryMgr = new RetryManager(attempts);
 
-        while (retryMgr.canRetry()) {
+        while (retryMgr.canContinue()) {
             try {
                 return operation.call();
             } catch (InterruptedException e) {

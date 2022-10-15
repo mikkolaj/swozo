@@ -70,18 +70,23 @@ public class RequestSenderEnhancerDecorator extends RequestSenderDecorator {
             Supplier<CompletableFuture<HttpResponse<T>>> requestSender
     ) {
         var retryMgr = new RetryManager(backoffRetries);
+        return requestSender.get().exceptionallyComposeAsync(err -> handleRetries(requestSender, retryMgr, err));
+    }
 
-        return requestSender.get().exceptionallyComposeAsync(err -> {
-            if (retryMgr.canRetry()) {
-                try {
-                    Thread.sleep(retryMgr.nextBackoffMillis());
-                    return requestSender.get();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+    private <T> CompletableFuture<HttpResponse<T>> handleRetries(
+            Supplier<CompletableFuture<HttpResponse<T>>> requestSender,
+            RetryManager retryMgr,
+            Throwable previousErr
+    ) {
+        if (retryMgr.canContinue()) {
+            try {
+                Thread.sleep(retryMgr.nextBackoffMillis());
+                return requestSender.get().exceptionallyComposeAsync(err -> handleRetries(requestSender, retryMgr, err));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
+        }
 
-            throw new PropagatingException(err);
-        });
+        throw new PropagatingException(previousErr);
     }
 }

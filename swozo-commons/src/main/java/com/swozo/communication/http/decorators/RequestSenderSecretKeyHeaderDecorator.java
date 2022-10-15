@@ -32,7 +32,7 @@ public class RequestSenderSecretKeyHeaderDecorator extends RequestSenderDecorato
 
     @Override
     public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, TypeReference<RespBody> type) {
-        return super.sendPost(uri, body, type);
+        return this.sendPost(uri, body, type, Function.identity());
     }
 
     @Override

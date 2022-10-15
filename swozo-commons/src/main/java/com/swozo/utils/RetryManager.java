@@ -1,27 +1,31 @@
 package com.swozo.utils;
 
 public class RetryManager {
-    private int failCounter = 0;
-    private int backoffPeriod = 1000;
-    private Exception lastException = null;
+    private int failCounter;
+    private long backoffPeriod;
+    private Exception lastException;
     private final int attempts;
 
-    public RetryManager(int attempts) {
-        if (attempts < 1) {
-            throw new IllegalArgumentException("Can't retry less than 1 time.");
-        }
-
+    public RetryManager(int attempts, long backoffPeriod) {
+        this.failCounter = 0;
+        this.lastException = null;
+        this.backoffPeriod = backoffPeriod;
         this.attempts = attempts;
     }
 
-    public boolean canRetry() {
+    public RetryManager(int attempts) {
+        this(attempts, 1000);
+    }
+
+    public boolean canContinue() {
         return failCounter < attempts;
     }
 
     public long nextBackoffMillis() {
+        var curPeriod = backoffPeriod;
         failCounter++;
         backoffPeriod *= 2;
-        return backoffPeriod;
+        return curPeriod;
     }
 
     public void setLastException(Exception lastException) {

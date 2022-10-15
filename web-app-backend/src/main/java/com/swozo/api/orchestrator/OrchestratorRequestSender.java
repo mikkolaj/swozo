@@ -31,7 +31,7 @@ class OrchestratorRequestSender {
         return unwrap(requestSender.sendGet(uri, new TypeReference<>() {}));
     }
 
-    public CompletableFuture<Void> sendScheduleRequest(ScheduleRequest scheduleRequest) {
+    public CompletableFuture<ScheduleResponse> sendScheduleRequest(ScheduleRequest scheduleRequest) {
         var uri = uriFactory.createSchedulesUri();
         return unwrap(requestSender.sendPost(uri, scheduleRequest,  new TypeReference<>() {}));
     }
