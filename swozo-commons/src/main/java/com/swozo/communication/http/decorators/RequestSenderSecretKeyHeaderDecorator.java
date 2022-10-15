@@ -1,5 +1,6 @@
 package com.swozo.communication.http.decorators;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.swozo.communication.http.RequestSender;
 import org.springframework.http.HttpHeaders;
 
@@ -20,23 +21,23 @@ public class RequestSenderSecretKeyHeaderDecorator extends RequestSenderDecorato
     }
 
     @Override
-    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, Class<T> clazz) {
-        return this.sendGet(uri, clazz, Function.identity());
+    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T> type) {
+        return this.sendGet(uri, type, Function.identity());
     }
 
     @Override
-    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, Class<T> clazz, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
-        return super.sendGet(uri, clazz, builderDecorator.andThen(addSecretKey()));
+    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
+        return super.sendGet(uri, type, builderDecorator.andThen(addSecretKey()));
     }
 
     @Override
-    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, Class<RespBody> clazz) {
-        return super.sendPost(uri, body, clazz);
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, TypeReference<RespBody> type) {
+        return super.sendPost(uri, body, type);
     }
 
     @Override
-    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, Class<RespBody> clazz, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
-        return super.sendPost(uri, body, clazz, builderDecorator.andThen(addSecretKey()));
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, TypeReference<RespBody> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
+        return super.sendPost(uri, body, type, builderDecorator.andThen(addSecretKey()));
     }
 
     private Function<HttpRequest.Builder, HttpRequest.Builder> addSecretKey() {

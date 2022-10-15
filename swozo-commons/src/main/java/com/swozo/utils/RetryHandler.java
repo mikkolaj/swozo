@@ -10,32 +10,24 @@ public class RetryHandler {
     }
 
     public static <V> V retryExponentially(Callable<V> operation, int attempts) throws Exception {
-        if (attempts < 1) {
-            throw new IllegalArgumentException("Can't retry less than 1 time.");
-        }
+        var retryMgr = new RetryManager(attempts);
 
-        var failCounter = 0;
-        var backoffPeriod = 1000;
-        Exception lastException = null;
-
-        while (failCounter < attempts) {
+        while (retryMgr.canRetry()) {
             try {
                 return operation.call();
             } catch (InterruptedException e) {
                 handleInterrupt(e);
             } catch (Exception e) {
-                lastException = e;
+                retryMgr.setLastException(e);
             }
             try {
-                failCounter += 1;
-                backoffPeriod *= 2;
-                Thread.sleep(backoffPeriod);
+                Thread.sleep(retryMgr.nextBackoffMillis());
             } catch (InterruptedException e) {
                 handleInterrupt(e);
             }
         }
-        assert lastException != null;
-        throw lastException;
+
+        throw retryMgr.getLastException();
     }
 
     public static void retryExponentially(ThrowingRunnable operation, int times) throws Exception {

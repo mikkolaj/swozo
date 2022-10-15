@@ -1,7 +1,8 @@
 package com.swozo.communication.http;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.swozo.jsonmapper.JsonMapperFacade;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -15,18 +16,24 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @Component
-@RequiredArgsConstructor
 public class JsonRequestSender implements RequestSender {
     private final JsonMapperFacade mapper;
+    private final HttpClient httpClient;
 
-    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, Class<T> clazz) {
-        return sendGet(uri, clazz, Function.identity());
+    @Autowired
+    public JsonRequestSender(JsonMapperFacade mapper) {
+        this.mapper = mapper;
+        this.httpClient = HttpClient.newHttpClient();
+    }
+
+    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T> type) {
+        return sendGet(uri, type, Function.identity());
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> sendGet(
             URI uri,
-            Class<T> clazz,
+            TypeReference<T> type,
             Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
     ) {
         var request = builderDecorator.apply(
@@ -35,22 +42,22 @@ public class JsonRequestSender implements RequestSender {
                         .GET()
         ).build();
 
-        return sendRequest(request, clazz);
+        return sendRequest(request, type);
     }
 
     public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(
             URI uri,
             ReqBody body,
-            Class<RespBody> clazz
+            TypeReference<RespBody> type
     ) {
-        return sendPost(uri, body, clazz, Function.identity());
+        return sendPost(uri, body, type, Function.identity());
     }
 
     @Override
     public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(
             URI uri,
             ReqBody body,
-            Class<RespBody> clazz,
+            TypeReference<RespBody> type,
             Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
     ) {
         var request = builderDecorator.apply(
@@ -61,18 +68,16 @@ public class JsonRequestSender implements RequestSender {
                         .POST(HttpRequest.BodyPublishers.ofString(mapper.toJson(body)))
                 ).build();
 
-        return sendRequest(request, clazz);
+        return sendRequest(request, type);
     }
 
-    private <T> CompletableFuture<HttpResponse<T>> sendRequest(HttpRequest request, Class<T> clazz) {
-        return HttpClient.newBuilder()
-                .build()
-                .sendAsync(
-                        request,
-                        responseInfo -> HttpResponse.BodySubscribers.mapping(
-                            HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8),
-                            json -> clazz.equals(Void.class) ? null : mapper.fromJson(json, clazz)
-                   )
-                );
+    private <T> CompletableFuture<HttpResponse<T>> sendRequest(HttpRequest request, TypeReference<T> type) {
+        return httpClient.sendAsync(
+                    request,
+                    responseInfo -> HttpResponse.BodySubscribers.mapping(
+                        HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8),
+                        json -> type.getType().equals(Void.class) ? null : mapper.fromJson(json, type)
+               )
+            );
     }
 }
