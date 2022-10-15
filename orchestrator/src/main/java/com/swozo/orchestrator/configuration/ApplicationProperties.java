@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 public record ApplicationProperties(
         Scheduler scheduler,
         Ansible ansible,
+        Orchestrator orchestrator,
         CloudProvider cloudProvider,
         int systemCommandTimeoutMinutes
 ) {
@@ -18,6 +19,9 @@ public record ApplicationProperties(
     private record Ansible(Jupyter jupyter) {
         private record Jupyter(String playbookPath) {
         }
+    }
+
+    public record Orchestrator(String secret) {
     }
 
     public String jupyterPlaybookPath() {

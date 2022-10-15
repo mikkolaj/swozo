@@ -38,7 +38,7 @@ public class AuthConstrainsConfig {
                 EndpointsConfig.of("/auth/**"),             // auth
                 EndpointsConfig.of("/v3/**"),               // swagger
                 EndpointsConfig.of("/swagger-ui/**")        // swagger UI
-        ).andWithoutMatchedBy(orchestratorMatcher);
+        ).andWithoutEndpointsMatchedBy(orchestratorMatcher);
 
         return List.of(
                 new AuthConstraint(new JwtAuthRule(jwtTokenService), jwtMatcher),

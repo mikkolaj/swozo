@@ -17,7 +17,7 @@ public class AllExceptEndpointMatcher extends EndpointMatcher {
         return new AllExceptEndpointMatcher(Arrays.stream(endpoints).collect(Collectors.toUnmodifiableSet()));
     }
 
-    public AllExceptEndpointMatcher andWithoutMatchedBy(EndpointMatcher endpointMatcher) {
+    public AllExceptEndpointMatcher andWithoutEndpointsMatchedBy(EndpointMatcher endpointMatcher) {
         extraBlackList.add(endpointMatcher);
         return this;
     }
