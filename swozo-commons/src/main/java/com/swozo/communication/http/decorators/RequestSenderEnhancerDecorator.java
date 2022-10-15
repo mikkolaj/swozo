@@ -1,9 +1,11 @@
 package com.swozo.communication.http.decorators;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.swozo.communication.http.RequestSender;
 import com.swozo.exceptions.InvalidStatusCodeException;
+import com.swozo.exceptions.PropagatingException;
 import com.swozo.exceptions.ServiceUnavailableException;
-import com.swozo.utils.RetryHandler;
+import com.swozo.utils.RetryManager;
 import com.swozo.utils.ServiceType;
 import org.springframework.http.HttpStatus;
 
@@ -30,23 +32,23 @@ public class RequestSenderEnhancerDecorator extends RequestSenderDecorator {
     }
 
     @Override
-    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, Class<T> clazz) {
-        return withOkStatusAssertion(super.sendGet(uri, clazz));
+    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T> type) {
+        return enhance(() -> super.sendGet(uri, type));
     }
 
     @Override
-    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, Class<RespBody> clazz) {
-        return enhance(() -> super.sendPost(uri, body, clazz));
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, TypeReference<RespBody> type) {
+        return enhance(() -> super.sendPost(uri, body, type));
     }
 
     @Override
-    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, Class<T> clazz, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
-        return enhance(() -> super.sendGet(uri, clazz, builderDecorator));
+    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
+        return enhance(() -> super.sendGet(uri, type, builderDecorator));
     }
 
     @Override
-    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, Class<RespBody> clazz, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
-        return enhance(() -> super.sendPost(uri, body, clazz, builderDecorator));
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, TypeReference<RespBody> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
+        return enhance(() -> super.sendPost(uri, body, type, builderDecorator));
     }
 
     private <T> CompletableFuture<HttpResponse<T>> enhance(Supplier<CompletableFuture<HttpResponse<T>>> responseSupplier) {
@@ -65,16 +67,21 @@ public class RequestSenderEnhancerDecorator extends RequestSenderDecorator {
     }
 
     private <T> CompletableFuture<HttpResponse<T>> withExponentialBackoff(
-            Supplier<CompletableFuture<HttpResponse<T>>> responseSupplier
+            Supplier<CompletableFuture<HttpResponse<T>>> requestSender
     ) {
-        try {
-            return RetryHandler.retryExponentially(() -> {
-                var result = responseSupplier.get();
-                result.get();
-                return result;
-            }, backoffRetries);
-        } catch (Exception e) {
-            return CompletableFuture.failedFuture(e);
-        }
+        var retryMgr = new RetryManager(backoffRetries);
+
+        return requestSender.get().exceptionallyComposeAsync(err -> {
+            if (retryMgr.canRetry()) {
+                try {
+                    Thread.sleep(retryMgr.nextBackoffMillis());
+                    return requestSender.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
+            throw new PropagatingException(err);
+        });
     }
 }

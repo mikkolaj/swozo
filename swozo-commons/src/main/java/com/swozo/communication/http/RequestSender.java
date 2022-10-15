@@ -1,5 +1,7 @@
 package com.swozo.communication.http;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -7,20 +9,24 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public interface RequestSender {
-    <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, Class<T> clazz);
+    <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T> type);
 
     <T> CompletableFuture<HttpResponse<T>> sendGet(
             URI uri,
-            Class<T> clazz,
+            TypeReference<T> type,
             Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
     );
-
-    <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, Class<RespBody> clazz);
 
     <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(
             URI uri,
             ReqBody body,
-            Class<RespBody> clazz,
+            TypeReference<RespBody> type
+    );
+
+    <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(
+            URI uri,
+            ReqBody body,
+            TypeReference<RespBody> type,
             Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
     );
 

@@ -1,5 +1,6 @@
 package com.swozo.api.orchestrator;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.swozo.communication.http.RequestSender;
 import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
@@ -25,11 +26,11 @@ class OrchestratorRequestSender {
 
     public CompletableFuture<OrchestratorLinkResponse> getActivityLinks(Long moduleActivityID) {
         var uri = uriFactory.createActivityLinksURI(moduleActivityID);
-        return unwrap(requestSender.sendGet(uri, OrchestratorLinkResponse.class));
+        return unwrap(requestSender.sendGet(uri, new TypeReference<>() {}));
     }
 
     public CompletableFuture<Void> sendScheduleRequest(ScheduleRequest scheduleRequest) {
         var uri = uriFactory.createSchedulesUri(scheduleRequest.getScheduleType());
-        return unwrap(requestSender.sendPost(uri, scheduleRequest, Void.class));
+        return unwrap(requestSender.sendPost(uri, scheduleRequest, new TypeReference<>() {}));
     }
 }
