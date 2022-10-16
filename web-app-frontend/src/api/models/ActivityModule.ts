@@ -64,6 +64,12 @@ export interface ActivityModule {
     instruction?: string;
     /**
      * 
+     * @type {number}
+     * @memberof ActivityModule
+     */
+    requestId?: number;
+    /**
+     * 
      * @type {Array<ActivityLink>}
      * @memberof ActivityModule
      */
@@ -84,6 +90,7 @@ export function ActivityModuleFromJSONTyped(json: any, ignoreDiscriminator: bool
         'module': !exists(json, 'module') ? undefined : ServiceModuleFromJSON(json['module']),
         'activity': !exists(json, 'activity') ? undefined : ActivityFromJSON(json['activity']),
         'instruction': !exists(json, 'instruction') ? undefined : json['instruction'],
+        'requestId': !exists(json, 'requestId') ? undefined : json['requestId'],
         'links': !exists(json, 'links') ? undefined : ((json['links'] as Array<any>).map(ActivityLinkFromJSON)),
     };
 }
@@ -101,6 +108,7 @@ export function ActivityModuleToJSON(value?: ActivityModule | null): any {
         'module': ServiceModuleToJSON(value.module),
         'activity': ActivityToJSON(value.activity),
         'instruction': value.instruction,
+        'requestId': value.requestId,
         'links': value.links === undefined ? undefined : ((value.links as Array<any>).map(ActivityLinkToJSON)),
     };
 }

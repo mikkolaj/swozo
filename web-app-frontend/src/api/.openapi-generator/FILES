@@ -23,9 +23,11 @@ models/FileDto.ts
 models/InitFileUploadRequest.ts
 models/JoinCourseRequest.ts
 models/LoginRequest.ts
+models/ParameterDescription.ts
 models/ParticipantDetailsDto.ts
 models/RemoteFile.ts
 models/Role.ts
+models/ServiceConfigDto.ts
 models/ServiceConnectionDetailsDto.ts
 models/ServiceModule.ts
 models/ServiceModuleDetailsDto.ts

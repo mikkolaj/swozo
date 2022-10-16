@@ -1,6 +1,11 @@
 package com.swozo.api.web.servicemodule;
 
+import com.swozo.api.orchestrator.OrchestratorService;
+import com.swozo.api.web.servicemodule.dto.ServiceConfigDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
+import com.swozo.model.scheduling.ParameterDescription;
+import com.swozo.model.scheduling.properties.FieldType;
+import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -23,7 +30,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 public class ServiceModuleController {
     private final Logger logger = LoggerFactory.getLogger(ServiceModuleController.class);
     private final ServiceModuleService serviceModuleService;
-
+    private final OrchestratorService orchestratorService;
 
     @GetMapping()
     @PreAuthorize("hasRole('TEACHER')")
@@ -37,6 +44,16 @@ public class ServiceModuleController {
     public ServiceModuleDetailsDto getServiceModule(AccessToken token, @PathVariable Long id) {
         logger.info("service module  info getter");
         return serviceModuleService.getServiceModuleInfo(id);
+    }
+
+    @GetMapping("/config")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public List<ServiceConfigDto> getSupportedServices() {
+//        return orchestratorService.getSupportedServices();
+        var s = new LinkedList<>(orchestratorService.getSupportedServices());
+        s.push(new ServiceConfigDto(ScheduleType.DOCKER, "DOCKER",
+                List.of(new ParameterDescription("dupa", true, FieldType.TEXT))));
+        return s;
     }
 
 //    @PutMapping("/{moduleId}")

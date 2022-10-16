@@ -15,6 +15,9 @@
 
 import * as runtime from '../runtime';
 import {
+    ServiceConfigDto,
+    ServiceConfigDtoFromJSON,
+    ServiceConfigDtoToJSON,
     ServiceModuleDetailsDto,
     ServiceModuleDetailsDtoFromJSON,
     ServiceModuleDetailsDtoToJSON,
@@ -94,6 +97,38 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
      */
     async getServiceModule(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
         const response = await this.getServiceModuleRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getSupportedServicesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceConfigDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/config`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceConfigDtoFromJSON));
+    }
+
+    /**
+     */
+    async getSupportedServices(initOverrides?: RequestInit): Promise<Array<ServiceConfigDto>> {
+        const response = await this.getSupportedServicesRaw(initOverrides);
         return await response.value();
     }
 

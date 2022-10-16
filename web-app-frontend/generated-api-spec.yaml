@@ -300,6 +300,22 @@ paths:
                 $ref: '#/components/schemas/ServiceModuleDetailsDto'
       security:
       - JWT_AUTH: []
+  /service-modules/config:
+    get:
+      tags:
+      - service-module-controller
+      operationId: getSupportedServices
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceConfigDto'
+      security:
+      - JWT_AUTH: []
   /courses/{id}/activities:
     get:
       tags:
@@ -493,6 +509,9 @@ components:
           $ref: '#/components/schemas/Activity'
         instruction:
           type: string
+        requestId:
+          type: integer
+          format: int64
         links:
           type: array
           items:
@@ -874,6 +893,40 @@ components:
           type: string
         password:
           type: string
+    ParameterDescription:
+      required:
+      - name
+      - required
+      - type
+      type: object
+      properties:
+        name:
+          type: string
+        required:
+          type: boolean
+        type:
+          type: string
+          enum:
+          - FILE
+          - TEXT
+    ServiceConfigDto:
+      required:
+      - parameterDescriptions
+      - scheduleType
+      - serviceName
+      type: object
+      properties:
+        scheduleType:
+          type: string
+          enum:
+          - JUPYTER
+          - DOCKER
+        serviceName:
+          type: string
+        parameterDescriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParameterDescription'
     CourseSummaryDto:
       required:
       - isPasswordProtected

@@ -1,24 +1,40 @@
 import { Box, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
-import { FileInputButton } from 'common/Input/FileInputButton';
+import { ServiceConfigDto } from 'api';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormSelectField } from 'common/Input/FormSelectField';
 import { SlideProps } from 'common/SlideForm/util';
 import { stylesRowCenteredVertical } from 'common/styles';
-import { ChangeEvent, useState } from 'react';
+import { FormikProps } from 'formik';
+import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mockServices } from 'utils/mocks';
-import { ModuleValues } from '../util';
+import { DynamicFormFields, ModuleValues } from '../util';
+import { DynamicModuleInfoForm } from './dynamic/DynamicModuleInfoForm';
 
 type Props = SlideProps & {
     values: ModuleValues;
-    setValues: (values: ModuleValues) => void;
+    supportedServices: ServiceConfigDto[];
+    dynamicFormRef: RefObject<FormikProps<DynamicFormFields>>;
+    dynamicFormFieldsRef: MutableRefObject<DynamicFormFields>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleChange: (e: ChangeEvent<any>) => void;
 };
 
-export const ModuleInfoForm = ({ nameBuilder, values, setValues, handleChange }: Props) => {
-    const [services] = useState(mockServices);
+export const ModuleInfoForm = ({
+    nameBuilder,
+    values,
+    supportedServices,
+    handleChange,
+    dynamicFormRef,
+    dynamicFormFieldsRef,
+}: Props) => {
     const { t } = useTranslation();
+    const serviceConfig = useMemo(() => {
+        return supportedServices.find((cfg) => cfg.serviceName === values.service);
+    }, [supportedServices, values.service]);
+
+    useEffect(() => {
+        dynamicFormFieldsRef.current = {};
+    }, [serviceConfig, dynamicFormFieldsRef]);
 
     return (
         <>
@@ -42,43 +58,35 @@ export const ModuleInfoForm = ({ nameBuilder, values, setValues, handleChange }:
                 i18nLabel="createModule.slides.0.form.description"
             />
             <FormSelectField name={nameBuilder('service')} i18nLabel="createModule.slides.0.form.service">
-                {services.map((service, idx) => (
-                    <MenuItem key={idx} value={service}>
-                        {service}
+                {supportedServices.map(({ serviceName, scheduleType }) => (
+                    <MenuItem key={serviceName} value={scheduleType}>
+                        {serviceName}
                     </MenuItem>
                 ))}
             </FormSelectField>
 
-            <Divider sx={{ width: '75%', mt: 2 }} />
-            {/* TODO this should probably be dynamic from server */}
-            <Typography sx={{ mt: 0 }} variant="subtitle1">
-                Konfiguracja serwisu
-            </Typography>
-            <Box
-                sx={{
-                    ...stylesRowCenteredVertical,
-                    ml: 2,
-                    mt: 2,
-                }}
-            >
-                <FormInputField
-                    name={nameBuilder('serviceFile')}
-                    wrapperSx={{ mt: 0 }}
-                    type="text"
-                    labelText="Startowy notebook"
-                    textFieldProps={{ inputProps: { readOnly: true } }}
-                />
-                <FileInputButton
-                    text="Wybierz plik"
-                    onFilesSelected={(files) => {
-                        console.log(files);
-                        setValues({
-                            ...values,
-                            serviceFile: files[0]?.name ?? '',
-                        });
-                    }}
-                />
-            </Box>
+            {serviceConfig && serviceConfig.parameterDescriptions && (
+                <>
+                    <Divider sx={{ width: '75%', mt: 2 }} />
+                    <Typography sx={{ mt: 0 }} variant="subtitle1">
+                        {t('createModule.slides.0.form.serviceConfig')}
+                    </Typography>
+                    <Box
+                        sx={{
+                            ...stylesRowCenteredVertical,
+                            ml: 2,
+                            mt: 2,
+                        }}
+                    >
+                        <DynamicModuleInfoForm
+                            dynamicFormRef={dynamicFormRef}
+                            serviceConfig={serviceConfig}
+                            currentValuesRef={dynamicFormFieldsRef}
+                        />
+                    </Box>
+                    <Divider sx={{ width: '75%', mt: 2 }} />
+                </>
+            )}
 
             <Divider sx={{ width: '75%', mt: 2 }} />
 

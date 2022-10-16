@@ -3,6 +3,8 @@ import { SlideValues2 } from 'common/SlideForm/util';
 export const MODULE_INFO_SLIDE = '0';
 export const MODULE_SPECS_SLIDE = '1';
 
+export type DynamicFormFields = Record<string, unknown>;
+
 export type ModuleValues = {
     name: string;
     subject: string;
@@ -26,7 +28,7 @@ export const initialModuleValues = () => ({
     name: '',
     subject: '',
     description: '',
-    service: 'Jupyter',
+    service: '',
     serviceFile: '',
     instructions: '',
     isPublic: true,

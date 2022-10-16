@@ -35,6 +35,11 @@ public class UriFactory {
                 Config.SCHEDULES + Config.AGGREGATED);
     }
 
+    public URI createServiceConfigurationUri() {
+        return createURI(orchestratorServerUrl +
+                Config.SCHEDULES + Config.CONFIGURATION);
+    }
+
     @SneakyThrows(URISyntaxException.class)
     private URI createURI(String uri) {
         return new URI(uri);
