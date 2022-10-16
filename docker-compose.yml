@@ -1,0 +1,18 @@
+services:
+  swozo-web-postgres:
+    extends:
+      file: ./database/docker-compose.yml
+      service: swozo-web-postgres
+    networks:
+      - swozo
+  swozo-orchestrator:
+    extends:
+      file: ./orchestrator/docker-compose-dev.yml
+      service: swozo-orchestrator
+    depends_on:
+      - swozo-web-postgres
+    networks:
+      - swozo
+
+networks:
+  swozo:
