@@ -37,6 +37,18 @@ export interface ParameterDescription {
      * @memberof ParameterDescription
      */
     type: ParameterDescriptionTypeEnum;
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof ParameterDescription
+     */
+    translatedLabel?: { [key: string]: string; };
+    /**
+     * 
+     * @type {{ [key: string]: object; }}
+     * @memberof ParameterDescription
+     */
+    clientValidationHelpers?: { [key: string]: object; };
 }
 
 /**
@@ -61,6 +73,8 @@ export function ParameterDescriptionFromJSONTyped(json: any, ignoreDiscriminator
         'name': json['name'],
         'required': json['required'],
         'type': json['type'],
+        'translatedLabel': !exists(json, 'translatedLabel') ? undefined : json['translatedLabel'],
+        'clientValidationHelpers': !exists(json, 'clientValidationHelpers') ? undefined : json['clientValidationHelpers'],
     };
 }
 
@@ -76,6 +90,8 @@ export function ParameterDescriptionToJSON(value?: ParameterDescription | null):
         'name': value.name,
         'required': value.required,
         'type': value.type,
+        'translatedLabel': value.translatedLabel,
+        'clientValidationHelpers': value.clientValidationHelpers,
     };
 }
 

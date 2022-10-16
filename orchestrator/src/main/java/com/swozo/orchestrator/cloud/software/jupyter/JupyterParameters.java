@@ -1,8 +1,8 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
 import com.swozo.model.scheduling.ParameterDescription;
-import com.swozo.model.scheduling.properties.FieldType;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
+import com.swozo.utils.SupportedLanguage;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -21,6 +21,16 @@ public class JupyterParameters {
     }
 
     public static List<ParameterDescription> getParameterDescriptions() {
-        return List.of(new ParameterDescription(NOTEBOOK_LOCATION_PARAM, true, FieldType.FILE));
+        return List.of(
+                ParameterDescription.builder(NOTEBOOK_LOCATION_PARAM)
+                        .withTranslatedLabel(
+                                Map.of(
+                                    SupportedLanguage.PL, "Startowy notebook",
+                                    SupportedLanguage.EN, "Initial notebook"
+                                )
+                        )
+                        .ofFile()
+                        .withAllowedExtensions(List.of("ipynb"))
+                        .build());
     }
 }

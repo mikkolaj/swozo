@@ -4,9 +4,9 @@ import com.swozo.api.orchestrator.OrchestratorService;
 import com.swozo.api.web.servicemodule.dto.ServiceConfigDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
 import com.swozo.model.scheduling.ParameterDescription;
-import com.swozo.model.scheduling.properties.FieldType;
 import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.security.AccessToken;
+import com.swozo.utils.SupportedLanguage;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -52,7 +53,14 @@ public class ServiceModuleController {
 //        return orchestratorService.getSupportedServices();
         var s = new LinkedList<>(orchestratorService.getSupportedServices());
         s.push(new ServiceConfigDto(ScheduleType.DOCKER, "DOCKER",
-                List.of(new ParameterDescription("dupa", true, FieldType.TEXT))));
+                List.of(
+                        ParameterDescription.builder("test1")
+                                .withTranslatedLabel(Map.of(SupportedLanguage.PL, "label pl"))
+                                .ofText().build(),
+                        ParameterDescription.builder("test2")
+                                .withTranslatedLabel(Map.of(SupportedLanguage.PL, "label pl2"))
+                                .ofFile().build()
+                )));
         return s;
     }
 

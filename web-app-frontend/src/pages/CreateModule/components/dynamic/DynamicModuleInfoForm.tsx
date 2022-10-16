@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import { ServiceConfigDto } from 'api';
 import { Formik, FormikProps } from 'formik';
 import _ from 'lodash';
@@ -27,15 +28,16 @@ export const DynamicModuleInfoForm = ({ currentValuesRef, serviceConfig, dynamic
             innerRef={dynamicFormRef}
         >
             {({ setFieldValue }) => (
-                <div>
+                <Box>
                     {serviceConfig.parameterDescriptions.map((param, idx) => (
-                        <DynamicField
+                        <Box
                             key={idx}
-                            param={{ ...param, name: param.name }}
-                            setValue={(val) => setFieldValue(param.name, val)}
-                        />
+                            sx={{ mb: idx + 1 < serviceConfig.parameterDescriptions.length ? 2 : 0 }}
+                        >
+                            <DynamicField param={param} setValue={(val) => setFieldValue(param.name, val)} />
+                        </Box>
                     ))}
-                </div>
+                </Box>
             )}
         </Formik>
     );
