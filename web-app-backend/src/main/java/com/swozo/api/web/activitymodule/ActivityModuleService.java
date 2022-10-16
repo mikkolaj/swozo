@@ -18,8 +18,9 @@ public class ActivityModuleService {
     public void provideLinksForActivityModules(Collection<ActivityModule> activityModules) {
         activityModules.stream()
                 .filter(activityModule -> activityModule.getLinks().isEmpty())
+                .filter(activityModule -> activityModule.getRequestId().isPresent())
                 .forEach(activityModule -> {
-                    orchestratorService.getActivityLinks(activityModule.getId()).links().stream()
+                    orchestratorService.getActivityLinks(activityModule.getRequestId().get()).links().stream()
                             .map(activityModuleMapper::toPersistence)
                             .forEach(activityModule::addLink);
 
