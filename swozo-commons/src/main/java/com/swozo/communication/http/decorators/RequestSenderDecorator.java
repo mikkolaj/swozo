@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class RequestSenderDecorator implements RequestSender {
+public abstract class RequestSenderDecorator implements RequestSender {
     protected final RequestSender wrappee;
 
     @Override

@@ -17,6 +17,12 @@ public class CommunicationConfig {
     @Bean(name = "orchestrator")
     public RequestSender provideOrchestratorRequestSender() {
         var requestSender = new JsonRequestSender(jsonMapperFacade);
-        return new RequestSenderEnhancerDecorator(requestSender, ServiceType.ORCHESTRATOR, 3);
+        final var BACKOFF_RETRIES = 3;
+
+        return new RequestSenderEnhancerDecorator(
+                requestSender,
+                ServiceType.ORCHESTRATOR,
+                BACKOFF_RETRIES
+        );
     }
 }
