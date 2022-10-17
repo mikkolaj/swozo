@@ -1,22 +1,25 @@
 import { Box, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
-import { ServiceConfigDto } from 'api';
+import { ServiceConfig } from 'api';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormSelectField } from 'common/Input/FormSelectField';
+import { RichTextEditor } from 'common/Input/RichTextEditor';
 import { SlideProps } from 'common/SlideForm/util';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { FormikProps } from 'formik';
+import _ from 'lodash';
 import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DynamicFormFields, ModuleValues } from '../util';
+import { DynamicFormFields, DynamicFormValueRegistry, ModuleValues } from '../util';
 import { DynamicModuleInfoForm } from './dynamic/DynamicModuleInfoForm';
 
 type Props = SlideProps & {
     values: ModuleValues;
-    supportedServices: ServiceConfigDto[];
+    supportedServices: ServiceConfig[];
     dynamicFormRef: RefObject<FormikProps<DynamicFormFields>>;
-    dynamicFormFieldsRef: MutableRefObject<DynamicFormFields>;
+    dynamicFormValueRegistryRef: MutableRefObject<DynamicFormValueRegistry>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleChange: (e: ChangeEvent<any>) => void;
+    setFieldValue: (name: string, value: unknown) => void;
 };
 
 export const ModuleInfoForm = ({
@@ -24,8 +27,9 @@ export const ModuleInfoForm = ({
     values,
     supportedServices,
     handleChange,
+    setFieldValue,
     dynamicFormRef,
-    dynamicFormFieldsRef,
+    dynamicFormValueRegistryRef,
 }: Props) => {
     const { t } = useTranslation();
     const serviceConfig = useMemo(() => {
@@ -33,8 +37,8 @@ export const ModuleInfoForm = ({
     }, [supportedServices, values.service]);
 
     useEffect(() => {
-        dynamicFormFieldsRef.current = {};
-    }, [serviceConfig, dynamicFormFieldsRef]);
+        dynamicFormValueRegistryRef.current = {};
+    }, [serviceConfig, dynamicFormValueRegistryRef]);
 
     return (
         <>
@@ -58,9 +62,9 @@ export const ModuleInfoForm = ({
                 i18nLabel="createModule.slides.0.form.description"
             />
             <FormSelectField name={nameBuilder('service')} i18nLabel="createModule.slides.0.form.service">
-                {supportedServices.map(({ serviceName, scheduleType }) => (
-                    <MenuItem key={serviceName} value={scheduleType}>
-                        {serviceName}
+                {supportedServices.map(({ serviceName }) => (
+                    <MenuItem key={serviceName} value={serviceName}>
+                        {_.capitalize(serviceName)}
                     </MenuItem>
                 ))}
             </FormSelectField>
@@ -76,27 +80,29 @@ export const ModuleInfoForm = ({
                             ...stylesRowCenteredVertical,
                             ml: 2,
                             mt: 2,
+                            width: '100%',
                         }}
                     >
                         <DynamicModuleInfoForm
                             dynamicFormRef={dynamicFormRef}
                             serviceConfig={serviceConfig}
-                            currentValuesRef={dynamicFormFieldsRef}
+                            currentValuesRef={dynamicFormValueRegistryRef}
                         />
                     </Box>
                     <Divider sx={{ width: '75%', mt: 2 }} />
                 </>
             )}
 
-            <Divider sx={{ width: '75%', mt: 2 }} />
-
-            <FormInputField
-                wrapperSx={{ width: '50%' }}
+            <Typography sx={{ mt: 2 }} variant="subtitle1">
+                {t('createModule.slides.0.form.instructions')}
+            </Typography>
+            <RichTextEditor
+                wrapperSx={{ width: '75%' }}
                 name={nameBuilder('instructions')}
-                type="text"
-                textFieldProps={{ multiline: true, fullWidth: true, required: false }}
-                i18nLabel="createModule.slides.0.form.instructions"
+                value={values.instructions}
+                setFieldValue={setFieldValue}
             />
+
             <FormControlLabel
                 sx={{ mt: 2 }}
                 control={<Checkbox value={values.isPublic} />}

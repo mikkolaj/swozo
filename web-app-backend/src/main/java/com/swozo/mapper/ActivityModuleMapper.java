@@ -24,7 +24,7 @@ public abstract class ActivityModuleMapper {
         return activityModule;
     }
 
-    @Mapping(target = "serviceName", expression = "java(activityModule.getModule().getScheduleType().toString())")
+    @Mapping(target = "serviceName", expression = "java(activityModule.getModule().getScheduleTypeName())")
     @Mapping(target = "connectionInstruction", source = "activityModule.instruction")
     @Mapping(target = "url", expression = "java(Optional.ofNullable(activityLink.getUrl()))")
     @Mapping(target = "connectionInfo", expression = "java(Optional.ofNullable(activityLink.getConnectionInfo()))")

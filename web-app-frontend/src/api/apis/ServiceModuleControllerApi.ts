@@ -15,16 +15,26 @@
 
 import * as runtime from '../runtime';
 import {
-    ServiceConfigDto,
-    ServiceConfigDtoFromJSON,
-    ServiceConfigDtoToJSON,
+    ReserveServiceModuleRequest,
+    ReserveServiceModuleRequestFromJSON,
+    ReserveServiceModuleRequestToJSON,
+    ServiceConfig,
+    ServiceConfigFromJSON,
+    ServiceConfigToJSON,
     ServiceModuleDetailsDto,
     ServiceModuleDetailsDtoFromJSON,
     ServiceModuleDetailsDtoToJSON,
+    ServiceModuleReservationDto,
+    ServiceModuleReservationDtoFromJSON,
+    ServiceModuleReservationDtoToJSON,
 } from '../models';
 
 export interface GetServiceModuleRequest {
     id: number;
+}
+
+export interface ReserveServiceModuleCreationRequest {
+    reserveServiceModuleRequest: ReserveServiceModuleRequest;
 }
 
 /**
@@ -102,7 +112,7 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getSupportedServicesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceConfigDto>>> {
+    async getSupportedServicesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceConfig>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -122,13 +132,52 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceConfigDtoFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceConfigFromJSON));
     }
 
     /**
      */
-    async getSupportedServices(initOverrides?: RequestInit): Promise<Array<ServiceConfigDto>> {
+    async getSupportedServices(initOverrides?: RequestInit): Promise<Array<ServiceConfig>> {
         const response = await this.getSupportedServicesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async reserveServiceModuleCreationRaw(requestParameters: ReserveServiceModuleCreationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleReservationDto>> {
+        if (requestParameters.reserveServiceModuleRequest === null || requestParameters.reserveServiceModuleRequest === undefined) {
+            throw new runtime.RequiredError('reserveServiceModuleRequest','Required parameter requestParameters.reserveServiceModuleRequest was null or undefined when calling reserveServiceModuleCreation.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ReserveServiceModuleRequestToJSON(requestParameters.reserveServiceModuleRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleReservationDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async reserveServiceModuleCreation(requestParameters: ReserveServiceModuleCreationRequest, initOverrides?: RequestInit): Promise<ServiceModuleReservationDto> {
+        const response = await this.reserveServiceModuleCreationRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

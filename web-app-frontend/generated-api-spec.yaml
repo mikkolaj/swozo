@@ -122,6 +122,41 @@ paths:
                 $ref: '#/components/schemas/StorageAccessRequest'
       security:
       - JWT_AUTH: []
+  /service-modules:
+    get:
+      tags:
+      - service-module-controller
+      operationId: getModuleList
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceModuleDetailsDto'
+      security:
+      - JWT_AUTH: []
+    post:
+      tags:
+      - service-module-controller
+      operationId: reserveServiceModuleCreation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReserveServiceModuleRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ServiceModuleReservationDto'
+      security:
+      - JWT_AUTH: []
   /courses:
     get:
       tags:
@@ -263,22 +298,6 @@ paths:
                 $ref: '#/components/schemas/UserDetailsDto'
       security:
       - JWT_AUTH: []
-  /service-modules:
-    get:
-      tags:
-      - service-module-controller
-      operationId: getModuleList
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ServiceModuleDetailsDto'
-      security:
-      - JWT_AUTH: []
   /service-modules/{id}:
     get:
       tags:
@@ -313,7 +332,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ServiceConfigDto'
+                  $ref: '#/components/schemas/ServiceConfig'
       security:
       - JWT_AUTH: []
   /courses/{id}/activities:
@@ -577,18 +596,25 @@ components:
           type: string
         instructionsFromTechnicalTeacher:
           type: string
-        creatorName:
-          type: string
         subject:
           type: string
-        scheduleType:
-          type: string
-          enum:
-          - JUPYTER
-          - DOCKER
         creationTime:
           type: string
           format: date-time
+        creator:
+          $ref: '#/components/schemas/User'
+        scheduleTypeName:
+          type: string
+        scheduleTypeVersion:
+          type: string
+        dynamicProperties:
+          type: object
+          additionalProperties:
+            type: string
+        isPublic:
+          type: boolean
+        isReady:
+          type: boolean
     User:
       type: object
       properties:
@@ -783,6 +809,43 @@ components:
         creationTime:
           type: string
           format: date-time
+    ReserveServiceModuleRequest:
+      required:
+      - dynamicProperties
+      - instructionsFromTechnicalTeacher
+      - isPublic
+      - name
+      - scheduleTypeName
+      - subject
+      type: object
+      properties:
+        name:
+          type: string
+        instructionsFromTechnicalTeacher:
+          type: string
+        subject:
+          type: string
+        scheduleTypeName:
+          type: string
+        dynamicProperties:
+          type: object
+          additionalProperties:
+            type: string
+        isPublic:
+          type: boolean
+    ServiceModuleReservationDto:
+      required:
+      - dynamicFieldAdditionalData
+      - reservationId
+      type: object
+      properties:
+        reservationId:
+          type: integer
+          format: int64
+        dynamicFieldAdditionalData:
+          type: object
+          additionalProperties:
+            type: object
     CourseDetailsDto:
       required:
       - activities
@@ -917,19 +980,16 @@ components:
           type: object
           additionalProperties:
             type: object
-    ServiceConfigDto:
+    ServiceConfig:
       required:
       - parameterDescriptions
-      - scheduleType
       - serviceName
+      - version
       type: object
       properties:
-        scheduleType:
-          type: string
-          enum:
-          - JUPYTER
-          - DOCKER
         serviceName:
+          type: string
+        version:
           type: string
         parameterDescriptions:
           type: array

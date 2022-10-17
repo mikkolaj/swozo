@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 @Component
 public class UriFactory {
     private final String orchestratorServerUrl;
+    private static final String SEPARATOR = "/";
 
     @Autowired
     public UriFactory(@Value("${orchestrator.server.url}") String orchestratorServerUrl) {
@@ -21,7 +22,7 @@ public class UriFactory {
     public URI createActivityLinksURI(Long moduleActivityID) {
         return createURI(orchestratorServerUrl +
                 Config.LINKS +
-                "/" +
+                SEPARATOR +
                 moduleActivityID);
     }
 
@@ -38,6 +39,11 @@ public class UriFactory {
     public URI createServiceConfigurationUri() {
         return createURI(orchestratorServerUrl +
                 Config.SCHEDULES + Config.CONFIGURATION);
+    }
+
+    public URI createServiceConfigurationUri(String scheduleType) {
+        return createURI(orchestratorServerUrl +
+                Config.SCHEDULES + Config.CONFIGURATION + SEPARATOR + scheduleType);
     }
 
     @SneakyThrows(URISyntaxException.class)

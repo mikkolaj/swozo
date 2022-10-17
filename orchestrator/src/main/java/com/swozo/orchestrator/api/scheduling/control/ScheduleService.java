@@ -4,6 +4,7 @@ import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
@@ -41,7 +42,7 @@ public class ScheduleService {
     // TODO: add retrying and cleaning of received, but not fulfilled requests
     public ScheduleResponse schedule(ScheduleRequest request) {
         var provisioner = provisionerFactory.getProvisioner(request.scheduleType());
-        provisioner.validateParameters(request.dynamicProperties());
+        provisioner.validateParameters(request.dynamicProperties(), request.scheduleVersion());
         var requestEntity = scheduleRequestTracker.startTracking(request);
         delegateScheduling(requestEntity, provisioner);
         return new ScheduleResponse(requestEntity.getId());
@@ -55,6 +56,10 @@ public class ScheduleService {
 
     public List<ServiceConfig> getSupportedServices() {
         return provisionerFactory.getAllProvisioners().stream().map(TimedSoftwareProvisioner::getServiceConfig).toList();
+    }
+
+    public ServiceConfig getServiceConfig(ScheduleType scheduleType) {
+        return provisionerFactory.getProvisioner(scheduleType).getServiceConfig();
     }
 
     private Void scheduleCreationAndDeletion(
@@ -112,7 +117,7 @@ public class ScheduleService {
 
     private static List<ActivityLinkInfo> delegateProvisioning(ScheduleRequestEntity request, TimedSoftwareProvisioner provisioner, VMResourceDetails resourceDetails) {
         return CheckedExceptionConverter.from(
-                () -> provisioner.provision(resourceDetails, request.getDynamicProperties()),
+                () -> provisioner.provision(resourceDetails, request.getDynamicProperties(), request.getScheduleVersion()),
                 ProvisioningFailed::new
         ).get();
     }

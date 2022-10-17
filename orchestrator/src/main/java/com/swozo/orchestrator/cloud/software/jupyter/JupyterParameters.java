@@ -31,6 +31,7 @@ public class JupyterParameters {
                         )
                         .ofFile()
                         .withAllowedExtensions(List.of("ipynb"))
-                        .build());
+                        .build()
+        );
     }
 }

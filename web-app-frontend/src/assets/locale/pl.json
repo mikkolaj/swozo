@@ -252,5 +252,10 @@
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",
         "DUPLICATE_FILE": "Plik już istnieje",
         "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie"
+    },
+    "dynamicForm": {
+        "file": {
+            "button": "Wybierz plik"
+        }
     }
 }

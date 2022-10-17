@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    User,
+    UserFromJSON,
+    UserFromJSONTyped,
+    UserToJSON,
+} from './User';
+
 /**
  * 
  * @export
@@ -42,34 +49,49 @@ export interface ServiceModule {
      * @type {string}
      * @memberof ServiceModule
      */
-    creatorName?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServiceModule
-     */
     subject?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServiceModule
-     */
-    scheduleType?: ServiceModuleScheduleTypeEnum;
     /**
      * 
      * @type {Date}
      * @memberof ServiceModule
      */
     creationTime?: Date;
-}
-
-/**
-* @export
-* @enum {string}
-*/
-export enum ServiceModuleScheduleTypeEnum {
-    Jupyter = 'JUPYTER',
-    Docker = 'DOCKER'
+    /**
+     * 
+     * @type {User}
+     * @memberof ServiceModule
+     */
+    creator?: User;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServiceModule
+     */
+    scheduleTypeName?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServiceModule
+     */
+    scheduleTypeVersion?: string;
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof ServiceModule
+     */
+    dynamicProperties?: { [key: string]: string; };
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ServiceModule
+     */
+    isPublic?: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ServiceModule
+     */
+    isReady?: boolean;
 }
 
 export function ServiceModuleFromJSON(json: any): ServiceModule {
@@ -85,10 +107,14 @@ export function ServiceModuleFromJSONTyped(json: any, ignoreDiscriminator: boole
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
         'instructionsFromTechnicalTeacher': !exists(json, 'instructionsFromTechnicalTeacher') ? undefined : json['instructionsFromTechnicalTeacher'],
-        'creatorName': !exists(json, 'creatorName') ? undefined : json['creatorName'],
         'subject': !exists(json, 'subject') ? undefined : json['subject'],
-        'scheduleType': !exists(json, 'scheduleType') ? undefined : json['scheduleType'],
         'creationTime': !exists(json, 'creationTime') ? undefined : (new Date(json['creationTime'])),
+        'creator': !exists(json, 'creator') ? undefined : UserFromJSON(json['creator']),
+        'scheduleTypeName': !exists(json, 'scheduleTypeName') ? undefined : json['scheduleTypeName'],
+        'scheduleTypeVersion': !exists(json, 'scheduleTypeVersion') ? undefined : json['scheduleTypeVersion'],
+        'dynamicProperties': !exists(json, 'dynamicProperties') ? undefined : json['dynamicProperties'],
+        'isPublic': !exists(json, 'isPublic') ? undefined : json['isPublic'],
+        'isReady': !exists(json, 'isReady') ? undefined : json['isReady'],
     };
 }
 
@@ -104,10 +130,14 @@ export function ServiceModuleToJSON(value?: ServiceModule | null): any {
         'id': value.id,
         'name': value.name,
         'instructionsFromTechnicalTeacher': value.instructionsFromTechnicalTeacher,
-        'creatorName': value.creatorName,
         'subject': value.subject,
-        'scheduleType': value.scheduleType,
         'creationTime': value.creationTime === undefined ? undefined : (value.creationTime.toISOString()),
+        'creator': UserToJSON(value.creator),
+        'scheduleTypeName': value.scheduleTypeName,
+        'scheduleTypeVersion': value.scheduleTypeVersion,
+        'dynamicProperties': value.dynamicProperties,
+        'isPublic': value.isPublic,
+        'isReady': value.isReady,
     };
 }
 

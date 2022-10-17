@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.swozo.communication.http.RequestSender.unwrap;
 
 @Component
-class OrchestratorRequestSender {
+public class OrchestratorRequestSender {
     private final RequestSender requestSender;
     private final UriFactory uriFactory;
 
@@ -44,6 +44,11 @@ class OrchestratorRequestSender {
 
     public CompletableFuture<List<ServiceConfig>> getServiceConfigs() {
         var uri = uriFactory.createServiceConfigurationUri();
+        return unwrap(requestSender.sendGet(uri, new TypeReference<>(){}));
+    }
+
+    public CompletableFuture<ServiceConfig> getServiceConfig(String scheduleType) {
+        var uri = uriFactory.createServiceConfigurationUri(scheduleType);
         return unwrap(requestSender.sendGet(uri, new TypeReference<>(){}));
     }
 }

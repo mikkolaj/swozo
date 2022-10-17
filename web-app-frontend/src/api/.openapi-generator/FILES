@@ -26,11 +26,13 @@ models/LoginRequest.ts
 models/ParameterDescription.ts
 models/ParticipantDetailsDto.ts
 models/RemoteFile.ts
+models/ReserveServiceModuleRequest.ts
 models/Role.ts
-models/ServiceConfigDto.ts
+models/ServiceConfig.ts
 models/ServiceConnectionDetailsDto.ts
 models/ServiceModule.ts
 models/ServiceModuleDetailsDto.ts
+models/ServiceModuleReservationDto.ts
 models/StorageAccessRequest.ts
 models/UploadAccessDto.ts
 models/User.ts

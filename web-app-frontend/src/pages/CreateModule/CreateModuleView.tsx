@@ -1,4 +1,5 @@
 import { Grid } from '@mui/material';
+import { ReserveServiceModuleRequest } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
@@ -8,13 +9,17 @@ import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikProps } from 'formik';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMutation } from 'react-query';
+import { extractValueForReservation } from './components/dynamic/utils';
 import { ModuleInfoForm } from './components/ModuleInfoForm';
 import { ModuleSpecsForm } from './components/ModuleSpecsForm';
 import { Summary } from './components/Summary';
 import {
     DynamicFormFields,
+    DynamicFormValueRegistry,
     FormValues,
     initialModuleValues,
     MODULE_INFO_SLIDE,
@@ -45,9 +50,19 @@ export const CreateModuleView = () => {
         removeApiError
     );
 
+    const reserveServiceModuleMutation = useMutation(
+        (reserveServiceModuleRequest: ReserveServiceModuleRequest) =>
+            getApis().serviceModuleApi.reserveServiceModuleCreation({ reserveServiceModuleRequest }),
+        {
+            onSuccess: (resp) => {
+                console.log(resp);
+            },
+        }
+    );
+
     const formRef = useRef<FormikProps<FormValues>>(null);
     const dynamicFormRef = useRef<FormikProps<DynamicFormFields>>(null);
-    const dynamicFormFieldsRef = useRef<DynamicFormFields>({});
+    const dynamicFormValueRegistryRef = useRef<DynamicFormValueRegistry>({});
 
     useEffect(() => {
         if (supportedServices && supportedServices.length > 0) {
@@ -73,23 +88,37 @@ export const CreateModuleView = () => {
             innerRef={formRef as any}
             slidesWithErrors={[]}
             slideConstructors={[
-                (slideProps, { values, handleChange }) => (
+                (slideProps, { values, handleChange, setFieldValue }) => (
                     <ModuleInfoForm
                         {...slideProps}
                         supportedServices={supportedServices}
                         values={values[MODULE_INFO_SLIDE]}
                         handleChange={handleChange}
+                        setFieldValue={setFieldValue}
                         dynamicFormRef={dynamicFormRef}
-                        dynamicFormFieldsRef={dynamicFormFieldsRef}
+                        dynamicFormValueRegistryRef={dynamicFormValueRegistryRef}
                     />
                 ),
                 (slideProps, _) => <ModuleSpecsForm {...slideProps} />,
                 (_) => <Summary />,
             ]}
-            onSubmit={(values) => {
+            onSubmit={() => {
                 console.log('submit');
-                console.log(dynamicFormFieldsRef.current);
-                console.log(values);
+                console.log(dynamicFormValueRegistryRef.current);
+                const values = formRef.current?.values;
+                if (!values) return;
+                const info = values[0];
+                reserveServiceModuleMutation.mutate({
+                    dynamicProperties: _.mapValues(
+                        dynamicFormValueRegistryRef.current,
+                        ({ type, associatedValue }) => extractValueForReservation(type, associatedValue)
+                    ),
+                    name: info.name,
+                    instructionsFromTechnicalTeacher: info.instructions,
+                    isPublic: info.isPublic,
+                    scheduleTypeName: info.service,
+                    subject: info.subject,
+                });
             }}
             buttons={
                 <Grid container>
@@ -106,13 +135,7 @@ export const CreateModuleView = () => {
                             slideCount={3}
                             label={t('createModule.buttons.next')}
                             lastSlideLabel={t('createModule.finish')}
-                            onNext={(slideNum) => {
-                                setCurrentSlide(slideNum);
-                                if (slideNum === +MODULE_SPECS_SLIDE) {
-                                    // dynamic form is unmounted when we change slide, we use second ref to persist that value
-                                    dynamicFormFieldsRef.current = dynamicFormRef.current?.values ?? {};
-                                }
-                            }}
+                            onNext={(slideNum) => setCurrentSlide(slideNum)}
                             onFinish={() => formRef.current?.handleSubmit()}
                         />
                     </Grid>

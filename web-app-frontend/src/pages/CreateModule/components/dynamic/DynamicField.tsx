@@ -1,11 +1,14 @@
 import { ParameterDescription } from 'api';
-import { fieldFactory, FieldUtils } from './FieldFactory';
+import { useTranslation } from 'react-i18next';
+import { fieldFactory } from './FieldFactory';
+import { FieldUtils } from './utils';
 
 type Props = FieldUtils & {
     param: ParameterDescription;
 };
 
 export const DynamicField = ({ param, ...fieldUtils }: Props) => {
+    const { i18n } = useTranslation();
     const fieldProvider = fieldFactory()[param.type];
 
     if (!fieldProvider) {
@@ -13,5 +16,5 @@ export const DynamicField = ({ param, ...fieldUtils }: Props) => {
         return <></>;
     }
 
-    return fieldProvider(param, fieldUtils);
+    return fieldProvider(param, i18n, fieldUtils);
 };

@@ -20,6 +20,7 @@ public class ScheduleRequestEntity extends BaseEntity {
     private LocalDateTime endTime;
     private String machineType;
     private int diskSizeGb;
+    private String scheduleVersion;
     private ScheduleTypeEntity scheduleType;
 
     @ElementCollection

@@ -1,13 +1,16 @@
 package com.swozo.mapper;
 
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
-import com.swozo.api.web.servicemodule.dto.ServiceConfigDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
-import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.api.web.servicemodule.dto.ServiceModuleReservationDto;
+import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 @Mapper(componentModel = "spring")
 public abstract class ServiceModuleMapper {
@@ -16,6 +19,12 @@ public abstract class ServiceModuleMapper {
 
     public abstract ServiceModuleDetailsDto toDto(ServiceModule serviceModule);
 
-    @Mapping(target = "serviceName", expression = "java(serviceConfig.scheduleType().toString())")
-    public abstract ServiceConfigDto toDto(ServiceConfig serviceConfig);
+    @Mapping(target = "dynamicProperties", ignore = true)
+    @Mapping(target = "isReady", expression = "java(false)")
+    @Mapping(target = "name", source = "request.name")
+    public abstract ServiceModule toPersistenceReservation(ReserveServiceModuleRequest request, User creator);
+
+    public ServiceModuleReservationDto toReservationDto(ServiceModule serviceModule, Map<String, Object> dynamicFieldAdditionalData) {
+        return new ServiceModuleReservationDto(serviceModule.getId(), dynamicFieldAdditionalData);
+    }
 }

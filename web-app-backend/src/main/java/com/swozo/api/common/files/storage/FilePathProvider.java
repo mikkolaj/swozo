@@ -5,6 +5,7 @@ import com.swozo.api.common.files.request.InitFileUploadRequest;
 import com.swozo.api.common.files.util.FilePathGenerator;
 import com.swozo.persistence.Activity;
 import com.swozo.persistence.RemoteFile;
+import com.swozo.persistence.ServiceModule;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -14,9 +15,14 @@ public class FilePathProvider {
     private static final String SEPARATOR = "/";
     private static final String COURSES = "courses";
     private static final String ACTIVITIES = "activities";
+    private static final String SERVICES = "services";
 
     public FilePathGenerator publicActivityFilePath(Activity activity) {
         return withFilename(COURSES, activity.getCourse().getId(), ACTIVITIES, activity.getId());
+    }
+
+    public FilePathGenerator serviceModuleFilePath(ServiceModule serviceModule) {
+        return withFilename(SERVICES, serviceModule.getId());
     }
 
     public String getFilename(String path) {

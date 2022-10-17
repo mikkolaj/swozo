@@ -93,9 +93,12 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         ServiceModule serviceModule = new ServiceModule();
         serviceModule.setName("Klasy w Pythonie");
         serviceModule.setInstructionsFromTechnicalTeacher("instrukcja do klas w pythonie trzeba miec klase");
-        serviceModule.setCreatorName("Boleslaw");
+        serviceModule.setCreator(teacher);
         serviceModule.setSubject("INFORMATYKA");
-        serviceModule.setScheduleType(ScheduleType.JUPYTER);
+        serviceModule.setScheduleTypeName(ScheduleType.JUPYTER.toString());
+        serviceModule.setScheduleTypeVersion("1.0.0");
+        serviceModule.setIsPublic(true);
+        serviceModule.setIsReady(true);
         serviceModule.setCreationTime(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule);
@@ -103,9 +106,12 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         ServiceModule serviceModule2 = new ServiceModule();
         serviceModule2.setName("Funkcje w Pythonie");
         serviceModule2.setInstructionsFromTechnicalTeacher("instrukcja do funkcji w pythonie trzeba funkcjonowac");
-        serviceModule2.setCreatorName("Boleslaw");
+        serviceModule2.setCreator(teacher);
         serviceModule2.setSubject("INFORMATYKA");
-        serviceModule2.setScheduleType(ScheduleType.JUPYTER);
+        serviceModule2.setScheduleTypeName(ScheduleType.JUPYTER.toString());
+        serviceModule2.setScheduleTypeVersion("1.0.0");
+        serviceModule2.setIsPublic(true);
+        serviceModule2.setIsReady(true);
         serviceModule2.setCreationTime(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule2);
