@@ -15,6 +15,9 @@
 
 import * as runtime from '../runtime';
 import {
+    FinishServiceModuleCreationRequest,
+    FinishServiceModuleCreationRequestFromJSON,
+    FinishServiceModuleCreationRequestToJSON,
     ReserveServiceModuleRequest,
     ReserveServiceModuleRequestFromJSON,
     ReserveServiceModuleRequestToJSON,
@@ -29,6 +32,10 @@ import {
     ServiceModuleReservationDtoToJSON,
 } from '../models';
 
+export interface FinishServiceModuleCreationOperationRequest {
+    finishServiceModuleCreationRequest: FinishServiceModuleCreationRequest;
+}
+
 export interface GetServiceModuleRequest {
     id: number;
 }
@@ -41,6 +48,45 @@ export interface ReserveServiceModuleCreationRequest {
  * 
  */
 export class ServiceModuleControllerApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async finishServiceModuleCreationRaw(requestParameters: FinishServiceModuleCreationOperationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
+        if (requestParameters.finishServiceModuleCreationRequest === null || requestParameters.finishServiceModuleCreationRequest === undefined) {
+            throw new runtime.RequiredError('finishServiceModuleCreationRequest','Required parameter requestParameters.finishServiceModuleCreationRequest was null or undefined when calling finishServiceModuleCreation.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: FinishServiceModuleCreationRequestToJSON(requestParameters.finishServiceModuleCreationRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async finishServiceModuleCreation(requestParameters: FinishServiceModuleCreationOperationRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
+        const response = await this.finishServiceModuleCreationRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      */

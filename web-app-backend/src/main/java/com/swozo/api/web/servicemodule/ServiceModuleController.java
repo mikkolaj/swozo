@@ -3,6 +3,7 @@ package com.swozo.api.web.servicemodule;
 import com.swozo.api.orchestrator.OrchestratorService;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleReservationDto;
+import com.swozo.api.web.servicemodule.request.FinishServiceModuleCreationRequest;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.security.AccessToken;
@@ -54,6 +55,15 @@ public class ServiceModuleController {
             @RequestBody ReserveServiceModuleRequest request
     ) {
         return service.reserveServiceModuleCreation(token.getUserId(), request);
+    }
+
+    @PutMapping
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public ServiceModuleDetailsDto finishServiceModuleCreation(
+            AccessToken token,
+            @RequestBody FinishServiceModuleCreationRequest request
+    ) {
+        return service.finishServiceModuleCreation(token.getUserId(), request);
     }
 
 

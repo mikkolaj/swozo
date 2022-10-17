@@ -15,6 +15,7 @@ export * from './CourseSummaryDto';
 export * from './CreateActivityRequest';
 export * from './CreateCourseRequest';
 export * from './FileDto';
+export * from './FinishServiceModuleCreationRequest';
 export * from './InitFileUploadRequest';
 export * from './JoinCourseRequest';
 export * from './LoginRequest';

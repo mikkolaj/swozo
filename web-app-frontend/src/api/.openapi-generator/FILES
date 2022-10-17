@@ -20,6 +20,7 @@ models/CourseSummaryDto.ts
 models/CreateActivityRequest.ts
 models/CreateCourseRequest.ts
 models/FileDto.ts
+models/FinishServiceModuleCreationRequest.ts
 models/InitFileUploadRequest.ts
 models/JoinCourseRequest.ts
 models/LoginRequest.ts

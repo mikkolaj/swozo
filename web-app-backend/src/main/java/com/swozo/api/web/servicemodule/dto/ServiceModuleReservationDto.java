@@ -6,6 +6,6 @@ import java.util.Map;
 
 public record ServiceModuleReservationDto(
         @Schema(required = true) Long reservationId,
-        @Schema(required = true) Map<String, Object> dynamicFieldAdditionalData
+        @Schema(required = true) Map<String, Object> dynamicFieldAdditionalActions
 ) {
 }

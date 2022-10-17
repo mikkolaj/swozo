@@ -162,7 +162,11 @@ export const mockGeneralModuleSummaryList: ServiceModuleDetailsDto[] = [
         id: -1,
         name: 'Wideokonferencja',
         subject: 'Programowanie',
-        creatorName: 'Zbigniew Kowalski',
+        creator: {
+            name: 'Zbigniew',
+            surname: 'Kowalski',
+            email: 'zkowalski@gmail.com',
+        },
         creationTime: new Date(),
         instructionsFromTechnicalTeacher: 'kamerka i mikrofon',
     },

@@ -30,7 +30,7 @@ export interface ServiceModuleReservationDto {
      * @type {{ [key: string]: object; }}
      * @memberof ServiceModuleReservationDto
      */
-    dynamicFieldAdditionalData: { [key: string]: object; };
+    dynamicFieldAdditionalActions: { [key: string]: object; };
 }
 
 export function ServiceModuleReservationDtoFromJSON(json: any): ServiceModuleReservationDto {
@@ -44,7 +44,7 @@ export function ServiceModuleReservationDtoFromJSONTyped(json: any, ignoreDiscri
     return {
         
         'reservationId': json['reservationId'],
-        'dynamicFieldAdditionalData': json['dynamicFieldAdditionalData'],
+        'dynamicFieldAdditionalActions': json['dynamicFieldAdditionalActions'],
     };
 }
 
@@ -58,7 +58,7 @@ export function ServiceModuleReservationDtoToJSON(value?: ServiceModuleReservati
     return {
         
         'reservationId': value.reservationId,
-        'dynamicFieldAdditionalData': value.dynamicFieldAdditionalData,
+        'dynamicFieldAdditionalActions': value.dynamicFieldAdditionalActions,
     };
 }
 

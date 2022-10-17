@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    UserDetailsDto,
+    UserDetailsDtoFromJSON,
+    UserDetailsDtoFromJSONTyped,
+    UserDetailsDtoToJSON,
+} from './UserDetailsDto';
+
 /**
  * 
  * @export
@@ -39,10 +46,10 @@ export interface ServiceModuleDetailsDto {
     instructionsFromTechnicalTeacher: string;
     /**
      * 
-     * @type {string}
+     * @type {UserDetailsDto}
      * @memberof ServiceModuleDetailsDto
      */
-    creatorName: string;
+    creator: UserDetailsDto;
     /**
      * 
      * @type {string}
@@ -70,7 +77,7 @@ export function ServiceModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscrimina
         'id': json['id'],
         'name': json['name'],
         'instructionsFromTechnicalTeacher': json['instructionsFromTechnicalTeacher'],
-        'creatorName': json['creatorName'],
+        'creator': UserDetailsDtoFromJSON(json['creator']),
         'subject': json['subject'],
         'creationTime': (new Date(json['creationTime'])),
     };
@@ -88,7 +95,7 @@ export function ServiceModuleDetailsDtoToJSON(value?: ServiceModuleDetailsDto | 
         'id': value.id,
         'name': value.name,
         'instructionsFromTechnicalTeacher': value.instructionsFromTechnicalTeacher,
-        'creatorName': value.creatorName,
+        'creator': UserDetailsDtoToJSON(value.creator),
         'subject': value.subject,
         'creationTime': (value.creationTime.toISOString()),
     };

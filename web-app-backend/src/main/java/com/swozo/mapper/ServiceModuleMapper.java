@@ -16,12 +16,16 @@ import java.util.Map;
 public abstract class ServiceModuleMapper {
     @Autowired
     protected ServiceModuleRepository serviceModuleRepository;
+    @Autowired
+    protected UserMapper userMapper;
 
+    @Mapping(target = "creator", expression = "java(userMapper.toDto(serviceModule.getCreator()))")
     public abstract ServiceModuleDetailsDto toDto(ServiceModule serviceModule);
 
     @Mapping(target = "dynamicProperties", ignore = true)
     @Mapping(target = "isReady", expression = "java(false)")
     @Mapping(target = "name", source = "request.name")
+    @Mapping(target = "creator", expression = "java(creator)")
     public abstract ServiceModule toPersistenceReservation(ReserveServiceModuleRequest request, User creator);
 
     public ServiceModuleReservationDto toReservationDto(ServiceModule serviceModule, Map<String, Object> dynamicFieldAdditionalData) {
