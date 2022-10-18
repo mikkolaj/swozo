@@ -3,6 +3,7 @@ package com.swozo.api.common.files;
 import com.swozo.api.common.files.dto.UploadAccessDto;
 import com.swozo.api.common.files.request.InitFileUploadRequest;
 import com.swozo.api.common.files.request.StorageAccessRequest;
+import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.api.common.files.util.FilePathGenerator;
 import com.swozo.api.common.files.util.UploadValidationStrategy;
@@ -29,6 +30,7 @@ public class FileService {
     private final FileRepository fileRepository;
     private final StorageProperties storageProperties;
     private final FileMapper fileMapper;
+    private final FilePathProvider filePathProvider;
 
     public StorageAccessRequest prepareExternalUpload(
             InitFileUploadRequest initFileUploadRequest,
@@ -36,6 +38,7 @@ public class FileService {
             UploadValidationStrategy validationStrategy
     ) {
         validationStrategy.validate();
+        filePathProvider.validateFilename(initFileUploadRequest.filename());
         var filePath = filePathGenerator.generate(initFileUploadRequest.filename());
 
         return storageProvider.createAuthorizedUploadRequest(

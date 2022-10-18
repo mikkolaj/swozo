@@ -51,9 +51,12 @@ public class FileFieldHandler implements DynamicFieldHandler {
             FinishServiceModuleCreationRequest request,
             ParameterDescription parameterDescription
     ) {
-        var file = fileService.acknowledgeExternalUploadWithoutTxn(new UploadAccessDto(
-                mapper.fromJson(request.repeatedInitialValues().get(fieldName), InitFileUploadRequest.class),
-                mapper.fromJson(request.echoFieldActions().get(fieldName), StorageAccessRequest.class)));
+        var file = fileService.acknowledgeExternalUploadWithoutTxn(
+                new UploadAccessDto(
+                    mapper.fromJson(request.repeatedInitialValues().get(fieldName), InitFileUploadRequest.class),
+                    mapper.fromJson(request.echoFieldActions().get(fieldName), StorageAccessRequest.class)
+                )
+        );
 
         return file.getId().toString();
     }
