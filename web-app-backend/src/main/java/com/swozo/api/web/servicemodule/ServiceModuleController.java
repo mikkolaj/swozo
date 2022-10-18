@@ -3,6 +3,7 @@ package com.swozo.api.web.servicemodule;
 import com.swozo.api.orchestrator.OrchestratorService;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleReservationDto;
+import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
 import com.swozo.api.web.servicemodule.request.FinishServiceModuleCreationRequest;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ServiceConfig;
@@ -28,11 +29,29 @@ public class ServiceModuleController {
     private final ServiceModuleService service;
     private final OrchestratorService orchestratorService;
 
-    @GetMapping()
-    @PreAuthorize("hasRole('TEACHER')")
+    @GetMapping("/all-system-modules")
+    @PreAuthorize("hasRole('ADMIN')")
     public Collection<ServiceModuleDetailsDto> getModuleList(AccessToken token) {
         logger.info("module list");
         return service.getServiceModuleList();
+    }
+
+    @GetMapping("/summary")
+    @PreAuthorize("hasRole('TEACHER')")
+    public List<ServiceModuleSummaryDto> getModuleSummaryList() {
+        return service.getAllPublicModules();
+    }
+
+    @GetMapping("/user")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public List<ServiceModuleDetailsDto> getUserModules(AccessToken accessToken) {
+        return service.getModulesCreatedByTeacher(accessToken.getUserId());
+    }
+
+    @GetMapping("/user/summary")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public List<ServiceModuleSummaryDto> getUserModulesSummary(AccessToken accessToken) {
+        return service.getModulesCreatedByTeacherSummary(accessToken.getUserId());
     }
 
     @GetMapping("/{id}")
@@ -50,11 +69,11 @@ public class ServiceModuleController {
 
     @PostMapping
     @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
-    public ServiceModuleReservationDto reserveServiceModuleCreation(
+    public ServiceModuleReservationDto initServiceModuleCreation(
             AccessToken token,
             @RequestBody ReserveServiceModuleRequest request
     ) {
-        return service.reserveServiceModuleCreation(token.getUserId(), request);
+        return service.initServiceModuleCreation(token.getUserId(), request);
     }
 
     @PutMapping

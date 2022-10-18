@@ -38,6 +38,7 @@ public class FilePathProvider {
         return filename -> join(join(partialPath), filename);
     }
 
+    // TODO: use this for files uploaded internally (not by a human)
     public String sanitizeFilename(String filename) {
         // TODO: this is not thoroughly tested, stolen from: https://stackoverflow.com/a/13293384
         var result = new StringBuilder();
@@ -53,7 +54,7 @@ public class FilePathProvider {
 
     public void validateFilename(String filename) {
         // TODO: do this with some pretty regex
-        if (!filename.contains("/") && !filename.contains("\\")) {
+        if (filename.contains("/") || filename.contains("\\")) {
             throw IllegalFilenameException.of(filename, List.of("/", "\\"));
         }
     }

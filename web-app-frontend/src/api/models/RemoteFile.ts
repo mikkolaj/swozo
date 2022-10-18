@@ -42,7 +42,7 @@ export interface RemoteFile {
      * @type {Date}
      * @memberof RemoteFile
      */
-    createdAt?: Date;
+    registeredAt?: Date;
 }
 
 export function RemoteFileFromJSON(json: any): RemoteFile {
@@ -58,7 +58,7 @@ export function RemoteFileFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         'id': !exists(json, 'id') ? undefined : json['id'],
         'path': !exists(json, 'path') ? undefined : json['path'],
         'sizeBytes': !exists(json, 'sizeBytes') ? undefined : json['sizeBytes'],
-        'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
+        'registeredAt': !exists(json, 'registeredAt') ? undefined : (new Date(json['registeredAt'])),
     };
 }
 
@@ -74,7 +74,7 @@ export function RemoteFileToJSON(value?: RemoteFile | null): any {
         'id': value.id,
         'path': value.path,
         'sizeBytes': value.sizeBytes,
-        'createdAt': value.createdAt === undefined ? undefined : (value.createdAt.toISOString()),
+        'registeredAt': value.registeredAt === undefined ? undefined : (value.registeredAt.toISOString()),
     };
 }
 

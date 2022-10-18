@@ -246,6 +246,7 @@
     },
     "toast": {
         "courseCreated": "Kurs został utworzony!",
+        "serviceModuleCreated": "Moduł został utworzony!",
         "fileUploaded": "Plik został przesłany!"
     },
     "commonErrors": {

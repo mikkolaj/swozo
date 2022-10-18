@@ -30,13 +30,19 @@ export interface ReserveServiceModuleRequest {
      * @type {string}
      * @memberof ReserveServiceModuleRequest
      */
-    instructionsFromTechnicalTeacher: string;
+    instructionHtml: string;
     /**
      * 
      * @type {string}
      * @memberof ReserveServiceModuleRequest
      */
     subject: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ReserveServiceModuleRequest
+     */
+    description: string;
     /**
      * 
      * @type {string}
@@ -68,8 +74,9 @@ export function ReserveServiceModuleRequestFromJSONTyped(json: any, ignoreDiscri
     return {
         
         'name': json['name'],
-        'instructionsFromTechnicalTeacher': json['instructionsFromTechnicalTeacher'],
+        'instructionHtml': json['instructionHtml'],
         'subject': json['subject'],
+        'description': json['description'],
         'scheduleTypeName': json['scheduleTypeName'],
         'dynamicProperties': json['dynamicProperties'],
         'isPublic': json['isPublic'],
@@ -86,8 +93,9 @@ export function ReserveServiceModuleRequestToJSON(value?: ReserveServiceModuleRe
     return {
         
         'name': value.name,
-        'instructionsFromTechnicalTeacher': value.instructionsFromTechnicalTeacher,
+        'instructionHtml': value.instructionHtml,
         'subject': value.subject,
+        'description': value.description,
         'scheduleTypeName': value.scheduleTypeName,
         'dynamicProperties': value.dynamicProperties,
         'isPublic': value.isPublic,

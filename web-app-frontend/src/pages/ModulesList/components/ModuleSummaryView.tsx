@@ -1,14 +1,16 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { ServiceModuleSummaryDto } from 'api';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
 import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
+import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ModuleSummary } from 'utils/mocks';
+import { formatDateTime } from 'utils/util';
 
 type Props = {
-    moduleSummary: ModuleSummary;
+    moduleSummary: ServiceModuleSummaryDto;
 };
 
 export const ModuleSummaryView = ({ moduleSummary }: Props) => {
@@ -30,7 +32,7 @@ export const ModuleSummaryView = ({ moduleSummary }: Props) => {
                                 borderBottom: '1px solid rgba(0,0,0, 0.3)',
                             }}
                         >
-                            #{moduleSummary.subject}
+                            #{_.capitalize(moduleSummary.subject)}
                         </Typography>
                     </Grid>
                     <Grid item xs={4} sx={{ textAlign: 'right' }}>
@@ -38,19 +40,19 @@ export const ModuleSummaryView = ({ moduleSummary }: Props) => {
                             {t('myModules.module.creationDate')}
                         </Typography>
                         <Typography sx={{ mt: -1 }} variant="h6" component="div">
-                            {moduleSummary.creationDate}
+                            {formatDateTime(moduleSummary.createdAt)}
                         </Typography>
                     </Grid>
                     <Grid item xs={4} sx={{ ...stylesRowCenteredVertical, mt: 2 }}>
                         <Typography variant="body2">
                             {t('myModules.module.usedBy', {
-                                activitiesCount: moduleSummary.usedInActivitiesCount,
+                                activitiesCount: moduleSummary.usedInActivitesCount,
                             })}
                         </Typography>
                     </Grid>
                     <Grid item xs={8} sx={{ mt: 2 }}>
                         <Box sx={stylesRowWithItemsAtTheEnd}>
-                            {moduleSummary.usedInActivitiesCount === 0 && (
+                            {moduleSummary.usedInActivitesCount === 0 && (
                                 <Button
                                     startIcon={<DeleteIcon />}
                                     variant="outlined"

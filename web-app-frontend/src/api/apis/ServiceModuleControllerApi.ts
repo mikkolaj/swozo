@@ -30,6 +30,9 @@ import {
     ServiceModuleReservationDto,
     ServiceModuleReservationDtoFromJSON,
     ServiceModuleReservationDtoToJSON,
+    ServiceModuleSummaryDto,
+    ServiceModuleSummaryDtoFromJSON,
+    ServiceModuleSummaryDtoToJSON,
 } from '../models';
 
 export interface FinishServiceModuleCreationOperationRequest {
@@ -40,7 +43,7 @@ export interface GetServiceModuleRequest {
     id: number;
 }
 
-export interface ReserveServiceModuleCreationRequest {
+export interface InitServiceModuleCreationRequest {
     reserveServiceModuleRequest: ReserveServiceModuleRequest;
 }
 
@@ -104,7 +107,7 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/service-modules`,
+            path: `/service-modules/all-system-modules`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -117,6 +120,38 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
      */
     async getModuleList(initOverrides?: RequestInit): Promise<Array<ServiceModuleDetailsDto>> {
         const response = await this.getModuleListRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getModuleSummaryListRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleSummaryDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/summary`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleSummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getModuleSummaryList(initOverrides?: RequestInit): Promise<Array<ServiceModuleSummaryDto>> {
+        const response = await this.getModuleSummaryListRaw(initOverrides);
         return await response.value();
     }
 
@@ -190,9 +225,73 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async reserveServiceModuleCreationRaw(requestParameters: ReserveServiceModuleCreationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleReservationDto>> {
+    async getUserModulesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleDetailsDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/user`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleDetailsDtoFromJSON));
+    }
+
+    /**
+     */
+    async getUserModules(initOverrides?: RequestInit): Promise<Array<ServiceModuleDetailsDto>> {
+        const response = await this.getUserModulesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUserModulesSummaryRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleSummaryDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/user/summary`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleSummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getUserModulesSummary(initOverrides?: RequestInit): Promise<Array<ServiceModuleSummaryDto>> {
+        const response = await this.getUserModulesSummaryRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async initServiceModuleCreationRaw(requestParameters: InitServiceModuleCreationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleReservationDto>> {
         if (requestParameters.reserveServiceModuleRequest === null || requestParameters.reserveServiceModuleRequest === undefined) {
-            throw new runtime.RequiredError('reserveServiceModuleRequest','Required parameter requestParameters.reserveServiceModuleRequest was null or undefined when calling reserveServiceModuleCreation.');
+            throw new runtime.RequiredError('reserveServiceModuleRequest','Required parameter requestParameters.reserveServiceModuleRequest was null or undefined when calling initServiceModuleCreation.');
         }
 
         const queryParameters: any = {};
@@ -222,8 +321,8 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async reserveServiceModuleCreation(requestParameters: ReserveServiceModuleCreationRequest, initOverrides?: RequestInit): Promise<ServiceModuleReservationDto> {
-        const response = await this.reserveServiceModuleCreationRaw(requestParameters, initOverrides);
+    async initServiceModuleCreation(requestParameters: InitServiceModuleCreationRequest, initOverrides?: RequestInit): Promise<ServiceModuleReservationDto> {
+        const response = await this.initServiceModuleCreationRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

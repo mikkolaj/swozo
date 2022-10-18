@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material';
-import { ReserveServiceModuleRequest } from 'api';
+import { ReserveServiceModuleRequest, ServiceModuleSummaryDto } from 'api';
 import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
@@ -10,20 +10,23 @@ import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikProps } from 'formik';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
-import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useAppDispatch } from 'services/store';
-import { fieldActionHandlerFactory } from './components/dynamic/fieldActionHandlers';
-import { extractValueForReservation } from './components/dynamic/utils';
+import { PageRoutes } from 'utils/routes';
 import { ModuleInfoForm } from './components/ModuleInfoForm';
 import { ModuleSpecsForm } from './components/ModuleSpecsForm';
 import { Summary } from './components/Summary';
 import {
+    buildFinishServiceModuleCreationRequest,
+    buildReserveServiceModuleRequest,
     DynamicFormFields,
     DynamicFormValueRegistry,
     FormValues,
+    handleAdditionalFieldActions,
     initialModuleValues,
     MODULE_INFO_SLIDE,
     MODULE_SPECS_SLIDE,
@@ -41,7 +44,9 @@ const initialValues: FormValues = {
 
 export const CreateModuleView = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const queryClient = useQueryClient();
     const [currentSlide, setCurrentSlide] = useState(0);
     const formRef = useRef<FormikProps<FormValues>>(null);
     const dynamicFormRef = useRef<FormikProps<DynamicFormFields>>(null);
@@ -59,55 +64,33 @@ export const CreateModuleView = () => {
 
     const createServiceModuleMutation = useMutation(
         async (reserveServiceModuleRequest: ReserveServiceModuleRequest) => {
-            const reservationResp = await getApis().serviceModuleApi.reserveServiceModuleCreation({
+            const reservationResp = await getApis().serviceModuleApi.initServiceModuleCreation({
                 reserveServiceModuleRequest,
             });
-            try {
-                const dynamicValues = Object.fromEntries(
-                    await Promise.all(
-                        Object.entries(reservationResp.dynamicFieldAdditionalActions).map(
-                            async ([fieldName, action]) => {
-                                const fieldRegistry = dynamicFormValueRegistryRef.current[fieldName];
-                                const resultValue = await fieldActionHandlerFactory(
-                                    fieldRegistry.type
-                                ).handle(
-                                    fieldRegistry.associatedValue,
-                                    action,
-                                    dispatch,
-                                    reserveServiceModuleRequest,
-                                    reservationResp
-                                );
-                                return [fieldName, resultValue];
-                            }
-                        )
-                    )
-                );
-                console.log('dynamic values:');
-                console.log(dynamicValues);
 
-                return getApis().serviceModuleApi.finishServiceModuleCreation({
-                    finishServiceModuleCreationRequest: {
-                        reservationId: reservationResp.reservationId,
-                        repeatedInitialValues: reserveServiceModuleRequest.dynamicProperties,
-                        echoFieldActions: _.mapValues(reservationResp.dynamicFieldAdditionalActions, (v) =>
-                            JSON.stringify(v)
-                        ),
-                        finalDynamicFieldValues: {
-                            ...reserveServiceModuleRequest.dynamicProperties,
-                            ...dynamicValues,
-                        },
-                    },
-                });
-            } catch (err) {
-                // TODO cancel reservation
-                console.log('second step error');
-                throw err as ApiError;
-            }
+            const resolvedAdditionalFieldActions = await handleAdditionalFieldActions(
+                reserveServiceModuleRequest,
+                reservationResp,
+                dynamicFormValueRegistryRef.current,
+                dispatch
+            );
+
+            return getApis().serviceModuleApi.finishServiceModuleCreation({
+                finishServiceModuleCreationRequest: buildFinishServiceModuleCreationRequest(
+                    reserveServiceModuleRequest,
+                    reservationResp,
+                    resolvedAdditionalFieldActions
+                ),
+            });
         },
         {
             onSuccess: (resp) => {
-                console.log('ok!!!');
-                console.log(resp);
+                toast.success(t('toast.serviceModuleCreated'));
+                queryClient.setQueryData(
+                    ['modules', 'me', 'summary'],
+                    (allModules: ServiceModuleSummaryDto[] | undefined) => [resp, ...(allModules ?? [])]
+                );
+                navigate(PageRoutes.MY_MODULES);
             },
             onError: (err: ApiError) => {
                 pushApiError(err);
@@ -154,22 +137,14 @@ export const CreateModuleView = () => {
                 (_) => <Summary />,
             ]}
             onSubmit={() => {
-                console.log('submit');
-                console.log(dynamicFormValueRegistryRef.current);
-                const values = formRef.current?.values;
-                if (!values) return;
-                const info = values[0];
-                createServiceModuleMutation.mutate({
-                    dynamicProperties: _.mapValues(
-                        dynamicFormValueRegistryRef.current,
-                        ({ type, associatedValue }) => extractValueForReservation(type, associatedValue)
-                    ),
-                    name: info.name,
-                    instructionsFromTechnicalTeacher: info.instructions,
-                    isPublic: info.isPublic,
-                    scheduleTypeName: info.service,
-                    subject: info.subject,
-                });
+                if (!formRef.current?.values) return;
+
+                createServiceModuleMutation.mutate(
+                    buildReserveServiceModuleRequest(
+                        formRef.current.values,
+                        dynamicFormValueRegistryRef.current
+                    )
+                );
             }}
             buttons={
                 <Grid container>

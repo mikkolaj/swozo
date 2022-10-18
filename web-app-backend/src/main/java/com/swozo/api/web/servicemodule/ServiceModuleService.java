@@ -3,6 +3,7 @@ package com.swozo.api.web.servicemodule;
 import com.swozo.api.orchestrator.OrchestratorService;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleReservationDto;
+import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
 import com.swozo.api.web.servicemodule.dynamic.DynamicPropertiesHelper;
 import com.swozo.api.web.servicemodule.request.FinishServiceModuleCreationRequest;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
@@ -15,10 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -41,8 +39,29 @@ public class ServiceModuleService {
         return serviceModuleMapper.toDto(serviceModule);
     }
 
+    public List<ServiceModuleDetailsDto> getModulesCreatedByTeacher(Long teacherId) {
+        return serviceModuleRepository.getAllModulesCreatedBy(teacherId)
+                .stream()
+                .map(serviceModuleMapper::toDto)
+                .toList();
+    }
+
+    public List<ServiceModuleSummaryDto> getAllPublicModules() {
+        return serviceModuleRepository.getAllByIsPublicTrueAndReadyIsTrue()
+                .stream()
+                .map(serviceModuleMapper::toSummaryDto)
+                .toList();
+    }
+
+    public List<ServiceModuleSummaryDto> getModulesCreatedByTeacherSummary(Long teacherId) {
+        return serviceModuleRepository.getAllModulesCreatedBy(teacherId)
+                .stream()
+                .map(serviceModuleMapper::toSummaryDto)
+                .toList();
+    }
+
     @Transactional
-    public ServiceModuleReservationDto reserveServiceModuleCreation(Long creatorId, ReserveServiceModuleRequest request) {
+    public ServiceModuleReservationDto initServiceModuleCreation(Long creatorId, ReserveServiceModuleRequest request) {
         var serviceConfig = orchestratorService.getServiceConfig(request.scheduleTypeName());
         var creator = userRepository.findById(creatorId).orElseThrow();
         serviceModuleValidator.validateReservation(creator, serviceConfig, request);
@@ -64,14 +83,14 @@ public class ServiceModuleService {
         if (!reservation.getCreator().getId().equals(creatorId)) {
             throw new RuntimeException("you are not a creator");
         }
-        if (reservation.getIsReady()) {
+        if (reservation.getReady()) {
             // TODO compare action results, if different throw else return result
         }
 
         var dynamicProperties = handleDynamicFieldTypesForCreation(reservation, request, serviceConfig);
 
         reservation.setDynamicProperties(dynamicProperties);
-        reservation.setIsReady(true);
+        reservation.setReady(true);
         reservation.setScheduleTypeVersion(serviceConfig.version());
         serviceModuleRepository.save(reservation);
 

@@ -36,7 +36,7 @@ public class ActivityModule extends BaseEntity {
     insert some MDA info fields here
      */
 
-    // not sure about this, we can wrap connectionDetails and instruction in optional instead
+    // not sure about this, we can wrap connectionDetails and instructionHtml in optional instead
     public ActivityModule(ServiceModule serviceModule) {
         this.module = serviceModule;
     }

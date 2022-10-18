@@ -28,6 +28,7 @@ public class OrchestratorService {
         return requestSender.sendScheduleRequests(scheduleRequests).join();
     }
 
+    // TODO: this should be cached
     public List<ServiceConfig> getSupportedServices() {
         return requestSender.getServiceConfigs().join();
     }

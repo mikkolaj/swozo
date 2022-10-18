@@ -16,9 +16,10 @@ import java.util.Map;
 @ToString
 public class ServiceModule extends BaseEntity {
     private String name;
-    private String instructionsFromTechnicalTeacher;
+    private String instructionUntrustedHtml;
     private String subject;
-    private LocalDateTime creationTime = LocalDateTime.now();
+    private String description;
+    private LocalDateTime createdAt = LocalDateTime.now();
     @ManyToOne(fetch = FetchType.EAGER)
     private User creator;
     private String scheduleTypeName;
@@ -28,10 +29,20 @@ public class ServiceModule extends BaseEntity {
     @Column(name = "property_value")
     @CollectionTable(name = "service_module_dynamic_properties", joinColumns = @JoinColumn(name = "service_module_id"))
     private Map<String, String> dynamicProperties = new HashMap<>();
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private Boolean isPublic;
-    private Boolean isReady;
+    private Boolean ready;
 
     /*
     insert some service specs here
      */
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 }

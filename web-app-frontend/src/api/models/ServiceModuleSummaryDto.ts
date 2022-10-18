@@ -14,12 +14,6 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    ServiceModuleInstructionDto,
-    ServiceModuleInstructionDtoFromJSON,
-    ServiceModuleInstructionDtoFromJSONTyped,
-    ServiceModuleInstructionDtoToJSON,
-} from './ServiceModuleInstructionDto';
-import {
     UserDetailsDto,
     UserDetailsDtoFromJSON,
     UserDetailsDtoFromJSONTyped,
@@ -29,76 +23,64 @@ import {
 /**
  * 
  * @export
- * @interface ServiceModuleDetailsDto
+ * @interface ServiceModuleSummaryDto
  */
-export interface ServiceModuleDetailsDto {
+export interface ServiceModuleSummaryDto {
     /**
      * 
      * @type {number}
-     * @memberof ServiceModuleDetailsDto
+     * @memberof ServiceModuleSummaryDto
      */
     id: number;
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleDetailsDto
+     * @memberof ServiceModuleSummaryDto
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleDetailsDto
+     * @memberof ServiceModuleSummaryDto
      */
     subject: string;
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleDetailsDto
+     * @memberof ServiceModuleSummaryDto
      */
     description: string;
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleDetailsDto
+     * @memberof ServiceModuleSummaryDto
      */
     serviceName: string;
     /**
      * 
      * @type {UserDetailsDto}
-     * @memberof ServiceModuleDetailsDto
+     * @memberof ServiceModuleSummaryDto
      */
     creator: UserDetailsDto;
     /**
      * 
      * @type {Date}
-     * @memberof ServiceModuleDetailsDto
+     * @memberof ServiceModuleSummaryDto
      */
     createdAt: Date;
     /**
      * 
      * @type {number}
-     * @memberof ServiceModuleDetailsDto
+     * @memberof ServiceModuleSummaryDto
      */
     usedInActivitesCount: number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ServiceModuleDetailsDto
-     */
-    isPublic: boolean;
-    /**
-     * 
-     * @type {ServiceModuleInstructionDto}
-     * @memberof ServiceModuleDetailsDto
-     */
-    instruction: ServiceModuleInstructionDto;
 }
 
-export function ServiceModuleDetailsDtoFromJSON(json: any): ServiceModuleDetailsDto {
-    return ServiceModuleDetailsDtoFromJSONTyped(json, false);
+export function ServiceModuleSummaryDtoFromJSON(json: any): ServiceModuleSummaryDto {
+    return ServiceModuleSummaryDtoFromJSONTyped(json, false);
 }
 
-export function ServiceModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServiceModuleDetailsDto {
+export function ServiceModuleSummaryDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServiceModuleSummaryDto {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -112,12 +94,10 @@ export function ServiceModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscrimina
         'creator': UserDetailsDtoFromJSON(json['creator']),
         'createdAt': (new Date(json['createdAt'])),
         'usedInActivitesCount': json['usedInActivitesCount'],
-        'isPublic': json['isPublic'],
-        'instruction': ServiceModuleInstructionDtoFromJSON(json['instruction']),
     };
 }
 
-export function ServiceModuleDetailsDtoToJSON(value?: ServiceModuleDetailsDto | null): any {
+export function ServiceModuleSummaryDtoToJSON(value?: ServiceModuleSummaryDto | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -134,8 +114,6 @@ export function ServiceModuleDetailsDtoToJSON(value?: ServiceModuleDetailsDto | 
         'creator': UserDetailsDtoToJSON(value.creator),
         'createdAt': (value.createdAt.toISOString()),
         'usedInActivitesCount': value.usedInActivitesCount,
-        'isPublic': value.isPublic,
-        'instruction': ServiceModuleInstructionDtoToJSON(value.instruction),
     };
 }
 

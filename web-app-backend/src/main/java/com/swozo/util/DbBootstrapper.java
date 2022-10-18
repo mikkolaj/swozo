@@ -92,27 +92,29 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 //        ServiceModule
         ServiceModule serviceModule = new ServiceModule();
         serviceModule.setName("Klasy w Pythonie");
-        serviceModule.setInstructionsFromTechnicalTeacher("instrukcja do klas w pythonie trzeba miec klase");
+        serviceModule.setInstructionUntrustedHtml("instrukcja do klas w pythonie trzeba miec klase");
         serviceModule.setCreator(teacher);
+        serviceModule.setDescription("opis1");
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setScheduleTypeName(ScheduleType.JUPYTER.toString());
         serviceModule.setScheduleTypeVersion("1.0.0");
-        serviceModule.setIsPublic(true);
-        serviceModule.setIsReady(true);
-        serviceModule.setCreationTime(LocalDateTime.of(2022,
+        serviceModule.setPublic(true);
+        serviceModule.setReady(true);
+        serviceModule.setCreatedAt(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule);
 
         ServiceModule serviceModule2 = new ServiceModule();
         serviceModule2.setName("Funkcje w Pythonie");
-        serviceModule2.setInstructionsFromTechnicalTeacher("instrukcja do funkcji w pythonie trzeba funkcjonowac");
+        serviceModule2.setInstructionUntrustedHtml("instrukcja do funkcji w pythonie trzeba funkcjonowac");
         serviceModule2.setCreator(teacher);
+        serviceModule2.setDescription("opis2");
         serviceModule2.setSubject("INFORMATYKA");
         serviceModule2.setScheduleTypeName(ScheduleType.JUPYTER.toString());
         serviceModule2.setScheduleTypeVersion("1.0.0");
-        serviceModule2.setIsPublic(true);
-        serviceModule2.setIsReady(true);
-        serviceModule2.setCreationTime(LocalDateTime.of(2022,
+        serviceModule2.setPublic(true);
+        serviceModule2.setReady(true);
+        serviceModule2.setCreatedAt(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule2);
 

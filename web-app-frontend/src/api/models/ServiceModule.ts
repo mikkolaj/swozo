@@ -43,7 +43,7 @@ export interface ServiceModule {
      * @type {string}
      * @memberof ServiceModule
      */
-    instructionsFromTechnicalTeacher?: string;
+    instructionUntrustedHtml?: string;
     /**
      * 
      * @type {string}
@@ -52,10 +52,16 @@ export interface ServiceModule {
     subject?: string;
     /**
      * 
+     * @type {string}
+     * @memberof ServiceModule
+     */
+    description?: string;
+    /**
+     * 
      * @type {Date}
      * @memberof ServiceModule
      */
-    creationTime?: Date;
+    createdAt?: Date;
     /**
      * 
      * @type {User}
@@ -85,13 +91,13 @@ export interface ServiceModule {
      * @type {boolean}
      * @memberof ServiceModule
      */
-    isPublic?: boolean;
+    ready?: boolean;
     /**
      * 
      * @type {boolean}
      * @memberof ServiceModule
      */
-    isReady?: boolean;
+    _public?: boolean;
 }
 
 export function ServiceModuleFromJSON(json: any): ServiceModule {
@@ -106,15 +112,16 @@ export function ServiceModuleFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
-        'instructionsFromTechnicalTeacher': !exists(json, 'instructionsFromTechnicalTeacher') ? undefined : json['instructionsFromTechnicalTeacher'],
+        'instructionUntrustedHtml': !exists(json, 'instructionUntrustedHtml') ? undefined : json['instructionUntrustedHtml'],
         'subject': !exists(json, 'subject') ? undefined : json['subject'],
-        'creationTime': !exists(json, 'creationTime') ? undefined : (new Date(json['creationTime'])),
+        'description': !exists(json, 'description') ? undefined : json['description'],
+        'createdAt': !exists(json, 'createdAt') ? undefined : (new Date(json['createdAt'])),
         'creator': !exists(json, 'creator') ? undefined : UserFromJSON(json['creator']),
         'scheduleTypeName': !exists(json, 'scheduleTypeName') ? undefined : json['scheduleTypeName'],
         'scheduleTypeVersion': !exists(json, 'scheduleTypeVersion') ? undefined : json['scheduleTypeVersion'],
         'dynamicProperties': !exists(json, 'dynamicProperties') ? undefined : json['dynamicProperties'],
-        'isPublic': !exists(json, 'isPublic') ? undefined : json['isPublic'],
-        'isReady': !exists(json, 'isReady') ? undefined : json['isReady'],
+        'ready': !exists(json, 'ready') ? undefined : json['ready'],
+        '_public': !exists(json, 'public') ? undefined : json['public'],
     };
 }
 
@@ -129,15 +136,16 @@ export function ServiceModuleToJSON(value?: ServiceModule | null): any {
         
         'id': value.id,
         'name': value.name,
-        'instructionsFromTechnicalTeacher': value.instructionsFromTechnicalTeacher,
+        'instructionUntrustedHtml': value.instructionUntrustedHtml,
         'subject': value.subject,
-        'creationTime': value.creationTime === undefined ? undefined : (value.creationTime.toISOString()),
+        'description': value.description,
+        'createdAt': value.createdAt === undefined ? undefined : (value.createdAt.toISOString()),
         'creator': UserToJSON(value.creator),
         'scheduleTypeName': value.scheduleTypeName,
         'scheduleTypeVersion': value.scheduleTypeVersion,
         'dynamicProperties': value.dynamicProperties,
-        'isPublic': value.isPublic,
-        'isReady': value.isReady,
+        'ready': value.ready,
+        'public': value._public,
     };
 }
 
