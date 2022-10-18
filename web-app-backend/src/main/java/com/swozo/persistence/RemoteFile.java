@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class RemoteFile extends BaseEntity {
     private String path;
     private Long sizeBytes;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime registeredAt = LocalDateTime.now();
 
     // TODO: keep other metadata?
 }

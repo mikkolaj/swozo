@@ -14,6 +14,7 @@ public abstract class FileMapper {
     protected FilePathProvider filePathProvider;
 
     @Mapping(target = "name", expression = "java(filePathProvider.getFilename(file.getPath()))")
+    @Mapping(target = "createdAt", source = "registeredAt")
     public abstract FileDto toDto(RemoteFile file);
 
     @Mapping(target = "path", expression = "java(uploadAccessDto.storageAccessRequest().filePath())")
