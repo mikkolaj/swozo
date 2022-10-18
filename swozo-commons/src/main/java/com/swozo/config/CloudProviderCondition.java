@@ -11,11 +11,11 @@ public abstract class CloudProviderCondition implements Condition {
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         var possibleProperty = context.getEnvironment().getProperty(getProviderProperty());
         return Optional.ofNullable(possibleProperty)
-                .map(property -> property.equals(getCloudProvider().toString()))
+                .map(property -> property.equals(getRequiredCloudProvider().toString()))
                 .orElse(false);
     }
 
     public abstract String getProviderProperty();
 
-    public abstract CloudProvider getCloudProvider();
+    public abstract CloudProvider getRequiredCloudProvider();
 }
