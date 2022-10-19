@@ -1,4 +1,4 @@
-import { CreateActivityRequest, CreateCourseRequest, ServiceModuleDetailsDto } from 'api';
+import { CreateActivityRequest, CreateCourseRequest, ServiceModuleSummaryDto } from 'api';
 import { ApiError } from 'api/errors';
 import { SlideValues2 } from 'common/SlideForm/util';
 import dayjs, { Dayjs } from 'dayjs';
@@ -7,8 +7,8 @@ import _ from 'lodash';
 import { TFunction } from 'react-i18next';
 import { formatDateTime, prepareErrorForDisplay, prepareFormikValidationErrors, withDate } from 'utils/util';
 
-export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 90;
-export const DEFAULT_MIN_TIME_OFFSET = 30;
+export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 10;
+export const DEFAULT_MIN_TIME_OFFSET = 0;
 
 export type FormValues = SlideValues2<CourseValues, ActivitesFormValues>;
 
@@ -21,8 +21,8 @@ export const ACTIVITIES_SLIDE = '1';
 export type ActivityValues = {
     name: string;
     description: string;
-    lessonModules: ServiceModuleDetailsDto[];
-    generalModules: ServiceModuleDetailsDto[];
+    lessonModules: ServiceModuleSummaryDto[];
+    generalModules: ServiceModuleSummaryDto[];
     instructions: string;
     date: Dayjs;
     startTime: Dayjs;

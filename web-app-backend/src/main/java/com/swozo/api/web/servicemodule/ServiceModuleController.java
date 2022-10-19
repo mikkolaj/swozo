@@ -38,7 +38,7 @@ public class ServiceModuleController {
 
     @GetMapping("/summary")
     @PreAuthorize("hasRole('TEACHER')")
-    public List<ServiceModuleSummaryDto> getModuleSummaryList() {
+    public List<ServiceModuleSummaryDto> getAllPublicServiceModules() {
         return service.getAllPublicModules();
     }
 

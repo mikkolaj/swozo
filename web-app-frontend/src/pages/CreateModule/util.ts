@@ -44,12 +44,12 @@ export type ModuleSpecs = {
 export type FormValues = SlideValues2<ModuleValues, ModuleSpecs>;
 
 export const initialModuleValues = (): ModuleValues => ({
-    name: 'n',
-    subject: 's',
-    description: 'd',
+    name: 'nowy moduł',
+    subject: 'informatyka',
+    description: 'opis',
     service: '',
     serviceFile: '',
-    instructions: 'i',
+    instructions: '',
     isPublic: true,
 });
 
@@ -65,7 +65,7 @@ export const buildReserveServiceModuleRequest = (
         ),
         name: moduleInfo.name,
         instructionHtml: moduleInfo.instructions,
-        isPublic: moduleInfo.isPublic,
+        isPublic: true, //TODO
         scheduleTypeName: moduleInfo.service,
         subject: moduleInfo.subject,
         description: moduleInfo.description,

@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.HashMap;
 
 import static com.swozo.util.CollectionUtils.iterateSimultaneously;
 
@@ -53,14 +52,12 @@ public class ScheduleService {
     }
 
     private ScheduleRequest buildScheduleServiceRequest(ActivityWithModule activityWithModule) {
-        var hardcodedParameters = new HashMap<String, String>();
-        hardcodedParameters.put("notebookLocation", "somewhereOverTheRainbow");
         return new ScheduleRequest(
                 provideServiceLifespan(activityWithModule.activity()),
                 providePsm(activityWithModule.activity()),
                 ScheduleType.JUPYTER,
                 "1.0.0",
-                hardcodedParameters
+                activityWithModule.module.getModule().getDynamicProperties()
         );
     }
 

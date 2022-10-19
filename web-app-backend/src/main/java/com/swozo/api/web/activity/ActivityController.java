@@ -2,11 +2,11 @@ package com.swozo.api.web.activity;
 
 import com.swozo.api.common.files.dto.UploadAccessDto;
 import com.swozo.api.common.files.request.InitFileUploadRequest;
-import com.swozo.api.common.files.request.StorageAccessRequest;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.security.AccessToken;
+import com.swozo.utils.StorageAccessRequest;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

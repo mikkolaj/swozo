@@ -1,5 +1,7 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.swozo.communication.http.RequestSender;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.ScheduleType;
@@ -12,13 +14,20 @@ import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.NotebookFailed;
 import com.swozo.orchestrator.configuration.ApplicationProperties;
+import com.swozo.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
+
+import static com.swozo.communication.http.RequestSender.unwrap;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +42,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private final LinkFormatter linkFormatter;
     private final ApplicationProperties properties;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final RequestSender requestSender;
 
     @Override
     public ServiceConfig getServiceConfig() {
@@ -49,6 +59,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         try {
             logger.info("Started provisioning Jupyter on: {}", resource);
             runPlaybook(resource);
+            handleParameters(parameters, resource);
             logger.info("Successfully provisioned Jupyter on resource: {}", resource);
             return createLinks(resource);
         } catch (NotebookFailed e) {
@@ -89,5 +100,37 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         if (!VERSION.equals(version)) {
             throw new IllegalArgumentException("Version: " + version + " for Jupyter provisioner is not supported");
         }
+    }
+
+    @SneakyThrows
+    private void handleParameters(Map<String, String> parameters, VMResourceDetails resource) {
+        // TODO do this properly
+        var properties = JupyterParameters.from(parameters);
+        var resp = unwrap(requestSender.sendGet(
+                new URI("http://localhost:5000/files/" + properties.notebookLocation()), new TypeReference<StorageAccessRequest>() {
+                })).join();
+        var curlCmd = String.format("curl %s --output /home/swozo/jupyter/lab_file.ipynb\n", resp.signedUrl());
+        System.out.println(resp);
+
+        var tempPlaybookFile = File.createTempFile(properties.notebookLocation(), "_download.yml");
+        try (var writer = new FileWriter(tempPlaybookFile)) {
+            writer.write("- name: Handle dynamic params\n" +
+                    "  hosts: all\n" +
+                    "  tasks:\n" +
+                    "    - name: download notebook\n" +
+                    "      command: " + curlCmd
+            );
+        }
+
+        System.out.println("downloading file");
+        ansibleRunner.runPlaybook(
+                AnsibleConnectionDetails.from(resource),
+                tempPlaybookFile.getPath(),
+                 5
+        );
+        System.out.println("done");
+
+        var x = tempPlaybookFile.delete();
+        System.out.println("remove file: " + x);
     }
 }

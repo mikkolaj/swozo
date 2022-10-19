@@ -1,4 +1,4 @@
-package com.swozo.api.common.files.request;
+package com.swozo.utils;
 
 import com.swozo.config.CloudProvider;
 import io.swagger.v3.oas.annotations.media.Schema;

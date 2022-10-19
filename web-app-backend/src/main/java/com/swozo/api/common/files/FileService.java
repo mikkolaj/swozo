@@ -2,7 +2,6 @@ package com.swozo.api.common.files;
 
 import com.swozo.api.common.files.dto.UploadAccessDto;
 import com.swozo.api.common.files.request.InitFileUploadRequest;
-import com.swozo.api.common.files.request.StorageAccessRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.api.common.files.util.FilePathGenerator;
@@ -11,6 +10,7 @@ import com.swozo.config.properties.StorageProperties;
 import com.swozo.mapper.FileMapper;
 import com.swozo.persistence.RemoteFile;
 import com.swozo.security.exceptions.UnauthorizedException;
+import com.swozo.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +90,15 @@ public class FileService {
                 storageProperties.webBucket().name(),
                 file.getPath(),
                 storageProperties.externalDownloadValidity()
+        );
+    }
+
+    public StorageAccessRequest createInternalDownloadRequest(Long remoteFileId) {
+        var file = fileRepository.findById(remoteFileId).orElseThrow();
+        return storageProvider.createAuthorizedDownloadRequest(
+                storageProperties.webBucket().name(),
+                file.getPath(),
+                storageProperties.internalDownloadValidity()
         );
     }
 

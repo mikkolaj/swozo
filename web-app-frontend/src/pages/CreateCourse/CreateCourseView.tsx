@@ -48,7 +48,7 @@ export const CreateCourseView = () => {
     const formRef = useRef<FormikProps<FormValues>>(null);
     const { data: availableLessonModules } = useQueryWithDefaults(
         'modules',
-        () => getApis().serviceModuleApi.getModuleList(),
+        () => getApis().serviceModuleApi.getAllPublicServiceModules(),
         []
     );
 

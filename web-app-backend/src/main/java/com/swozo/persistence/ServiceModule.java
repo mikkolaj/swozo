@@ -29,8 +29,6 @@ public class ServiceModule extends BaseEntity {
     @Column(name = "property_value")
     @CollectionTable(name = "service_module_dynamic_properties", joinColumns = @JoinColumn(name = "service_module_id"))
     private Map<String, String> dynamicProperties = new HashMap<>();
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
     private Boolean isPublic;
     private Boolean ready;
 

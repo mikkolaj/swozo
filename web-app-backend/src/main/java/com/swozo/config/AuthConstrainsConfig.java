@@ -31,7 +31,8 @@ public class AuthConstrainsConfig {
     @Bean
     public List<AuthConstraint> authConstraints() {
         var orchestratorMatcher = EndpointMatcher.of(
-                EndpointsConfig.of("/orchestrator-test", HttpMethod.GET)
+                EndpointsConfig.of("/orchestrator-test", HttpMethod.GET),
+                EndpointsConfig.of("/files/**")
         );
 
         var jwtMatcher = AllExceptEndpointMatcher.of(

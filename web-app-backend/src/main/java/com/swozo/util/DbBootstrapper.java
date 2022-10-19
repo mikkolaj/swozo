@@ -19,10 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -98,6 +95,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setScheduleTypeName(ScheduleType.JUPYTER.toString());
         serviceModule.setScheduleTypeVersion("1.0.0");
+        serviceModule.setDynamicProperties(Map.of("notebookLocation", "mock1"));
         serviceModule.setPublic(true);
         serviceModule.setReady(true);
         serviceModule.setCreatedAt(LocalDateTime.of(2022,
@@ -112,6 +110,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule2.setSubject("INFORMATYKA");
         serviceModule2.setScheduleTypeName(ScheduleType.JUPYTER.toString());
         serviceModule2.setScheduleTypeVersion("1.0.0");
+        serviceModule2.setDynamicProperties(Map.of("notebookLocation", "mock1"));
         serviceModule2.setPublic(true);
         serviceModule2.setReady(true);
         serviceModule2.setCreatedAt(LocalDateTime.of(2022,

@@ -359,7 +359,7 @@ paths:
     get:
       tags:
       - service-module-controller
-      operationId: getModuleSummaryList
+      operationId: getAllPublicServiceModules
       responses:
         "200":
           description: OK

@@ -93,6 +93,38 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
+    async getAllPublicServiceModulesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleSummaryDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/summary`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleSummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getAllPublicServiceModules(initOverrides?: RequestInit): Promise<Array<ServiceModuleSummaryDto>> {
+        const response = await this.getAllPublicServiceModulesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async getModuleListRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleDetailsDto>>> {
         const queryParameters: any = {};
 
@@ -120,38 +152,6 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
      */
     async getModuleList(initOverrides?: RequestInit): Promise<Array<ServiceModuleDetailsDto>> {
         const response = await this.getModuleListRaw(initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async getModuleSummaryListRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleSummaryDto>>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("JWT_AUTH", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/service-modules/summary`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleSummaryDtoFromJSON));
-    }
-
-    /**
-     */
-    async getModuleSummaryList(initOverrides?: RequestInit): Promise<Array<ServiceModuleSummaryDto>> {
-        const response = await this.getModuleSummaryListRaw(initOverrides);
         return await response.value();
     }
 
