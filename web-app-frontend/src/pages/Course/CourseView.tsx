@@ -1,14 +1,16 @@
 import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { CourseDetailsDto } from 'api';
+import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
+import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
+import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { buildErrorPageHandler } from 'hooks/useCommonErrorHandlers';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from 'react-query';
 import { PageRoutes } from 'utils/routes';
 import { ActivityView } from './components/Activity/ActivityView';
 import { ParticipantsListView } from './components/Options/ParticipantsList/ParticipantsListView';
@@ -42,18 +44,24 @@ export const CourseView = () => {
     const [courseId] = useRequiredParams(['courseId']);
     const { t } = useTranslation();
     const [tab, setTab] = useState<TabConfig>(tabs['activities']);
+    const [errorHandlers] = useState<HandlerConfig>({
+        [ErrorType.COURSE_NOT_FOUND]: buildErrorPageHandler(
+            t('course.error.noCourse'),
+            PageRoutes.MY_COURSES
+        ),
+    });
+    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+        useApiErrorHandling(errorHandlers);
 
-    const { data: course, isError } = useQuery(['courses', courseId], () =>
-        getApis().courseApi.getCourse({ id: +courseId })
+    const { data: course } = useErrorHandledQuery(
+        ['courses', courseId],
+        () => getApis().courseApi.getCourse({ id: +courseId }),
+        pushApiError,
+        removeApiError
     );
 
-    if (isError) {
-        return (
-            <PageContainerWithError
-                navButtonMessage={t('course.error.noCourse')}
-                navigateTo={PageRoutes.MY_COURSES}
-            />
-        );
+    if (isApiError && errorHandler?.shouldTerminateRendering) {
+        return consumeErrorAction() ?? <></>;
     }
 
     if (!course) {

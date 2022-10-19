@@ -61,3 +61,31 @@ export const prepareFormikValidationErrors = (
         .map(([key, error]) => [keyMapper(key), valueMapper(error as ValidationError)])
         .reduce((acc, [fieldPath, error]) => _.set(acc, fieldPath, error), {});
 };
+
+export const sleep = (sleepTimeMillis: number) => new Promise((res) => setTimeout(res, sleepTimeMillis));
+
+export async function withExponentialBackoff<T>(
+    fetcher: () => Promise<T>,
+    maxRetries: number,
+    maxTimeMillis: number,
+    maxSleepTimeMillis: number = 1000
+): Promise<T> {
+    const start = new Date();
+    const initialSleepMilis = 100;
+    let lastErr = undefined;
+
+    for (let i = 0; i <= maxRetries; i++) {
+        try {
+            return await fetcher();
+        } catch (err) {
+            if (new Date().getTime() - start.getTime() <= maxTimeMillis) {
+                await sleep(Math.min(maxSleepTimeMillis, initialSleepMilis * Math.pow(2, i)));
+                lastErr = err;
+            } else {
+                throw err;
+            }
+        }
+    }
+
+    throw lastErr;
+}

@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.configuration;
 
-import com.swozo.orchestrator.configuration.conditions.CloudProvider;
+import com.swozo.config.CloudProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 

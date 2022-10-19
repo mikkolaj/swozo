@@ -20,6 +20,8 @@ public abstract class ActivityMapper {
     protected ServiceModuleRepository moduleRepository;
     @Autowired
     protected ActivityModuleMapper activityModuleMapper;
+    @Autowired
+    protected FileMapper fileMapper;
 
     public abstract ActivityInstruction toPersistence(ActivityInstructionDto activityInstructionDto);
 
@@ -41,5 +43,6 @@ public abstract class ActivityMapper {
 
     @Mapping(target = "instructionsFromTeacher", expression = "java(activity.getInstructionsFromTeacher().stream().map(this::toDto).toList())")
     @Mapping(target = "activityModules", expression = "java(activity.getModules().stream().map(activityModuleMapper::toDto).toList())")
+    @Mapping(target = "publicFiles", expression = "java(activity.getPublicFiles().stream().map(fileMapper::toDto).toList())")
     public abstract ActivityDetailsDto toDto(Activity activity);
 }

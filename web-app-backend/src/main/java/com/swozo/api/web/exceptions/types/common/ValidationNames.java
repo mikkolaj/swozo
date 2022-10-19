@@ -4,10 +4,10 @@ public interface ValidationNames {
     interface Fields {
         String ACTIVITIES = "activities";
         String COURSE = "course";
+        String END_TIME = "endTime";
         String EXPECTED_STUDENT_COUNT = "expectedStudentCount";
         String NAME = "name";
         String START_TIME = "startTime";
-        String END_TIME = "endTime";
     }
 
     interface Errors {
