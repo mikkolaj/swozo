@@ -12,6 +12,7 @@ Requirements:
 1. `gcp.storage.project` must contain your GCP project name
 2. `gcp.storage.zone` must contain desired zone to create resources in
 3. `storage.web-bucket.name` must contain name of the bucket used for storage (it must be globally unique, max 64 chars long)
+4. `orchestrator.secret` must contain secret key used for orchestrator authentication, same one must be configured on orchestrator
 ## Local development
 
 For now running server via Intellij is recommended. Server should be available at `localhost:5000`.
