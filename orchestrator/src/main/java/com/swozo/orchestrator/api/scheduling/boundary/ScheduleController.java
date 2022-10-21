@@ -10,6 +10,7 @@ import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.orchestrator.api.scheduling.control.ScheduleService;
 import com.swozo.utils.SupportedLanguage;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,17 +25,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(Config.SCHEDULES)
 public class ScheduleController {
+    @Qualifier("web-server")
     private final RequestSender requestSender;
     private final ScheduleService service;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    public ScheduleController(@Qualifier("web-server") RequestSender requestSender, ScheduleService service) {
-        this.requestSender = requestSender;
-        this.service = service;
-    }
 
     @PostMapping
     public ScheduleResponse schedule(@RequestBody ScheduleRequest request) {

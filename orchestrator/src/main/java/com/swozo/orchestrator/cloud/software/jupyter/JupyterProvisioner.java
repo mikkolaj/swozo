@@ -112,7 +112,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         var curlCmd = String.format("curl %s --output /home/swozo/jupyter/lab_file.ipynb\n", resp.signedUrl());
         System.out.println(resp);
 
-        var tempPlaybookFile = File.createTempFile(properties.notebookLocation(), "_download.yml");
+        var tempPlaybookFile = File.createTempFile(properties.notebookLocation() + "_dl", "_download.yml");
         try (var writer = new FileWriter(tempPlaybookFile)) {
             writer.write("- name: Handle dynamic params\n" +
                     "  hosts: all\n" +

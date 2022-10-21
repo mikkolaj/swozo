@@ -12,23 +12,27 @@ public interface DynamicFieldHandler {
     FieldType getType();
 
     /**
-     * @return empty optional if not further client-side actions are required for that field,
+     * @return empty optional if no further client-side actions are required for that field,
      *         otherwise object that should allow these actions to be executed
      */
-    Optional<Object> handleForServiceModuleReservation(
+    default Optional<Object> handleForServiceModuleReservation(
             String fieldName,
             ServiceModule serviceModuleReservation,
             ReserveServiceModuleRequest request,
             ParameterDescription parameterDescription
-    );
+    ) {
+        return Optional.empty();
+    }
 
     /**
      * @return final value that should be saved for this field
      */
-    String handleForServiceModuleCreation(
+    default String handleForServiceModuleCreation(
             String fieldName,
             ServiceModule serviceModuleReservation,
             FinishServiceModuleCreationRequest request,
             ParameterDescription parameterDescription
-    );
+    ) {
+        return request.finalDynamicFieldValues().get(fieldName);
+    }
 }

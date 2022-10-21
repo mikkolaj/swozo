@@ -58,6 +58,6 @@ public class FileFieldHandler implements DynamicFieldHandler {
                 )
         );
 
-        return file.getId().toString();
+        return fileService.encodeUniqueIdentifier(file);
     }
 }

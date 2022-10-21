@@ -111,4 +111,8 @@ public class FileService {
             throw new UnauthorizedException("Failed to verify upload response");
         }
     }
+
+    public String encodeUniqueIdentifier(RemoteFile file) {
+        return file.getId().toString();
+    }
 }

@@ -18,11 +18,11 @@ public record ParameterDescription(
 ) {
 
     public static Builder builder(String name) {
-        return new Builder(name);
+        return builder(name, true);
     }
 
     public static Builder builder(String name, boolean required) {
-        return new Builder(name, required);
+        return new Builder(name, required, null, null);
     }
 
     public static class Builder {
@@ -38,14 +38,6 @@ public record ParameterDescription(
             this.fieldType = fieldType;
             this.translatedLabel = translatedLabel;
             this.validationHelpers = new HashMap<>();
-        }
-
-        public Builder(String name, boolean required) {
-            this(name, required, null, null);
-        }
-
-        public Builder(String name) {
-            this(name, true);
         }
 
         protected ParameterDescription build() {
