@@ -1,6 +1,6 @@
-package com.swozo.api.orchestrator.exceptions;
+package com.swozo.exceptions;
 
-import com.swozo.util.ServiceType;
+import com.swozo.utils.ServiceType;
 
 public class ServiceUnavailableException extends RuntimeException {
     public ServiceUnavailableException(ServiceType serviceType) {

@@ -1,4 +1,4 @@
-package com.swozo.api.orchestrator.exceptions;
+package com.swozo.exceptions;
 
 import java.net.http.HttpResponse;
 

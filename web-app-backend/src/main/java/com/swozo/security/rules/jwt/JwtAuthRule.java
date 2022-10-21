@@ -1,4 +1,4 @@
-package com.swozo.security.jwt;
+package com.swozo.security.rules.jwt;
 
 import com.swozo.security.AuthRule;
 import com.swozo.security.exceptions.UnauthorizedException;
