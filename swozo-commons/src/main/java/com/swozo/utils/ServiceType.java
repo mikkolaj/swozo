@@ -1,4 +1,4 @@
-package com.swozo.util;
+package com.swozo.utils;
 
 public enum ServiceType {
     ORCHESTRATOR,

@@ -1,4 +1,4 @@
-package com.swozo.security.jwt;
+package com.swozo.security.rules.jwt;
 
 import com.swozo.config.EnvNames;
 import com.swozo.persistence.Role;
