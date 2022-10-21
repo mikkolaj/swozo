@@ -18,6 +18,7 @@ services:
       DATABASE_NAME: swozo-orchestrator-db
       DATABASE_USER: orchestrator
       DATABASE_PASSWORD: mysecretpassword2
+      ORCHESTRATOR_SECRET_KEY: super-secret-orchestrator-key-with-at-least-32-chars
       LOG_LEVEL: INFO
     volumes:
       - type: bind

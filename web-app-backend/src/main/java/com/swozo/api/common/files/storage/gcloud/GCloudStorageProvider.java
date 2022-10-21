@@ -10,6 +10,7 @@ import com.swozo.config.cloud.gcloud.storage.GCloudStorageCondition;
 import com.swozo.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -21,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Profile("!test")
 @RequiredArgsConstructor
 @Conditional(GCloudStorageCondition.class)
 public class GCloudStorageProvider implements StorageProvider {

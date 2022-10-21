@@ -66,6 +66,8 @@ public class RequestSenderEnhancerDecorator extends RequestSenderDecorator {
                 });
     }
 
+    // TODO move it to RetryHandler and try make it more reusable
+    // https://github.com/mikkolaj/swozo/pull/24#discussion_r999386507
     private <T> CompletableFuture<HttpResponse<T>> withExponentialBackoff(
             Supplier<CompletableFuture<HttpResponse<T>>> requestSender
     ) {

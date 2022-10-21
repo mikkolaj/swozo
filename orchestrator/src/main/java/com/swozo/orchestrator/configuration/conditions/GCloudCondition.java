@@ -10,7 +10,7 @@ public class GCloudCondition extends CloudProviderCondition {
     }
 
     @Override
-    public CloudProvider getCloudProvider() {
+    public CloudProvider getRequiredCloudProvider() {
         return CloudProvider.GCLOUD;
     }
 }

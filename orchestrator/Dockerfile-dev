@@ -29,6 +29,6 @@ ENTRYPOINT [ \
     "-Dcom.sun.management.jmxremote.local.only=false", \
     "-Dcom.sun.management.jmxremote.authenticate=false", \
     "-Dcom.sun.management.jmxremote.ssl=false", \
-    '-Duser.timezone=UTC', \
+    "-Duser.timezone=UTC", \
     "-jar","/app/orchestrator.jar" \
 ]
