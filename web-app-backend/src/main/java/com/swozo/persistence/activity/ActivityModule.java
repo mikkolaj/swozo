@@ -17,7 +17,7 @@ import java.util.Optional;
 @Setter
 @ToString
 public class ActivityModule extends BaseEntity {
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "service_module_id")
     private ServiceModule serviceModule;
 

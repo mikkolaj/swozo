@@ -3,7 +3,6 @@ import { CourseDetailsDto } from 'api';
 import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
@@ -64,10 +63,6 @@ export const CourseView = () => {
         return consumeErrorAction() ?? <></>;
     }
 
-    if (!course) {
-        return <PageContainerWithLoader />;
-    }
-
     return (
         <CourseContext.Provider value={course}>
             <PageContainer
@@ -94,7 +89,7 @@ export const CourseView = () => {
                     </>
                 }
             >
-                <Container>{tab.tabRenderer(course)}</Container>
+                <Container>{course && tab.tabRenderer(course)}</Container>
             </PageContainer>
         </CourseContext.Provider>
     );

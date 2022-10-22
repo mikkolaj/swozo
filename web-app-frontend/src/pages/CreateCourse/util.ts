@@ -7,8 +7,8 @@ import _ from 'lodash';
 import { TFunction } from 'react-i18next';
 import { formatDateTime, prepareErrorForDisplay, prepareFormikValidationErrors, withDate } from 'utils/util';
 
-export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 10;
-export const DEFAULT_MIN_TIME_OFFSET = 0;
+export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 30;
+export const DEFAULT_MIN_TIME_OFFSET = 5;
 
 export type FormValues = SlideValues2<CourseValues, ActivitesFormValues>;
 

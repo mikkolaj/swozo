@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material';
-import { CreateCourseRequest } from 'api';
+import { CourseDetailsDto, CreateCourseRequest } from 'api';
 import { ApiError, ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
@@ -8,7 +8,8 @@ import { SlideForm } from 'common/SlideForm/SlideForm';
 import { clearErrorsForSlide, getSortedSlidesWithErrors } from 'common/SlideForm/util';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikErrors, FormikProps } from 'formik';
-import { useQueryWithDefaults } from 'hooks/query/useQueryWithDefaults';
+import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
+import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,11 +46,14 @@ export const CreateCourseView = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [formattedApiErrors, setFormattedApiErrors] = useState<FormikErrors<FormValues>>();
 
+    const { pushApiError, removeApiError } = useApiErrorHandling({});
+
     const formRef = useRef<FormikProps<FormValues>>(null);
-    const { data: availableLessonModules } = useQueryWithDefaults(
+    const { data: availableLessonModules } = useErrorHandledQuery(
         'modules',
         () => getApis().serviceModuleApi.getAllPublicServiceModules(),
-        []
+        pushApiError,
+        removeApiError
     );
 
     // TODO: call api
@@ -59,8 +63,11 @@ export const CreateCourseView = () => {
         (createCourseRequest: CreateCourseRequest) => getApis().courseApi.addCourse({ createCourseRequest }),
         {
             onSuccess: (courseDetailsResp) => {
-                // TODO update instead of invalidation
-                queryClient.invalidateQueries('courses');
+                queryClient.setQueryData('courses', (allCourses: CourseDetailsDto[] = []) => [
+                    courseDetailsResp,
+                    ...allCourses,
+                ]);
+                queryClient.setQueryData(['courses', `${courseDetailsResp.id}`], courseDetailsResp);
                 toast(t('toast.courseCreated'));
                 navigate(PageRoutes.Course(courseDetailsResp.id));
             },
@@ -70,7 +77,7 @@ export const CreateCourseView = () => {
                     setFormattedApiErrors(formattedErrors);
                     setCurrentSlide(getSortedSlidesWithErrors(formattedErrors)[0]);
                 } else {
-                    // TODO
+                    pushApiError(error);
                 }
             },
         }
@@ -106,7 +113,7 @@ export const CreateCourseView = () => {
                         {...slideProps}
                         values={values[ACTIVITIES_SLIDE]}
                         setFieldValue={setFieldValue}
-                        availableLessonModules={availableLessonModules}
+                        availableLessonModules={availableLessonModules ?? []}
                         availableGeneralModules={availableGeneralModules}
                     />
                 ),

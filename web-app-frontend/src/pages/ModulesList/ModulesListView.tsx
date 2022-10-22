@@ -1,7 +1,6 @@
 import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
@@ -28,10 +27,6 @@ export const ModulesListView = () => {
         return consumeErrorAction() ?? <></>;
     }
 
-    if (!modules) {
-        return <PageContainerWithLoader />;
-    }
-
     return (
         <PageContainer
             header={
@@ -53,7 +48,7 @@ export const ModulesListView = () => {
         >
             <Container>
                 <Stack spacing={2} px={2}>
-                    {modules.map((module) => (
+                    {modules?.map((module) => (
                         <ModuleSummaryView key={module.id} moduleSummary={module} />
                     ))}
                 </Stack>

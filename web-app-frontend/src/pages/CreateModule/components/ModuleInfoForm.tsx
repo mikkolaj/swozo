@@ -98,7 +98,7 @@ export const ModuleInfoForm = ({
             </Typography>
             <RichTextEditor
                 wrapperSx={{ width: '75%' }}
-                name={nameBuilder('instructions')}
+                name={nameBuilder('teacherInstruction')}
                 value={values.teacherInstruction}
                 setFieldValue={setFieldValue}
             />
@@ -108,7 +108,7 @@ export const ModuleInfoForm = ({
             </Typography>
             <RichTextEditor
                 wrapperSx={{ width: '75%' }}
-                name={nameBuilder('instructions')}
+                name={nameBuilder('studentInstruction')}
                 value={values.studentInstruction}
                 setFieldValue={setFieldValue}
             />

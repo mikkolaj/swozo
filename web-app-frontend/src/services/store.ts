@@ -18,4 +18,4 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 export const selectIsLoggedIn = (state: RootState) => state.auth.isLoggedIn;
-export const selectFileUploadState = (state: RootState, filename: string) => state.files[filename];
+export const selectFileUploadState = (state: RootState, filename: string) => state.files.uploads[filename];

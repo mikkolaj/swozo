@@ -2,7 +2,6 @@ import { Grid } from '@mui/material';
 import { ReserveServiceModuleRequest, ServiceModuleSummaryDto } from 'api';
 import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
-import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
 import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
@@ -108,10 +107,6 @@ export const CreateModuleView = () => {
         return consumeErrorAction() ?? <></>;
     }
 
-    if (!supportedServices) {
-        return <PageContainerWithLoader />;
-    }
-
     return (
         <SlideForm
             titleI18n="createModule.title"
@@ -125,7 +120,7 @@ export const CreateModuleView = () => {
                 (slideProps, { values, handleChange, setFieldValue }) => (
                     <ModuleInfoForm
                         {...slideProps}
-                        supportedServices={supportedServices}
+                        supportedServices={supportedServices ?? []}
                         values={values[MODULE_INFO_SLIDE]}
                         handleChange={handleChange}
                         setFieldValue={setFieldValue}

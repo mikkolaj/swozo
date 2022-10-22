@@ -103,13 +103,14 @@ export const ActivityInstructionsView = () => {
                                     </Typography>
                                     <Divider sx={{ mb: 2 }} />
                                     {isSame(me, course.teacher) && (
-                                        <Box sx={{ mb: 2 }}>
-                                            <Typography variant="h6" component="div" gutterBottom>
+                                        <Box>
+                                            <Typography variant="h6" component="div">
                                                 {t(
                                                     'activityInstructions.tabs.modules.teacherInstructionLabel'
                                                 )}
                                             </Typography>
                                             <RichTextViewer
+                                                wrapperSx={{ ml: 1 }}
                                                 untrustedPossiblyDangerousHtml={
                                                     serviceModule.teacherInstruction
                                                         .untrustedPossiblyDangerousHtml
@@ -117,10 +118,11 @@ export const ActivityInstructionsView = () => {
                                             />
                                         </Box>
                                     )}
-                                    <Typography variant="h6" component="div" gutterBottom>
+                                    <Typography variant="h6" component="div">
                                         {t('activityInstructions.tabs.modules.studentInstructionLabel')}
                                     </Typography>
                                     <RichTextViewer
+                                        wrapperSx={{ ml: 1 }}
                                         untrustedPossiblyDangerousHtml={
                                             serviceModule.studentInstruction.untrustedPossiblyDangerousHtml
                                         }
