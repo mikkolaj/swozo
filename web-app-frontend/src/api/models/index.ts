@@ -23,6 +23,7 @@ export * from './ServiceConnectionDetailsDto';
 export * from './ServiceModuleDetailsDto';
 export * from './ServiceModuleReservationDto';
 export * from './ServiceModuleSummaryDto';
+export * from './ServiceModuleUsageDto';
 export * from './StorageAccessRequest';
 export * from './UploadAccessDto';
 export * from './UserDetailsDto';

@@ -33,6 +33,9 @@ import {
     ServiceModuleSummaryDto,
     ServiceModuleSummaryDtoFromJSON,
     ServiceModuleSummaryDtoToJSON,
+    ServiceModuleUsageDto,
+    ServiceModuleUsageDtoFromJSON,
+    ServiceModuleUsageDtoToJSON,
 } from '../models';
 
 export interface FinishServiceModuleCreationOperationRequest {
@@ -40,7 +43,13 @@ export interface FinishServiceModuleCreationOperationRequest {
 }
 
 export interface GetServiceModuleRequest {
-    id: number;
+    serviceModuleId: number;
+}
+
+export interface GetUsageRequest {
+    serviceModuleId: number;
+    offset?: number;
+    limit?: number;
 }
 
 export interface InitServiceModuleCreationRequest {
@@ -126,8 +135,8 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
     /**
      */
     async getServiceModuleRaw(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getServiceModule.');
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling getServiceModule.');
         }
 
         const queryParameters: any = {};
@@ -143,7 +152,7 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/service-modules/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: `/service-modules/{serviceModuleId}`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -188,6 +197,50 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
      */
     async getSupportedServices(initOverrides?: RequestInit): Promise<Array<ServiceConfig>> {
         const response = await this.getSupportedServicesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUsageRaw(requestParameters: GetUsageRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleUsageDto>>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling getUsage.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/usage/{serviceModuleId}`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleUsageDtoFromJSON));
+    }
+
+    /**
+     */
+    async getUsage(requestParameters: GetUsageRequest, initOverrides?: RequestInit): Promise<Array<ServiceModuleUsageDto>> {
+        const response = await this.getUsageRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

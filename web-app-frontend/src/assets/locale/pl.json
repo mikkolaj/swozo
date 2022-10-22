@@ -162,6 +162,7 @@
     },
     "myModule": {
         "header": "Moduł: {{name}}",
+        "edit": "edytuj",
         "generalInfo": "Informacje ogólne",
         "subject": "Tematyka",
         "description": "Opis",
@@ -169,11 +170,13 @@
         "teacherInstruction": "Instrukcje dla nauczyciela",
         "studentInstruction": "Instrukcje dla ucznia",
         "usedBy": {
-            "label": "Wykorzystany w aktywnościach",
+            "label": "Informacje o wykorzystaniu",
+            "unused": "Moduł nie jest jeszcze wykorzystywany",
             "info": {
                 "courseName": "Nazwa kursu",
                 "activityName": "Nazwa aktywności",
-                "teacherName": "Email założyciela"
+                "teacherEmail": "Email założyciela",
+                "addedAt": "Data dodania"
             }
         }
     },

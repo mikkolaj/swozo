@@ -1,20 +1,31 @@
+import EditIcon from '@mui/icons-material/Edit';
 import { Box, Grid, Typography } from '@mui/material';
 import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { ReadonlyField } from 'common/Input/Readonly/ReadonlyField';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
+import { StackedList } from 'common/StackedList/StackedList';
+import { StackedListContent } from 'common/StackedList/StackedListContent';
+import { StackedListHeader } from 'common/StackedList/StackedListHeader';
+import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
 import { InstructionView } from 'common/Styled/InstructionView';
-import { stylesColumnCenteredVertical, stylesRowCenteredHorizontal } from 'common/styles';
+import { LinkedTypography } from 'common/Styled/LinkedTypography';
+import { stylesColumnCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useRequiredParams } from 'hooks/useRequiredParams';
+import _ from 'lodash';
 import { DynamicReadonlyField } from 'pages/CreateModule/components/dynamic/DynamicReadonlyField';
 import { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { PageRoutes } from 'utils/routes';
+import { formatDate } from 'utils/util';
 
 export const MyModuleView = () => {
     const [moduleId] = useRequiredParams(['moduleId']);
+    const navigate = useNavigate();
     const { t } = useTranslation();
 
     const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
@@ -22,7 +33,14 @@ export const MyModuleView = () => {
 
     const { data: serviceModule } = useErrorHandledQuery(
         ['modules', moduleId],
-        () => getApis().serviceModuleApi.getServiceModule({ id: +moduleId }),
+        () => getApis().serviceModuleApi.getServiceModule({ serviceModuleId: +moduleId }),
+        pushApiError,
+        removeApiError
+    );
+
+    const { data: usage } = useErrorHandledQuery(
+        ['modules', moduleId, 'usage'],
+        () => getApis().serviceModuleApi.getUsage({ serviceModuleId: +moduleId, limit: 100, offset: 0 }),
         pushApiError,
         removeApiError
     );
@@ -35,8 +53,6 @@ export const MyModuleView = () => {
         return <PageContainerWithLoader />;
     }
 
-    console.log(serviceModule);
-
     return (
         <PageContainer
             sx={{ p: 0 }}
@@ -47,17 +63,21 @@ export const MyModuleView = () => {
                             {t('myModule.header', { name: serviceModule.name })}
                         </Typography>
                     </Grid>
+                    <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
+                        <ButtonWithIconAndText
+                            textI18n="myModule.edit"
+                            Icon={EditIcon}
+                            onClick={() => navigate('/')}
+                        />
+                    </Grid>
                 </>
             }
         >
-            <Grid container sx={{ m: 2, mt: 0 }}>
+            <Grid container sx={{ p: 2, pt: 0 }}>
                 <Grid item xs={12}>
-                    <Box sx={{ ...stylesRowCenteredHorizontal, justifyContent: 'center', mb: 4 }}>
-                        <Typography variant="h3">{serviceModule.name}</Typography>
-                    </Box>
-                </Grid>
-                <Grid item xs={12}>
-                    <Typography variant="h5">{t('myModule.generalInfo')}</Typography>
+                    <Typography variant="h5" gutterBottom>
+                        {t('myModule.generalInfo')}
+                    </Typography>
                     <Box sx={{ ...stylesColumnCenteredVertical }}>
                         <StyledReadonlyField
                             wrapperSx={{ width: '50%' }}
@@ -65,9 +85,12 @@ export const MyModuleView = () => {
                             textFieldProps={{ multiline: true, fullWidth: true }}
                             i18nLabel="myModule.description"
                         />
-                        <StyledReadonlyField value={serviceModule.subject} i18nLabel="myModule.subject" />
                         <StyledReadonlyField
-                            value={serviceModule.serviceName}
+                            value={_.capitalize(serviceModule.subject)}
+                            i18nLabel="myModule.subject"
+                        />
+                        <StyledReadonlyField
+                            value={_.capitalize(serviceModule.serviceName)}
                             i18nLabel="myModule.serviceName"
                         />
                         {Object.entries(serviceModule.dynamicFields).map(([fieldName, field]) => (
@@ -93,6 +116,57 @@ export const MyModuleView = () => {
                             />
                         </Box>
                     </Box>
+                </Grid>
+                <Grid item xs={12} sx={{ mt: 4 }}>
+                    <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
+                        {t('myModule.usedBy.label')}
+                    </Typography>
+                    {usage && usage.length > 0 ? (
+                        <StackedList
+                            /* eslint-disable react/jsx-key */
+                            header={
+                                <StackedListHeader
+                                    proportions={[3, 3, 3, 3]}
+                                    items={['courseName', 'activityName', 'teacherEmail', 'addedAt'].map(
+                                        (label) => (
+                                            <Typography variant="body1" color="GrayText">
+                                                {t(`myModule.usedBy.info.${label}`)}
+                                            </Typography>
+                                        )
+                                    )}
+                                />
+                            }
+                            content={
+                                <StackedListContent
+                                    proportions={[3, 3, 3, 3]}
+                                    items={usage ?? []}
+                                    itemKeyExtractor={({ courseId, activityName }) =>
+                                        `${courseId}_${activityName}`
+                                    }
+                                    itemRenderer={({
+                                        courseName,
+                                        activityName,
+                                        courseCreator,
+                                        addedAt,
+                                        courseId,
+                                    }) => [
+                                        <LinkedTypography
+                                            variant="body1"
+                                            to={PageRoutes.Course(courseId)}
+                                            text={courseName}
+                                            decorated
+                                        />,
+                                        <Typography variant="body1">{activityName}</Typography>,
+                                        <Typography variant="body1">{courseCreator.email}</Typography>,
+                                        <Typography variant="body1">{formatDate(addedAt)}</Typography>,
+                                    ]}
+                                />
+                            }
+                            /* eslint-enable react/jsx-key */
+                        />
+                    ) : (
+                        <Typography>{t('myModule.usedBy.unused')}</Typography>
+                    )}
                 </Grid>
             </Grid>
         </PageContainer>

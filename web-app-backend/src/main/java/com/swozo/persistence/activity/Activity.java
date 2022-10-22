@@ -26,6 +26,7 @@ public class Activity extends BaseEntity {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String instructionFromTeacherHtml;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "activity_module_id")

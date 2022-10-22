@@ -239,13 +239,13 @@ paths:
                 $ref: '#/components/schemas/UserDetailsDto'
       security:
       - JWT_AUTH: []
-  /service-modules/{id}:
+  /service-modules/{serviceModuleId}:
     get:
       tags:
       - service-module-controller
       operationId: getServiceModule
       parameters:
-      - name: id
+      - name: serviceModuleId
         in: path
         required: true
         schema:
@@ -290,6 +290,43 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ServiceModuleSummaryDto'
+      security:
+      - JWT_AUTH: []
+  /service-modules/usage/{serviceModuleId}:
+    get:
+      tags:
+      - service-module-controller
+      operationId: getUsage
+      parameters:
+      - name: serviceModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+          default: 0
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+          default: 100
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceModuleUsageDto'
       security:
       - JWT_AUTH: []
   /service-modules/summary:
@@ -909,6 +946,27 @@ components:
           type: string
         password:
           type: string
+    ServiceModuleUsageDto:
+      required:
+      - activityName
+      - addedAt
+      - courseCreator
+      - courseId
+      - courseName
+      type: object
+      properties:
+        courseCreator:
+          $ref: '#/components/schemas/UserDetailsDto'
+        courseId:
+          type: integer
+          format: int64
+        courseName:
+          type: string
+        activityName:
+          type: string
+        addedAt:
+          type: string
+          format: date-time
     ServiceConfig:
       required:
       - parameterDescriptions

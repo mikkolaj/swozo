@@ -4,6 +4,7 @@ import com.swozo.api.orchestrator.OrchestratorService;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleReservationDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
+import com.swozo.api.web.servicemodule.dto.ServiceModuleUsageDto;
 import com.swozo.api.web.servicemodule.request.FinishServiceModuleCreationRequest;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ServiceConfig;
@@ -54,11 +55,11 @@ public class ServiceModuleController {
         return service.getModulesCreatedByTeacherSummary(accessToken.getUserId());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{serviceModuleId}")
     @PreAuthorize("hasRole('TEACHER')")
-    public ServiceModuleDetailsDto getServiceModule(AccessToken token, @PathVariable Long id) {
+    public ServiceModuleDetailsDto getServiceModule(AccessToken token, @PathVariable Long serviceModuleId) {
         logger.info("service serviceModule  info getter");
-        return service.getServiceModuleInfo(id);
+        return service.getServiceModuleInfo(serviceModuleId);
     }
 
     @GetMapping("/config")
@@ -83,6 +84,17 @@ public class ServiceModuleController {
             @RequestBody FinishServiceModuleCreationRequest request
     ) {
         return service.finishServiceModuleCreation(token.getUserId(), request);
+    }
+
+    @GetMapping("/usage/{serviceModuleId}")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public List<ServiceModuleUsageDto> getUsage(
+            AccessToken accessToken,
+            @PathVariable Long serviceModuleId,
+            @RequestParam(defaultValue = "0") Long offset,
+            @RequestParam(defaultValue = "100") Long limit
+    ) {
+        return service.getServiceUsageInfo(serviceModuleId, accessToken.getUserId(), offset, limit);
     }
 
 

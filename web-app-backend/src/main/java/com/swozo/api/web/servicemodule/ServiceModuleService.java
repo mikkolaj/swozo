@@ -1,9 +1,12 @@
 package com.swozo.api.web.servicemodule;
 
 import com.swozo.api.orchestrator.OrchestratorService;
+import com.swozo.api.web.activitymodule.ActivityModuleRepository;
+import com.swozo.api.web.exceptions.types.servicemodule.ServiceModuleNotFoundException;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleReservationDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
+import com.swozo.api.web.servicemodule.dto.ServiceModuleUsageDto;
 import com.swozo.api.web.servicemodule.dynamic.DynamicPropertiesHelper;
 import com.swozo.api.web.servicemodule.request.FinishServiceModuleCreationRequest;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
@@ -12,6 +15,7 @@ import com.swozo.mapper.ServiceModuleMapper;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.persistence.ServiceModule;
+import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +33,15 @@ public class ServiceModuleService {
     private final DynamicPropertiesHelper dynamicPropertiesHelper;
     private final OrchestratorService orchestratorService;
     private final ServiceModuleValidator serviceModuleValidator;
+    private final ActivityModuleRepository activityModuleRepository;
 
     public Collection<ServiceModuleSummaryDto> getServiceModuleList() {
         return serviceModuleRepository.findAll().stream().map(serviceModuleMapper::toSummaryDto).toList();
     }
 
     public ServiceModuleDetailsDto getServiceModuleInfo(Long serviceModuleId) {
-        var serviceModule = serviceModuleRepository.getById(serviceModuleId);
+        var serviceModule = serviceModuleRepository.findById(serviceModuleId)
+                .orElseThrow(() -> ServiceModuleNotFoundException.of(serviceModuleId));
         var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getScheduleTypeName());
         return serviceModuleMapper.toDto(serviceModule, serviceConfig);
     }
@@ -61,6 +67,19 @@ public class ServiceModuleService {
                 .toList();
     }
 
+    public List<ServiceModuleUsageDto> getServiceUsageInfo(Long serviceModuleId, Long userId, Long offset, Long limit) {
+        var serviceModule = serviceModuleRepository.findById(serviceModuleId)
+                .orElseThrow(() -> ServiceModuleNotFoundException.of(serviceModuleId));
+
+        if (!serviceModule.getCreator().getId().equals(userId)) {
+            throw new UnauthorizedException("You are not authorized to view usage for service " + serviceModuleId);
+        }
+
+        return activityModuleRepository.getActivityModulesThatUseServiceModule(serviceModuleId, offset, limit).stream()
+                .map(serviceModuleMapper::toDto)
+                .toList();
+    }
+
     @Transactional
     public ServiceModuleReservationDto initServiceModuleCreation(Long creatorId, ReserveServiceModuleRequest request) {
         var serviceConfig = orchestratorService.getServiceConfig(request.scheduleTypeName());
@@ -79,7 +98,8 @@ public class ServiceModuleService {
 
     @Transactional
     public ServiceModuleDetailsDto finishServiceModuleCreation(Long creatorId, FinishServiceModuleCreationRequest request) {
-        var reservation = serviceModuleRepository.findById(request.reservationId()).orElseThrow(); // TODO err
+        var reservation = serviceModuleRepository.findById(request.reservationId())
+                .orElseThrow(() -> ServiceModuleNotFoundException.ofReservation(request.reservationId()));
         var serviceConfig = orchestratorService.getServiceConfig(reservation.getScheduleTypeName());
         if (!reservation.getCreator().getId().equals(creatorId)) {
             throw new RuntimeException("you are not a creator");

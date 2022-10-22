@@ -2,15 +2,13 @@ package com.swozo.mapper;
 
 import com.swozo.api.web.activitymodule.ActivityModuleRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
-import com.swozo.api.web.servicemodule.dto.DynamicFieldDto;
-import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
-import com.swozo.api.web.servicemodule.dto.ServiceModuleReservationDto;
-import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
+import com.swozo.api.web.servicemodule.dto.*;
 import com.swozo.api.web.servicemodule.dynamic.DynamicPropertiesHelper;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.activity.ActivityModule;
 import com.swozo.persistence.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -78,5 +76,16 @@ public abstract class ServiceModuleMapper {
 
     public ServiceModuleReservationDto toReservationDto(ServiceModule serviceModule, Map<String, Object> dynamicFieldAdditionalData) {
         return new ServiceModuleReservationDto(serviceModule.getId(), dynamicFieldAdditionalData);
+    }
+
+    public ServiceModuleUsageDto toDto(ActivityModule activityModule) {
+        var course = activityModule.getActivity().getCourse();
+        return new ServiceModuleUsageDto(
+                userMapper.toDto(course.getTeacher()),
+                course.getId(),
+                course.getName(),
+                activityModule.getActivity().getName(),
+                activityModule.getActivity().getCreatedAt()
+        );
     }
 }

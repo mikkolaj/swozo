@@ -29,6 +29,7 @@ models/ServiceConnectionDetailsDto.ts
 models/ServiceModuleDetailsDto.ts
 models/ServiceModuleReservationDto.ts
 models/ServiceModuleSummaryDto.ts
+models/ServiceModuleUsageDto.ts
 models/StorageAccessRequest.ts
 models/UploadAccessDto.ts
 models/UserDetailsDto.ts
