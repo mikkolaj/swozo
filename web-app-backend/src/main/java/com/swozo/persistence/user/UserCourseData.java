@@ -1,5 +1,6 @@
-package com.swozo.persistence;
+package com.swozo.persistence.user;
 
+import com.swozo.persistence.Course;
 import lombok.*;
 
 import javax.persistence.*;

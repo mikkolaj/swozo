@@ -1,15 +1,17 @@
-import { Button, Divider, Grid, Paper, Tab, Tabs, Typography } from '@mui/material';
-import { getApis } from 'api/initialize-apis';
+import { Box, Button, Divider, Grid, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
+import { InstructionView } from 'common/Styled/InstructionView';
 import { RichTextViewer } from 'common/Styled/RichTextViewer';
 import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useMeQuery } from 'hooks/query/useMeQuery';
+import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { useNoCourseOrNoActivityErrorHandlers } from 'hooks/useCommonErrorHandlers';
+import { useCourseWithActivity } from 'hooks/useCourseActivity';
 import { useRequiredParams } from 'hooks/useRequiredParams';
+import _ from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
@@ -20,32 +22,27 @@ export const ActivityInstructionsView = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [currentTab, setCurrentTab] = useState(0);
-    const { data: course, isError } = useQuery(['courses', courseId], () =>
-        getApis().courseApi.getCourse({ id: +courseId })
+    const errorHandlers: HandlerConfig = {
+        ...useNoCourseOrNoActivityErrorHandlers(courseId, activityId),
+    };
+    const { isApiError, errorHandler, isApiErrorSet, consumeErrorAction, pushApiError, removeApiError } =
+        useApiErrorHandling(errorHandlers);
+
+    const { course, activity } = useCourseWithActivity(
+        courseId,
+        activityId,
+        isApiErrorSet,
+        pushApiError,
+        removeApiError
     );
+    console.log(activity);
 
-    if (isError) {
-        return (
-            <PageContainerWithError
-                navButtonMessage={t('activityInstructions.error.noCourse')}
-                navigateTo={PageRoutes.MY_COURSES}
-            />
-        );
+    if (isApiError && errorHandler?.shouldTerminateRendering) {
+        return consumeErrorAction() ?? <></>;
     }
 
-    if (!course) {
+    if (!course || !activity) {
         return <PageContainerWithLoader />;
-    }
-
-    const activity = course.activities.find((activity) => activity.id === +activityId);
-
-    if (!activity) {
-        return (
-            <PageContainerWithError
-                navButtonMessage={t('activityInstructions.error.noActivity')}
-                navigateTo={PageRoutes.Course(courseId)}
-            />
-        );
     }
 
     return (
@@ -86,24 +83,53 @@ export const ActivityInstructionsView = () => {
             <Grid container sx={{ p: 2 }}>
                 {currentTab === 0 && (
                     <Grid item xs={12}>
-                        {activity.instructionsFromTeacher.map(({ untrustedPossiblyDangerousHtml }, idx) => (
-                            <Paper
-                                key={idx}
-                                sx={{
-                                    width: '100%',
-                                    mb: idx < activity.instructionsFromTeacher.length - 1 ? 2 : 0,
-                                    p: 2,
-                                }}
-                            >
-                                <RichTextViewer
-                                    untrustedPossiblyDangerousHtml={untrustedPossiblyDangerousHtml}
-                                />
-                            </Paper>
-                        ))}
+                        <InstructionView
+                            wrapperSx={{ boxShadow: 3 }}
+                            instruction={activity.instructionFromTeacher}
+                        />
                     </Grid>
                 )}
 
-                {currentTab === 1 && <Grid container>TODO</Grid>}
+                {currentTab === 1 && (
+                    <Grid container>
+                        {activity.activityModules.map(({ serviceModule, id }) => (
+                            <Grid key={id} item xs={12} sx={{ mb: 2 }}>
+                                <Paper sx={{ width: '100%', p: 2, boxShadow: 3 }}>
+                                    <Typography variant="h5" component="div" gutterBottom>
+                                        {t('activityInstructions.tabs.modules.serviceModuleTitle', {
+                                            serviceName: _.capitalize(serviceModule.serviceName),
+                                            serviceModuleName: serviceModule.name,
+                                        })}
+                                    </Typography>
+                                    <Divider sx={{ mb: 2 }} />
+                                    {isSame(me, course.teacher) && (
+                                        <Box sx={{ mb: 2 }}>
+                                            <Typography variant="h6" component="div" gutterBottom>
+                                                {t(
+                                                    'activityInstructions.tabs.modules.teacherInstructionLabel'
+                                                )}
+                                            </Typography>
+                                            <RichTextViewer
+                                                untrustedPossiblyDangerousHtml={
+                                                    serviceModule.teacherInstruction
+                                                        .untrustedPossiblyDangerousHtml
+                                                }
+                                            />
+                                        </Box>
+                                    )}
+                                    <Typography variant="h6" component="div" gutterBottom>
+                                        {t('activityInstructions.tabs.modules.studentInstructionLabel')}
+                                    </Typography>
+                                    <RichTextViewer
+                                        untrustedPossiblyDangerousHtml={
+                                            serviceModule.studentInstruction.untrustedPossiblyDangerousHtml
+                                        }
+                                    />
+                                </Paper>
+                            </Grid>
+                        ))}
+                    </Grid>
+                )}
             </Grid>
         </PageContainer>
     );

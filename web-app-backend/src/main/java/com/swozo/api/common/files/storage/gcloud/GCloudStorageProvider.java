@@ -7,7 +7,7 @@ import com.google.cloud.storage.Storage;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.config.CloudProvider;
 import com.swozo.config.cloud.gcloud.storage.GCloudStorageCondition;
-import com.swozo.utils.StorageAccessRequest;
+import com.swozo.model.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Profile;

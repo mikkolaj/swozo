@@ -9,7 +9,7 @@ import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.exceptions.types.course.ActivityNotFoundException;
 import com.swozo.api.web.exceptions.types.files.FileNotFoundException;
 import com.swozo.mapper.ActivityMapper;
-import com.swozo.utils.StorageAccessRequest;
+import com.swozo.model.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

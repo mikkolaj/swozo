@@ -16,22 +16,22 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ActivityInstructionDto
+ * @interface InstructionDto
  */
-export interface ActivityInstructionDto {
+export interface InstructionDto {
     /**
      * 
      * @type {string}
-     * @memberof ActivityInstructionDto
+     * @memberof InstructionDto
      */
     untrustedPossiblyDangerousHtml: string;
 }
 
-export function ActivityInstructionDtoFromJSON(json: any): ActivityInstructionDto {
-    return ActivityInstructionDtoFromJSONTyped(json, false);
+export function InstructionDtoFromJSON(json: any): InstructionDto {
+    return InstructionDtoFromJSONTyped(json, false);
 }
 
-export function ActivityInstructionDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ActivityInstructionDto {
+export function InstructionDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): InstructionDto {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -41,7 +41,7 @@ export function ActivityInstructionDtoFromJSONTyped(json: any, ignoreDiscriminat
     };
 }
 
-export function ActivityInstructionDtoToJSON(value?: ActivityInstructionDto | null): any {
+export function InstructionDtoToJSON(value?: InstructionDto | null): any {
     if (value === undefined) {
         return undefined;
     }

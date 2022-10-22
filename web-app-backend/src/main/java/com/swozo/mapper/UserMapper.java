@@ -3,8 +3,8 @@ package com.swozo.mapper;
 import com.swozo.api.web.course.dto.ParticipantDetailsDto;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.api.web.user.dto.UserDetailsDto;
-import com.swozo.persistence.User;
-import com.swozo.persistence.UserCourseData;
+import com.swozo.persistence.user.User;
+import com.swozo.persistence.user.UserCourseData;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class UserMapper {
     @Autowired
     protected UserRepository userRepository;
-
-    public User fromEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow();
-    }
-
-    public User fromId(long userId) {
-        return userRepository.findById(userId).orElseThrow();
-    }
 
     public abstract UserDetailsDto toDto(User user);
 

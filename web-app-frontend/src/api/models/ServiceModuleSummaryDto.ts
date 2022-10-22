@@ -14,6 +14,12 @@
 
 import { exists, mapValues } from '../runtime';
 import {
+    InstructionDto,
+    InstructionDtoFromJSON,
+    InstructionDtoFromJSONTyped,
+    InstructionDtoToJSON,
+} from './InstructionDto';
+import {
     UserDetailsDto,
     UserDetailsDtoFromJSON,
     UserDetailsDtoFromJSONTyped,
@@ -58,6 +64,18 @@ export interface ServiceModuleSummaryDto {
     serviceName: string;
     /**
      * 
+     * @type {InstructionDto}
+     * @memberof ServiceModuleSummaryDto
+     */
+    teacherInstruction: InstructionDto;
+    /**
+     * 
+     * @type {InstructionDto}
+     * @memberof ServiceModuleSummaryDto
+     */
+    studentInstruction: InstructionDto;
+    /**
+     * 
      * @type {UserDetailsDto}
      * @memberof ServiceModuleSummaryDto
      */
@@ -73,7 +91,7 @@ export interface ServiceModuleSummaryDto {
      * @type {number}
      * @memberof ServiceModuleSummaryDto
      */
-    usedInActivitesCount: number;
+    usedInActivitiesCount: number;
 }
 
 export function ServiceModuleSummaryDtoFromJSON(json: any): ServiceModuleSummaryDto {
@@ -91,9 +109,11 @@ export function ServiceModuleSummaryDtoFromJSONTyped(json: any, ignoreDiscrimina
         'subject': json['subject'],
         'description': json['description'],
         'serviceName': json['serviceName'],
+        'teacherInstruction': InstructionDtoFromJSON(json['teacherInstruction']),
+        'studentInstruction': InstructionDtoFromJSON(json['studentInstruction']),
         'creator': UserDetailsDtoFromJSON(json['creator']),
         'createdAt': (new Date(json['createdAt'])),
-        'usedInActivitesCount': json['usedInActivitesCount'],
+        'usedInActivitiesCount': json['usedInActivitiesCount'],
     };
 }
 
@@ -111,9 +131,11 @@ export function ServiceModuleSummaryDtoToJSON(value?: ServiceModuleSummaryDto | 
         'subject': value.subject,
         'description': value.description,
         'serviceName': value.serviceName,
+        'teacherInstruction': InstructionDtoToJSON(value.teacherInstruction),
+        'studentInstruction': InstructionDtoToJSON(value.studentInstruction),
         'creator': UserDetailsDtoToJSON(value.creator),
         'createdAt': (value.createdAt.toISOString()),
-        'usedInActivitesCount': value.usedInActivitesCount,
+        'usedInActivitiesCount': value.usedInActivitiesCount,
     };
 }
 

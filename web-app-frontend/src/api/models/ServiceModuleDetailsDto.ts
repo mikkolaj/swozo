@@ -14,11 +14,11 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    ServiceModuleInstructionDto,
-    ServiceModuleInstructionDtoFromJSON,
-    ServiceModuleInstructionDtoFromJSONTyped,
-    ServiceModuleInstructionDtoToJSON,
-} from './ServiceModuleInstructionDto';
+    InstructionDto,
+    InstructionDtoFromJSON,
+    InstructionDtoFromJSONTyped,
+    InstructionDtoToJSON,
+} from './InstructionDto';
 import {
     UserDetailsDto,
     UserDetailsDtoFromJSON,
@@ -64,6 +64,18 @@ export interface ServiceModuleDetailsDto {
     serviceName: string;
     /**
      * 
+     * @type {InstructionDto}
+     * @memberof ServiceModuleDetailsDto
+     */
+    teacherInstruction: InstructionDto;
+    /**
+     * 
+     * @type {InstructionDto}
+     * @memberof ServiceModuleDetailsDto
+     */
+    studentInstruction: InstructionDto;
+    /**
+     * 
      * @type {UserDetailsDto}
      * @memberof ServiceModuleDetailsDto
      */
@@ -79,19 +91,13 @@ export interface ServiceModuleDetailsDto {
      * @type {number}
      * @memberof ServiceModuleDetailsDto
      */
-    usedInActivitesCount: number;
+    usedInActivitiesCount: number;
     /**
      * 
      * @type {boolean}
      * @memberof ServiceModuleDetailsDto
      */
     isPublic: boolean;
-    /**
-     * 
-     * @type {ServiceModuleInstructionDto}
-     * @memberof ServiceModuleDetailsDto
-     */
-    instruction: ServiceModuleInstructionDto;
 }
 
 export function ServiceModuleDetailsDtoFromJSON(json: any): ServiceModuleDetailsDto {
@@ -109,11 +115,12 @@ export function ServiceModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscrimina
         'subject': json['subject'],
         'description': json['description'],
         'serviceName': json['serviceName'],
+        'teacherInstruction': InstructionDtoFromJSON(json['teacherInstruction']),
+        'studentInstruction': InstructionDtoFromJSON(json['studentInstruction']),
         'creator': UserDetailsDtoFromJSON(json['creator']),
         'createdAt': (new Date(json['createdAt'])),
-        'usedInActivitesCount': json['usedInActivitesCount'],
+        'usedInActivitiesCount': json['usedInActivitiesCount'],
         'isPublic': json['isPublic'],
-        'instruction': ServiceModuleInstructionDtoFromJSON(json['instruction']),
     };
 }
 
@@ -131,11 +138,12 @@ export function ServiceModuleDetailsDtoToJSON(value?: ServiceModuleDetailsDto | 
         'subject': value.subject,
         'description': value.description,
         'serviceName': value.serviceName,
+        'teacherInstruction': InstructionDtoToJSON(value.teacherInstruction),
+        'studentInstruction': InstructionDtoToJSON(value.studentInstruction),
         'creator': UserDetailsDtoToJSON(value.creator),
         'createdAt': (value.createdAt.toISOString()),
-        'usedInActivitesCount': value.usedInActivitesCount,
+        'usedInActivitiesCount': value.usedInActivitiesCount,
         'isPublic': value.isPublic,
-        'instruction': ServiceModuleInstructionDtoToJSON(value.instruction),
     };
 }
 

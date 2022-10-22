@@ -6,7 +6,7 @@ import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.exceptions.types.course.NotACreatorException;
 import com.swozo.api.web.exceptions.types.course.NotAMemberException;
-import com.swozo.persistence.Activity;
+import com.swozo.persistence.activity.Activity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

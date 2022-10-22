@@ -4,11 +4,10 @@ import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.persistence.Course;
+import com.swozo.persistence.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Optional;
 
 
 @Mapper(componentModel = "spring")
@@ -18,10 +17,11 @@ public abstract class CourseMapper {
     @Autowired
     protected ActivityMapper activityMapper;
 
-    @Mapping(target = "teacher", expression = "java(userMapper.fromId(teacherId))")
+    @Mapping(target = "name", source = "createCourseRequest.name")
+    @Mapping(target = "teacher", expression = "java(teacher)")
     @Mapping(target = "activities", expression = "java(createCourseRequest.activities().stream().map(activityMapper::toPersistence).toList())")
     @Mapping(target = "password", expression = "java(createCourseRequest.password().orElse(null))")
-    public abstract Course toPersistence(CreateCourseRequest createCourseRequest, long teacherId);
+    public abstract Course toPersistence(CreateCourseRequest createCourseRequest, User teacher);
 
     @Mapping(target = "lastActivityTime", source = "course.creationTime")
     @Mapping(target = "teacher", expression = "java(userMapper.toDto(course.getTeacher()))")

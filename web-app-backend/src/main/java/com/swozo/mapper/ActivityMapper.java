@@ -1,12 +1,10 @@
 package com.swozo.mapper;
 
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
-import com.swozo.api.web.activity.dto.ActivityInstructionDto;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
-import com.swozo.persistence.Activity;
-import com.swozo.persistence.ActivityInstruction;
-import com.swozo.persistence.ActivityModule;
+import com.swozo.persistence.activity.Activity;
+import com.swozo.persistence.activity.ActivityModule;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,26 +20,19 @@ public abstract class ActivityMapper {
     protected ActivityModuleMapper activityModuleMapper;
     @Autowired
     protected FileMapper fileMapper;
-
-    public abstract ActivityInstruction toPersistence(ActivityInstructionDto activityInstructionDto);
-
-    public abstract ActivityInstructionDto toDto(ActivityInstruction activityInstruction);
+    @Autowired
+    protected CommonMappers commonMappers;
 
     protected LinkedList<ActivityModule> modulesToPersistence(CreateActivityRequest createActivityRequest) {
         return moduleRepository.findAllById(createActivityRequest.selectedModulesIds()).stream()
                 .map(activityModuleMapper::fromServiceModule).collect(Collectors.toCollection(LinkedList::new));
     }
 
-    protected LinkedList<ActivityInstruction> instructionsToPersistence(CreateActivityRequest createActivityRequest) {
-        return createActivityRequest.instructionsFromTeacher().stream()
-                .map(this::toPersistence).collect(Collectors.toCollection(LinkedList::new));
-    }
-
     @Mapping(target = "modules", expression = "java(modulesToPersistence(createActivityRequest))")
-    @Mapping(target = "instructionsFromTeacher", expression = "java(instructionsToPersistence(createActivityRequest))")
+    @Mapping(target = "instructionFromTeacherHtml", expression = "java(commonMappers.instructionToPersistence(createActivityRequest.instructionFromTeacher()))")
     public abstract Activity toPersistence(CreateActivityRequest createActivityRequest);
 
-    @Mapping(target = "instructionsFromTeacher", expression = "java(activity.getInstructionsFromTeacher().stream().map(this::toDto).toList())")
+    @Mapping(target = "instructionFromTeacher", expression = "java(commonMappers.instructionToDto(activity.getInstructionFromTeacherHtml()))")
     @Mapping(target = "activityModules", expression = "java(activity.getModules().stream().map(activityModuleMapper::toDto).toList())")
     @Mapping(target = "publicFiles", expression = "java(activity.getPublicFiles().stream().map(fileMapper::toDto).toList())")
     public abstract ActivityDetailsDto toDto(Activity activity);

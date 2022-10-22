@@ -48,7 +48,10 @@ export const ParticipantsListView = ({ course }: Props) => {
     const { isApiError, pushApiError, consumeErrorAction, errorHandler } = useApiErrorHandling(errorHandlers);
     const addStudentMutation = useMutation(
         (email: string) =>
-            getApis().courseApi.addStudentToCourse({ courseId: course.id, addStudentRequest: { email } }),
+            getApis().courseApi.addStudentToCourse({
+                courseId: course.id,
+                modifyParticipantRequest: { email },
+            }),
         {
             onSuccess: (mutatedCourse, email) => {
                 toast.success(t('course.options.participants.addStudent.success', { email }));

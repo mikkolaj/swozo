@@ -8,7 +8,7 @@ import com.swozo.api.web.exceptions.types.common.ValidationNames;
 import com.swozo.api.web.exceptions.types.course.AlreadyAMemberException;
 import com.swozo.api.web.exceptions.types.course.NotACreatorException;
 import com.swozo.persistence.Course;
-import com.swozo.persistence.User;
+import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

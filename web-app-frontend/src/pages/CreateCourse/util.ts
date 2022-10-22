@@ -81,11 +81,9 @@ const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityReq
         description: activity.description,
         startTime: withDate(activity.startTime, activity.date).toDate(),
         endTime: withDate(activity.endTime, activity.date).toDate(),
-        instructionsFromTeacher: [
-            {
-                untrustedPossiblyDangerousHtml: activity.instructions,
-            },
-        ],
+        instructionFromTeacher: {
+            untrustedPossiblyDangerousHtml: activity.instructions,
+        },
         selectedModulesIds: [...activity.lessonModules /*, ...activity.generalModules*/].map(({ id }) => id), // TODO
     };
 };

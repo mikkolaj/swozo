@@ -8,7 +8,16 @@ import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.model.scheduling.properties.ScheduleType;
-import com.swozo.persistence.*;
+import com.swozo.persistence.Course;
+import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.activity.Activity;
+import com.swozo.persistence.activity.ActivityLink;
+import com.swozo.persistence.activity.ActivityModule;
+import com.swozo.persistence.activity.utils.TranslatableActivityLink;
+import com.swozo.persistence.user.Role;
+import com.swozo.persistence.user.User;
+import com.swozo.persistence.user.UserCourseData;
+import com.swozo.utils.SupportedLanguage;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +28,10 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -89,7 +101,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 //        ServiceModule
         ServiceModule serviceModule = new ServiceModule();
         serviceModule.setName("Klasy w Pythonie");
-        serviceModule.setInstructionUntrustedHtml("instrukcja do klas w pythonie trzeba miec klase");
+        serviceModule.setTeacherInstructionHtml("teach");
+        serviceModule.setStudentInstructionHtml("stud");
         serviceModule.setCreator(teacher);
         serviceModule.setDescription("opis1");
         serviceModule.setSubject("INFORMATYKA");
@@ -104,7 +117,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         ServiceModule serviceModule2 = new ServiceModule();
         serviceModule2.setName("Funkcje w Pythonie");
-        serviceModule2.setInstructionUntrustedHtml("instrukcja do funkcji w pythonie trzeba funkcjonowac");
+        serviceModule2.setTeacherInstructionHtml("teach");
+        serviceModule2.setStudentInstructionHtml("stud");
         serviceModule2.setCreator(teacher);
         serviceModule2.setDescription("opis2");
         serviceModule2.setSubject("INFORMATYKA");
@@ -117,6 +131,12 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule2);
 
+        var activityLink1 = new ActivityLink();
+        activityLink1.setUrl("http://34.118.97.16/lab");
+        activityLink1.setConnectionInfo("Login: student@123.swozo.com\nHasło: 123123");
+        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "pl test"));
+        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
+
 //        ACTIVITIES:
         Activity activity = new Activity();
         activity.setName("Pętle, konstrukcje warunkowe");
@@ -125,15 +145,14 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.JULY, 29, 17, 30, 40));
         activity.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 29, 19, 30, 40));
-        activity.setInstructionsFromTeacher(List.of(new ActivityInstruction( "Przed zajęciami należy przeczytać dokumentacje Pythona")));
+        activity.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
         activity.setCourse(course);
         activity.addActivityModule(new ActivityModule(
                 serviceModule,
                 activity,
-                "1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki",
-                null,
-                List.of(new ActivityLink("http://34.118.97.16/lab", "Login: student@123.swozo.com\nHasło: 123123")
-                )));
+                1L,
+                List.of(activityLink1)
+        ));
         course.addActivity(activity);
         activityRepository.save(activity);
 
@@ -144,27 +163,15 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.JULY, 30, 15, 30, 40));
         activity2.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 30, 17, 0, 40));
-        activity2.setInstructionsFromTeacher(List.of(new ActivityInstruction("Przed zajęciami należy przeczytać dokumentacje Pythona")));
+        activity2.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
         activity2.setCourse(course);
         activity2.addActivityModule(new ActivityModule(
                 serviceModule,
-                activity,
-                "1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki",
-                null,
-                List.of(new ActivityLink("http://34.118.97.16/lab", "Login: student@123.swozo.com\nHasło: 123123")
-                )));
+                activity2,
+                1L,
+                List.of(activityLink1)
+        ));
         course.addActivity(activity2);
         activityRepository.save(activity2);
-
-
-//        ActivityModule
-        ActivityModule activityModule = new ActivityModule(
-                serviceModule,
-                activity,
-                "instrukcja",
-                null,
-                new LinkedList<>()
-        );
-        activityModuleRepository.save(activityModule);
     }
 }

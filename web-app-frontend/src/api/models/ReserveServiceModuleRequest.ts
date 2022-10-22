@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    InstructionDto,
+    InstructionDtoFromJSON,
+    InstructionDtoFromJSONTyped,
+    InstructionDtoToJSON,
+} from './InstructionDto';
+
 /**
  * 
  * @export
@@ -30,12 +37,6 @@ export interface ReserveServiceModuleRequest {
      * @type {string}
      * @memberof ReserveServiceModuleRequest
      */
-    instructionHtml: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ReserveServiceModuleRequest
-     */
     subject: string;
     /**
      * 
@@ -43,6 +44,18 @@ export interface ReserveServiceModuleRequest {
      * @memberof ReserveServiceModuleRequest
      */
     description: string;
+    /**
+     * 
+     * @type {InstructionDto}
+     * @memberof ReserveServiceModuleRequest
+     */
+    teacherInstruction: InstructionDto;
+    /**
+     * 
+     * @type {InstructionDto}
+     * @memberof ReserveServiceModuleRequest
+     */
+    studentInstruction: InstructionDto;
     /**
      * 
      * @type {string}
@@ -74,9 +87,10 @@ export function ReserveServiceModuleRequestFromJSONTyped(json: any, ignoreDiscri
     return {
         
         'name': json['name'],
-        'instructionHtml': json['instructionHtml'],
         'subject': json['subject'],
         'description': json['description'],
+        'teacherInstruction': InstructionDtoFromJSON(json['teacherInstruction']),
+        'studentInstruction': InstructionDtoFromJSON(json['studentInstruction']),
         'scheduleTypeName': json['scheduleTypeName'],
         'dynamicProperties': json['dynamicProperties'],
         'isPublic': json['isPublic'],
@@ -93,9 +107,10 @@ export function ReserveServiceModuleRequestToJSON(value?: ReserveServiceModuleRe
     return {
         
         'name': value.name,
-        'instructionHtml': value.instructionHtml,
         'subject': value.subject,
         'description': value.description,
+        'teacherInstruction': InstructionDtoToJSON(value.teacherInstruction),
+        'studentInstruction': InstructionDtoToJSON(value.studentInstruction),
         'scheduleTypeName': value.scheduleTypeName,
         'dynamicProperties': value.dynamicProperties,
         'isPublic': value.isPublic,

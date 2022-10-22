@@ -1,24 +1,27 @@
 package com.swozo.api.web.course;
 
-import com.swozo.api.web.exceptions.types.course.CourseNotFoundException;
-import com.swozo.api.web.exceptions.types.course.InvalidCoursePasswordException;
-import com.swozo.api.web.exceptions.types.user.UserNotFoundException;
 import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
-import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.api.web.course.request.JoinCourseRequest;
+import com.swozo.api.web.course.request.ModifyParticipantRequest;
+import com.swozo.api.web.exceptions.types.course.CourseNotFoundException;
+import com.swozo.api.web.exceptions.types.course.InvalidCoursePasswordException;
+import com.swozo.api.web.exceptions.types.user.UserNotFoundException;
 import com.swozo.api.web.user.UserRepository;
+import com.swozo.api.web.user.UserService;
 import com.swozo.mapper.CourseMapper;
-import com.swozo.persistence.*;
+import com.swozo.persistence.Course;
+import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 @Service
@@ -26,6 +29,7 @@ import java.util.function.BiConsumer;
 public class CourseService {
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final CourseMapper courseMapper;
     private final ScheduleService scheduleService;
     private final ActivityModuleService activityModuleService;
@@ -64,7 +68,7 @@ public class CourseService {
     public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId) {
         courseValidator.validateNewCourse(createCourseRequest);
 
-        var course = courseMapper.toPersistence(createCourseRequest, teacherId);
+        var course = courseMapper.toPersistence(createCourseRequest, userService.getUserById(teacherId));
         course.setJoinUUID(UUID.randomUUID().toString());
         course.getActivities().forEach(activity -> {
             activity.setCourse(course);
@@ -84,17 +88,12 @@ public class CourseService {
     public Course updateCourse(Long id, Long teacherId, CreateCourseRequest createCourseRequest) {
         // TODO validate that teacherId = id of creator etc...
         var oldCourse = courseRepository.getById(id);
-        var course = courseMapper.toPersistence(createCourseRequest, oldCourse.getTeacher().getId());
+        var course = courseMapper.toPersistence(createCourseRequest, oldCourse.getTeacher());
         course.setId(oldCourse.getId());
 
         // TODO maybe check what should be overwritten
         courseRepository.save(course);
         return course;
-    }
-
-    public Collection<Activity> courseActivityList(Long id) {
-        Course course = courseRepository.getById(id);
-        return course.getActivities();
     }
 
     @Transactional
@@ -116,8 +115,8 @@ public class CourseService {
     }
 
     @Transactional
-    public CourseDetailsDto addStudent(Long teacherId, Long courseId, AddStudentRequest addStudentRequest) {
-        return modifyCourseParticipant(courseId, addStudentRequest.email(), (student, course) -> {
+    public CourseDetailsDto addStudent(Long teacherId, Long courseId, ModifyParticipantRequest modifyParticipantRequest) {
+        return modifyCourseParticipant(courseId, modifyParticipantRequest.email(), (student, course) -> {
             courseValidator.validateAddStudentRequest(student, teacherId, course);
             course.addStudent(student);
         });

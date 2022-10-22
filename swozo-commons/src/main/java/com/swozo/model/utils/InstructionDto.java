@@ -1,8 +1,8 @@
-package com.swozo.api.web.activity.dto;
+package com.swozo.model.utils;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record ActivityInstructionDto(
+public record InstructionDto(
         @Schema(required = true) String untrustedPossiblyDangerousHtml
 ) {
 }

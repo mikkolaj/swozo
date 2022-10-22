@@ -1,5 +1,7 @@
-package com.swozo.persistence;
+package com.swozo.persistence.activity;
 
+import com.swozo.persistence.BaseEntity;
+import com.swozo.persistence.ServiceModule;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,13 +19,11 @@ import java.util.Optional;
 public class ActivityModule extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "service_module_id")
-    private ServiceModule module;
+    private ServiceModule serviceModule;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "activity_id")
     private Activity activity;
-
-    private String instruction;
 
     private Long requestId;
 
@@ -38,7 +38,7 @@ public class ActivityModule extends BaseEntity {
 
     // not sure about this, we can wrap connectionDetails and instructionHtml in optional instead
     public ActivityModule(ServiceModule serviceModule) {
-        this.module = serviceModule;
+        this.serviceModule = serviceModule;
     }
 
     public void addLink(ActivityLink link) {

@@ -1,5 +1,6 @@
 package com.swozo.persistence;
 
+import com.swozo.persistence.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,21 +17,25 @@ import java.util.Map;
 @ToString
 public class ServiceModule extends BaseEntity {
     private String name;
-    private String instructionUntrustedHtml;
     private String subject;
     private String description;
-    private LocalDateTime createdAt = LocalDateTime.now();
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User creator;
+    private String teacherInstructionHtml;
+    private String studentInstructionHtml;
     private String scheduleTypeName;
     private String scheduleTypeVersion;
+    private Boolean isPublic;
+    private Boolean ready;
+
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     @ElementCollection
     @MapKeyColumn(name = "property_name")
     @Column(name = "property_value")
     @CollectionTable(name = "service_module_dynamic_properties", joinColumns = @JoinColumn(name = "service_module_id"))
     private Map<String, String> dynamicProperties = new HashMap<>();
-    private Boolean isPublic;
-    private Boolean ready;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User creator;
 
     /*
     insert some service specs here
@@ -42,5 +47,9 @@ public class ServiceModule extends BaseEntity {
 
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public boolean isReady() {
+        return ready;
     }
 }

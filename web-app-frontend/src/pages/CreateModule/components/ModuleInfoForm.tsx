@@ -94,18 +94,28 @@ export const ModuleInfoForm = ({
             )}
 
             <Typography sx={{ mt: 2 }} variant="subtitle1">
-                {t('createModule.slides.0.form.instructions')}
+                {t('createModule.slides.0.form.instructions.teacher')}
             </Typography>
             <RichTextEditor
                 wrapperSx={{ width: '75%' }}
                 name={nameBuilder('instructions')}
-                value={values.instructions}
+                value={values.teacherInstruction}
+                setFieldValue={setFieldValue}
+            />
+
+            <Typography sx={{ mt: 2 }} variant="subtitle1">
+                {t('createModule.slides.0.form.instructions.student')}
+            </Typography>
+            <RichTextEditor
+                wrapperSx={{ width: '75%' }}
+                name={nameBuilder('instructions')}
+                value={values.studentInstruction}
                 setFieldValue={setFieldValue}
             />
 
             <FormControlLabel
                 sx={{ mt: 2 }}
-                control={<Checkbox value={values.isPublic} />}
+                control={<Checkbox checked={values.isPublic} value={values.isPublic} />}
                 label={t('createModule.slides.0.form.public')}
                 name={nameBuilder('isPublic')}
                 onChange={handleChange}

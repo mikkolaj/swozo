@@ -14,12 +14,6 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    ActivityInstructionDto,
-    ActivityInstructionDtoFromJSON,
-    ActivityInstructionDtoFromJSONTyped,
-    ActivityInstructionDtoToJSON,
-} from './ActivityInstructionDto';
-import {
     ActivityModuleDetailsDto,
     ActivityModuleDetailsDtoFromJSON,
     ActivityModuleDetailsDtoFromJSONTyped,
@@ -31,6 +25,12 @@ import {
     FileDtoFromJSONTyped,
     FileDtoToJSON,
 } from './FileDto';
+import {
+    InstructionDto,
+    InstructionDtoFromJSON,
+    InstructionDtoFromJSONTyped,
+    InstructionDtoToJSON,
+} from './InstructionDto';
 
 /**
  * 
@@ -70,10 +70,10 @@ export interface ActivityDetailsDto {
     endTime: Date;
     /**
      * 
-     * @type {Array<ActivityInstructionDto>}
+     * @type {InstructionDto}
      * @memberof ActivityDetailsDto
      */
-    instructionsFromTeacher: Array<ActivityInstructionDto>;
+    instructionFromTeacher: InstructionDto;
     /**
      * 
      * @type {Array<ActivityModuleDetailsDto>}
@@ -103,7 +103,7 @@ export function ActivityDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: 
         'description': json['description'],
         'startTime': (new Date(json['startTime'])),
         'endTime': (new Date(json['endTime'])),
-        'instructionsFromTeacher': ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionDtoFromJSON)),
+        'instructionFromTeacher': InstructionDtoFromJSON(json['instructionFromTeacher']),
         'activityModules': ((json['activityModules'] as Array<any>).map(ActivityModuleDetailsDtoFromJSON)),
         'publicFiles': ((json['publicFiles'] as Array<any>).map(FileDtoFromJSON)),
     };
@@ -123,7 +123,7 @@ export function ActivityDetailsDtoToJSON(value?: ActivityDetailsDto | null): any
         'description': value.description,
         'startTime': (value.startTime.toISOString()),
         'endTime': (value.endTime.toISOString()),
-        'instructionsFromTeacher': ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionDtoToJSON)),
+        'instructionFromTeacher': InstructionDtoToJSON(value.instructionFromTeacher),
         'activityModules': ((value.activityModules as Array<any>).map(ActivityModuleDetailsDtoToJSON)),
         'publicFiles': ((value.publicFiles as Array<any>).map(FileDtoToJSON)),
     };

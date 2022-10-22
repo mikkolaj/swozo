@@ -4,7 +4,8 @@ import { FileInputButton } from 'common/Input/FileInputButton';
 import { FormInputField } from 'common/Input/FormInputField';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { i18n } from 'i18next';
-import { FieldUtils, getTranslated } from './utils';
+import { getTranslated } from 'utils/util';
+import { FieldUtils } from './utils';
 
 type FieldProvider = (param: ParameterDescription, i18n: i18n, fieldUtils: FieldUtils) => JSX.Element;
 

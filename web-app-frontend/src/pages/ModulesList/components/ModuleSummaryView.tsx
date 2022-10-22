@@ -46,13 +46,13 @@ export const ModuleSummaryView = ({ moduleSummary }: Props) => {
                     <Grid item xs={4} sx={{ ...stylesRowCenteredVertical, mt: 2 }}>
                         <Typography variant="body2">
                             {t('myModules.module.usedBy', {
-                                activitiesCount: moduleSummary.usedInActivitesCount,
+                                activitiesCount: moduleSummary.usedInActivitiesCount,
                             })}
                         </Typography>
                     </Grid>
                     <Grid item xs={8} sx={{ mt: 2 }}>
                         <Box sx={stylesRowWithItemsAtTheEnd}>
-                            {moduleSummary.usedInActivitesCount === 0 && (
+                            {moduleSummary.usedInActivitiesCount === 0 && (
                                 <Button
                                     startIcon={<DeleteIcon />}
                                     variant="outlined"

@@ -16,32 +16,32 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ServiceModuleInstructionDto
+ * @interface ModifyParticipantRequest
  */
-export interface ServiceModuleInstructionDto {
+export interface ModifyParticipantRequest {
     /**
      * 
      * @type {string}
-     * @memberof ServiceModuleInstructionDto
+     * @memberof ModifyParticipantRequest
      */
-    untrustedPossiblyDangerousHtml: string;
+    email: string;
 }
 
-export function ServiceModuleInstructionDtoFromJSON(json: any): ServiceModuleInstructionDto {
-    return ServiceModuleInstructionDtoFromJSONTyped(json, false);
+export function ModifyParticipantRequestFromJSON(json: any): ModifyParticipantRequest {
+    return ModifyParticipantRequestFromJSONTyped(json, false);
 }
 
-export function ServiceModuleInstructionDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): ServiceModuleInstructionDto {
+export function ModifyParticipantRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): ModifyParticipantRequest {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'untrustedPossiblyDangerousHtml': json['untrustedPossiblyDangerousHtml'],
+        'email': json['email'],
     };
 }
 
-export function ServiceModuleInstructionDtoToJSON(value?: ServiceModuleInstructionDto | null): any {
+export function ModifyParticipantRequestToJSON(value?: ModifyParticipantRequest | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -50,7 +50,7 @@ export function ServiceModuleInstructionDtoToJSON(value?: ServiceModuleInstructi
     }
     return {
         
-        'untrustedPossiblyDangerousHtml': value.untrustedPossiblyDangerousHtml,
+        'email': value.email,
     };
 }
 

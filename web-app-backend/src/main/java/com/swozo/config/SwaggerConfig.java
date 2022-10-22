@@ -33,7 +33,8 @@ public class SwaggerConfig {
         };
 
         String[] pathsToExclude = {
-                "/courses/all-system-courses"
+                "/courses/all-system-courses",
+                "/service-modules/all-system-modules"
         };
 
         return GroupedOpenApi.builder()

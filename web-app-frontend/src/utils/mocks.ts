@@ -13,11 +13,12 @@ export const mockGeneralModuleSummaryList: ServiceModuleDetailsDto[] = [
             email: 'zkowalski@gmail.com',
         },
         createdAt: new Date(),
-        instruction: { untrustedPossiblyDangerousHtml: 'kamerka i mikrofon' },
+        teacherInstruction: { untrustedPossiblyDangerousHtml: 't' },
+        studentInstruction: { untrustedPossiblyDangerousHtml: 's' },
         description: 'test',
         isPublic: true,
         serviceName: 'JUPYTER',
-        usedInActivitesCount: 0,
+        usedInActivitiesCount: 0,
     },
 ];
 

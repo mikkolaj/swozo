@@ -1,6 +1,6 @@
 package com.swozo.api.common.files;
 
-import com.swozo.utils.StorageAccessRequest;
+import com.swozo.model.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

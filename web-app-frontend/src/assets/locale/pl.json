@@ -63,6 +63,8 @@
             "timeRange": "{{startTime}} - {{endTime}}",
             "linksInfo": {
                 "info": "Linki dla: {{courseName}} - {{activityName}}",
+                "title": "{{serviceModuleName}} ({{serviceName}})",
+                "linksUnavailable": "Linki nie są jeszcze dostępne, odśwież stronę przed rozpoczęciem zajęć",
                 "connectionInstruction": "Instrukcja podłączenia",
                 "closeButton": "Zamknij"
             }
@@ -177,7 +179,10 @@
                     "dynamicParams": {
                         "file": "plik"
                     },
-                    "instructions": "Ogólne instrukcje",
+                    "instructions": {
+                        "teacher": "Instrukcja dla nauczyciela",
+                        "student": "Instrukcja dla studenta"
+                    },
                     "public": "Moduł publiczny"
                 }
             },
@@ -208,7 +213,10 @@
                 }
             },
             "modules": {
-                "label": "Informacje o używanych modułach"
+                "label": "Informacje o używanych modułach",
+                "serviceModuleTitle": "{{serviceModuleName}} ({{serviceName}})",
+                "teacherInstructionLabel": "Instrukcje dla nauczyciela",
+                "studentInstructionLabel": "Instrukcje dla studenta"
             }
         },
         "error": {

@@ -1,8 +1,11 @@
-package com.swozo.persistence;
+package com.swozo.persistence.activity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.swozo.persistence.BaseEntity;
+import com.swozo.persistence.Course;
+import com.swozo.persistence.RemoteFile;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,11 +25,7 @@ public class Activity extends BaseEntity {
     private String description;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "activity_module_id")
-    @ToString.Exclude
-    private Collection<ActivityInstruction> instructionsFromTeacher;
+    private String instructionFromTeacherHtml;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "activity_module_id")

@@ -32,7 +32,7 @@ public class ServiceModuleController {
     @GetMapping("/all-system-modules")
     @PreAuthorize("hasRole('ADMIN')")
     public Collection<ServiceModuleDetailsDto> getModuleList(AccessToken token) {
-        logger.info("module list");
+        logger.info("serviceModule list");
         return service.getServiceModuleList();
     }
 
@@ -57,7 +57,7 @@ public class ServiceModuleController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
     public ServiceModuleDetailsDto getServiceModule(AccessToken token, @PathVariable Long id) {
-        logger.info("service module  info getter");
+        logger.info("service serviceModule  info getter");
         return service.getServiceModuleInfo(id);
     }
 
@@ -89,7 +89,7 @@ public class ServiceModuleController {
 //    @PutMapping("/{moduleId}")
 //    @PreAuthorize("hasRole('TACHER')")
 //    public ServiceModuleDetailsResp updateServiceModule(AccessToken token, @PathVariable Long moduleId, @RequestBody ServiceModule newServiceModule) {
-//        System.out.println("updating module with id: " + moduleId);
+//        System.out.println("updating serviceModule with id: " + moduleId);
 //        return new ServiceModule();
 //    }
 }

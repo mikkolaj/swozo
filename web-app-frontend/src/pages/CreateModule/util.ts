@@ -30,7 +30,8 @@ export type ModuleValues = {
     description: string;
     service: string;
     serviceFile: string;
-    instructions: string;
+    teacherInstruction: string;
+    studentInstruction: string;
     isPublic: boolean;
 };
 
@@ -49,7 +50,8 @@ export const initialModuleValues = (): ModuleValues => ({
     description: 'opis',
     service: '',
     serviceFile: '',
-    instructions: '',
+    teacherInstruction: '',
+    studentInstruction: '',
     isPublic: true,
 });
 
@@ -64,8 +66,9 @@ export const buildReserveServiceModuleRequest = (
             extractValueForReservation(type, associatedValue)
         ),
         name: moduleInfo.name,
-        instructionHtml: moduleInfo.instructions,
-        isPublic: true, //TODO
+        teacherInstruction: { untrustedPossiblyDangerousHtml: moduleInfo.teacherInstruction },
+        studentInstruction: { untrustedPossiblyDangerousHtml: moduleInfo.studentInstruction },
+        isPublic: moduleInfo.isPublic,
         scheduleTypeName: moduleInfo.service,
         subject: moduleInfo.subject,
         description: moduleInfo.description,

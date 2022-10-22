@@ -4,7 +4,7 @@ import com.swozo.api.web.auth.dto.AuthDetailsDto;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.auth.request.LoginRequest;
 import com.swozo.api.web.user.UserRepository;
-import com.swozo.persistence.User;
+import com.swozo.persistence.user.User;
 import com.swozo.security.AccessToken;
 import com.swozo.security.TokenService;
 import lombok.RequiredArgsConstructor;

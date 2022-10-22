@@ -1,6 +1,6 @@
 import { ApiError, ValidationError, ValidationErrorType } from 'api/errors';
 import dayjs, { Dayjs } from 'dayjs';
-import { TFunction } from 'i18next';
+import { i18n, TFunction } from 'i18next';
 import _ from 'lodash';
 
 export const DATE_FORMAT = 'DD.MM.YYYY';
@@ -49,6 +49,22 @@ export const prepareErrorForDisplay = (
     return t(
         resolveI18nValidationError(i18nPrefix, error.errorType),
         _.mapValues(error.args, (value, key) => argFormatter(key, value))
+    );
+};
+
+export const getTranslated = (i18n: i18n, translations?: Record<string, string>) => {
+    if (!translations) {
+        return '';
+    }
+
+    const preferredFallback = 'en';
+    const locale = i18n.language;
+
+    return (
+        translations[locale.toUpperCase()] ??
+        translations[preferredFallback.toUpperCase()] ??
+        Object.values(translations)[0] ??
+        ''
     );
 };
 

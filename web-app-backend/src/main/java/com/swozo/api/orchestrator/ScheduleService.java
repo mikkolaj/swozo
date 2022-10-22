@@ -6,8 +6,8 @@ import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.properties.Psm;
 import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
-import com.swozo.persistence.Activity;
-import com.swozo.persistence.ActivityModule;
+import com.swozo.persistence.activity.Activity;
+import com.swozo.persistence.activity.ActivityModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +57,7 @@ public class ScheduleService {
                 providePsm(activityWithModule.activity()),
                 ScheduleType.JUPYTER,
                 "1.0.0",
-                activityWithModule.module.getModule().getDynamicProperties()
+                activityWithModule.module.getServiceModule().getDynamicProperties()
         );
     }
 

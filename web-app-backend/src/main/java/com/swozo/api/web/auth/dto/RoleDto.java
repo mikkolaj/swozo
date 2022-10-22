@@ -1,7 +1,7 @@
 package com.swozo.api.web.auth.dto;
 
 
-import com.swozo.persistence.Role;
+import com.swozo.persistence.user.Role;
 
 public enum RoleDto {
     STUDENT,

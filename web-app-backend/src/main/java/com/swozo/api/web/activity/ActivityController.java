@@ -5,8 +5,8 @@ import com.swozo.api.common.files.request.InitFileUploadRequest;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.security.AccessToken;
-import com.swozo.utils.StorageAccessRequest;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -84,21 +84,21 @@ public class ActivityController {
 //    @GetMapping("/{id}/service-modules")
 //    @PreAuthorize("hasRole('TEACHER')")
 //    public Collection<ActivityModule> getCourseActivityList(AccessToken token, @PathVariable Long id) {
-//        logger.info("service module list from activity with id: {}", id);
+//        logger.info("service serviceModule list from activity with id: {}", id);
 //        return activityService.getActivityModulesList(id);
 //    }
 //
 //    @PostMapping("/{activityId}/service-modules/{activityModuleId}")
 //    @PreAuthorize("hasRole('TEACHER')")
 //    public Activity addModuleToActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
-//        logger.info("adding module with id: {} to activity with id: {}", activityModuleId, activityId);
+//        logger.info("adding serviceModule with id: {} to activity with id: {}", activityModuleId, activityId);
 //        return activityService.addModuleToActivity(activityId, activityModuleId);
 //    }
 //
 //    @DeleteMapping("/{activityId}/service-modules/{activityModuleId}")
 //    @PreAuthorize("hasRole('TEACHER')")
 //    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
-//        logger.info("removing module with id: {} from activity with id: {}", activityModuleId, activityId);
+//        logger.info("removing serviceModule with id: {} from activity with id: {}", activityModuleId, activityId);
 //        return activityService.deleteModuleFromActivity(activityId, activityModuleId);
 //    }
 //

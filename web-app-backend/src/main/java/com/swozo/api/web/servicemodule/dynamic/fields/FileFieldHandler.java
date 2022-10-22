@@ -9,8 +9,8 @@ import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.jsonmapper.JsonMapperFacade;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.properties.FieldType;
+import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.persistence.ServiceModule;
-import com.swozo.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

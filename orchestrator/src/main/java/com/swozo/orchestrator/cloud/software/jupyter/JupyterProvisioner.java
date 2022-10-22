@@ -5,6 +5,7 @@ import com.swozo.communication.http.RequestSender;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
@@ -14,7 +15,7 @@ import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.NotebookFailed;
 import com.swozo.orchestrator.configuration.ApplicationProperties;
-import com.swozo.utils.StorageAccessRequest;
+import com.swozo.utils.SupportedLanguage;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -93,7 +94,17 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
 
     private List<ActivityLinkInfo> createLinks(VMResourceDetails vmResourceDetails) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
-        return List.of(new ActivityLinkInfo(formattedLink, MAIN_LINK_DESCRIPTION));
+        return List.of(new ActivityLinkInfo(
+                formattedLink,
+                MAIN_LINK_DESCRIPTION,
+                // TODO refactor this
+                Map.of(
+                        SupportedLanguage.PL, "<ol>" +
+                                "<li>Otwórz link</li>" +
+                                "<li>Wpisz dostarczone hasło w formularzu</li>" +
+                                "</ol>"
+                )
+        ));
     }
 
     private void assertSupportedVersion(String version) {

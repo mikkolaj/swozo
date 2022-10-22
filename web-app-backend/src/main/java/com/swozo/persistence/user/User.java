@@ -1,6 +1,7 @@
-package com.swozo.persistence;
+package com.swozo.persistence.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.swozo.persistence.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;

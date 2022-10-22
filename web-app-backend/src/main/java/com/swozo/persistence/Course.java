@@ -1,5 +1,8 @@
 package com.swozo.persistence;
 
+import com.swozo.persistence.activity.Activity;
+import com.swozo.persistence.user.User;
+import com.swozo.persistence.user.UserCourseData;
 import lombok.*;
 
 import javax.persistence.*;

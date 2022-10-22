@@ -1,5 +1,4 @@
 import { InitFileUploadRequest, ParameterDescriptionTypeEnum } from 'api';
-import { i18n } from 'i18next';
 
 export type FieldUtils = {
     setFieldValue: (value: unknown, type: ParameterDescriptionTypeEnum) => void;
@@ -31,20 +30,4 @@ export const extractValueForReservation = (type: ParameterDescriptionTypeEnum, v
 
     console.error(`Unsupported dynamic property type: ${type}`);
     return '';
-};
-
-export const getTranslated = (i18n: i18n, translations?: Record<string, string>) => {
-    if (!translations) {
-        return '';
-    }
-
-    const preferredFallback = 'en';
-    const locale = i18n.language;
-
-    return (
-        translations[locale.toUpperCase()] ??
-        translations[preferredFallback.toUpperCase()] ??
-        Object.values(translations)[0] ??
-        ''
-    );
 };

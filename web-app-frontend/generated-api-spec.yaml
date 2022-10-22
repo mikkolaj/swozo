@@ -45,69 +45,6 @@ paths:
                 $ref: '#/components/schemas/ServiceModuleReservationDto'
       security:
       - JWT_AUTH: []
-  /courses/{id}:
-    get:
-      tags:
-      - course-controller
-      operationId: getCourse
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CourseDetailsDto'
-      security:
-      - JWT_AUTH: []
-    put:
-      tags:
-      - course-controller
-      operationId: editCourse
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCourseRequest'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/Course'
-      security:
-      - JWT_AUTH: []
-    delete:
-      tags:
-      - course-controller
-      operationId: deleteCourse
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-      security:
-      - JWT_AUTH: []
   /activities/{activityId}/files:
     put:
       tags:
@@ -212,7 +149,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddStudentRequest'
+              $ref: '#/components/schemas/ModifyParticipantRequest'
         required: true
       responses:
         "200":
@@ -238,7 +175,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/ModifyParticipantRequest'
         required: true
       responses:
         "200":
@@ -387,27 +324,11 @@ paths:
                   $ref: '#/components/schemas/ServiceConfig'
       security:
       - JWT_AUTH: []
-  /service-modules/all-system-modules:
-    get:
-      tags:
-      - service-module-controller
-      operationId: getModuleList
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ServiceModuleDetailsDto'
-      security:
-      - JWT_AUTH: []
-  /courses/{id}/activities:
+  /courses/{id}:
     get:
       tags:
       - course-controller
-      operationId: getCourseActivityList
+      operationId: getCourse
       parameters:
       - name: id
         in: path
@@ -421,9 +342,23 @@ paths:
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Activity'
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
+    delete:
+      tags:
+      - course-controller
+      operationId: deleteCourse
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
       security:
       - JWT_AUTH: []
   /courses/summary/{uuid}:
@@ -498,18 +433,26 @@ components:
           type: object
           additionalProperties:
             type: string
+    InstructionDto:
+      required:
+      - untrustedPossiblyDangerousHtml
+      type: object
+      properties:
+        untrustedPossiblyDangerousHtml:
+          type: string
     ServiceModuleDetailsDto:
       required:
       - createdAt
       - creator
       - description
       - id
-      - instruction
       - isPublic
       - name
       - serviceName
+      - studentInstruction
       - subject
-      - usedInActivitesCount
+      - teacherInstruction
+      - usedInActivitiesCount
       type: object
       properties:
         id:
@@ -523,25 +466,20 @@ components:
           type: string
         serviceName:
           type: string
+        teacherInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        studentInstruction:
+          $ref: '#/components/schemas/InstructionDto'
         creator:
           $ref: '#/components/schemas/UserDetailsDto'
         createdAt:
           type: string
           format: date-time
-        usedInActivitesCount:
+        usedInActivitiesCount:
           type: integer
           format: int32
         isPublic:
           type: boolean
-        instruction:
-          $ref: '#/components/schemas/ServiceModuleInstructionDto'
-    ServiceModuleInstructionDto:
-      required:
-      - untrustedPossiblyDangerousHtml
-      type: object
-      properties:
-        untrustedPossiblyDangerousHtml:
-          type: string
     UserDetailsDto:
       required:
       - email
@@ -555,253 +493,6 @@ components:
           type: string
         email:
           type: string
-    ActivityInstructionDto:
-      required:
-      - untrustedPossiblyDangerousHtml
-      type: object
-      properties:
-        untrustedPossiblyDangerousHtml:
-          type: string
-    CreateActivityRequest:
-      required:
-      - description
-      - endTime
-      - instructionsFromTeacher
-      - name
-      - selectedModulesIds
-      - startTime
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        instructionsFromTeacher:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityInstructionDto'
-        selectedModulesIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-    CreateCourseRequest:
-      required:
-      - activities
-      - description
-      - expectedStudentCount
-      - name
-      - subject
-      type: object
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-        description:
-          type: string
-        expectedStudentCount:
-          type: integer
-          format: int32
-        activities:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreateActivityRequest'
-        password:
-          type: string
-    Activity:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        description:
-          type: string
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        instructionsFromTeacher:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityInstruction'
-        modules:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityModule'
-        publicFiles:
-          type: array
-          items:
-            $ref: '#/components/schemas/RemoteFile'
-        course:
-          type: integer
-          format: int64
-    ActivityInstruction:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        untrustedPossiblyDangerousHtml:
-          type: string
-    ActivityLink:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        url:
-          type: string
-        connectionInfo:
-          type: string
-    ActivityModule:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        module:
-          $ref: '#/components/schemas/ServiceModule'
-        activity:
-          $ref: '#/components/schemas/Activity'
-        instruction:
-          type: string
-        requestId:
-          type: integer
-          format: int64
-        links:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityLink'
-    Course:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        subject:
-          type: string
-        description:
-          type: string
-        joinUUID:
-          type: string
-        password:
-          type: string
-        creationTime:
-          type: string
-          format: date-time
-        activities:
-          type: array
-          items:
-            $ref: '#/components/schemas/Activity'
-        students:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserCourseData'
-        teacher:
-          $ref: '#/components/schemas/User'
-    RemoteFile:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        path:
-          type: string
-        sizeBytes:
-          type: integer
-          format: int64
-        registeredAt:
-          type: string
-          format: date-time
-    Role:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-    ServiceModule:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        instructionUntrustedHtml:
-          type: string
-        subject:
-          type: string
-        description:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        creator:
-          $ref: '#/components/schemas/User'
-        scheduleTypeName:
-          type: string
-        scheduleTypeVersion:
-          type: string
-        dynamicProperties:
-          type: object
-          additionalProperties:
-            type: string
-        ready:
-          type: boolean
-        public:
-          type: boolean
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        surname:
-          type: string
-        email:
-          type: string
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/Role'
-    UserCourseData:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UserCourseId'
-        user:
-          $ref: '#/components/schemas/User'
-        course:
-          $ref: '#/components/schemas/Course'
-        joinedAt:
-          type: string
-          format: date-time
-    UserCourseId:
-      type: object
-      properties:
-        userId:
-          type: integer
-          format: int64
-        courseId:
-          type: integer
-          format: int64
     InitFileUploadRequest:
       required:
       - filename
@@ -856,7 +547,7 @@ components:
       - description
       - endTime
       - id
-      - instructionsFromTeacher
+      - instructionFromTeacher
       - name
       - publicFiles
       - startTime
@@ -875,10 +566,8 @@ components:
         endTime:
           type: string
           format: date-time
-        instructionsFromTeacher:
-          type: array
-          items:
-            $ref: '#/components/schemas/ActivityInstructionDto'
+        instructionFromTeacher:
+          $ref: '#/components/schemas/InstructionDto'
         activityModules:
           type: array
           items:
@@ -891,17 +580,14 @@ components:
       required:
       - connectionDetails
       - id
-      - instruction
-      - module
+      - serviceModule
       type: object
       properties:
         id:
           type: integer
           format: int64
-        module:
+        serviceModule:
           $ref: '#/components/schemas/ServiceModuleDetailsDto'
-        instruction:
-          type: string
         connectionDetails:
           type: array
           items:
@@ -923,14 +609,14 @@ components:
           format: date-time
     ServiceConnectionDetailsDto:
       required:
-      - connectionInstruction
-      - serviceName
+      - connectionInstructions
+      - url
       type: object
       properties:
-        serviceName:
-          type: string
-        connectionInstruction:
-          type: string
+        connectionInstructions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/InstructionDto'
         url:
           type: string
         connectionInfo:
@@ -939,21 +625,24 @@ components:
       required:
       - description
       - dynamicProperties
-      - instructionHtml
       - isPublic
       - name
       - scheduleTypeName
+      - studentInstruction
       - subject
+      - teacherInstruction
       type: object
       properties:
         name:
-          type: string
-        instructionHtml:
           type: string
         subject:
           type: string
         description:
           type: string
+        teacherInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        studentInstruction:
+          $ref: '#/components/schemas/InstructionDto'
         scheduleTypeName:
           type: string
         dynamicProperties:
@@ -975,6 +664,57 @@ components:
           type: object
           additionalProperties:
             type: object
+    CreateActivityRequest:
+      required:
+      - description
+      - endTime
+      - instructionFromTeacher
+      - name
+      - selectedModulesIds
+      - startTime
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        instructionFromTeacher:
+          $ref: '#/components/schemas/InstructionDto'
+        selectedModulesIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    CreateCourseRequest:
+      required:
+      - activities
+      - description
+      - expectedStudentCount
+      - name
+      - subject
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        description:
+          type: string
+        expectedStudentCount:
+          type: integer
+          format: int32
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateActivityRequest'
+        password:
+          type: string
     CourseDetailsDto:
       required:
       - activities
@@ -1025,7 +765,7 @@ components:
         joinedAt:
           type: string
           format: date-time
-    AddStudentRequest:
+    ModifyParticipantRequest:
       required:
       - email
       type: object
@@ -1080,8 +820,10 @@ components:
       - id
       - name
       - serviceName
+      - studentInstruction
       - subject
-      - usedInActivitesCount
+      - teacherInstruction
+      - usedInActivitiesCount
       type: object
       properties:
         id:
@@ -1095,12 +837,16 @@ components:
           type: string
         serviceName:
           type: string
+        teacherInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        studentInstruction:
+          $ref: '#/components/schemas/InstructionDto'
         creator:
           $ref: '#/components/schemas/UserDetailsDto'
         createdAt:
           type: string
           format: date-time
-        usedInActivitesCount:
+        usedInActivitiesCount:
           type: integer
           format: int32
     ParameterDescription:
