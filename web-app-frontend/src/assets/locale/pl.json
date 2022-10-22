@@ -163,6 +163,7 @@
     "myModule": {
         "header": "Moduł: {{name}}",
         "edit": "edytuj",
+        "delete": "usuń",
         "generalInfo": "Informacje ogólne",
         "subject": "Tematyka",
         "description": "Opis",
@@ -183,6 +184,7 @@
     "createModule": {
         "title": "Nowy moduł",
         "finish": "Utwórz moduł",
+        "finishEditMode": "Zapisz zmiany",
         "buttons": {
             "next": "Dalej",
             "back": "Wróć"
@@ -275,6 +277,8 @@
     "toast": {
         "courseCreated": "Kurs został utworzony!",
         "serviceModuleCreated": "Moduł został utworzony!",
+        "serviceModuleUpdated": "Moduł został zaaktualizowany!",
+        "serviceModuleDeleted": "Moduł został usunięty!",
         "fileUploaded": "Plik został przesłany!"
     },
     "commonErrors": {

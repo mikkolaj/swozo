@@ -130,4 +130,14 @@ public class FileService {
     public RemoteFile decodeUniqueIdentifier(String encodedIdentifier) {
         return fileRepository.findById(Long.valueOf(encodedIdentifier)).orElseThrow();
     }
+
+    /**
+     * Called when removal of a file is caused not by a direct user action. File is not guaranteed to be deleted
+     * from both local and remote storage but logs are guaranteed to be maintained for later retry.
+     */
+    public void removeFileInternally(RemoteFile file) {
+        // TODO assert proper logging
+        fileRepository.delete(file);
+        storageProvider.cleanup(storageProperties.webBucket().name(), file.getPath());
+    }
 }

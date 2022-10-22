@@ -2,6 +2,7 @@ import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
+import { useDeleteServiceModule } from 'hooks/query/useDeleteServiceModule';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useTranslation } from 'react-i18next';
@@ -17,11 +18,13 @@ export const MyModulesListView = () => {
         useApiErrorHandling({});
 
     const { data: modules } = useErrorHandledQuery(
-        ['modules', 'me', 'summary'],
+        ['modules', 'summary', 'me'],
         () => getApis().serviceModuleApi.getUserModulesSummary(),
         pushApiError,
         removeApiError
     );
+
+    const { serviceModuleDeleteMutation } = useDeleteServiceModule(pushApiError);
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {
         return consumeErrorAction() ?? <></>;
@@ -49,7 +52,11 @@ export const MyModulesListView = () => {
             <Container>
                 <Stack spacing={2} px={2}>
                     {modules?.map((module) => (
-                        <ModuleSummaryView key={module.id} moduleSummary={module} />
+                        <ModuleSummaryView
+                            key={module.id}
+                            moduleSummary={module}
+                            onDelete={() => serviceModuleDeleteMutation.mutate(`${module.id}`)}
+                        />
                     ))}
                 </Stack>
             </Container>

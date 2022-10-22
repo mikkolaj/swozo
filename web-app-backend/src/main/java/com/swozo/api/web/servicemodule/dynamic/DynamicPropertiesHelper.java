@@ -7,6 +7,7 @@ import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.properties.FieldType;
 import com.swozo.persistence.ServiceModule;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -55,6 +56,15 @@ public class DynamicPropertiesHelper {
                         request,
                         parameterDescription
                 );
+    }
+
+    @Async
+    public void handleCleanup(Map<String, String> oldValues, Map<String, ParameterDescription> parameterDescriptionsByName) {
+        oldValues.keySet().forEach(fieldName -> {
+           var oldValue = oldValues.get(fieldName);
+           var param = parameterDescriptionsByName.get(fieldName);
+           getHandler(param.type()).cleanup(oldValue, param);
+        });
     }
 
     public String decodeValue(String storedValue, ParameterDescription parameterDescription) {

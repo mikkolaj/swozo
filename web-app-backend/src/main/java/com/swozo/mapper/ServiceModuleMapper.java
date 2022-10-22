@@ -74,6 +74,19 @@ public abstract class ServiceModuleMapper {
     @Mapping(target = "studentInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.studentInstruction()))")
     public abstract ServiceModule toPersistenceReservation(ReserveServiceModuleRequest request, User creator);
 
+    @Mapping(target = "teacherInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getTeacherInstructionHtml()))")
+    @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
+    public abstract ReserveServiceModuleRequest toFormDataDto(ServiceModule serviceModule);
+
+    public void updateCommonFields(ServiceModule serviceModule, ReserveServiceModuleRequest request) {
+        // change of service type is not supported
+        serviceModule.setName(request.name());
+        serviceModule.setSubject(request.subject());
+        serviceModule.setDescription(request.description());
+        serviceModule.setTeacherInstructionHtml(commonMappers.instructionToPersistence(request.teacherInstruction()));
+        serviceModule.setStudentInstructionHtml(commonMappers.instructionToPersistence(request.studentInstruction()));
+    }
+
     public ServiceModuleReservationDto toReservationDto(ServiceModule serviceModule, Map<String, Object> dynamicFieldAdditionalData) {
         return new ServiceModuleReservationDto(serviceModule.getId(), dynamicFieldAdditionalData);
     }

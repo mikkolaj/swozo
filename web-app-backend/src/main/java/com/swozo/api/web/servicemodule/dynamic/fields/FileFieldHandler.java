@@ -68,4 +68,10 @@ public class FileFieldHandler implements DynamicFieldHandler {
     public String decodeValue(String storedValue, ParameterDescription parameterDescription) {
         return mapper.toJson(fileMapper.toDto(fileService.decodeUniqueIdentifier(storedValue)));
     }
+
+    @Override
+    public void cleanup(String storedValue, ParameterDescription parameterDescription) {
+        var file = fileService.decodeUniqueIdentifier(storedValue);
+        fileService.removeFileInternally(file);
+    }
 }

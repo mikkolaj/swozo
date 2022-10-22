@@ -72,6 +72,10 @@ function App() {
                     element={guarded(<CreateModuleView />, withRole(TECHNICAL_TEACHER))}
                 />
                 <Route
+                    path={PageRoutes.EDIT_MODULE}
+                    element={guarded(<CreateModuleView editMode />, withRole(TECHNICAL_TEACHER))}
+                />
+                <Route
                     path={PageRoutes.ACTIVITY_INSTRUCTIONS}
                     element={guarded(<ActivityInstructionsView />, ANY_LOGGED_IN)}
                 />

@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Box, Grid, Typography } from '@mui/material';
 import { ApiError } from 'api/errors';
@@ -12,6 +13,7 @@ import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
 import { InstructionView } from 'common/Styled/InstructionView';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
 import { stylesColumnCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
+import { useDeleteServiceModule } from 'hooks/query/useDeleteServiceModule';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useRequiredParams } from 'hooks/useRequiredParams';
@@ -32,7 +34,7 @@ export const MyModuleView = () => {
         useApiErrorHandling({});
 
     const { data: serviceModule } = useErrorHandledQuery(
-        ['modules', moduleId],
+        ['modules', moduleId, 'details'],
         () => getApis().serviceModuleApi.getServiceModule({ serviceModuleId: +moduleId }),
         pushApiError,
         removeApiError
@@ -44,6 +46,8 @@ export const MyModuleView = () => {
         pushApiError,
         removeApiError
     );
+
+    const { serviceModuleDeleteMutation } = useDeleteServiceModule(pushApiError);
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {
         return consumeErrorAction() ?? <></>;
@@ -67,8 +71,15 @@ export const MyModuleView = () => {
                         <ButtonWithIconAndText
                             textI18n="myModule.edit"
                             Icon={EditIcon}
-                            onClick={() => navigate('/')}
+                            onClick={() => navigate(PageRoutes.EditModule(serviceModule.id))}
                         />
+                        {serviceModule.usedInActivitiesCount === 0 && (
+                            <ButtonWithIconAndText
+                                textI18n="myModule.delete"
+                                Icon={DeleteIcon}
+                                onClick={() => serviceModuleDeleteMutation.mutate(`${serviceModule.id}`)}
+                            />
+                        )}
                     </Grid>
                 </>
             }

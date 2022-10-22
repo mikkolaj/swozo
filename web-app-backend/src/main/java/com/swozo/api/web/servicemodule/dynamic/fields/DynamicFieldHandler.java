@@ -39,4 +39,8 @@ public interface DynamicFieldHandler {
     default String decodeValue(String storedValue, ParameterDescription parameterDescription) {
         return storedValue;
     }
+
+    default void cleanup(String storedValue, ParameterDescription parameterDescription) {
+        // nothing to do
+    }
 }

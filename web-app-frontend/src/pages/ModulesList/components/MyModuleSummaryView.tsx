@@ -12,9 +12,10 @@ import { formatDateTime } from 'utils/util';
 
 type Props = {
     moduleSummary: ServiceModuleSummaryDto;
+    onDelete: () => void;
 };
 
-export const ModuleSummaryView = ({ moduleSummary }: Props) => {
+export const ModuleSummaryView = ({ moduleSummary, onDelete }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -57,7 +58,7 @@ export const ModuleSummaryView = ({ moduleSummary }: Props) => {
                                 <Button
                                     startIcon={<DeleteIcon />}
                                     variant="outlined"
-                                    onClick={() => navigate('/')}
+                                    onClick={() => onDelete()}
                                     sx={{ marginRight: 1 }}
                                 >
                                     {t('myModules.module.buttons.delete')}
@@ -66,7 +67,7 @@ export const ModuleSummaryView = ({ moduleSummary }: Props) => {
                             <Button
                                 startIcon={<EditIcon />}
                                 variant="outlined"
-                                onClick={() => navigate('/')}
+                                onClick={() => navigate(PageRoutes.EditModule(moduleSummary.id))}
                                 sx={{ marginRight: 1 }}
                             >
                                 {t('myModules.module.buttons.edit')}

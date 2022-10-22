@@ -1,7 +1,8 @@
 import { Grid } from '@mui/material';
-import { ReserveServiceModuleRequest, ServiceModuleSummaryDto } from 'api';
+import { ReserveServiceModuleRequest } from 'api';
 import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
+import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
 import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
@@ -12,7 +13,7 @@ import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAppDispatch } from 'services/store';
 import { PageRoutes } from 'utils/routes';
@@ -20,16 +21,23 @@ import { ModuleInfoForm } from './components/ModuleInfoForm';
 import { ModuleSpecsForm } from './components/ModuleSpecsForm';
 import { Summary } from './components/Summary';
 import {
-    buildFinishServiceModuleCreationRequest,
     buildReserveServiceModuleRequest,
+    createServiceModule,
     DynamicFormFields,
     DynamicFormValueRegistry,
     FormValues,
-    handleAdditionalFieldActions,
     initialModuleValues,
+    mapToInitialValues,
     MODULE_INFO_SLIDE,
     MODULE_SPECS_SLIDE,
+    preprocessSupportedServices,
+    updateCacheAfterServiceModuleChange,
+    updateServiceModule,
 } from './util';
+
+type Props = {
+    editMode?: boolean;
+};
 
 const initialValues: FormValues = {
     [MODULE_INFO_SLIDE]: initialModuleValues(),
@@ -41,7 +49,8 @@ const initialValues: FormValues = {
     },
 };
 
-export const CreateModuleView = () => {
+export const CreateModuleView = ({ editMode = false }: Props) => {
+    const { moduleId } = useParams();
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -54,6 +63,14 @@ export const CreateModuleView = () => {
     const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
+    const { data: editModeInitialValues } = useErrorHandledQuery(
+        ['modules', moduleId, 'edit'],
+        () => getApis().serviceModuleApi.getFormDataForEdit({ serviceModuleId: +(moduleId ?? -1) }),
+        pushApiError,
+        removeApiError,
+        editMode && moduleId !== undefined
+    );
+
     const { data: supportedServices } = useErrorHandledQuery(
         'services',
         () => getApis().serviceModuleApi.getSupportedServices(),
@@ -63,35 +80,27 @@ export const CreateModuleView = () => {
 
     const createServiceModuleMutation = useMutation(
         async (reserveServiceModuleRequest: ReserveServiceModuleRequest) => {
-            const reservationResp = await getApis().serviceModuleApi.initServiceModuleCreation({
-                reserveServiceModuleRequest,
-            });
-
-            const resolvedAdditionalFieldActions = await handleAdditionalFieldActions(
-                reserveServiceModuleRequest,
-                reservationResp,
-                dynamicFormValueRegistryRef.current,
-                dispatch
-            );
-
-            return getApis().serviceModuleApi.finishServiceModuleCreation({
-                finishServiceModuleCreationRequest: buildFinishServiceModuleCreationRequest(
-                    reserveServiceModuleRequest,
-                    reservationResp,
-                    resolvedAdditionalFieldActions
-                ),
-            });
+            return editMode
+                ? updateServiceModule(
+                      reserveServiceModuleRequest,
+                      moduleId ?? '',
+                      dynamicFormValueRegistryRef.current,
+                      dispatch
+                  )
+                : createServiceModule(
+                      reserveServiceModuleRequest,
+                      dynamicFormValueRegistryRef.current,
+                      dispatch
+                  );
         },
         {
             onSuccess: (resp) => {
-                toast.success(t('toast.serviceModuleCreated'));
-                queryClient.setQueryData(
-                    ['modules', 'me', 'summary'],
-                    (allModules: ServiceModuleSummaryDto[] | undefined) => [resp, ...(allModules ?? [])]
-                );
+                toast.success(t(`toast.${editMode ? 'serviceModuleUpdated' : 'serviceModuleCreated'}`));
+                updateCacheAfterServiceModuleChange(resp, queryClient);
                 navigate(PageRoutes.MY_MODULES);
             },
             onError: (err: ApiError) => {
+                queryClient.invalidateQueries('modules');
                 pushApiError(err);
             },
         }
@@ -103,8 +112,17 @@ export const CreateModuleView = () => {
         }
     }, [supportedServices]);
 
+    if (editMode && moduleId === undefined) {
+        navigate(PageRoutes.HOME);
+        return <></>;
+    }
+
     if (isApiError && errorHandler?.shouldTerminateRendering) {
         return consumeErrorAction() ?? <></>;
+    }
+
+    if (editMode && (!editModeInitialValues || !supportedServices)) {
+        return <PageContainerWithLoader />;
     }
 
     return (
@@ -112,7 +130,9 @@ export const CreateModuleView = () => {
             titleI18n="createModule.title"
             slidesI18n="createModule.slides"
             currentSlide={currentSlide}
-            initialValues={initialValues}
+            initialValues={
+                editMode && editModeInitialValues ? mapToInitialValues(editModeInitialValues) : initialValues
+            }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             innerRef={formRef as any}
             slidesWithErrors={[]}
@@ -120,7 +140,7 @@ export const CreateModuleView = () => {
                 (slideProps, { values, handleChange, setFieldValue }) => (
                     <ModuleInfoForm
                         {...slideProps}
-                        supportedServices={supportedServices ?? []}
+                        supportedServices={preprocessSupportedServices(supportedServices, editMode, values)}
                         values={values[MODULE_INFO_SLIDE]}
                         handleChange={handleChange}
                         setFieldValue={setFieldValue}
@@ -155,7 +175,9 @@ export const CreateModuleView = () => {
                             currentSlide={currentSlide}
                             slideCount={3}
                             label={t('createModule.buttons.next')}
-                            lastSlideLabel={t('createModule.finish')}
+                            lastSlideLabel={t(
+                                editMode ? 'createModule.finishEditMode' : 'createModule.finish'
+                            )}
                             onNext={(slideNum) => setCurrentSlide(slideNum)}
                             onFinish={() => formRef.current?.handleSubmit()}
                         />

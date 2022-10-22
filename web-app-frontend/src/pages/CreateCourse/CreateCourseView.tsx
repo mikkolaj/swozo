@@ -50,7 +50,7 @@ export const CreateCourseView = () => {
 
     const formRef = useRef<FormikProps<FormValues>>(null);
     const { data: availableLessonModules } = useErrorHandledQuery(
-        'modules',
+        ['modules', 'summary', 'public'],
         () => getApis().serviceModuleApi.getAllPublicServiceModules(),
         pushApiError,
         removeApiError

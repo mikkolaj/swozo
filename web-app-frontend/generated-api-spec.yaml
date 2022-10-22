@@ -45,6 +45,85 @@ paths:
                 $ref: '#/components/schemas/ServiceModuleReservationDto'
       security:
       - JWT_AUTH: []
+  /service-modules/{serviceModuleId}/edit/service-config/init:
+    put:
+      tags:
+      - service-module-controller
+      operationId: initServiceConfigUpdate
+      parameters:
+      - name: serviceModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReserveServiceModuleRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+      security:
+      - JWT_AUTH: []
+  /service-modules/{serviceModuleId}/edit/service-config/finish:
+    put:
+      tags:
+      - service-module-controller
+      operationId: finishServiceConfigUpdate
+      parameters:
+      - name: serviceModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinishServiceModuleCreationRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ServiceModuleDetailsDto'
+      security:
+      - JWT_AUTH: []
+  /service-modules/{serviceModuleId}/edit/common:
+    put:
+      tags:
+      - service-module-controller
+      operationId: updateCommonData
+      parameters:
+      - name: serviceModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReserveServiceModuleRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
   /activities/{activityId}/files:
     put:
       tags:
@@ -258,6 +337,47 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ServiceModuleDetailsDto'
+      security:
+      - JWT_AUTH: []
+    delete:
+      tags:
+      - service-module-controller
+      operationId: deleteServiceModule
+      parameters:
+      - name: serviceModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ServiceModuleDetailsDto'
+      security:
+      - JWT_AUTH: []
+  /service-modules/{serviceModuleId}/edit:
+    get:
+      tags:
+      - service-module-controller
+      operationId: getFormDataForEdit
+      parameters:
+      - name: serviceModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ReserveServiceModuleRequest'
       security:
       - JWT_AUTH: []
   /service-modules/user:
@@ -590,6 +710,36 @@ components:
           type: string
         email:
           type: string
+    ReserveServiceModuleRequest:
+      required:
+      - description
+      - dynamicProperties
+      - isPublic
+      - name
+      - scheduleTypeName
+      - studentInstruction
+      - subject
+      - teacherInstruction
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        description:
+          type: string
+        teacherInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        studentInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        scheduleTypeName:
+          type: string
+        dynamicProperties:
+          type: object
+          additionalProperties:
+            type: string
+        isPublic:
+          type: boolean
     InitFileUploadRequest:
       required:
       - filename
@@ -755,36 +905,6 @@ components:
         usedInActivitiesCount:
           type: integer
           format: int32
-    ReserveServiceModuleRequest:
-      required:
-      - description
-      - dynamicProperties
-      - isPublic
-      - name
-      - scheduleTypeName
-      - studentInstruction
-      - subject
-      - teacherInstruction
-      type: object
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-        description:
-          type: string
-        teacherInstruction:
-          $ref: '#/components/schemas/InstructionDto'
-        studentInstruction:
-          $ref: '#/components/schemas/InstructionDto'
-        scheduleTypeName:
-          type: string
-        dynamicProperties:
-          type: object
-          additionalProperties:
-            type: string
-        isPublic:
-          type: boolean
     ServiceModuleReservationDto:
       required:
       - dynamicFieldAdditionalActions

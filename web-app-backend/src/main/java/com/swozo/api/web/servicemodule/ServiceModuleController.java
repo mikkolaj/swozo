@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -86,6 +87,38 @@ public class ServiceModuleController {
         return service.finishServiceModuleCreation(token.getUserId(), request);
     }
 
+    @PutMapping("/{serviceModuleId}/edit/common")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public void updateCommonData(
+            AccessToken token,
+            @PathVariable Long serviceModuleId,
+            @RequestBody ReserveServiceModuleRequest request
+    ) {
+        service.updateCommonData(token.getUserId(), serviceModuleId, request);
+    }
+
+    @PutMapping("/{serviceModuleId}/edit/service-config/init")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public Map<String, Object> initServiceConfigUpdate(
+            AccessToken token,
+            @PathVariable Long serviceModuleId,
+            @RequestBody ReserveServiceModuleRequest request
+    ) {
+         return service.initServiceConfigUpdate(token.getUserId(), serviceModuleId, request);
+    }
+
+    @PutMapping("/{serviceModuleId}/edit/service-config/finish")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public ServiceModuleDetailsDto finishServiceConfigUpdate(
+            AccessToken token,
+            @PathVariable Long serviceModuleId,
+            @RequestBody FinishServiceModuleCreationRequest request
+    ) {
+        var txnData = service.finishServiceConfigUpdate(token.getUserId(), serviceModuleId, request);
+        service.cleanupOldDataOutsideTxn(txnData);
+        return txnData.serviceModule();
+    }
+
     @GetMapping("/usage/{serviceModuleId}")
     @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
     public List<ServiceModuleUsageDto> getUsage(
@@ -95,6 +128,20 @@ public class ServiceModuleController {
             @RequestParam(defaultValue = "100") Long limit
     ) {
         return service.getServiceUsageInfo(serviceModuleId, accessToken.getUserId(), offset, limit);
+    }
+
+    @GetMapping("/{serviceModuleId}/edit")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public ReserveServiceModuleRequest getFormDataForEdit(AccessToken accessToken, @PathVariable Long serviceModuleId) {
+        return service.getFormDataForEdit(serviceModuleId, accessToken.getUserId());
+    }
+
+    @DeleteMapping("/{serviceModuleId}")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    public ServiceModuleDetailsDto deleteServiceModule(AccessToken accessToken, @PathVariable Long serviceModuleId) {
+        var txnData = service.deleteServiceModule(accessToken.getUserId(), serviceModuleId);
+        service.cleanupOldDataOutsideTxn(txnData);
+        return txnData.serviceModule();
     }
 
 
