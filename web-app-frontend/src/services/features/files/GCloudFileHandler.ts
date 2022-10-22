@@ -36,12 +36,31 @@ export class GCloudFileHandler implements FileHandler {
         }
     }
 
-    download(filename: string, { signedUrl }: StorageAccessRequest): Promise<void> {
-        // TODO: consider using fetch api to have more control
-        const link = document.createElement('a');
-        link.href = signedUrl;
-        link.download = filename;
-        link.click();
-        return Promise.resolve();
+    download(filename: string, { signedUrl, httpHeaders, httpMethod }: StorageAccessRequest): Promise<void> {
+        return fetch(signedUrl, { method: httpMethod, headers: httpHeaders })
+            .catch((err) => {
+                console.error(err);
+                throw {
+                    errorType: ErrorType.THIRD_PARTY_ERROR,
+                };
+            })
+            .then((resp) => {
+                if (resp.status < 200 || resp.status > 299) {
+                    throw {
+                        errorType: ErrorType.THIRD_PARTY_ERROR,
+                    };
+                }
+                return resp.blob();
+            })
+            .then((fileBlob) => {
+                const url = window.URL.createObjectURL(fileBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });
     }
 }

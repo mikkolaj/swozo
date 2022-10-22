@@ -31,7 +31,7 @@ public class ServiceModuleController {
 
     @GetMapping("/all-system-modules")
     @PreAuthorize("hasRole('ADMIN')")
-    public Collection<ServiceModuleDetailsDto> getModuleList(AccessToken token) {
+    public Collection<ServiceModuleSummaryDto> getModuleList(AccessToken token) {
         logger.info("serviceModule list");
         return service.getServiceModuleList();
     }
@@ -44,7 +44,7 @@ public class ServiceModuleController {
 
     @GetMapping("/user")
     @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
-    public List<ServiceModuleDetailsDto> getUserModules(AccessToken accessToken) {
+    public List<ServiceModuleSummaryDto> getUserModules(AccessToken accessToken) {
         return service.getModulesCreatedByTeacher(accessToken.getUserId());
     }
 

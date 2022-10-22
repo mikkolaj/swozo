@@ -6,10 +6,12 @@ import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.api.common.files.util.FilePathGenerator;
 import com.swozo.api.common.files.util.UploadValidationStrategy;
+import com.swozo.api.web.exceptions.types.files.FileNotFoundException;
 import com.swozo.config.properties.StorageProperties;
 import com.swozo.mapper.FileMapper;
 import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.persistence.RemoteFile;
+import com.swozo.persistence.user.User;
 import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -59,6 +61,7 @@ public class FileService {
      */
     @Transactional
     public <T> T acknowledgeExternalUpload(
+            User owner,
             UploadAccessDto uploadAccessDto,
             Supplier<T> initialResourceSupplier,
             BiFunction<RemoteFile, T, T> fileConsumer
@@ -70,7 +73,7 @@ public class FileService {
             return initialResourceSupplier.get();
         }
 
-        var file = fileRepository.save(fileMapper.toPersistence(uploadAccessDto));
+        var file = fileRepository.save(fileMapper.toPersistence(uploadAccessDto, owner));
 
         try {
             return fileConsumer.apply(file, initialResourceSupplier.get());
@@ -80,9 +83,9 @@ public class FileService {
         }
     }
 
-    public RemoteFile acknowledgeExternalUploadWithoutTxn(UploadAccessDto uploadAccessDto) {
+    public RemoteFile acknowledgeExternalUploadWithoutTxn(User owner, UploadAccessDto uploadAccessDto) {
         validateStorageAccessRequest(uploadAccessDto.storageAccessRequest());
-        return fileRepository.save(fileMapper.toPersistence(uploadAccessDto));
+        return fileRepository.save(fileMapper.toPersistence(uploadAccessDto, owner));
     }
 
     public StorageAccessRequest createExternalDownloadRequest(RemoteFile file) {
@@ -91,6 +94,14 @@ public class FileService {
                 file.getPath(),
                 storageProperties.externalDownloadValidity()
         );
+    }
+
+    public StorageAccessRequest createExternalDownloadRequest(Long remoteFileId, Long downloaderId) {
+        var file = fileRepository.findById(remoteFileId).orElseThrow(() -> FileNotFoundException.globally(remoteFileId));
+        if (!file.getOwner().getId().equals(downloaderId)) {
+            throw new UnauthorizedException("You are unauthorized to download this file.");
+        }
+        return createExternalDownloadRequest(file);
     }
 
     public StorageAccessRequest createInternalDownloadRequest(Long remoteFileId) {
@@ -114,5 +125,9 @@ public class FileService {
 
     public String encodeUniqueIdentifier(RemoteFile file) {
         return file.getId().toString();
+    }
+
+    public RemoteFile decodeUniqueIdentifier(String encodedIdentifier) {
+        return fileRepository.findById(Long.valueOf(encodedIdentifier)).orElseThrow();
     }
 }

@@ -30,19 +30,20 @@ public class ServiceModuleService {
     private final OrchestratorService orchestratorService;
     private final ServiceModuleValidator serviceModuleValidator;
 
-    public Collection<ServiceModuleDetailsDto> getServiceModuleList() {
-        return serviceModuleRepository.findAll().stream().map(serviceModuleMapper::toDto).toList();
+    public Collection<ServiceModuleSummaryDto> getServiceModuleList() {
+        return serviceModuleRepository.findAll().stream().map(serviceModuleMapper::toSummaryDto).toList();
     }
 
     public ServiceModuleDetailsDto getServiceModuleInfo(Long serviceModuleId) {
         var serviceModule = serviceModuleRepository.getById(serviceModuleId);
-        return serviceModuleMapper.toDto(serviceModule);
+        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getScheduleTypeName());
+        return serviceModuleMapper.toDto(serviceModule, serviceConfig);
     }
 
-    public List<ServiceModuleDetailsDto> getModulesCreatedByTeacher(Long teacherId) {
+    public List<ServiceModuleSummaryDto> getModulesCreatedByTeacher(Long teacherId) {
         return serviceModuleRepository.getAllModulesCreatedBy(teacherId)
                 .stream()
-                .map(serviceModuleMapper::toDto)
+                .map(serviceModuleMapper::toSummaryDto)
                 .toList();
     }
 
@@ -94,7 +95,7 @@ public class ServiceModuleService {
         reservation.setScheduleTypeVersion(serviceConfig.version());
         serviceModuleRepository.save(reservation);
 
-        return serviceModuleMapper.toDto(reservation);
+        return serviceModuleMapper.toDto(reservation, serviceConfig);
     }
 
     private Map<String, Object> handleDynamicFieldTypesForReservation(

@@ -160,6 +160,23 @@
             }
         }
     },
+    "myModule": {
+        "header": "Moduł: {{name}}",
+        "generalInfo": "Informacje ogólne",
+        "subject": "Tematyka",
+        "description": "Opis",
+        "serviceName": "Wykorzystywany serwis",
+        "teacherInstruction": "Instrukcje dla nauczyciela",
+        "studentInstruction": "Instrukcje dla ucznia",
+        "usedBy": {
+            "label": "Wykorzystany w aktywnościach",
+            "info": {
+                "courseName": "Nazwa kursu",
+                "activityName": "Nazwa aktywności",
+                "teacherName": "Email założyciela"
+            }
+        }
+    },
     "createModule": {
         "title": "Nowy moduł",
         "finish": "Utwórz moduł",
@@ -265,6 +282,11 @@
     "dynamicForm": {
         "file": {
             "button": "Wybierz plik"
+        }
+    },
+    "dynamicDisplay": {
+        "file": {
+            "button": "Pobierz plik"
         }
     }
 }

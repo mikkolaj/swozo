@@ -5,13 +5,13 @@ import { FormInputField } from 'common/Input/FormInputField';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { i18n } from 'i18next';
 import { getTranslated } from 'utils/util';
-import { FieldUtils } from './utils';
+import { InputFieldUtils } from './utils';
 
-type FieldProvider = (param: ParameterDescription, i18n: i18n, fieldUtils: FieldUtils) => JSX.Element;
+type FieldProvider = (param: ParameterDescription, i18n: i18n, fieldUtils: InputFieldUtils) => JSX.Element;
 
-type FieldFactory = Record<ParameterDescriptionTypeEnum, FieldProvider>;
+type InputFieldFactory = Record<ParameterDescriptionTypeEnum, FieldProvider>;
 
-export const fieldFactory = (): FieldFactory => {
+export const inputFieldFactory = (): InputFieldFactory => {
     return {
         FILE: (
             { name, required, translatedLabel, clientValidationHelpers }: ParameterDescription,

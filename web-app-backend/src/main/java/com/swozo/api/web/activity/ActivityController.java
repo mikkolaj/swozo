@@ -39,10 +39,11 @@ public class ActivityController {
     @PutMapping("/{activityId}/files")
     @PreAuthorize("hasRole('TEACHER')")
     public ActivityDetailsDto ackPublicActivityFileUpload(
+            AccessToken accessToken,
             @PathVariable Long activityId,
             @RequestBody UploadAccessDto uploadAccessDto
     ) {
-        return activityService.ackPublicActivityFileUpload(activityId, uploadAccessDto);
+        return activityService.ackPublicActivityFileUpload(activityId, accessToken.getUserId(), uploadAccessDto);
     }
     
     @GetMapping("/{activityId}/files/{fileId}")

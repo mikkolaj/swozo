@@ -35,4 +35,8 @@ public interface DynamicFieldHandler {
     ) {
         return request.finalDynamicFieldValues().get(fieldName);
     }
+
+    default String decodeValue(String storedValue, ParameterDescription parameterDescription) {
+        return storedValue;
+    }
 }

@@ -29,12 +29,14 @@ public class SwaggerConfig {
                 "/users/**",
                 "/service-modules/**",
                 "/courses/**",
-                "/activities/**"
+                "/activities/**",
+                "/files/**"
         };
 
         String[] pathsToExclude = {
                 "/courses/all-system-courses",
-                "/service-modules/all-system-modules"
+                "/service-modules/all-system-modules",
+                "/files/internal/**"
         };
 
         return GroupedOpenApi.builder()

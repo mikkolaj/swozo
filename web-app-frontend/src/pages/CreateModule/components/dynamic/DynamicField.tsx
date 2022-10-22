@@ -1,15 +1,15 @@
 import { ParameterDescription } from 'api';
 import { useTranslation } from 'react-i18next';
-import { fieldFactory } from './FieldFactory';
-import { FieldUtils } from './utils';
+import { inputFieldFactory } from './InputFieldFactory';
+import { InputFieldUtils } from './utils';
 
-type Props = FieldUtils & {
+type Props = InputFieldUtils & {
     param: ParameterDescription;
 };
 
 export const DynamicField = ({ param, ...fieldUtils }: Props) => {
     const { i18n } = useTranslation();
-    const fieldProvider = fieldFactory()[param.type];
+    const fieldProvider = inputFieldFactory()[param.type];
 
     if (!fieldProvider) {
         console.error(`Field type: "${param.type}" is not supported`);

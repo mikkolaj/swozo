@@ -5,8 +5,8 @@ import com.swozo.model.utils.InstructionDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
-// TODO add and dynamic fields
 public record ServiceModuleDetailsDto(
         @Schema(required = true) Long id,
         @Schema(required = true) String name,
@@ -18,6 +18,7 @@ public record ServiceModuleDetailsDto(
         @Schema(required = true) UserDetailsDto creator,
         @Schema(required = true) LocalDateTime createdAt,
         @Schema(required = true) int usedInActivitiesCount,
-        @Schema(required = true) boolean isPublic
+        @Schema(required = true) boolean isPublic,
+        @Schema(required = true) Map<String, DynamicFieldDto> dynamicFields
 ) {
 }

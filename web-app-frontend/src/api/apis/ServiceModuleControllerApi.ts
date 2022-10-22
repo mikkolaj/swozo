@@ -193,7 +193,7 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getUserModulesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleDetailsDto>>> {
+    async getUserModulesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleSummaryDto>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -213,12 +213,12 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleDetailsDtoFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleSummaryDtoFromJSON));
     }
 
     /**
      */
-    async getUserModules(initOverrides?: RequestInit): Promise<Array<ServiceModuleDetailsDto>> {
+    async getUserModules(initOverrides?: RequestInit): Promise<Array<ServiceModuleSummaryDto>> {
         const response = await this.getUserModulesRaw(initOverrides);
         return await response.value();
     }

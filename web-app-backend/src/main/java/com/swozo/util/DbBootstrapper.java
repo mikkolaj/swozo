@@ -1,5 +1,6 @@
 package com.swozo.util;
 
+import com.swozo.api.common.files.FileRepository;
 import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activitymodule.ActivityModuleRepository;
 import com.swozo.api.web.auth.dto.RoleDto;
@@ -9,6 +10,7 @@ import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.persistence.Course;
+import com.swozo.persistence.RemoteFile;
 import com.swozo.persistence.ServiceModule;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityLink;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +38,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
+@Profile("dev")
 public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent> {
     private final Logger logger = LoggerFactory.getLogger(DbBootstrapper.class);
 
@@ -44,6 +48,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final ActivityRepository activityRepository;
     private final ServiceModuleRepository serviceModuleRepository;
     private final ActivityModuleRepository activityModuleRepository;
+    private final FileRepository fileRepository;
     private boolean alreadySetup = false;
 
     @Override
@@ -68,7 +73,6 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 .forEach(name -> roleRepository.save(new Role(name)));
     }
 
-    // TODO assert dev env
     private void setupTestData() {
         var adminRole = roleRepository.findByName(RoleDto.ADMIN.toString());
         userRepository.save(new User("Bolek", "Kowalski", "admin@gmail.com", "admin", List.of(adminRole)));
@@ -98,6 +102,13 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         courseRepository.save(course);
 
+//        FILES
+        var mockFile = new RemoteFile();
+        mockFile.setPath("/test");
+        mockFile.setSizeBytes(2000L);
+
+        fileRepository.save(mockFile);
+
 //        ServiceModule
         ServiceModule serviceModule = new ServiceModule();
         serviceModule.setName("Klasy w Pythonie");
@@ -108,7 +119,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setScheduleTypeName(ScheduleType.JUPYTER.toString());
         serviceModule.setScheduleTypeVersion("1.0.0");
-        serviceModule.setDynamicProperties(Map.of("notebookLocation", "mock1"));
+        serviceModule.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
         serviceModule.setPublic(true);
         serviceModule.setReady(true);
         serviceModule.setCreatedAt(LocalDateTime.of(2022,
@@ -124,7 +135,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule2.setSubject("INFORMATYKA");
         serviceModule2.setScheduleTypeName(ScheduleType.JUPYTER.toString());
         serviceModule2.setScheduleTypeVersion("1.0.0");
-        serviceModule2.setDynamicProperties(Map.of("notebookLocation", "mock1"));
+        serviceModule2.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
         serviceModule2.setPublic(true);
         serviceModule2.setReady(true);
         serviceModule2.setCreatedAt(LocalDateTime.of(2022,

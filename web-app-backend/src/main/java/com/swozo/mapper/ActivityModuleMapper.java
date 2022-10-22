@@ -54,7 +54,7 @@ public abstract class ActivityModuleMapper {
     @Mapping(target = "connectionInfo", expression = "java(Optional.ofNullable(activityLink.getConnectionInfo()))")
     protected abstract ServiceConnectionDetailsDto toDto(ActivityLink activityLink);
 
-    @Mapping(target = "serviceModule", expression = "java(serviceModuleMapper.toDto(activityModule.getServiceModule()))")
+    @Mapping(target = "serviceModule", expression = "java(serviceModuleMapper.toSummaryDto(activityModule.getServiceModule()))")
     @Mapping(target = "connectionDetails", expression = "java(connectionDetailsToDto(activityModule))")
     public abstract ActivityModuleDetailsDto toDto(ActivityModule activityModule);
 }

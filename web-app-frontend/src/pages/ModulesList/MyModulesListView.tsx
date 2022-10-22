@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
@@ -8,9 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { TECHNICAL_TEACHER, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
-import { ModuleSummaryView } from './components/ModuleSummaryView';
+import { ModuleSummaryView } from './components/MyModuleSummaryView';
 
-export const ModulesListView = () => {
+export const MyModulesListView = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
@@ -52,7 +52,6 @@ export const ModulesListView = () => {
                         <ModuleSummaryView key={module.id} moduleSummary={module} />
                     ))}
                 </Stack>
-                <Box sx={{ height: 1000 }} />
             </Container>
         </PageContainer>
     );

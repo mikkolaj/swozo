@@ -2,10 +2,14 @@ package com.swozo.mapper;
 
 import com.swozo.api.web.activitymodule.ActivityModuleRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
+import com.swozo.api.web.servicemodule.dto.DynamicFieldDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleDetailsDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleReservationDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
+import com.swozo.api.web.servicemodule.dynamic.DynamicPropertiesHelper;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
+import com.swozo.model.scheduling.ParameterDescription;
+import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.persistence.ServiceModule;
 import com.swozo.persistence.user.User;
 import org.mapstruct.Mapper;
@@ -13,6 +17,8 @@ import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class ServiceModuleMapper {
@@ -24,13 +30,36 @@ public abstract class ServiceModuleMapper {
     protected UserMapper userMapper;
     @Autowired
     protected CommonMappers commonMappers;
+    @Autowired
+    protected DynamicPropertiesHelper dynamicPropertiesHelper;
+
+    protected Map<String, DynamicFieldDto> dynamicFieldsToDto(ServiceModule serviceModule, ServiceConfig serviceConfig) {
+        var paramsByNameMap = serviceConfig.parameterDescriptions().stream()
+                .collect(Collectors.toMap(
+                    ParameterDescription::name,
+                    Function.identity()
+                )
+        );
+        return serviceModule.getDynamicProperties().entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> {
+                            var paramDescription = paramsByNameMap.get(e.getKey());
+                            return new DynamicFieldDto(
+                                    dynamicPropertiesHelper.decodeValue(e.getValue(), paramDescription),
+                                    paramDescription
+                            );
+                        }
+                ));
+    }
 
     @Mapping(target = "creator", expression = "java(userMapper.toDto(serviceModule.getCreator()))")
-    @Mapping(target = "serviceName", source = "scheduleTypeName")
+    @Mapping(target = "serviceName", source = "serviceModule.scheduleTypeName")
     @Mapping(target = "usedInActivitiesCount", expression = "java(activityModuleRepository.countActivityModulesByServiceModuleId(serviceModule.getId()))")
     @Mapping(target = "teacherInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getTeacherInstructionHtml()))")
     @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
-    public abstract ServiceModuleDetailsDto toDto(ServiceModule serviceModule);
+    @Mapping(target = "dynamicFields", expression = "java(dynamicFieldsToDto(serviceModule, serviceConfig))")
+    public abstract ServiceModuleDetailsDto toDto(ServiceModule serviceModule, ServiceConfig serviceConfig);
 
     @Mapping(target = "creator", expression = "java(userMapper.toDto(serviceModule.getCreator()))")
     @Mapping(target = "serviceName", source = "scheduleTypeName")

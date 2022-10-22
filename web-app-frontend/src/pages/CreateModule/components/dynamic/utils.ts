@@ -1,8 +1,12 @@
 import { InitFileUploadRequest, ParameterDescriptionTypeEnum } from 'api';
 
-export type FieldUtils = {
+export type InputFieldUtils = {
     setFieldValue: (value: unknown, type: ParameterDescriptionTypeEnum) => void;
     setAssociatedValue?: (value: unknown) => void;
+};
+
+export type DisplayFieldUtils = {
+    onInteractionError: (error: unknown) => void;
 };
 
 export const getInitialValue = (type: ParameterDescriptionTypeEnum): unknown => {

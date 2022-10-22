@@ -7,6 +7,7 @@ import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.servicemodule.request.FinishServiceModuleCreationRequest;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.jsonmapper.JsonMapperFacade;
+import com.swozo.mapper.FileMapper;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.properties.FieldType;
 import com.swozo.model.utils.StorageAccessRequest;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FileFieldHandler implements DynamicFieldHandler {
     private final FileService fileService;
+    private final FileMapper fileMapper;
     private final FilePathProvider filePathProvider;
     private final JsonMapperFacade mapper;
 
@@ -52,6 +54,7 @@ public class FileFieldHandler implements DynamicFieldHandler {
             ParameterDescription parameterDescription
     ) {
         var file = fileService.acknowledgeExternalUploadWithoutTxn(
+                serviceModuleReservation.getCreator(),
                 new UploadAccessDto(
                     mapper.fromJson(request.repeatedInitialValues().get(fieldName), InitFileUploadRequest.class),
                     mapper.fromJson(request.echoFieldActions().get(fieldName), StorageAccessRequest.class)
@@ -59,5 +62,10 @@ public class FileFieldHandler implements DynamicFieldHandler {
         );
 
         return fileService.encodeUniqueIdentifier(file);
+    }
+
+    @Override
+    public String decodeValue(String storedValue, ParameterDescription parameterDescription) {
+        return mapper.toJson(fileMapper.toDto(fileService.decodeUniqueIdentifier(storedValue)));
     }
 }

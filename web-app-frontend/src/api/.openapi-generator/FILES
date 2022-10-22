@@ -1,6 +1,7 @@
 apis/ActivityControllerApi.ts
 apis/AuthControllerApi.ts
 apis/CourseControllerApi.ts
+apis/FileControllerApi.ts
 apis/ServiceModuleControllerApi.ts
 apis/UserControllerApi.ts
 apis/index.ts
@@ -12,6 +13,7 @@ models/CourseDetailsDto.ts
 models/CourseSummaryDto.ts
 models/CreateActivityRequest.ts
 models/CreateCourseRequest.ts
+models/DynamicFieldDto.ts
 models/FileDto.ts
 models/FinishServiceModuleCreationRequest.ts
 models/InitFileUploadRequest.ts

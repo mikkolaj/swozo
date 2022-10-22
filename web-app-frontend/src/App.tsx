@@ -12,7 +12,8 @@ import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
 import { FilesListView } from 'pages/FilesList/FilesListView';
 import { Home } from 'pages/Home/Home';
 import { Login } from 'pages/Login/Login';
-import { ModulesListView } from 'pages/ModulesList/ModulesListView';
+import { MyModuleView } from 'pages/Module/MyModuleView';
+import { MyModulesListView } from 'pages/ModulesList/MyModulesListView';
 import { Route, Routes } from 'react-router-dom';
 import { PopupError } from 'services/features/error/PopupError';
 import { useAppSelector } from 'services/store';
@@ -60,7 +61,11 @@ function App() {
                 />
                 <Route
                     path={PageRoutes.MY_MODULES}
-                    element={guarded(<ModulesListView />, withRole(TEACHER, TECHNICAL_TEACHER))}
+                    element={guarded(<MyModulesListView />, withRole(TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.MY_MODULE}
+                    element={guarded(<MyModuleView />, withRole(TECHNICAL_TEACHER))}
                 />
                 <Route
                     path={PageRoutes.CREATE_MODULE}

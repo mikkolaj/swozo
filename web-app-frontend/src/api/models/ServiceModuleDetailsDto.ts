@@ -14,6 +14,12 @@
 
 import { exists, mapValues } from '../runtime';
 import {
+    DynamicFieldDto,
+    DynamicFieldDtoFromJSON,
+    DynamicFieldDtoFromJSONTyped,
+    DynamicFieldDtoToJSON,
+} from './DynamicFieldDto';
+import {
     InstructionDto,
     InstructionDtoFromJSON,
     InstructionDtoFromJSONTyped,
@@ -98,6 +104,12 @@ export interface ServiceModuleDetailsDto {
      * @memberof ServiceModuleDetailsDto
      */
     isPublic: boolean;
+    /**
+     * 
+     * @type {{ [key: string]: DynamicFieldDto; }}
+     * @memberof ServiceModuleDetailsDto
+     */
+    dynamicFields: { [key: string]: DynamicFieldDto; };
 }
 
 export function ServiceModuleDetailsDtoFromJSON(json: any): ServiceModuleDetailsDto {
@@ -121,6 +133,7 @@ export function ServiceModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscrimina
         'createdAt': (new Date(json['createdAt'])),
         'usedInActivitiesCount': json['usedInActivitiesCount'],
         'isPublic': json['isPublic'],
+        'dynamicFields': (mapValues(json['dynamicFields'], DynamicFieldDtoFromJSON)),
     };
 }
 
@@ -144,6 +157,7 @@ export function ServiceModuleDetailsDtoToJSON(value?: ServiceModuleDetailsDto | 
         'createdAt': (value.createdAt.toISOString()),
         'usedInActivitiesCount': value.usedInActivitiesCount,
         'isPublic': value.isPublic,
+        'dynamicFields': (mapValues(value.dynamicFields, DynamicFieldDtoToJSON)),
     };
 }
 

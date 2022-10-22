@@ -3,6 +3,7 @@ import {
     AuthControllerApi,
     Configuration,
     CourseControllerApi,
+    FileControllerApi,
     Middleware,
     ResponseContext,
     ServiceModuleControllerApi,
@@ -19,6 +20,7 @@ type Apis = {
     courseApi: CourseControllerApi;
     activitiesApi: ActivityControllerApi;
     serviceModuleApi: ServiceModuleControllerApi;
+    fileApi: FileControllerApi;
 };
 
 const is4xxFailure = (response: Response) => response.status >= 400 && response.status < 500;
@@ -72,6 +74,7 @@ export const initializeApis = (): Apis => {
         courseApi: new CourseControllerApi(configuration),
         activitiesApi: new ActivityControllerApi(configuration),
         serviceModuleApi: new ServiceModuleControllerApi(configuration),
+        fileApi: new FileControllerApi(configuration),
     };
 };
 

@@ -1,8 +1,8 @@
-import { ServiceModuleDetailsDto } from 'api';
+import { ServiceModuleSummaryDto } from 'api';
 import dayjs, { Dayjs } from 'dayjs';
 
 // should have different type but will do for now
-export const mockGeneralModuleSummaryList: ServiceModuleDetailsDto[] = [
+export const mockGeneralModuleSummaryList: ServiceModuleSummaryDto[] = [
     {
         id: -1,
         name: 'Wideokonferencja',
@@ -16,7 +16,6 @@ export const mockGeneralModuleSummaryList: ServiceModuleDetailsDto[] = [
         teacherInstruction: { untrustedPossiblyDangerousHtml: 't' },
         studentInstruction: { untrustedPossiblyDangerousHtml: 's' },
         description: 'test',
-        isPublic: true,
         serviceName: 'JUPYTER',
         usedInActivitiesCount: 0,
     },

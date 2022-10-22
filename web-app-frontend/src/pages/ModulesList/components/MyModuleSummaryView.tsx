@@ -7,6 +7,7 @@ import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/st
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { PageRoutes } from 'utils/routes';
 import { formatDateTime } from 'utils/util';
 
 type Props = {
@@ -70,7 +71,10 @@ export const ModuleSummaryView = ({ moduleSummary }: Props) => {
                             >
                                 {t('myModules.module.buttons.edit')}
                             </Button>
-                            <Button variant="contained" onClick={() => navigate('/')}>
+                            <Button
+                                variant="contained"
+                                onClick={() => navigate(PageRoutes.MyModule(moduleSummary.id))}
+                            >
                                 {t('myModules.module.buttons.details')}
                             </Button>
                         </Box>

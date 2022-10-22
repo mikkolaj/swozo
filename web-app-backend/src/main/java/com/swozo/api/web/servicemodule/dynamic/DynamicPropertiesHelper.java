@@ -57,6 +57,10 @@ public class DynamicPropertiesHelper {
                 );
     }
 
+    public String decodeValue(String storedValue, ParameterDescription parameterDescription) {
+        return getHandler(parameterDescription.type()).decodeValue(storedValue, parameterDescription);
+    }
+
     private DynamicFieldHandler getHandler(FieldType fieldType) {
         return Optional.ofNullable(fieldHandlers.get(fieldType)).orElseThrow();
     }
