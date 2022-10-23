@@ -1,7 +1,7 @@
 import { ParameterDescription } from 'api';
 import { useTranslation } from 'react-i18next';
+import { InputFieldUtils } from '../utils';
 import { inputFieldFactory } from './InputFieldFactory';
-import { InputFieldUtils } from './utils';
 
 type Props = InputFieldUtils & {
     param: ParameterDescription;

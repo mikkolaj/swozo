@@ -21,21 +21,21 @@ import { PageRoutes } from 'utils/routes';
 import { ModuleInfoForm } from './components/ModuleInfoForm';
 import { ModuleSpecsForm } from './components/ModuleSpecsForm';
 import { Summary } from './components/Summary';
+import { createServiceModule, updateCacheAfterServiceModuleChange, updateServiceModule } from './util/api';
 import {
     buildReserveServiceModuleRequest,
-    createServiceModule,
-    DynamicFormFields,
-    DynamicFormValueRegistry,
-    FormValues,
     initialModuleSpecsValues,
     initialModuleValues,
     mapToInitialValues,
+    preprocessSupportedServices,
+} from './util/mapping';
+import {
+    DynamicFormFields,
+    DynamicFormValueRegistry,
+    FormValues,
     MODULE_INFO_SLIDE,
     MODULE_SPECS_SLIDE,
-    preprocessSupportedServices,
-    updateCacheAfterServiceModuleChange,
-    updateServiceModule,
-} from './util';
+} from './util/types';
 
 type Props = {
     editMode?: boolean;

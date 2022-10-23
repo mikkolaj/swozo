@@ -1,11 +1,11 @@
 import { Box } from '@mui/material';
 import { ServiceConfig } from 'api';
+import { DynamicField } from 'common/DynamicFields/Input/DynamicField';
 import { Formik, FormikProps } from 'formik';
 import _ from 'lodash';
-import { DynamicFormFields, DynamicFormValueRegistry } from 'pages/CreateModule/util';
+import { DynamicFormFields, DynamicFormValueRegistry } from 'pages/CreateModule/util/types';
 import { MutableRefObject, RefObject } from 'react';
-import { DynamicField } from './DynamicField';
-import { getInitialValue } from './utils';
+import { getInitialValue } from '../../../common/DynamicFields/utils';
 
 type Props = {
     serviceConfig: ServiceConfig;

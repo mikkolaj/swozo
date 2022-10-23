@@ -9,8 +9,8 @@ import { FormikProps } from 'formik';
 import _ from 'lodash';
 import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DynamicFormFields, DynamicFormValueRegistry, ModuleValues } from '../util';
-import { DynamicModuleInfoForm } from './dynamic/DynamicModuleInfoForm';
+import { DynamicFormFields, DynamicFormValueRegistry, ModuleValues } from '../util/types';
+import { DynamicModuleInfoForm } from './DynamicModuleInfoForm';
 
 type Props = SlideProps & {
     values: ModuleValues;

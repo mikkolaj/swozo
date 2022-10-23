@@ -1,7 +1,7 @@
 import { DynamicFieldDto } from 'api';
 import { useTranslation } from 'react-i18next';
+import { DisplayFieldUtils } from '../utils';
 import { displayFieldFactory } from './DisplayFieldFactory';
-import { DisplayFieldUtils } from './utils';
 
 type Props = DisplayFieldUtils & {
     field: DynamicFieldDto;
