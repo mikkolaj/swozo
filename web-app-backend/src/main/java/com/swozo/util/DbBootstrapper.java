@@ -99,7 +99,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.setPassword("haslo");
         course.setJoinUUID(UUID.randomUUID().toString());
         course.setStudents(List.of(new UserCourseData(student1, course), new UserCourseData(student2, course)));
-
+        course.setSandboxMode(false);
+        course.setPublic(false);
         courseRepository.save(course);
 
 //        FILES

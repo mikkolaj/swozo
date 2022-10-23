@@ -8,12 +8,14 @@ import com.swozo.orchestrator.api.scheduling.persistence.entity.RequestStatus;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ScheduleRequestRepository;
+import com.swozo.utils.SupportedLanguage;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +56,16 @@ public class ScheduleRequestTracker {
     }
 
     public List<ActivityLinkInfo> getLinks(Long scheduleRequestId) {
-        return linkRepository.findAllByScheduleRequestId(scheduleRequestId).stream().map(linkMapper::toDto).toList();
+        return linkRepository.findAllByScheduleRequestId(scheduleRequestId).stream()
+                .map(activityLinkInfoEntity -> {
+                    // TODO connectionInstructionHtml which is needed on frontend is currently not persisted
+                    // on orchestrator side, imo rather than duplicating that info we should just send them
+                    // to backend when they are ready, below is a temporary workaround
+                    return new ActivityLinkInfo(
+                            activityLinkInfoEntity.getUrl(), activityLinkInfoEntity.getConnectionInfo(),
+                            Map.of(SupportedLanguage.PL, "workaround"));
+                })
+                .toList();
     }
 
     public void saveLinks(Long scheduleRequestId, List<ActivityLinkInfo> links) {

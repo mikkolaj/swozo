@@ -17,11 +17,14 @@ import com.swozo.model.utils.InstructionDto;
 import com.swozo.persistence.ServiceModule;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,8 +33,9 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class SandboxService {
-    private static final Duration SANDBOX_AVAILABILITY_DURATION = Duration.ofMinutes(30);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private final ThreadPoolTaskScheduler taskScheduler;
     private final CourseService courseService;
     private final UserService userService;
     private final ServiceModuleService serviceModuleService;
@@ -48,17 +52,17 @@ public class SandboxService {
     ) {
         sandboxValidator.validateCreateSandboxRequest(creatorId, request);
         var startTime = scheduleService.getAsapScheduleAvailability();
-        var validTo = startTime.plus(SANDBOX_AVAILABILITY_DURATION);
+        var validTo = startTime.plusMinutes(request.validForMinutes());
 
         var serviceModule = serviceModuleService.getById(serviceModuleId);
-        var sandboxRequest = buildCourseSandboxRequest(creatorId, request.userCount(), serviceModule, startTime, validTo);
+        var sandboxRequest = buildCourseSandboxRequest(creatorId, request.studentCount(), serviceModule, startTime, validTo);
         var sandboxCourseDetails = courseService.createCourse(sandboxRequest, creatorId, true);
 
-        var sandboxUsers = createSandboxUsers(request.userCount());
+        var sandboxUsers = createSandboxUsers(request.studentCount());
         var course = courseRepository.getById(sandboxCourseDetails.id());
         sandboxUsers.forEach(sandboxUser -> course.addStudent(sandboxUser.user));
 
-        scheduleSandboxCleanup(sandboxCourseDetails, sandboxUsers);
+        scheduleSandboxCleanup(startTime, request, sandboxCourseDetails, sandboxUsers);
 
         return sandboxMapper.toDto(sandboxCourseDetails, sandboxUsers, validTo);
     }
@@ -92,8 +96,32 @@ public class SandboxService {
         );
     }
 
-    private void scheduleSandboxCleanup(CourseDetailsDto courseDetailsDto, List<SandboxUser> users) {
-        // TODO add cron task, on system startup assert everything is cleaned up
+    private void scheduleSandboxCleanup(
+            LocalDateTime serviceModuleStartTime,
+            CreateSandboxEnvironmentRequest request,
+            CourseDetailsDto courseDetailsDto,
+            List<SandboxUser> users
+    ) {
+        // TODO check on system startup if some left-over courses failed to be deleted
+        var courseCleanupTime = serviceModuleStartTime
+                .plusMinutes(request.validForMinutes() + request.resultsValidForMinutes())
+                .toInstant(ZoneOffset.UTC);
+
+        logger.info("scheduling sandbox course id: " + courseDetailsDto.id() +  " deletion to " + courseCleanupTime);
+
+        taskScheduler.schedule(
+                () -> {
+                    try {
+                        logger.info("Cleaning up sandbox course: " + courseDetailsDto.id());
+                        courseService.deleteCourse(courseDetailsDto.id());
+                        userService.removeUsers(users.stream().map(sandboxUser -> sandboxUser.user.getId()).toList());
+                        logger.info("Sanbox course: " + courseDetailsDto.id() + " cleaned up successfully");
+                    } catch (Exception exception) {
+                        logger.error("Failed to cleanup sandbox course: " + courseDetailsDto.id(), exception);
+                    }
+                },
+                courseCleanupTime
+        );
     }
 
     private List<SandboxUser> createSandboxUsers(int count) {

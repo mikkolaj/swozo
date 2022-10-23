@@ -84,8 +84,10 @@ public class CourseService {
         return courseMapper.toDto(course, true);
     }
 
+    @Transactional
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
+        // TODO: remove all files
     }
 
     public Course updateCourse(Long id, Long teacherId, CreateCourseRequest createCourseRequest) {

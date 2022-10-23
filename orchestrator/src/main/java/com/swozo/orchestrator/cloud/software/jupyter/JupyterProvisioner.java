@@ -118,7 +118,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         // TODO do this properly
         var properties = JupyterParameters.from(parameters);
         var resp = unwrap(requestSender.sendGet(
-                new URI("http://localhost:5000/files/" + properties.notebookLocation()), new TypeReference<StorageAccessRequest>() {
+                new URI("http://localhost:5000/files/internal/download/" + properties.notebookLocation()), new TypeReference<StorageAccessRequest>() {
                 })).join();
         var curlCmd = String.format("curl %s --output /home/swozo/jupyter/lab_file.ipynb\n", resp.signedUrl());
         System.out.println(resp);

@@ -312,7 +312,7 @@
             "setup": {
                 "instruction": "Instrukcja",
                 "mainInfo": "Zostanie utworzony testowy, prywatny kurs z wybraną liczbą testowych studentów ({{studentCount}}). Dostaniesz dane logowania do ich kont oraz link do kursu. Zaraz po uruchomieniu modułu zostaną dostarczone linki umożliwiające wykonanie testu.",
-                "moreInfo": "Po upływie {{validForMinutes}}min moduł zostanie wyłączony, jeśli serwis wspiera zbieranie wyników prac uczniów zostaną one dostarczone i będą dostępne przez kolejne {{resultsValidForMinutes}}min w zakładce 'Pliki' kursu. Po upływie tego czasu kurs, konta studentów i wszystkie pliki zostaną usunięte automatycznie. Nie będziesz mógł ręcznie edytować tego kursu.",
+                "moreInfo": "Po upływie {{validForMinutes}}min (od czasu uruchomienia) moduł zostanie wyłączony, jeśli serwis wspiera zbieranie wyników prac uczniów zostaną one dostarczone i będą dostępne przez kolejne {{resultsValidForMinutes}}min w zakładce 'Pliki' kursu. Po upływie tego czasu kurs, konta studentów i wszystkie pliki zostaną usunięte automatycznie. Nie będziesz mógł ręcznie edytować tego kursu.",
                 "limit": "Pamiętaj że jednocześnie możesz mieć dostęp do tylko jednego środowiska testowego, nie będziesz mógł wcześniej go usunąć.",
                 "form": {
                     "createButton": "Utwórz środowisko testowe",
@@ -321,7 +321,13 @@
                     "resultsValidForMinutes": "Czas dostępu do wyników (min)"
                 }
             },
-            "result": {}
+            "result": {
+                "success": "Kurs został utworzony, poczkaj chwilę na utworzenie modułu i przejdź do testowania",
+                "courseLink": "Link do utworzonego kursu (kurs znajdziesz również w zakładce 'Kursy')",
+                "userData": "Poniżej znajdują się dane dostępu do testowych kont studentów, zapisz je w osobnym pliku tekstowym, po zamknięciu okna nie będzie można ich już sprawdzić. Użyj tych danych do logowania po czym przejdź do utworzonego kursu.",
+                "email": "Adres Email: ",
+                "password": "Hasło: "
+            }
         }
     },
     "error": {

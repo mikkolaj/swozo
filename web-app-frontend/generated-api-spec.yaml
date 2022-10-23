@@ -951,10 +951,18 @@ components:
             type: object
     CreateSandboxEnvironmentRequest:
       required:
-      - userCount
+      - resultsValidForMinutes
+      - studentCount
+      - validForMinutes
       type: object
       properties:
-        userCount:
+        studentCount:
+          type: integer
+          format: int32
+        validForMinutes:
+          type: integer
+          format: int32
+        resultsValidForMinutes:
           type: integer
           format: int32
     CourseDetailsDto:

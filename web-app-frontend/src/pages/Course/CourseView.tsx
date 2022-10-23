@@ -69,18 +69,18 @@ export const CourseView = () => {
                 sx={{ p: 0 }}
                 header={
                     <>
-                        <Grid item xs={6}>
+                        <Grid item xs={8}>
                             <Typography variant="h4" component="div">
                                 {course?.name}
                             </Typography>
                         </Grid>
-                        <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
+                        <Grid item xs={4} sx={stylesRowWithItemsAtTheEnd}>
                             {Object.entries(tabs).map(([type, config]) => (
                                 <Button
                                     key={type}
                                     onClick={() => setTab(config)}
                                     variant={tab.type === type ? 'contained' : 'outlined'}
-                                    sx={{ mr: 0.5 }}
+                                    sx={{ mr: 0.5, height: '50px' }}
                                 >
                                     {t(`course.options.${type}.button`)}
                                 </Button>

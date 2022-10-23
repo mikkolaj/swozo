@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +33,11 @@ public class UserService {
     public User createUser(CreateUserRequest request) {
         // TODO validate
         return userRepository.save(userMapper.toPersistence(request));
+    }
+
+    @Transactional
+    public void removeUsers(List<Long> userIds) {
+        // TODO: remove all files
+        userRepository.deleteAllById(userIds);
     }
 }

@@ -24,7 +24,19 @@ export interface CreateSandboxEnvironmentRequest {
      * @type {number}
      * @memberof CreateSandboxEnvironmentRequest
      */
-    userCount: number;
+    studentCount: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateSandboxEnvironmentRequest
+     */
+    validForMinutes: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateSandboxEnvironmentRequest
+     */
+    resultsValidForMinutes: number;
 }
 
 export function CreateSandboxEnvironmentRequestFromJSON(json: any): CreateSandboxEnvironmentRequest {
@@ -37,7 +49,9 @@ export function CreateSandboxEnvironmentRequestFromJSONTyped(json: any, ignoreDi
     }
     return {
         
-        'userCount': json['userCount'],
+        'studentCount': json['studentCount'],
+        'validForMinutes': json['validForMinutes'],
+        'resultsValidForMinutes': json['resultsValidForMinutes'],
     };
 }
 
@@ -50,7 +64,9 @@ export function CreateSandboxEnvironmentRequestToJSON(value?: CreateSandboxEnvir
     }
     return {
         
-        'userCount': value.userCount,
+        'studentCount': value.studentCount,
+        'validForMinutes': value.validForMinutes,
+        'resultsValidForMinutes': value.resultsValidForMinutes,
     };
 }
 

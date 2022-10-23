@@ -1,10 +1,13 @@
 import { Box, Button, Card, CardContent, Divider, Grid, Modal, Typography } from '@mui/material';
-import { ServiceModuleSummaryDto } from 'api';
-import { FormInputField } from 'common/Input/FormInputField';
+import { CreateSandboxEnvironmentRequest, ServiceModuleSandboxDto, ServiceModuleSummaryDto } from 'api';
+import { getApis } from 'api/initialize-apis';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
-import { stylesRowCenteredVertical, stylesRowWithSpaceBetweenItems } from 'common/styles';
 import { Form, Formik } from 'formik';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMutation } from 'react-query';
+import { SandboxForm } from './SandboxForm';
+import { SandboxResultInfo } from './SandboxResultInfo';
 
 type Props = {
     serviceModule: ServiceModuleSummaryDto;
@@ -12,13 +15,7 @@ type Props = {
     onClose: () => void;
 };
 
-type FormValues = {
-    studentCount: number;
-    validForMinutes: number;
-    resultsValidForMinutes: number;
-};
-
-const initialValues: FormValues = {
+const initialValues: CreateSandboxEnvironmentRequest = {
     studentCount: 1,
     resultsValidForMinutes: 15,
     validForMinutes: 15,
@@ -26,9 +23,23 @@ const initialValues: FormValues = {
 
 export const SandboxModal = ({ open, serviceModule, onClose }: Props) => {
     const { t } = useTranslation();
+    const [sanboxInfoResult, setSandboxInfoResult] = useState<ServiceModuleSandboxDto>();
+
+    const createSanboxMutation = useMutation(
+        (values: CreateSandboxEnvironmentRequest) =>
+            getApis().sandboxApi.createServiceModuleTestingEnvironment({
+                serviceModuleId: serviceModule.id,
+                createSandboxEnvironmentRequest: values,
+            }),
+        {
+            onSuccess: (res) => {
+                setSandboxInfoResult(res);
+            },
+        }
+    );
 
     return (
-        <Modal open={open} onClose={onClose} sx={{ width: '50%', margin: 'auto' }}>
+        <Modal open={open} onClose={() => undefined} sx={{ width: '50%', margin: 'auto' }}>
             <AbsolutelyCentered>
                 <Card
                     sx={{
@@ -53,10 +64,16 @@ export const SandboxModal = ({ open, serviceModule, onClose }: Props) => {
                                 {t('moduleSandbox.modal.title', { name: serviceModule.name })}
                             </Typography>
                             <Divider />
-                            <Formik initialValues={initialValues} onSubmit={(values) => console.log(values)}>
+                            <Formik
+                                initialValues={initialValues}
+                                onSubmit={(values) => createSanboxMutation.mutate(values)}
+                            >
                                 {({ values }) => (
                                     <Form>
                                         <Box sx={{ p: 2 }}>
+                                            {sanboxInfoResult && (
+                                                <SandboxResultInfo info={sanboxInfoResult} />
+                                            )}
                                             <Box>
                                                 <Typography variant="h5" gutterBottom>
                                                     {t('moduleSandbox.modal.setup.instruction')}
@@ -83,44 +100,13 @@ export const SandboxModal = ({ open, serviceModule, onClose }: Props) => {
                                                 </Typography>
                                             </Box>
                                         </Box>
-                                        <Box sx={{ ...stylesRowWithSpaceBetweenItems, px: 12 }}>
-                                            <FormInputField
-                                                name="studentCount"
-                                                type="number"
-                                                i18nLabel="moduleSandbox.modal.setup.form.studentCount"
-                                            />
-                                            <FormInputField
-                                                name="validForMinutes"
-                                                type="number"
-                                                i18nLabel="moduleSandbox.modal.setup.form.validForMinutes"
-                                            />
-                                            <FormInputField
-                                                name="resultsValidForMinutes"
-                                                type="number"
-                                                i18nLabel="moduleSandbox.modal.setup.form.resultsValidForMinutes"
-                                            />
-                                        </Box>
-                                        <Box
-                                            sx={{
-                                                ...stylesRowCenteredVertical,
-                                                justifyContent: 'center',
-                                                mt: 4,
-                                            }}
-                                        >
-                                            <Button
-                                                type="submit"
-                                                fullWidth
-                                                variant="contained"
-                                                sx={{ width: '300px' }}
-                                            >
-                                                {t('moduleSandbox.modal.setup.form.createButton')}
-                                            </Button>
-                                        </Box>
+                                        {!sanboxInfoResult && (
+                                            <SandboxForm buttonDisabled={createSanboxMutation.isLoading} />
+                                        )}
                                     </Form>
                                 )}
                             </Formik>
                         </Box>
-                        {/* <Box sx={{ height: '5000px' }}></Box> */}
                     </CardContent>
                     <Grid container sx={{ justifyContent: 'flex-end', p: 1 }}>
                         <Button onClick={onClose}>{t('course.activity.linksInfo.closeButton')}</Button>

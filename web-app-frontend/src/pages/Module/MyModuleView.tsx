@@ -29,7 +29,7 @@ import { SandboxModal } from './components/SandboxModal';
 
 export const MyModuleView = () => {
     const [moduleId] = useRequiredParams(['moduleId']);
-    const [sandboxModalOpen, setSandboxModalOpen] = useState(true);
+    const [sandboxModalOpen, setSandboxModalOpen] = useState(false);
     const navigate = useNavigate();
     const { t } = useTranslation();
 
