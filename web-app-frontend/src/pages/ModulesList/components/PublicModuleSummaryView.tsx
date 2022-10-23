@@ -1,9 +1,7 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
 import { ServiceModuleSummaryDto } from 'api';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
-import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
+import { stylesColumnCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -12,10 +10,9 @@ import { formatDateTime } from 'utils/util';
 
 type Props = {
     moduleSummary: ServiceModuleSummaryDto;
-    onDelete: () => void;
 };
 
-export const ModuleSummaryView = ({ moduleSummary, onDelete }: Props) => {
+export const PublicModuleSummaryView = ({ moduleSummary }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -26,7 +23,7 @@ export const ModuleSummaryView = ({ moduleSummary, onDelete }: Props) => {
                     <Grid item xs={8}>
                         <LinkedTypography
                             variant="h4"
-                            to={PageRoutes.MyModule(moduleSummary.id)}
+                            to={PageRoutes.PublicModule(moduleSummary.id)}
                             text={moduleSummary.name}
                         />
                         <Typography
@@ -49,36 +46,29 @@ export const ModuleSummaryView = ({ moduleSummary, onDelete }: Props) => {
                             {formatDateTime(moduleSummary.createdAt)}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4} sx={{ ...stylesRowCenteredVertical, mt: 2 }}>
-                        <Typography variant="body2">
-                            {t('myModules.module.usedBy', {
-                                activitiesCount: moduleSummary.usedInActivitiesCount,
-                            })}
+                    <Grid
+                        item
+                        xs={8}
+                        sx={{
+                            ...stylesColumnCenteredVertical,
+                            mt: 2,
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis ellipsis',
+                        }}
+                    >
+                        <Typography variant="body1">
+                            {t('publicModules.author', { email: moduleSummary.creator.email })}
+                        </Typography>
+                        <Typography variant="body2" noWrap>
+                            {t('publicModules.description', { description: moduleSummary.description })}
                         </Typography>
                     </Grid>
-                    <Grid item xs={8} sx={{ mt: 2 }}>
+                    <Grid item xs={4} sx={{ mt: 2 }}>
                         <Box sx={stylesRowWithItemsAtTheEnd}>
-                            {moduleSummary.usedInActivitiesCount === 0 && (
-                                <Button
-                                    startIcon={<DeleteIcon />}
-                                    variant="outlined"
-                                    onClick={() => onDelete()}
-                                    sx={{ marginRight: 1 }}
-                                >
-                                    {t('myModules.module.buttons.delete')}
-                                </Button>
-                            )}
-                            <Button
-                                startIcon={<EditIcon />}
-                                variant="outlined"
-                                onClick={() => navigate(PageRoutes.EditModule(moduleSummary.id))}
-                                sx={{ marginRight: 1 }}
-                            >
-                                {t('myModules.module.buttons.edit')}
-                            </Button>
                             <Button
                                 variant="contained"
-                                onClick={() => navigate(PageRoutes.MyModule(moduleSummary.id))}
+                                onClick={() => navigate(PageRoutes.PublicModule(moduleSummary.id))}
                             >
                                 {t('myModules.module.buttons.details')}
                             </Button>

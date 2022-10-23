@@ -17,11 +17,11 @@ import java.util.Optional;
 @Setter
 @ToString
 public class ActivityModule extends BaseEntity {
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "service_module_id")
     private ServiceModule serviceModule;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "activity_id")
     private Activity activity;
 

@@ -39,10 +39,13 @@ public class ServiceModuleService {
     }
 
     public ServiceModuleDetailsDto getServiceModuleInfo(Long serviceModuleId) {
-        var serviceModule = serviceModuleRepository.findById(serviceModuleId)
-                .orElseThrow(() -> ServiceModuleNotFoundException.of(serviceModuleId));
+        var serviceModule = getById(serviceModuleId);
         var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getScheduleTypeName());
         return serviceModuleMapper.toDto(serviceModule, serviceConfig);
+    }
+
+    public ServiceModuleSummaryDto getServiceModuleSummary(Long serviceModuleId) {
+        return serviceModuleMapper.toSummaryDto(getById(serviceModuleId));
     }
 
     public List<ServiceModuleSummaryDto> getModulesCreatedByTeacher(Long teacherId) {

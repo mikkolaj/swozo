@@ -390,6 +390,27 @@ paths:
                 $ref: '#/components/schemas/ServiceModuleDetailsDto'
       security:
       - JWT_AUTH: []
+  /service-modules/{serviceModuleId}/summary:
+    get:
+      tags:
+      - service-module-controller
+      operationId: getServiceModuleSummary
+      parameters:
+      - name: serviceModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ServiceModuleSummaryDto'
+      security:
+      - JWT_AUTH: []
   /service-modules/{serviceModuleId}/edit:
     get:
       tags:

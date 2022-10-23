@@ -13,7 +13,9 @@ import { FilesListView } from 'pages/FilesList/FilesListView';
 import { Home } from 'pages/Home/Home';
 import { Login } from 'pages/Login/Login';
 import { MyModuleView } from 'pages/Module/MyModuleView';
+import { PublicModuleView } from 'pages/Module/PublicModuleView';
 import { MyModulesListView } from 'pages/ModulesList/MyModulesListView';
+import { PublicModulesListView } from 'pages/ModulesList/PublicModulesListView';
 import { Route, Routes } from 'react-router-dom';
 import { PopupError } from 'services/features/error/PopupError';
 import { ModalContainer } from 'services/features/modal/ModalContainer';
@@ -75,6 +77,14 @@ function App() {
                 <Route
                     path={PageRoutes.EDIT_MODULE}
                     element={guarded(<CreateModuleView editMode />, withRole(TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.PUBLIC_MODULES}
+                    element={guarded(<PublicModulesListView />, withRole(TEACHER, TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.PUBLIC_MODULE}
+                    element={guarded(<PublicModuleView />, withRole(TEACHER))}
                 />
                 <Route
                     path={PageRoutes.ACTIVITY_INSTRUCTIONS}

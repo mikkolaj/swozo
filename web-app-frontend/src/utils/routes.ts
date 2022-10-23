@@ -9,6 +9,8 @@ export class PageRoutes {
     static readonly CREATE_MODULE = `${this.MY_MODULES}/creator`;
     static readonly MY_MODULE = `${this.MY_MODULES}/:moduleId`;
     static readonly EDIT_MODULE = `${this.MY_MODULE}/editor`;
+    static readonly PUBLIC_MODULES = '/public-moduels';
+    static readonly PUBLIC_MODULE = `${this.PUBLIC_MODULES}/:moduleId`;
     static readonly ACTIVITIES = `${this.COURSE}/activities`;
     static readonly ACTIVITY = `${this.ACTIVITIES}/:activityId`;
     static readonly ACTIVITY_INSTRUCTIONS = `${this.ACTIVITY}/instructions`;
@@ -28,7 +30,7 @@ export class PageRoutes {
     }
 
     static PublicModule(moduleId: string | number): string {
-        return moduleId + '';
+        return RouteBuilder.of(this.PUBLIC_MODULE).withReplaced('moduleId', moduleId).build();
     }
 
     static Activity(courseId: string | number, activityId: string | number): string {

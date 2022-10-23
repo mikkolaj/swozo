@@ -59,6 +59,10 @@ export interface GetServiceModuleRequest {
     serviceModuleId: number;
 }
 
+export interface GetServiceModuleSummaryRequest {
+    serviceModuleId: number;
+}
+
 export interface GetUsageRequest {
     serviceModuleId: number;
     offset?: number;
@@ -303,6 +307,42 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
      */
     async getServiceModule(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
         const response = await this.getServiceModuleRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getServiceModuleSummaryRaw(requestParameters: GetServiceModuleSummaryRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleSummaryDto>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling getServiceModuleSummary.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/{serviceModuleId}/summary`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleSummaryDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getServiceModuleSummary(requestParameters: GetServiceModuleSummaryRequest, initOverrides?: RequestInit): Promise<ServiceModuleSummaryDto> {
+        const response = await this.getServiceModuleSummaryRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

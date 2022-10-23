@@ -3,6 +3,7 @@ import { CreateSandboxEnvironmentRequest, ServiceModuleSandboxDto, ServiceModule
 import { getApis } from 'api/initialize-apis';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { Form, Formik } from 'formik';
+import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from 'react-query';
@@ -24,6 +25,7 @@ const initialValues: CreateSandboxEnvironmentRequest = {
 export const SandboxModal = ({ open, serviceModule, onClose }: Props) => {
     const { t } = useTranslation();
     const [sanboxInfoResult, setSandboxInfoResult] = useState<ServiceModuleSandboxDto>();
+    const { pushApiError } = useApiErrorHandling({});
 
     const createSanboxMutation = useMutation(
         (values: CreateSandboxEnvironmentRequest) =>
@@ -35,11 +37,16 @@ export const SandboxModal = ({ open, serviceModule, onClose }: Props) => {
             onSuccess: (res) => {
                 setSandboxInfoResult(res);
             },
+            onError: pushApiError,
         }
     );
 
     return (
-        <Modal open={open} onClose={() => undefined} sx={{ width: '50%', margin: 'auto' }}>
+        <Modal
+            open={open}
+            onClose={() => (createSanboxMutation.isIdle ? onClose() : undefined)}
+            sx={{ width: '50%', margin: 'auto' }}
+        >
             <AbsolutelyCentered>
                 <Card
                     sx={{

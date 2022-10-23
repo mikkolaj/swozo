@@ -8,7 +8,8 @@
     "navbar": {
         "logo": "SWOZO",
         "myCourses": "kursy",
-        "myModules": "moduły",
+        "myModules": "moje moduły",
+        "publicModules": "moduły",
         "myFiles": "pliki",
         "menu": {
             "logout": "wyloguj",
@@ -182,6 +183,20 @@
                 "addedAt": "Data dodania"
             }
         }
+    },
+    "publicModules": {
+        "header": "Publiczne moduły",
+        "searchBoxPlaceholder": "Nazwa modułu, autor...",
+        "filters": "Zaawansowane filtry",
+        "author": "Autor: {{email}}",
+        "description": "Opis: {{description}}",
+        "any": "Wszystkie"
+    },
+    "publicModule": {
+        "authorName": "Autor",
+        "authorEmail": "Email autora",
+        "createdAt": "Data utworzenia",
+        "usedBy": "Liczba użyć"
     },
     "createModule": {
         "title": "Nowy moduł",

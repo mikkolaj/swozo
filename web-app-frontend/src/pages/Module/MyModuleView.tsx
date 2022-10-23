@@ -5,27 +5,25 @@ import { Box, Grid, Typography } from '@mui/material';
 import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { DynamicReadonlyField } from 'common/DynamicFields/Output/DynamicReadonlyField';
-import { ReadonlyField } from 'common/Input/Readonly/ReadonlyField';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
 import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
-import { InstructionView } from 'common/Styled/InstructionView';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
 import { stylesColumnCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useDeleteServiceModule } from 'hooks/query/useDeleteServiceModule';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useRequiredParams } from 'hooks/useRequiredParams';
-import _ from 'lodash';
-import { ComponentProps, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'utils/routes';
 import { formatDate } from 'utils/util';
 import { SandboxModal } from './components/SandboxModal';
+import { ServiceModuleGeneralInfo } from './components/ServiceModuleGeneralInfo';
 
 export const MyModuleView = () => {
     const [moduleId] = useRequiredParams(['moduleId']);
@@ -98,42 +96,16 @@ export const MyModuleView = () => {
                         {t('myModule.generalInfo')}
                     </Typography>
                     <Box sx={{ ...stylesColumnCenteredVertical }}>
-                        <StyledReadonlyField
-                            wrapperSx={{ width: '50%' }}
-                            value={serviceModule.description}
-                            textFieldProps={{ multiline: true, fullWidth: true }}
-                            i18nLabel="myModule.description"
-                        />
-                        <StyledReadonlyField
-                            value={_.capitalize(serviceModule.subject)}
-                            i18nLabel="myModule.subject"
-                        />
-                        <StyledReadonlyField
-                            value={_.capitalize(serviceModule.serviceName)}
-                            i18nLabel="myModule.serviceName"
-                        />
-                        {Object.entries(serviceModule.dynamicFields).map(([fieldName, field]) => (
-                            <Box key={fieldName} sx={{ m: 1 }}>
-                                <DynamicReadonlyField
-                                    field={field}
-                                    onInteractionError={(err) => pushApiError(err as ApiError)}
-                                />
-                            </Box>
-                        ))}
-                        <Box sx={{ m: 1 }}>
-                            <Typography>{t('myModule.teacherInstruction')}</Typography>
-                            <InstructionView
-                                wrapperSx={{ maxWidth: '50%' }}
-                                instruction={serviceModule.teacherInstruction}
-                            />
-                        </Box>
-                        <Box sx={{ m: 1 }}>
-                            <Typography>{t('myModule.studentInstruction')}</Typography>
-                            <InstructionView
-                                wrapperSx={{ maxWidth: '50%' }}
-                                instruction={serviceModule.studentInstruction}
-                            />
-                        </Box>
+                        <ServiceModuleGeneralInfo serviceModule={serviceModule}>
+                            {Object.entries(serviceModule.dynamicFields).map(([fieldName, field]) => (
+                                <Box key={fieldName} sx={{ m: 1 }}>
+                                    <DynamicReadonlyField
+                                        field={field}
+                                        onInteractionError={(err) => pushApiError(err as ApiError)}
+                                    />
+                                </Box>
+                            ))}
+                        </ServiceModuleGeneralInfo>
                     </Box>
                 </Grid>
                 <Grid item xs={12} sx={{ mt: 4 }}>
@@ -196,7 +168,3 @@ export const MyModuleView = () => {
         </PageContainer>
     );
 };
-
-const StyledReadonlyField = ({ wrapperSx, ...props }: ComponentProps<typeof ReadonlyField>) => (
-    <ReadonlyField wrapperSx={{ m: 1, ...wrapperSx }} {...props} />
-);

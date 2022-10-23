@@ -57,10 +57,17 @@ public class ServiceModuleController {
     }
 
     @GetMapping("/{serviceModuleId}")
-    @PreAuthorize("hasRole('TEACHER')")
+    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
     public ServiceModuleDetailsDto getServiceModule(AccessToken token, @PathVariable Long serviceModuleId) {
         logger.info("service serviceModule  info getter");
         return service.getServiceModuleInfo(serviceModuleId);
+    }
+
+    @GetMapping("/{serviceModuleId}/summary")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ServiceModuleSummaryDto getServiceModuleSummary(@PathVariable Long serviceModuleId) {
+        logger.info("service serviceModule  info getter");
+        return service.getServiceModuleSummary(serviceModuleId);
     }
 
     @GetMapping("/config")
