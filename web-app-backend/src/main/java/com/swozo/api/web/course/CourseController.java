@@ -66,7 +66,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public CourseDetailsDto addCourse(AccessToken token, @RequestBody CreateCourseRequest createCourseRequest) {
         logger.info("creating new course with name: {}", createCourseRequest.name());
-        return courseService.createCourse(createCourseRequest, token.getUserId());
+        return courseService.createCourse(createCourseRequest, token.getUserId(), false);
     }
 
     @DeleteMapping("/{id}")

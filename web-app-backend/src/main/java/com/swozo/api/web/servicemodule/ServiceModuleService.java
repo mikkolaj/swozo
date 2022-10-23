@@ -68,6 +68,11 @@ public class ServiceModuleService {
                 .toList();
     }
 
+    public ServiceModule getById(Long serviceModuleId) {
+        return serviceModuleRepository.findById(serviceModuleId)
+                .orElseThrow(() -> ServiceModuleNotFoundException.of(serviceModuleId));
+    }
+
     public List<ServiceModuleUsageDto> getServiceUsageInfo(Long serviceModuleId, Long userId, Long offset, Long limit) {
         var serviceModule = serviceModuleRepository.findById(serviceModuleId)
                 .orElseThrow(() -> ServiceModuleNotFoundException.of(serviceModuleId));
@@ -220,11 +225,6 @@ public class ServiceModuleService {
                     ParameterDescription::name,
                     Function.identity()
                 ));
-    }
-
-    private ServiceModule getById(Long serviceModuleId) {
-       return serviceModuleRepository.findById(serviceModuleId)
-               .orElseThrow(() -> ServiceModuleNotFoundException.of(serviceModuleId));
     }
 
     private ServiceModule getByIdWithCreatorValidation(Long serviceModuleId, Long userId) {

@@ -11,6 +11,7 @@ import com.swozo.persistence.activity.ActivityModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 import static com.swozo.util.CollectionUtils.iterateSimultaneously;
@@ -41,6 +42,11 @@ public class ScheduleService {
 
         iterateSimultaneously(allActivityModules, requestIds, ActivityModule::setRequestId);
         moduleRepository.saveAll(allActivityModules);
+    }
+
+    public LocalDateTime getAsapScheduleAvailability() {
+        // TODO don't hardcode this
+        return LocalDateTime.now().plusMinutes(10);
     }
 
     private Psm providePsm(Activity activity) {

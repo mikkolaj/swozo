@@ -30,7 +30,8 @@ public class SwaggerConfig {
                 "/service-modules/**",
                 "/courses/**",
                 "/activities/**",
-                "/files/**"
+                "/files/**",
+                "/sandbox/**"
         };
 
         String[] pathsToExclude = {

@@ -16,4 +16,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> getByJoinUUID(String joinUUID);
 
     Optional<Course> findByName(String name);
+
+    Optional<Course> findBySandboxModeIsTrueAndTeacherId(Long teacherId);
 }

@@ -1,10 +1,13 @@
 package com.swozo.api.web.user;
 
 import com.swozo.api.web.user.dto.UserDetailsDto;
+import com.swozo.api.web.user.request.CreateUserRequest;
 import com.swozo.mapper.UserMapper;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,5 +26,11 @@ public class UserService {
 
     public User getUserById(long userId) {
         return userRepository.findById(userId).orElseThrow();
+    }
+
+    @Transactional
+    public User createUser(CreateUserRequest request) {
+        // TODO validate
+        return userRepository.save(userMapper.toPersistence(request));
     }
 }

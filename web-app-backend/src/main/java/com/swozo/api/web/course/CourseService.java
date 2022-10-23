@@ -65,8 +65,10 @@ public class CourseService {
     }
 
     @Transactional
-    public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId) {
-        courseValidator.validateNewCourse(createCourseRequest);
+    public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId, boolean sandboxMode) {
+        if (!sandboxMode) {
+            courseValidator.validateNewCourse(createCourseRequest);
+        }
 
         var course = courseMapper.toPersistence(createCourseRequest, userService.getUserById(teacherId));
         course.setJoinUUID(UUID.randomUUID().toString());
@@ -74,6 +76,7 @@ public class CourseService {
             activity.setCourse(course);
             activity.getModules().forEach(activityModule -> activityModule.setActivity(activity));
         });
+        course.setSandboxMode(sandboxMode);
 
         courseRepository.save(course);
 
