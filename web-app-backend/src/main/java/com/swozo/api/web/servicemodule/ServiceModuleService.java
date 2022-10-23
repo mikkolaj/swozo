@@ -48,14 +48,6 @@ public class ServiceModuleService {
         return serviceModuleMapper.toSummaryDto(getById(serviceModuleId));
     }
 
-    public List<ServiceModuleSummaryDto> getModulesCreatedByTeacher(Long teacherId) {
-        return serviceModuleRepository.getAllModulesCreatedBy(teacherId)
-                .stream()
-                .filter(ServiceModule::isReady)
-                .map(serviceModuleMapper::toSummaryDto)
-                .toList();
-    }
-
     public List<ServiceModuleSummaryDto> getAllPublicModules() {
         return serviceModuleRepository.getAllByIsPublicTrueAndReadyIsTrue()
                 .stream()
@@ -77,9 +69,7 @@ public class ServiceModuleService {
     }
 
     public List<ServiceModuleUsageDto> getServiceUsageInfo(Long serviceModuleId, Long userId, Long offset, Long limit) {
-        var serviceModule = serviceModuleRepository.findById(serviceModuleId)
-                .orElseThrow(() -> ServiceModuleNotFoundException.of(serviceModuleId));
-
+        var serviceModule = getById(serviceModuleId);
         serviceModuleValidator.validateIsCreator(userId, serviceModule);
 
         return activityModuleRepository.getActivityModulesThatUseServiceModule(serviceModuleId, offset, limit).stream()
@@ -88,7 +78,7 @@ public class ServiceModuleService {
     }
 
     public ReserveServiceModuleRequest getFormDataForEdit(Long serviceModuleId, Long editorId) {
-        var serviceModule =  getById(serviceModuleId);
+        var serviceModule = getById(serviceModuleId);
         serviceModuleValidator.validateIsCreator(editorId, serviceModule);
 
         return serviceModuleMapper.toFormDataDto(serviceModule);

@@ -44,12 +44,6 @@ public class ServiceModuleController {
         return service.getAllPublicModules();
     }
 
-    @GetMapping("/user")
-    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
-    public List<ServiceModuleSummaryDto> getUserModules(AccessToken accessToken) {
-        return service.getModulesCreatedByTeacher(accessToken.getUserId());
-    }
-
     @GetMapping("/user/summary")
     @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
     public List<ServiceModuleSummaryDto> getUserModulesSummary(AccessToken accessToken) {
