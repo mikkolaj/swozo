@@ -6,6 +6,7 @@ import {
     FileControllerApi,
     Middleware,
     ResponseContext,
+    SandboxControllerApi,
     ServiceModuleControllerApi,
     UserControllerApi,
 } from 'api';
@@ -21,6 +22,7 @@ type Apis = {
     activitiesApi: ActivityControllerApi;
     serviceModuleApi: ServiceModuleControllerApi;
     fileApi: FileControllerApi;
+    sandboxApi: SandboxControllerApi;
 };
 
 const is4xxFailure = (response: Response) => response.status >= 400 && response.status < 500;
@@ -75,6 +77,7 @@ export const initializeApis = (): Apis => {
         activitiesApi: new ActivityControllerApi(configuration),
         serviceModuleApi: new ServiceModuleControllerApi(configuration),
         fileApi: new FileControllerApi(configuration),
+        sandboxApi: new SandboxControllerApi(configuration),
     };
 };
 

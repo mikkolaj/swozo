@@ -181,6 +181,33 @@ paths:
                 $ref: '#/components/schemas/StorageAccessRequest'
       security:
       - JWT_AUTH: []
+  /sandbox/{serviceModuleId}:
+    post:
+      tags:
+      - sandbox-controller
+      operationId: createServiceModuleTestingEnvironment
+      parameters:
+      - name: serviceModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSandboxEnvironmentRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ServiceModuleSandboxDto'
+      security:
+      - JWT_AUTH: []
   /courses:
     get:
       tags:
@@ -922,57 +949,14 @@ components:
           type: object
           additionalProperties:
             type: object
-    CreateActivityRequest:
+    CreateSandboxEnvironmentRequest:
       required:
-      - description
-      - endTime
-      - instructionFromTeacher
-      - name
-      - selectedModulesIds
-      - startTime
+      - userCount
       type: object
       properties:
-        name:
-          type: string
-        description:
-          type: string
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        instructionFromTeacher:
-          $ref: '#/components/schemas/InstructionDto'
-        selectedModulesIds:
-          type: array
-          items:
-            type: integer
-            format: int64
-    CreateCourseRequest:
-      required:
-      - activities
-      - description
-      - expectedStudentCount
-      - name
-      - subject
-      type: object
-      properties:
-        name:
-          type: string
-        subject:
-          type: string
-        description:
-          type: string
-        expectedStudentCount:
+        userCount:
           type: integer
           format: int32
-        activities:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreateActivityRequest'
-        password:
-          type: string
     CourseDetailsDto:
       required:
       - activities
@@ -1023,6 +1007,86 @@ components:
         joinedAt:
           type: string
           format: date-time
+    SandboxUserDetailsDto:
+      required:
+      - email
+      - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    ServiceModuleSandboxDto:
+      required:
+      - courseDetailsDto
+      - sandboxStudents
+      - validTo
+      type: object
+      properties:
+        courseDetailsDto:
+          $ref: '#/components/schemas/CourseDetailsDto'
+        sandboxStudents:
+          type: array
+          items:
+            $ref: '#/components/schemas/SandboxUserDetailsDto'
+        validTo:
+          type: string
+          format: date-time
+    CreateActivityRequest:
+      required:
+      - description
+      - endTime
+      - instructionFromTeacher
+      - name
+      - selectedModulesIds
+      - startTime
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        instructionFromTeacher:
+          $ref: '#/components/schemas/InstructionDto'
+        selectedModulesIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    CreateCourseRequest:
+      required:
+      - activities
+      - description
+      - expectedStudentCount
+      - isPublic
+      - name
+      - subject
+      type: object
+      properties:
+        name:
+          type: string
+        subject:
+          type: string
+        description:
+          type: string
+        expectedStudentCount:
+          type: integer
+          format: int32
+        isPublic:
+          type: boolean
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateActivityRequest'
+        password:
+          type: string
     ModifyParticipantRequest:
       required:
       - email

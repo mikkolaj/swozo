@@ -36,6 +36,7 @@ export type CourseValues = {
     numberOfActivities: number;
     expectedStudentCount: number;
     password?: string;
+    isPublic: boolean;
 };
 
 export type ActivitesFormValues = {
@@ -49,6 +50,7 @@ export const initialCourseValues = (): CourseValues => ({
     numberOfActivities: 1,
     expectedStudentCount: 2,
     password: undefined,
+    isPublic: true,
 });
 
 export const initialActivityValues = (): ActivityValues => ({
@@ -121,5 +123,6 @@ export const buildCreateCourseRequest = (
         expectedStudentCount: course.expectedStudentCount,
         activities: activities.map(buildCreateActivityRequest),
         password: course.password,
+        isPublic: course.isPublic,
     };
 };

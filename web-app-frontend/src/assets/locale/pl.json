@@ -102,7 +102,8 @@
                     "description": "opis",
                     "numberOfActivities": "liczba zajęć",
                     "expectedStudentCount": "planowana liczba uczestników",
-                    "password": "Hasło do dołączenia"
+                    "password": "Hasło do dołączenia",
+                    "public": "Kurs publiczny"
                 }
             },
             "1": {
@@ -162,6 +163,7 @@
     },
     "myModule": {
         "header": "Moduł: {{name}}",
+        "sandbox": "Przetestuj moduł",
         "edit": "edytuj",
         "delete": "usuń",
         "generalInfo": "Informacje ogólne",
@@ -303,6 +305,24 @@
         "fileName": "Nazwa pliku",
         "courseName": "Nazwa kursu",
         "creationDate": "Data utworzenia"
+    },
+    "moduleSandbox": {
+        "modal": {
+            "title": "Testowanie modułu: {{name}}",
+            "setup": {
+                "instruction": "Instrukcja",
+                "mainInfo": "Zostanie utworzony testowy, prywatny kurs z wybraną liczbą testowych studentów ({{studentCount}}). Dostaniesz dane logowania do ich kont oraz link do kursu. Zaraz po uruchomieniu modułu zostaną dostarczone linki umożliwiające wykonanie testu.",
+                "moreInfo": "Po upływie {{validForMinutes}}min moduł zostanie wyłączony, jeśli serwis wspiera zbieranie wyników prac uczniów zostaną one dostarczone i będą dostępne przez kolejne {{resultsValidForMinutes}}min w zakładce 'Pliki' kursu. Po upływie tego czasu kurs, konta studentów i wszystkie pliki zostaną usunięte automatycznie. Nie będziesz mógł ręcznie edytować tego kursu.",
+                "limit": "Pamiętaj że jednocześnie możesz mieć dostęp do tylko jednego środowiska testowego, nie będziesz mógł wcześniej go usunąć.",
+                "form": {
+                    "createButton": "Utwórz środowisko testowe",
+                    "studentCount": "Liczba studentów",
+                    "validForMinutes": "Czas dostępu do modułu (min)",
+                    "resultsValidForMinutes": "Czas dostępu do wyników (min)"
+                }
+            },
+            "result": {}
+        }
     },
     "error": {
         "defaultMessage": "Coś poszło nie tak...",

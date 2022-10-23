@@ -1,5 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { Box, Grid, Typography } from '@mui/material';
 import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
@@ -19,14 +20,16 @@ import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import _ from 'lodash';
-import { ComponentProps } from 'react';
+import { ComponentProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { PageRoutes } from 'utils/routes';
 import { formatDate } from 'utils/util';
+import { SandboxModal } from './components/SandboxModal';
 
 export const MyModuleView = () => {
     const [moduleId] = useRequiredParams(['moduleId']);
+    const [sandboxModalOpen, setSandboxModalOpen] = useState(true);
     const navigate = useNavigate();
     const { t } = useTranslation();
 
@@ -68,6 +71,11 @@ export const MyModuleView = () => {
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
+                        <ButtonWithIconAndText
+                            textI18n="myModule.sandbox"
+                            Icon={SportsEsportsIcon}
+                            onClick={() => setSandboxModalOpen(true)}
+                        />
                         <ButtonWithIconAndText
                             textI18n="myModule.edit"
                             Icon={EditIcon}
@@ -180,6 +188,11 @@ export const MyModuleView = () => {
                     )}
                 </Grid>
             </Grid>
+            <SandboxModal
+                open={sandboxModalOpen}
+                onClose={() => setSandboxModalOpen(false)}
+                serviceModule={serviceModule}
+            />
         </PageContainer>
     );
 };

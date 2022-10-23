@@ -107,7 +107,13 @@ export const CreateCourseView = () => {
                 }),
             })}
             slideConstructors={[
-                (slideProps) => <CourseInfoForm {...slideProps} />,
+                (slideProps, { values, handleChange }) => (
+                    <CourseInfoForm
+                        values={values[COURSE_SLIDE]}
+                        handleChange={handleChange}
+                        {...slideProps}
+                    />
+                ),
                 (slideProps, { values, setFieldValue }) => (
                     <ActivitiesForm
                         {...slideProps}
