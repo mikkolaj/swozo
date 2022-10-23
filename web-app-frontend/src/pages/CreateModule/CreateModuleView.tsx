@@ -150,7 +150,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                     />
                 ),
                 (slideProps, _) => <ModuleSpecsForm {...slideProps} />,
-                (_) => <Summary />,
+                (_, { values }) => <Summary editMode={editMode} moduleInfo={values[MODULE_INFO_SLIDE]} />,
             ]}
             onSubmit={() => {
                 if (!formRef.current?.values) return;

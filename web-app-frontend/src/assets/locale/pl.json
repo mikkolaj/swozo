@@ -222,7 +222,38 @@
                 }
             },
             "2": {
-                "title": "Podsumowanie"
+                "title": "Podsumowanie",
+                "service": "Wykorzystywany serwis: {{serviceName}}",
+                "accessibility": {
+                    "public": {
+                        "label": "Moduł jest ustawiony jako publiczny.",
+                        "info": "Wszyscy będą mogli z niego skorzystać zaraz po utworzeniu"
+                    },
+                    "private": {
+                        "label": "Moduł jest ustawiony jako prywatny.",
+                        "info": "Tylko ty będziesz mógł z niego skorzystać."
+                    }
+                },
+                "disclaimer": {
+                    "title": "Pamiętaj",
+                    "lines": [
+                        {
+                            "text": "- Tworzenie modułu może chwilę potrwać",
+                            "editMode": false
+                        },
+                        {
+                            "text": "- Aktualizacja modułu może chwilę potrwać",
+                            "editMode": true
+                        },
+                        {
+                            "text": "- Początkowo zaleca się ustawienie modułu jako prywatny i przetestowanie czy działa poprawnie korzystając z opcji 'Przetestuj moduł' w panelu modułu",
+                            "editMode": false
+                        },
+                        "- Moduł może zostać usunięty tylko gdy nikt z niego jeszcze nie skorzystał",
+                        "- Żeby zablokować przyszłe korzystanie z modułu możesz wyłączyć opcję 'Moduł publiczny', jednak osoby które już go wybrały wciąż będą w stanie go użyć",
+                        "- Zmiana typu serwisu nie będzie możliwa, będziesz mógł jednak zmienić jego konfigurację, w szczególności zawartość plików i wymagania techniczne"
+                    ]
+                }
             }
         }
     },
