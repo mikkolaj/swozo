@@ -122,6 +122,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ServiceModuleDetailsDto'
       security:
       - JWT_AUTH: []
   /activities/{activityId}/files:

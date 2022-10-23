@@ -166,10 +166,14 @@ export const updateServiceModule = async (
     dynamicFormValueRegistry: DynamicFormValueRegistry,
     dispatch: AppDispatch
 ) => {
-    await getApis().serviceModuleApi.updateCommonData({
+    const updatedSerivceModule = await getApis().serviceModuleApi.updateCommonData({
         reserveServiceModuleRequest,
         serviceModuleId: +serviceModuleId,
     });
+
+    if (_.isEmpty(reserveServiceModuleRequest.dynamicProperties)) {
+        return updatedSerivceModule;
+    }
 
     const additionalActions = await getApis().serviceModuleApi.initServiceConfigUpdate({
         reserveServiceModuleRequest,
@@ -196,17 +200,24 @@ export const updateServiceModule = async (
 
 export const updateCacheAfterServiceModuleChange = (
     resp: ServiceModuleDetailsDto,
-    queryClient: QueryClient
+    queryClient: QueryClient,
+    editMode: boolean
 ) => {
-    queryClient.setQueryData(
-        ['modules', 'summary', 'public'],
-        (allModules: ServiceModuleSummaryDto[] = []) => [resp, ...allModules]
-    );
-    queryClient.setQueryData(['modules', 'summary', 'me'], (allModules: ServiceModuleSummaryDto[] = []) => [
-        resp,
-        ...allModules,
-    ]);
+    const updateOldModules = (allModules: ServiceModuleSummaryDto[] = []) => {
+        if (editMode) {
+            return [resp, ...allModules.filter((module) => module.id !== resp.id)];
+        }
+
+        return [resp, ...allModules];
+    };
+
+    queryClient.setQueryData(['modules', 'summary', 'public'], updateOldModules);
+    queryClient.setQueryData(['modules', 'summary', 'me'], updateOldModules);
     queryClient.setQueryData(['modules', `${resp.id}`, 'details'], resp);
+
+    if (editMode) {
+        queryClient.removeQueries(['modules', `${resp.id}`, 'edit']);
+    }
 };
 
 export const preprocessSupportedServices = (

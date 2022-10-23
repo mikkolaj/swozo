@@ -16,6 +16,7 @@ import { MyModuleView } from 'pages/Module/MyModuleView';
 import { MyModulesListView } from 'pages/ModulesList/MyModulesListView';
 import { Route, Routes } from 'react-router-dom';
 import { PopupError } from 'services/features/error/PopupError';
+import { ModalContainer } from 'services/features/modal/ModalContainer';
 import { useAppSelector } from 'services/store';
 import {
     ANY_LOGGED_IN,
@@ -89,6 +90,7 @@ function App() {
 
             <Toaster />
             <PopupError />
+            <ModalContainer />
         </>
     );
 }

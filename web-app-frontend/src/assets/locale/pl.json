@@ -189,6 +189,10 @@
             "next": "Dalej",
             "back": "Wróć"
         },
+        "modal": {
+            "creating": "Tworzę moduł, proszę nie zamykać okna przeglądarki.",
+            "updating": "Aktualizuję moduł, proszę nie zamykać okna przeglądarki."
+        },
         "slides": {
             "0": {
                 "title": "Informacje ogólne",

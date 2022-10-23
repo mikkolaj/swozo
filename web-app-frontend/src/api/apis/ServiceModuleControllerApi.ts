@@ -530,7 +530,7 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async updateCommonDataRaw(requestParameters: UpdateCommonDataRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+    async updateCommonDataRaw(requestParameters: UpdateCommonDataRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
         if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
             throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling updateCommonData.');
         }
@@ -561,13 +561,14 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             body: ReserveServiceModuleRequestToJSON(requestParameters.reserveServiceModuleRequest),
         }, initOverrides);
 
-        return new runtime.VoidApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async updateCommonData(requestParameters: UpdateCommonDataRequest, initOverrides?: RequestInit): Promise<void> {
-        await this.updateCommonDataRaw(requestParameters, initOverrides);
+    async updateCommonData(requestParameters: UpdateCommonDataRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
+        const response = await this.updateCommonDataRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

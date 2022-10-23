@@ -3,12 +3,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import authReducer from 'services/features/auth/authSlice';
 import errorReducer from 'services/features/error/errorSlice';
 import fileReducer from 'services/features/files/fileSlice';
+import modalReducer from 'services/features/modal/modalSlice';
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
         error: errorReducer,
         files: fileReducer,
+        modal: modalReducer,
     },
 });
 

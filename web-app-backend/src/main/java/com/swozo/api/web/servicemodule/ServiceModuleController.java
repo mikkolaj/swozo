@@ -89,12 +89,12 @@ public class ServiceModuleController {
 
     @PutMapping("/{serviceModuleId}/edit/common")
     @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
-    public void updateCommonData(
+    public ServiceModuleDetailsDto updateCommonData(
             AccessToken token,
             @PathVariable Long serviceModuleId,
             @RequestBody ReserveServiceModuleRequest request
     ) {
-        service.updateCommonData(token.getUserId(), serviceModuleId, request);
+        return service.updateCommonData(token.getUserId(), serviceModuleId, request);
     }
 
     @PutMapping("/{serviceModuleId}/edit/service-config/init")

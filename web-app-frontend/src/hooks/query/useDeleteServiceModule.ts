@@ -30,7 +30,6 @@ export const useDeleteServiceModule = (pushApiError: (error: ApiError) => void) 
                         allModules.filter((module) => module.id !== resp.id)
                 );
                 queryClient.removeQueries(['modules', `${resp.id}`]);
-                queryClient.removeQueries(['modules', `${resp.id}`, 'details']);
 
                 navigate(PageRoutes.MY_MODULES);
             },

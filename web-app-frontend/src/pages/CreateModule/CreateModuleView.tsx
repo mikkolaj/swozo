@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { closeModal, ModalId, openModal } from 'services/features/modal/modalSlice';
 import { useAppDispatch } from 'services/store';
 import { PageRoutes } from 'utils/routes';
 import { ModuleInfoForm } from './components/ModuleInfoForm';
@@ -26,6 +27,7 @@ import {
     DynamicFormFields,
     DynamicFormValueRegistry,
     FormValues,
+    initialModuleSpecsValues,
     initialModuleValues,
     mapToInitialValues,
     MODULE_INFO_SLIDE,
@@ -41,12 +43,7 @@ type Props = {
 
 const initialValues: FormValues = {
     [MODULE_INFO_SLIDE]: initialModuleValues(),
-    [MODULE_SPECS_SLIDE]: {
-        environment: 'isolated',
-        storage: 1,
-        cpu: 'big',
-        ram: 'big',
-    },
+    [MODULE_SPECS_SLIDE]: initialModuleSpecsValues(),
 };
 
 export const CreateModuleView = ({ editMode = false }: Props) => {
@@ -96,11 +93,15 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
         {
             onSuccess: (resp) => {
                 toast.success(t(`toast.${editMode ? 'serviceModuleUpdated' : 'serviceModuleCreated'}`));
-                updateCacheAfterServiceModuleChange(resp, queryClient);
+                updateCacheAfterServiceModuleChange(resp, queryClient, editMode);
+                dispatch(closeModal(ModalId.MODULE_CREATION_IN_PROGRESS));
                 navigate(PageRoutes.MY_MODULES);
             },
             onError: (err: ApiError) => {
-                queryClient.invalidateQueries('modules');
+                if (editMode) {
+                    queryClient.invalidateQueries(['modules', moduleId]);
+                }
+                dispatch(closeModal(ModalId.MODULE_CREATION_IN_PROGRESS));
                 pushApiError(err);
             },
         }
@@ -172,6 +173,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <NextSlideButton
+                            disabled={createServiceModuleMutation.isLoading}
                             currentSlide={currentSlide}
                             slideCount={3}
                             label={t('createModule.buttons.next')}
@@ -179,7 +181,20 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                                 editMode ? 'createModule.finishEditMode' : 'createModule.finish'
                             )}
                             onNext={(slideNum) => setCurrentSlide(slideNum)}
-                            onFinish={() => formRef.current?.handleSubmit()}
+                            onFinish={() => {
+                                dispatch(
+                                    openModal({
+                                        modalProps: {
+                                            id: ModalId.MODULE_CREATION_IN_PROGRESS,
+                                            allowClose: false,
+                                            textLines: [
+                                                t(`createModule.modal.${editMode ? 'updating' : 'creating'}`),
+                                            ],
+                                        },
+                                    })
+                                );
+                                formRef.current?.handleSubmit();
+                            }}
                         />
                     </Grid>
                 </Grid>
