@@ -2,6 +2,7 @@ import { CssBaseline } from '@mui/material';
 import { Navbar } from 'common/Navbar/Navbar';
 import { PageGuard } from 'common/PageGuard/PageGuard';
 import { Toaster } from 'common/Styled/Toaster';
+import { ActivityFilesView } from 'pages/ActivityFiles/ActivityFilesView';
 import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
 import { CourseView } from 'pages/Course/CourseView';
 import { JoinCourseView } from 'pages/Course/JoinCourseView';
@@ -68,6 +69,10 @@ function App() {
                 <Route
                     path={PageRoutes.ACTIVITY_INSTRUCTIONS}
                     element={guarded(<ActivityInstructionsView />, ANY_LOGGED_IN)}
+                />
+                <Route
+                    path={PageRoutes.ACTIVITY_FILES}
+                    element={guarded(<ActivityFilesView />, ANY_LOGGED_IN)}
                 />
                 <Route path={PageRoutes.FILES} element={guarded(<FilesListView />, withRole(STUDENT))} />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />

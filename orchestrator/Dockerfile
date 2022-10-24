@@ -9,13 +9,20 @@ RUN ["python3","-m","pip","install","--user","ansible"]
 RUN ["python3","-m","pip","uninstall","-y","pip"]
 
 ARG JAR_FILE=build/libs/\*.jar
-ENV PATH="${PATH}:~/.local/bin"
 ENV GCP_SSH_KEY_PATH /auth/orchestrator_id_rsa
 ENV GOOGLE_APPLICATION_CREDENTIALS /auth/orchestrator-key.json
 
+ENV ANSIBLE_PLAYBOOK_EXECUTABLE_PATH=/root/.local/bin/ansible-playbook
 ENV JUPYTER_PLAYBOOK_PATH=/provisioning/software/jupyter/prepare-and-run-jupyter.yml
+ENV LOG_LEVEL=INFO
 COPY ./src/main/resources/provisioning/administration /provisioning/administration
 COPY ./src/main/resources/provisioning/software /provisioning/software
 
 COPY ${JAR_FILE} /app/orchestrator.jar
-ENTRYPOINT ["java","--enable-preview","-jar","/app/orchestrator.jar"]
+ENTRYPOINT [ \
+    "java", \
+    "--enable-preview", \
+    "-jar", \
+    '-Duser.timezone=UTC', \
+    "/app/orchestrator.jar" \
+]

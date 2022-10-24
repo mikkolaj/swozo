@@ -1,46 +1,43 @@
 package com.swozo.api.orchestrator;
 
-import com.swozo.api.orchestrator.exceptions.InvalidStatusCodeException;
-import com.swozo.api.orchestrator.exceptions.ServiceUnavailableException;
-import com.swozo.jsonmapper.JsonMapperFacade;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.swozo.communication.http.RequestSender;
 import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
-import com.swozo.util.RequestSender;
-import com.swozo.util.ServiceType;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import com.swozo.model.scheduling.ScheduleResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.net.http.HttpResponse;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
+import static com.swozo.communication.http.RequestSender.unwrap;
+
 @Component
-@RequiredArgsConstructor
 class OrchestratorRequestSender {
+    @Qualifier("orchestrator")
     private final RequestSender requestSender;
     private final UriFactory uriFactory;
-    private final JsonMapperFacade mapper;
 
-    public CompletableFuture<OrchestratorLinkResponse> getActivityLinks(Long moduleActivityID) {
-        var uri = uriFactory.createActivityLinksURI(moduleActivityID);
-        // TODO proper error handling
-        return withOkStatusAssertion(requestSender.sendGet(uri))
-                .thenApply(response -> mapper.fromJson(response.body(), OrchestratorLinkResponse.class));
+    @Autowired
+    public OrchestratorRequestSender(@Qualifier("orchestrator") RequestSender requestSender, UriFactory uriFactory) {
+        this.requestSender = requestSender;
+        this.uriFactory = uriFactory;
     }
 
-    public CompletableFuture<HttpResponse<String>> sendScheduleRequest(ScheduleRequest scheduleRequest) {
-        var uri = uriFactory.createSchedulesUri(scheduleRequest.getScheduleType());
-        return withOkStatusAssertion(requestSender.sendPost(uri, mapper.toJson(scheduleRequest)));
+    public CompletableFuture<OrchestratorLinkResponse> getActivityLinks(Long scheduleRequestId) {
+        var uri = uriFactory.createActivityLinksURI(scheduleRequestId);
+        return unwrap(requestSender.sendGet(uri, new TypeReference<>() {}));
     }
 
-    private <T> CompletableFuture<HttpResponse<T>> withOkStatusAssertion(CompletableFuture<HttpResponse<T>> response) {
-        return response.exceptionally(ex -> {
-                    throw new ServiceUnavailableException(ServiceType.ORCHESTRATOR, ex);
-                })
-                .thenApply(resp -> {
-                    if (!HttpStatus.valueOf(resp.statusCode()).is2xxSuccessful())
-                        throw new InvalidStatusCodeException(resp);
-                    return resp;
-                });
+    public CompletableFuture<ScheduleResponse> sendScheduleRequest(ScheduleRequest scheduleRequest) {
+        var uri = uriFactory.createSchedulesUri();
+        return unwrap(requestSender.sendPost(uri, scheduleRequest,  new TypeReference<>() {}));
+    }
+
+    public CompletableFuture<Collection<ScheduleResponse>> sendScheduleRequests(Collection<ScheduleRequest> scheduleRequests) {
+        var uri = uriFactory.createAggregatedSchedulesUri();
+        return unwrap(requestSender.sendPost(uri, scheduleRequests,  new TypeReference<>() {}));
     }
 }

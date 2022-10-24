@@ -1,10 +1,12 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import { ActivityDetailsDto } from 'api';
+import { useMeQuery } from 'hooks/query/useMeQuery';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatDate, formatTime } from 'utils/util';
 import { ActivityActionButton } from './components/ActivityActionButton';
@@ -18,6 +20,7 @@ export const ActivityView = ({ activity }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const course = useContext(CourseContext);
+    const { me } = useMeQuery();
     const [linksModalOpen, setLinksModalOpen] = useState(false);
     if (!course) {
         navigate(PageRoutes.HOME, { replace: true });
@@ -65,6 +68,12 @@ export const ActivityView = ({ activity }: Props) => {
                             onClick={() => setLinksModalOpen(true)}
                             textI18n="course.activity.links"
                         />
+                        {(isSame(me, course.teacher) || activity.publicFiles.length > 0) && (
+                            <ActivityActionButton
+                                onClick={() => navigate(PageRoutes.ActivityFiles(course.id, activity.id))}
+                                textI18n="course.activity.files"
+                            />
+                        )}
                         <ActivityActionButton
                             onClick={() => navigate(PageRoutes.ActivityInstructions(course.id, activity.id))}
                             textI18n="course.activity.instructions"

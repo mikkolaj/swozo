@@ -60,4 +60,12 @@ public class Course extends BaseEntity {
     public Optional<String> getPassword() {
         return Optional.ofNullable(password);
     }
+
+    public boolean isCreator(Long userId) {
+        return teacher.getId().equals(userId);
+    }
+
+    public boolean isParticipant(Long userId) {
+        return getStudents().stream().anyMatch(userCourseData -> userCourseData.getId().getUserId().equals(userId));
+    }
 }

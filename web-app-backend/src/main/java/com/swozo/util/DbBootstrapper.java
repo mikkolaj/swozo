@@ -124,6 +124,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 serviceModule,
                 activity,
                 "1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki",
+                null,
                 List.of(new ActivityLink("http://34.118.97.16/lab", "Login: student@123.swozo.com\nHasło: 123123")
                 )));
         course.addActivity(activity);
@@ -142,6 +143,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 serviceModule,
                 activity,
                 "1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki",
+                null,
                 List.of(new ActivityLink("http://34.118.97.16/lab", "Login: student@123.swozo.com\nHasło: 123123")
                 )));
         course.addActivity(activity2);
@@ -153,6 +155,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 serviceModule,
                 activity,
                 "instrukcja",
+                null,
                 new LinkedList<>()
         );
         activityModuleRepository.save(activityModule);

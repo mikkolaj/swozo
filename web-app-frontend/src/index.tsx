@@ -10,7 +10,7 @@ import { store } from 'services/store';
 import App from './App';
 import './index.css';
 
-const appConfig: AppConfig = configureEnvironment();
+export const appConfig: AppConfig = configureEnvironment();
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
