@@ -1,7 +1,10 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
 import com.swozo.model.links.ActivityLinkInfo;
+import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
@@ -15,10 +18,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class JupyterProvisioner implements TimedSoftwareProvisioner {
+    private static final ScheduleType SUPPORTED_SCHEDULE = ScheduleType.JUPYTER;
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
@@ -29,7 +34,13 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public List<ActivityLinkInfo> provision(VMResourceDetails resource) throws InterruptedException, ProvisioningFailed {
+    public ServiceConfig getServiceConfig() {
+        return new ServiceConfig(SUPPORTED_SCHEDULE, JupyterParameters.getParameterDescriptions());
+    }
+
+    @Override
+    // TODO: getting notebook from specified location
+    public List<ActivityLinkInfo> provision(VMResourceDetails resource, Map<String, String> parameters) throws ProvisioningFailed {
         try {
             logger.info("Started provisioning Jupyter on: {}", resource);
             runPlaybook(resource);
@@ -41,11 +52,16 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
+    public void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException {
+        JupyterParameters.from(dynamicParameters);
+    }
+
+    @Override
     public int getProvisioningSeconds() {
         return PROVISIONING_SECONDS;
     }
 
-    private void runPlaybook(VMResourceDetails resource) throws InterruptedException {
+    private void runPlaybook(VMResourceDetails resource) {
         ansibleRunner.runPlaybook(
                 AnsibleConnectionDetails.from(resource),
                 properties.jupyterPlaybookPath(),

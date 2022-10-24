@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.configuration;
 
-import com.swozo.orchestrator.configuration.conditions.CloudProvider;
+import com.swozo.config.CloudProvider;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -9,15 +9,23 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 public record ApplicationProperties(
         Scheduler scheduler,
         Ansible ansible,
+        Orchestrator orchestrator,
         CloudProvider cloudProvider,
         int systemCommandTimeoutMinutes
 ) {
     private record Scheduler(int threadPoolSize) {
     }
 
-    private record Ansible(Jupyter jupyter) {
+    private record Ansible(String playbookExecutablePath, Jupyter jupyter) {
         private record Jupyter(String playbookPath) {
         }
+    }
+
+    public record Orchestrator(String secret) {
+    }
+
+    public String ansiblePlaybookExecutablePath() {
+        return ansible.playbookExecutablePath;
     }
 
     public String jupyterPlaybookPath() {

@@ -4,9 +4,10 @@ import { blue } from '@mui/material/colors';
 import { CourseDetailsDto } from 'api';
 import { PasswordLikeText } from 'common/Styled/PasswordLikeText';
 import { stylesColumn, stylesRowCenteredVertical } from 'common/styles';
+import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { TEACHER, WithRole } from 'utils/roles';
+import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatName } from 'utils/util';
 
@@ -18,6 +19,7 @@ const HIDDEN_PASSWORD_PLACEHOLDER = '*****';
 
 export const TeacherSection = ({ course }: Props) => {
     const { t } = useTranslation();
+    const { me } = useMeQuery();
     const joinCourseUrl = PageRoutes.withOrigin(PageRoutes.JoinCourse(course.joinUUID));
 
     return (
@@ -50,16 +52,14 @@ export const TeacherSection = ({ course }: Props) => {
                         <ContentCopyIcon sx={{ transform: 'scale(0.9)', ml: 0.5, mt: -0.3 }} />
                     </IconButton>
                 </Box>
-                {course.coursePassword && (
-                    <WithRole roles={[TEACHER]}>
-                        <PasswordLikeText
-                            textSupplier={(isVisible) =>
-                                t('course.options.participants.coursePassword', {
-                                    password: isVisible ? course.coursePassword : HIDDEN_PASSWORD_PLACEHOLDER,
-                                })
-                            }
-                        />
-                    </WithRole>
+                {course.coursePassword && isSame(me, course.teacher) && (
+                    <PasswordLikeText
+                        textSupplier={(isVisible) =>
+                            t('course.options.participants.coursePassword', {
+                                password: isVisible ? course.coursePassword : HIDDEN_PASSWORD_PLACEHOLDER,
+                            })
+                        }
+                    />
                 )}
             </Box>
         </Box>

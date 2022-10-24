@@ -1,15 +1,25 @@
-version: '3.7'
-
 services:
   swozo-orchestrator:
     container_name: swozo-orchestrator
     image: swozo/orchestrator:dev
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
     ports:
       - "8080:8080"
+      - "22000:22000"
+      - "24000:24000"
     environment:
-      GCP_PROJECT: <placeholder>
-      GCP_ZONE: <placeholder>
-      GCP_SSH_USER: <placeholder>
+      GCP_PROJECT: swozo-362919
+      GCP_ZONE: europe-central2-a
+      GCP_SSH_USER: swozo
+      DATABASE_HOST: swozo-db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: swozo-orchestrator-db
+      DATABASE_USER: orchestrator
+      DATABASE_PASSWORD: mysecretpassword2
+      ORCHESTRATOR_SECRET_KEY: super-secret-orchestrator-key-with-at-least-32-chars
+      LOG_LEVEL: INFO
     volumes:
       - type: bind
         source: ./src/main/resources/provisioning/administration

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "546b3952-ebf2-466d-a43d-23e540d457bf",
+		"_postman_id": "54ec258b-55ab-4a6b-a92b-9d8fe0b1eead",
 		"name": "Orchestrator",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"@type\" : \"ScheduleJupyter\",\n  \"serviceLifespan\" : {\n    \"startTime\" : \"2022-06-14T21:44:47.4281697\",\n    \"endTime\" : \"2022-06-14T21:44:47.4291679\"\n  },\n  \"psm\" : {\n    \"machineType\" : \"e2-medium\",\n    \"discSizeGB\" : 10\n  },\n  \"activityModuleID\" : 2,\n  \"scheduleType\" : \"JUPYTER\",\n  \"notebookLocation\" : \"aaa\"\n}",
+					"raw": "{\n  \"@type\" : \"ScheduleRequest\",\n  \"serviceLifespan\" : {\n    \"startTime\" : \"2022-10-12T17:44:36.671486700+02:00\",\n    \"endTime\" : \"2022-10-13T17:54:36.671486700+02:00\"\n  },\n  \"psm\" : {\n    \"machineType\" : \"e2-medium\",\n    \"diskSizeGb\" : 10\n  },\n  \"scheduleType\" : \"JUPYTER\",\n  \"dynamicProperties\": {\n      \"notebookLocation\" : \"aaa\"\n  }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -35,7 +35,7 @@
 		{
 			"name": "Get links",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
 				"url": {
 					"raw": "localhost:8080/links/2",
@@ -46,6 +46,25 @@
 					"path": [
 						"links",
 						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Schedule properties",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/schedules/configuration",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"schedules",
+						"configuration"
 					]
 				}
 			},

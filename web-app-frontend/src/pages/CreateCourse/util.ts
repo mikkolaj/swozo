@@ -52,8 +52,8 @@ export const initialCourseValues = (): CourseValues => ({
 });
 
 export const initialActivityValues = (): ActivityValues => ({
-    name: 'x',
-    description: '',
+    name: 'Konstrukcje warunkowe',
+    description: 'nauczymy się pisać if else',
     lessonModules: [],
     generalModules: [],
     instructions: '',

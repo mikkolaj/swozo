@@ -25,6 +25,12 @@ import {
     ActivityModuleFromJSONTyped,
     ActivityModuleToJSON,
 } from './ActivityModule';
+import {
+    RemoteFile,
+    RemoteFileFromJSON,
+    RemoteFileFromJSONTyped,
+    RemoteFileToJSON,
+} from './RemoteFile';
 
 /**
  * 
@@ -76,6 +82,12 @@ export interface Activity {
     modules?: Array<ActivityModule>;
     /**
      * 
+     * @type {Array<RemoteFile>}
+     * @memberof Activity
+     */
+    publicFiles?: Array<RemoteFile>;
+    /**
+     * 
      * @type {number}
      * @memberof Activity
      */
@@ -99,6 +111,7 @@ export function ActivityFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
         'endTime': !exists(json, 'endTime') ? undefined : (new Date(json['endTime'])),
         'instructionsFromTeacher': !exists(json, 'instructionsFromTeacher') ? undefined : ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionFromJSON)),
         'modules': !exists(json, 'modules') ? undefined : ((json['modules'] as Array<any>).map(ActivityModuleFromJSON)),
+        'publicFiles': !exists(json, 'publicFiles') ? undefined : ((json['publicFiles'] as Array<any>).map(RemoteFileFromJSON)),
         'course': !exists(json, 'course') ? undefined : json['course'],
     };
 }
@@ -119,6 +132,7 @@ export function ActivityToJSON(value?: Activity | null): any {
         'endTime': value.endTime === undefined ? undefined : (value.endTime.toISOString()),
         'instructionsFromTeacher': value.instructionsFromTeacher === undefined ? undefined : ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionToJSON)),
         'modules': value.modules === undefined ? undefined : ((value.modules as Array<any>).map(ActivityModuleToJSON)),
+        'publicFiles': value.publicFiles === undefined ? undefined : ((value.publicFiles as Array<any>).map(RemoteFileToJSON)),
         'course': value.course,
     };
 }

@@ -41,7 +41,7 @@ public class CourseService {
                 courseRepository.getCoursesByTeacherId(userId);
 
         return courses.stream()
-                .map(course -> courseMapper.toDto(course, isCreator(course, userId)))
+                .map(course -> courseMapper.toDto(course, course.isCreator(userId)))
                 .toList();
     }
 
@@ -51,7 +51,7 @@ public class CourseService {
         activityModuleService
                 .provideLinksForActivityModules(course.getActivities().stream().flatMap(x -> x.getModules().stream()).toList());
 
-        return courseMapper.toDto(course, isCreator(course, userId));
+        return courseMapper.toDto(course, course.isCreator(userId));
     }
 
     public CourseSummaryDto getCourseSummary(String joinUUID) {
@@ -137,9 +137,5 @@ public class CourseService {
         modifier.accept(student, course);
         courseRepository.save(course);
         return courseMapper.toDto(course, true);
-    }
-
-    private boolean isCreator(Course course, Long userId) {
-        return Objects.equals(course.getTeacher().getId(), userId);
     }
 }

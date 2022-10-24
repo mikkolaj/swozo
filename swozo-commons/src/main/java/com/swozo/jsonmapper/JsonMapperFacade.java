@@ -1,6 +1,7 @@
 package com.swozo.jsonmapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -32,6 +33,11 @@ public class JsonMapperFacade {
 
     @SneakyThrows({JsonProcessingException.class})
     public <T> T fromJson(String json, Class<T> type) {
+        return objectMapper.readValue(json, type);
+    }
+
+    @SneakyThrows({JsonProcessingException.class})
+    public <T> T fromJson(String json, TypeReference<T> type) {
         return objectMapper.readValue(json, type);
     }
 

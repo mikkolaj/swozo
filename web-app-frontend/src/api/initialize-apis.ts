@@ -1,4 +1,5 @@
 import {
+    ActivityControllerApi,
     AuthControllerApi,
     Configuration,
     CourseControllerApi,
@@ -7,13 +8,16 @@ import {
     ServiceModuleControllerApi,
     UserControllerApi,
 } from 'api';
+import { appConfig } from 'index';
 import { getAccessToken } from 'services/features/auth/auth';
+import { withExponentialBackoff } from 'utils/util';
 import { ApiError, ErrorType } from './errors';
 
 type Apis = {
     authApi: AuthControllerApi;
     userApi: UserControllerApi;
     courseApi: CourseControllerApi;
+    activitiesApi: ActivityControllerApi;
     serviceModuleApi: ServiceModuleControllerApi;
 };
 
@@ -52,6 +56,13 @@ export const initializeApis = (): Apis => {
     const configuration = new Configuration({
         accessToken: getAccessToken,
         middleware: [new ErrorPreprocessorMiddleware()],
+        fetchApi: (input, init) => {
+            return withExponentialBackoff(
+                () => fetch(input, init),
+                appConfig.fetchConfig.retries,
+                appConfig.fetchConfig.maxTimeMillis
+            );
+        },
         basePath: process.env.REACT_APP_BASE_PATH,
     });
 
@@ -59,6 +70,7 @@ export const initializeApis = (): Apis => {
         authApi: new AuthControllerApi(configuration),
         userApi: new UserControllerApi(configuration),
         courseApi: new CourseControllerApi(configuration),
+        activitiesApi: new ActivityControllerApi(configuration),
         serviceModuleApi: new ServiceModuleControllerApi(configuration),
     };
 };

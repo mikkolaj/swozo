@@ -16,7 +16,7 @@ import { buildErrorHandler, HandlerConfig, useApiErrorHandling } from 'hooks/use
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { PageRoutes } from 'utils/routes';
@@ -37,7 +37,13 @@ export const JoinCourseView = () => {
 
     const { isApiError, errorHandler, isApiErrorSet, consumeErrorAction, pushApiError, removeApiError } =
         useApiErrorHandling(errorHandlers);
-    const { data: userCourses } = useQuery(['courses'], () => getApis().courseApi.getUserCourses());
+
+    const { data: userCourses } = useErrorHandledQuery(
+        ['courses'],
+        () => getApis().courseApi.getUserCourses(),
+        pushApiError,
+        removeApiError
+    );
 
     const { data: course } = useErrorHandledQuery(
         ['courses', 'public', joinUUID],

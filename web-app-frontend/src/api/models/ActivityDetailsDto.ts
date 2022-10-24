@@ -25,6 +25,12 @@ import {
     ActivityModuleDetailsDtoFromJSONTyped,
     ActivityModuleDetailsDtoToJSON,
 } from './ActivityModuleDetailsDto';
+import {
+    FileDto,
+    FileDtoFromJSON,
+    FileDtoFromJSONTyped,
+    FileDtoToJSON,
+} from './FileDto';
 
 /**
  * 
@@ -74,6 +80,12 @@ export interface ActivityDetailsDto {
      * @memberof ActivityDetailsDto
      */
     activityModules: Array<ActivityModuleDetailsDto>;
+    /**
+     * 
+     * @type {Array<FileDto>}
+     * @memberof ActivityDetailsDto
+     */
+    publicFiles: Array<FileDto>;
 }
 
 export function ActivityDetailsDtoFromJSON(json: any): ActivityDetailsDto {
@@ -93,6 +105,7 @@ export function ActivityDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: 
         'endTime': (new Date(json['endTime'])),
         'instructionsFromTeacher': ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionDtoFromJSON)),
         'activityModules': ((json['activityModules'] as Array<any>).map(ActivityModuleDetailsDtoFromJSON)),
+        'publicFiles': ((json['publicFiles'] as Array<any>).map(FileDtoFromJSON)),
     };
 }
 
@@ -112,6 +125,7 @@ export function ActivityDetailsDtoToJSON(value?: ActivityDetailsDto | null): any
         'endTime': (value.endTime.toISOString()),
         'instructionsFromTeacher': ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionDtoToJSON)),
         'activityModules': ((value.activityModules as Array<any>).map(ActivityModuleDetailsDtoToJSON)),
+        'publicFiles': ((value.publicFiles as Array<any>).map(FileDtoToJSON)),
     };
 }
 

@@ -1,0 +1,12 @@
+services:
+  swozo-web-postgres:
+    image: swozo/postgres:latest
+    build:
+      context: .
+    container_name: swozo-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: swozo-web-db
+      POSTGRES_PASSWORD: mysecretpassword
+      ORCHESTRATOR_PASSWORD: mysecretpassword2

@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 @Entity
 @Table(name = "ActivityModules")
@@ -24,6 +25,8 @@ public class ActivityModule extends BaseEntity {
 
     private String instruction;
 
+    private Long requestId;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "link_id")
     @ToString.Exclude
@@ -40,5 +43,9 @@ public class ActivityModule extends BaseEntity {
 
     public void addLink(ActivityLink link) {
         links.add(link);
+    }
+
+    public Optional<Long> getRequestId() {
+        return Optional.ofNullable(requestId);
     }
 }

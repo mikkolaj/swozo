@@ -51,14 +51,14 @@ public class FilterExceptionHandler extends OncePerRequestFilter {
     private void addCorsHeaders(HttpServletRequest request, HttpServletResponse response) {
         try {
             // if exception (such as UnauthorizedException thrown by AuthFilter) is thrown
-            // filter chain doesn't add cors headers by default, and we get cors errors in the browser
+            // filter chain doesn't add cors httpHeaders by default, and we get cors errors in the browser
             new DefaultCorsProcessor().processRequest(
                     context.getBean(HandlerMappingIntrospector.class).getCorsConfiguration(request),
                     request,
                     response
             );
         } catch (Exception exception) {
-            logger.error("Failed to add cors headers", exception);
+            logger.error("Failed to add cors httpHeaders", exception);
         }
     }
 }
