@@ -1,4 +1,4 @@
-package com.swozo.mda.util.mock;
+package com.swozo.util.mock;
 
 import lombok.*;
 

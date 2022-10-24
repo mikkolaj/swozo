@@ -1,6 +1,6 @@
-package com.swozo.mda.persistance.models;
+package com.swozo.persistence.models;
 
-import com.swozo.mda.persistance.vmInfo.PIMVmInfo;
+import com.swozo.persistence.vmInfo.PIMVmInfo;
 import lombok.*;
 
 import java.util.Optional;

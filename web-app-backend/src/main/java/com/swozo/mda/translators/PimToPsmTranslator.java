@@ -1,15 +1,14 @@
-package com.swozo.mda.engine.translators;
+package com.swozo.mda.translators;
 
-import com.swozo.mda.persistance.models.Pim;
-import com.swozo.mda.persistance.models.Psm;
-import com.swozo.mda.persistance.vmInfo.PIMVmInfo;
-import com.swozo.mda.persistance.vmInfo.PSMVmInfo;
+import com.swozo.persistence.models.Pim;
+import com.swozo.persistence.models.Psm;
+import com.swozo.persistence.vmInfo.PIMVmInfo;
+import com.swozo.persistence.vmInfo.PSMVmInfo;
 import lombok.*;
 
 import java.util.Optional;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString

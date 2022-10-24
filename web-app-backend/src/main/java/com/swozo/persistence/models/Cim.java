@@ -1,6 +1,6 @@
-package com.swozo.mda.persistance.models;
+package com.swozo.persistence.models;
 
-import com.swozo.mda.util.mock.ModuleMock;
+import com.swozo.util.mock.ModuleMock;
 import lombok.*;
 
 import java.util.ArrayList;

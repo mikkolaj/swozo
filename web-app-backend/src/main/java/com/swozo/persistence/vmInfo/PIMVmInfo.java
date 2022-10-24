@@ -1,6 +1,6 @@
-package com.swozo.mda.persistance.vmInfo;
+package com.swozo.persistence.vmInfo;
 
-import com.swozo.mda.util.mock.ModuleMock;
+import com.swozo.util.mock.ModuleMock;
 import lombok.*;
 
 import java.util.ArrayList;
