@@ -90,6 +90,12 @@ public class ScheduleHandler {
     }
 
     public Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
+            ScheduleRequestEntity request
+    ) {
+        return provisionSoftwareAndScheduleDeletion(request, getProvisioner(request));
+    }
+
+    public Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
             ScheduleRequestEntity request,
             TimedSoftwareProvisioner provisioner
     ) {

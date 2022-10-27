@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,15 +39,61 @@ public class ScheduleRequestTracker {
         var timeThreshold = LocalDateTime.now().minusSeconds(TimedSoftwareProvisioner.MAX_PROVISIONING_SECONDS);
         return requestRepository.findByEndTimeLessThanAndStatusNot(timeThreshold, RequestStatus.DELETED)
                 .stream()
-                .filter(this::endsBeforeProvisioningTime)
+                .filter(this::endsBeforeAvailability)
                 .toList();
     }
 
-    private boolean endsBeforeProvisioningTime(ScheduleRequestEntity scheduleRequestEntity) {
-        var dto = requestMapper.toDto(scheduleRequestEntity);
+    public List<ScheduleRequestEntity> getValidSchedulesToRestartFromBeginning() {
+        var timeThreshold = getFurthestProvisioningThreshold();
+        var submittedSchedules = getValidSchedulesWithStatus(timeThreshold, RequestStatus.SUBMITTED);
+        var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(timeThreshold, RequestStatus.VM_CREATION_FAILED);
+
+        return combineLists(submittedSchedules, schedulesFailedOnVmCreation);
+    }
+
+    public List<ScheduleRequestEntity> getValidSchedulesToReprovision() {
+        var timeThreshold = getFurthestProvisioningThreshold();
+        var submittedSchedules = getValidSchedulesWithStatus(timeThreshold, RequestStatus.PROVISIONING);
+        var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(timeThreshold, RequestStatus.PROVISIONING_FAILED);
+
+        return combineLists(submittedSchedules, schedulesFailedOnVmCreation);
+    }
+
+    private LocalDateTime getFurthestProvisioningThreshold() {
+        return LocalDateTime.now().minusSeconds(TimedSoftwareProvisioner.MAX_PROVISIONING_SECONDS);
+    }
+
+    private List<ScheduleRequestEntity> getValidSchedulesWithStatus(LocalDateTime timeThreshold, RequestStatus status) {
+        return requestRepository.findByEndTimeGreaterThanAndStatusEquals(timeThreshold, status)
+                .stream()
+                .filter(this::endsAfterAvailability)
+                .toList();
+    }
+
+    @SafeVarargs
+    private <T> List<T> combineLists(List<T>... lists) {
+        var combined = new ArrayList<T>();
+        for (var list : lists) {
+            combined.addAll(list);
+        }
+        return combined;
+    }
+
+    private boolean endsBeforeAvailability(ScheduleRequestEntity requestEntity) {
+        return requestEntity.getEndTime()
+                .isAfter(getTargetAvailability(requestEntity));
+    }
+
+    private boolean endsAfterAvailability(ScheduleRequestEntity scheduleRequestEntity) {
+        return scheduleRequestEntity.getEndTime()
+                .isBefore(getTargetAvailability(scheduleRequestEntity));
+    }
+
+
+    private LocalDateTime getTargetAvailability(ScheduleRequestEntity requestEntity) {
+        var dto = requestMapper.toDto(requestEntity);
         var provisioningSeconds = provisionerFactory.getProvisioner(dto.scheduleType()).getProvisioningSeconds();
-        var targetProvisioningTime = LocalDateTime.now().plusSeconds(provisioningSeconds);
-        return scheduleRequestEntity.getEndTime().isBefore(targetProvisioningTime);
+        return LocalDateTime.now().plusSeconds(provisioningSeconds);
     }
 
     public void updateStatus(long scheduleRequestId, RequestStatus status) {
