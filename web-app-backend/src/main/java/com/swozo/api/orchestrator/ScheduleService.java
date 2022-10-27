@@ -62,7 +62,6 @@ public class ScheduleService {
                 provideServiceLifespan(activityWithModule.activity()),
                 providePsm(activityWithModule.activity()),
                 ScheduleType.JUPYTER,
-                "1.0.0",
                 activityWithModule.module.getServiceModule().getDynamicProperties()
         );
     }

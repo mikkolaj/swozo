@@ -35,7 +35,6 @@ export const ActivityInstructionsView = () => {
         pushApiError,
         removeApiError
     );
-    console.log(activity);
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {
         return consumeErrorAction() ?? <></>;

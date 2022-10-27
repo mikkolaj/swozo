@@ -45,7 +45,7 @@ public class ScheduleController {
 //        return service.getSupportedServices();
         // TODO: mock for testing multiple services, remove this
         var s = new LinkedList<>(service.getSupportedServices());
-        s.addLast(new ServiceConfig(ScheduleType.DOCKER.toString(), "1.0.0",
+        s.addLast(new ServiceConfig(ScheduleType.DOCKER.toString(),
                 List.of(
                         ParameterDescription.builder("dockerImageUrl")
                                 .withTranslatedLabel(Map.of(SupportedLanguage.PL, "Link do publicznego obrazu"))

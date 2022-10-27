@@ -6,7 +6,6 @@ import java.util.List;
 
 public record ServiceConfig(
         @Schema(required = true) String serviceName,
-        @Schema(required = true) String version,
         @Schema(required = true) List<ParameterDescription> parameterDescriptions
 ) {
 }

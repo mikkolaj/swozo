@@ -22,7 +22,6 @@ public class ServiceModule extends BaseEntity {
     private String teacherInstructionHtml;
     private String studentInstructionHtml;
     private String scheduleTypeName;
-    private String scheduleTypeVersion;
     private Boolean isPublic;
     private Boolean ready;
 

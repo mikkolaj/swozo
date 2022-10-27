@@ -9,13 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface TimedSoftwareProvisioner {
-    List<ActivityLinkInfo> provision(
-            VMResourceDetails resourceDetails,
-            Map<String, String> dynamicParameters,
-            String provisionerVersion
-    ) throws InterruptedException, ProvisioningFailed;
+    List<ActivityLinkInfo> provision(VMResourceDetails resourceDetails, Map<String, String> dynamicParameters) throws InterruptedException, ProvisioningFailed;
 
-    void validateParameters(Map<String, String> dynamicParameters, String provisionerVersion) throws InvalidParametersException;
+    void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException;
 
     ScheduleType getScheduleType();
 

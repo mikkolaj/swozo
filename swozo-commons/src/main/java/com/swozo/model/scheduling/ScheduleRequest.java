@@ -12,7 +12,6 @@ public record ScheduleRequest(
         ServiceLifespan serviceLifespan,
         Psm psm,
         ScheduleType scheduleType,
-        String scheduleVersion,
         Map<String, String> dynamicProperties
 ) {
 }

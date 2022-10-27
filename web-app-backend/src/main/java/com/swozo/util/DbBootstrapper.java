@@ -24,8 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -38,7 +38,6 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-@Profile("dev")
 public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent> {
     private final Logger logger = LoggerFactory.getLogger(DbBootstrapper.class);
 
@@ -49,6 +48,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final ServiceModuleRepository serviceModuleRepository;
     private final ActivityModuleRepository activityModuleRepository;
     private final FileRepository fileRepository;
+    private final Environment environment;
     private boolean alreadySetup = false;
 
     @Override
@@ -60,7 +60,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         logger.info("preparing database...");
 
         prepareRoles();
-        setupTestData();
+
+        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+            setupTestData();
+        }
 
         logger.info("database ready");
         alreadySetup = true;
@@ -119,7 +122,6 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setDescription("opis1");
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setScheduleTypeName(ScheduleType.JUPYTER.toString());
-        serviceModule.setScheduleTypeVersion("1.0.0");
         serviceModule.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
         serviceModule.setPublic(true);
         serviceModule.setReady(true);
@@ -135,7 +137,6 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule2.setDescription("opis2");
         serviceModule2.setSubject("INFORMATYKA");
         serviceModule2.setScheduleTypeName(ScheduleType.JUPYTER.toString());
-        serviceModule2.setScheduleTypeVersion("1.0.0");
         serviceModule2.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
         serviceModule2.setPublic(true);
         serviceModule2.setReady(true);

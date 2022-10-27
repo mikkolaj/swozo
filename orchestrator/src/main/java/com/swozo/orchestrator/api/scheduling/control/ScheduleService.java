@@ -42,7 +42,7 @@ public class ScheduleService {
     // TODO: add retrying and cleaning of received, but not fulfilled requests
     public ScheduleResponse schedule(ScheduleRequest request) {
         var provisioner = provisionerFactory.getProvisioner(request.scheduleType());
-        provisioner.validateParameters(request.dynamicProperties(), request.scheduleVersion());
+        provisioner.validateParameters(request.dynamicProperties());
         var requestEntity = scheduleRequestTracker.startTracking(request);
         delegateScheduling(requestEntity, provisioner);
         return new ScheduleResponse(requestEntity.getId());
@@ -117,7 +117,7 @@ public class ScheduleService {
 
     private static List<ActivityLinkInfo> delegateProvisioning(ScheduleRequestEntity request, TimedSoftwareProvisioner provisioner, VMResourceDetails resourceDetails) {
         return CheckedExceptionConverter.from(
-                () -> provisioner.provision(resourceDetails, request.getDynamicProperties(), request.getScheduleVersion()),
+                () -> provisioner.provision(resourceDetails, request.getDynamicProperties()),
                 ProvisioningFailed::new
         ).get();
     }

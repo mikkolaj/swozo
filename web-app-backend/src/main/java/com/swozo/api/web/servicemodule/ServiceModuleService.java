@@ -116,7 +116,6 @@ public class ServiceModuleService {
 
         reservation.setDynamicProperties(dynamicProperties);
         reservation.setReady(true);
-        reservation.setScheduleTypeVersion(serviceConfig.version());
         serviceModuleRepository.save(reservation);
 
         return serviceModuleMapper.toDto(reservation, serviceConfig);
