@@ -432,22 +432,6 @@ paths:
                 $ref: '#/components/schemas/ReserveServiceModuleRequest'
       security:
       - JWT_AUTH: []
-  /service-modules/user:
-    get:
-      tags:
-      - service-module-controller
-      operationId: getUserModules
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ServiceModuleSummaryDto'
-      security:
-      - JWT_AUTH: []
   /service-modules/user/summary:
     get:
       tags:
@@ -918,8 +902,6 @@ components:
             $ref: '#/components/schemas/InstructionDto'
         url:
           type: string
-        connectionInfo:
-          type: string
     ServiceModuleSummaryDto:
       required:
       - createdAt
@@ -1188,12 +1170,9 @@ components:
       required:
       - parameterDescriptions
       - serviceName
-      - version
       type: object
       properties:
         serviceName:
-          type: string
-        version:
           type: string
         parameterDescriptions:
           type: array

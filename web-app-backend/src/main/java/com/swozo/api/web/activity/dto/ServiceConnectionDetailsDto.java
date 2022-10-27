@@ -5,11 +5,9 @@ import com.swozo.utils.SupportedLanguage;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Map;
-import java.util.Optional;
 
 public record ServiceConnectionDetailsDto(
         @Schema(required = true) Map<SupportedLanguage, InstructionDto> connectionInstructions,
-        @Schema(required = true) String url,
-        Optional<String> connectionInfo
+        @Schema(required = true) String url
 ) {
 }

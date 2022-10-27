@@ -18,7 +18,6 @@ import java.util.Map;
 @ToString
 public class ActivityLink extends BaseEntity {
     private String url;
-    private String connectionInfo;
 
     @OneToMany(mappedBy = "activityLink", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @MapKey(name = "translationId.language")

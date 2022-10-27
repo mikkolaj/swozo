@@ -34,12 +34,6 @@ export interface ServiceConfig {
     serviceName: string;
     /**
      * 
-     * @type {string}
-     * @memberof ServiceConfig
-     */
-    version: string;
-    /**
-     * 
      * @type {Array<ParameterDescription>}
      * @memberof ServiceConfig
      */
@@ -57,7 +51,6 @@ export function ServiceConfigFromJSONTyped(json: any, ignoreDiscriminator: boole
     return {
         
         'serviceName': json['serviceName'],
-        'version': json['version'],
         'parameterDescriptions': ((json['parameterDescriptions'] as Array<any>).map(ParameterDescriptionFromJSON)),
     };
 }
@@ -72,7 +65,6 @@ export function ServiceConfigToJSON(value?: ServiceConfig | null): any {
     return {
         
         'serviceName': value.serviceName,
-        'version': value.version,
         'parameterDescriptions': ((value.parameterDescriptions as Array<any>).map(ParameterDescriptionToJSON)),
     };
 }

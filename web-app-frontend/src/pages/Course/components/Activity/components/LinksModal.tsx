@@ -16,7 +16,7 @@ import {
 import { ActivityDetailsDto } from 'api';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { InstructionView } from 'common/Styled/InstructionView';
-import { stylesColumn, stylesColumnCenteredVertical } from 'common/styles';
+import { stylesColumnCenteredVertical } from 'common/styles';
 import _ from 'lodash';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext } from 'react';
@@ -99,32 +99,13 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                         {t('course.activity.linksInfo.linksUnavailable')}
                                                     </Typography>
                                                 )}
-                                                {activityModule.connectionDetails.map(
-                                                    ({ url, connectionInfo }) => (
-                                                        <Box key={url} sx={stylesColumnCenteredVertical}>
-                                                            <Link target="_blank" rel="noopener" href={url}>
-                                                                {url}
-                                                            </Link>
-                                                            {connectionInfo && (
-                                                                <Box
-                                                                    sx={{
-                                                                        ...stylesColumn,
-                                                                        userSelect: 'text',
-                                                                        ':hover': { cursor: 'text' },
-                                                                    }}
-                                                                >
-                                                                    {connectionInfo
-                                                                        .split('\n')
-                                                                        .map((line, idx) => (
-                                                                            <Typography key={idx}>
-                                                                                {line}
-                                                                            </Typography>
-                                                                        ))}
-                                                                </Box>
-                                                            )}
-                                                        </Box>
-                                                    )
-                                                )}
+                                                {activityModule.connectionDetails.map(({ url }) => (
+                                                    <Box key={url} sx={stylesColumnCenteredVertical}>
+                                                        <Link target="_blank" rel="noopener" href={url}>
+                                                            {url}
+                                                        </Link>
+                                                    </Box>
+                                                ))}
                                             </Box>
                                         </AccordionSummary>
                                         <AccordionDetails sx={{ mt: -1 }}>

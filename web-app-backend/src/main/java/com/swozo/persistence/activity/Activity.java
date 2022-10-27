@@ -1,8 +1,5 @@
 package com.swozo.persistence.activity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
@@ -40,8 +37,7 @@ public class Activity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @ToString.Exclude
     private Course course;
 
     public void addActivityModule(ActivityModule newModuleMetadata) {

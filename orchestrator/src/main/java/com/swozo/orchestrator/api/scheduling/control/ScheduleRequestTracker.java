@@ -62,8 +62,8 @@ public class ScheduleRequestTracker {
                     // on orchestrator side, imo rather than duplicating that info we should just send them
                     // to backend when they are ready, below is a temporary workaround
                     return new ActivityLinkInfo(
-                            activityLinkInfoEntity.getUrl(), activityLinkInfoEntity.getConnectionInfo(),
-                            Map.of(SupportedLanguage.PL, "workaround"));
+                            activityLinkInfoEntity.getUrl(),
+                            Map.of(SupportedLanguage.PL, activityLinkInfoEntity.getConnectionInfo()));
                 })
                 .toList();
     }

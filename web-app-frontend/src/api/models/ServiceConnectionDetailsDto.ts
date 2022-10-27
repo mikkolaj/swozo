@@ -38,12 +38,6 @@ export interface ServiceConnectionDetailsDto {
      * @memberof ServiceConnectionDetailsDto
      */
     url: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServiceConnectionDetailsDto
-     */
-    connectionInfo?: string;
 }
 
 export function ServiceConnectionDetailsDtoFromJSON(json: any): ServiceConnectionDetailsDto {
@@ -58,7 +52,6 @@ export function ServiceConnectionDetailsDtoFromJSONTyped(json: any, ignoreDiscri
         
         'connectionInstructions': (mapValues(json['connectionInstructions'], InstructionDtoFromJSON)),
         'url': json['url'],
-        'connectionInfo': !exists(json, 'connectionInfo') ? undefined : json['connectionInfo'],
     };
 }
 
@@ -73,7 +66,6 @@ export function ServiceConnectionDetailsDtoToJSON(value?: ServiceConnectionDetai
         
         'connectionInstructions': (mapValues(value.connectionInstructions, InstructionDtoToJSON)),
         'url': value.url,
-        'connectionInfo': value.connectionInfo,
     };
 }
 

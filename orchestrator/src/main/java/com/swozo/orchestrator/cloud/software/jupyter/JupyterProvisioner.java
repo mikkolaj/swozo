@@ -90,12 +90,11 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
         return List.of(new ActivityLinkInfo(
                 formattedLink,
-                MAIN_LINK_DESCRIPTION,
                 // TODO refactor this
                 Map.of(
                         SupportedLanguage.PL, "<ol>" +
                                 "<li>Otwórz link</li>" +
-                                "<li>Wpisz dostarczone hasło w formularzu</li>" +
+                                "<li>Wpisz hasło w formularzu:" + MAIN_LINK_DESCRIPTION + " </li>" +
                                 "</ol>"
                 )
         ));

@@ -146,8 +146,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         var activityLink1 = new ActivityLink();
         activityLink1.setUrl("http://34.118.97.16/lab");
-        activityLink1.setConnectionInfo("Login: student@123.swozo.com\nHasło: 123123");
-        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "pl test"));
+        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
         activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
 
 //        ACTIVITIES:
