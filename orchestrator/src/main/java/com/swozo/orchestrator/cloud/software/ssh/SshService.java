@@ -7,12 +7,16 @@ import com.swozo.orchestrator.configuration.ApplicationProperties;
 import com.swozo.utils.CheckedExceptionConverter;
 import com.swozo.utils.RetryHandler;
 import lombok.RequiredArgsConstructor;
+import org.apache.sshd.client.SshClient;
+import org.apache.sshd.common.config.keys.FilePasswordProvider;
+import org.apache.sshd.common.util.security.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +28,9 @@ public class SshService {
 
     // TODO: make it async, this way multiple subsequent calls might slow things down
     // explanation: https://github.com/mikkolaj/swozo/pull/13
-    public void waitForConnection(SshTarget target, int attempts) throws ConnectionFailed {
+    public void waitForConnection(SshTarget target, SshAuth auth, int attempts) throws ConnectionFailed {
         CheckedExceptionConverter.from(() -> RetryHandler.retryExponentially(
-                () -> testConnection(target), attempts), ConnectionFailed::new
+                () -> testConnection(target, auth), attempts), ConnectionFailed::new
         ).run();
     }
 
@@ -44,9 +48,18 @@ public class SshService {
         }
     }
 
-    private void testConnection(SshTarget target) throws IOException {
-        try (var socket = new Socket()) {
-            socket.connect(new InetSocketAddress(target.ipAddress(), target.sshPort()), DEFAULT_TIMEOUT_MILLISECONDS);
+    private void testConnection(SshTarget target, SshAuth auth) throws IOException, GeneralSecurityException {
+        try (var client = SshClient.setUpDefaultClient()) {
+            client.start();
+            try (var session = client.connect(auth.sshUser(), target.ipAddress(), target.sshPort())
+                    .verify(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS)
+                    .getSession()
+            ) {
+                SecurityUtils.getKeyPairResourceParser()
+                        .loadKeyPairs(null, Paths.get(auth.sshKeyPath()), FilePasswordProvider.EMPTY)
+                        .forEach(session::addPublicKeyIdentity);
+                session.auth().await(DEFAULT_TIMEOUT_MILLISECONDS);
+            }
         }
     }
 }

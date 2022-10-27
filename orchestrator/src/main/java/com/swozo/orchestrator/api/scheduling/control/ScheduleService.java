@@ -54,7 +54,10 @@ public class ScheduleService {
     }
 
     public List<ServiceConfig> getSupportedServices() {
-        return provisionerFactory.getAllProvisioners().stream().map(TimedSoftwareProvisioner::getServiceConfig).toList();
+        return provisionerFactory.getAllProvisioners()
+                .stream()
+                .map(TimedSoftwareProvisioner::getServiceConfig)
+                .toList();
     }
 
     private Void scheduleCreationAndDeletion(
@@ -63,8 +66,9 @@ public class ScheduleService {
     ) throws InterruptedException {
         try {
             scheduleRequestTracker.updateStatus(request.getId(), VM_CREATING);
+            var requestDto = requestMapper.toDto(request);
             timedVmProvider
-                    .createInstance(requestMapper.toDto(request).psm())
+                    .createInstance(requestDto.psm(), requestDto.buildVmNamePrefix())
                     .thenAccept(provisionSoftwareAndScheduleDeletion(request, provisioner))
                     .get();
         } catch (ExecutionException e) {

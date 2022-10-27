@@ -1,5 +1,8 @@
 package com.swozo.orchestrator.cloud.resources.gcloud.compute;
 
+import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpStatusCodes;
+import com.google.api.gax.rpc.AbortedException;
 import com.swozo.model.scheduling.properties.Psm;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
@@ -44,13 +47,10 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     @Async
     @Override
     @Transactional
-    public CompletableFuture<VMResourceDetails> createInstance(Psm psm) throws InterruptedException, VMOperationFailed {
+    public CompletableFuture<VMResourceDetails> createInstance(Psm psm, String namePrefix) throws InterruptedException, VMOperationFailed {
         try {
-            // TODO: create unique name
-            var vmAddress = getVMAddress("super-instancja");
-            var vmSpecs = getVMSpecs(psm);
+            var vmAddress = handleVmNameCollisions(psm, namePrefix);
             var vmEntity = vmRepository.save(vmMapper.toPersistence(vmAddress));
-            manager.createInstance(vmAddress, vmSpecs);
             updateStatus(vmEntity, VMStatus.CREATED);
             var publicIPAddress = manager.getInstanceExternalIP(vmAddress);
             return CompletableFuture
@@ -59,6 +59,40 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
         } catch (IOException | ExecutionException | TimeoutException e) {
             throw new VMOperationFailed(e);
         }
+    }
+
+    private VMAddress handleVmNameCollisions(Psm psm, String namePrefix) throws IOException, ExecutionException, TimeoutException, InterruptedException {
+        var suffix = 0;
+        Optional<VMAddress> vmAddress = Optional.empty();
+
+        while (vmAddress.isEmpty()) {
+            var nameToTry = String.format("%s-%d", namePrefix, suffix);
+            vmAddress = tryCreatingVmWithName(psm, String.format(nameToTry));
+            suffix += 1;
+        }
+        return vmAddress.get();
+    }
+
+    private Optional<VMAddress> tryCreatingVmWithName(Psm psm, String name) throws IOException, ExecutionException, TimeoutException, InterruptedException {
+        try {
+            var vmAddress = getVMAddress(name);
+            var vmSpecs = getVMSpecs(psm);
+            manager.createInstance(vmAddress, vmSpecs);
+            return Optional.of(vmAddress);
+        } catch (ExecutionException ex) {
+            if (isCausedByConflict(ex)) {
+                logger.warn("Name conflict while trying to create instance: {}", name);
+            } else {
+                throw ex;
+            }
+        }
+        return Optional.empty();
+    }
+
+    private boolean isCausedByConflict(ExecutionException ex) {
+        return ex.getCause() instanceof AbortedException rpcCause
+                && rpcCause.getCause() instanceof HttpResponseException httpCause
+                && httpCause.getStatusCode() == HttpStatusCodes.STATUS_CODE_CONFLICT;
     }
 
     @Async
