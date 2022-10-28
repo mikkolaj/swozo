@@ -7,7 +7,7 @@ import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -19,14 +19,14 @@ import java.util.function.Supplier;
 @Component
 @Profile("!test")
 @RequiredArgsConstructor
-public class UnfulfilledSchedulesHandler implements ApplicationListener<ApplicationPreparedEvent> {
+public class UnfulfilledSchedulesHandler implements ApplicationListener<ApplicationReadyEvent> {
     private final ScheduleRequestTracker requestTracker;
     private final ScheduleHandler scheduleHandler;
     private final TimedVMProvider vmProvider;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void onApplicationEvent(ApplicationPreparedEvent event) {
+    public void onApplicationEvent(ApplicationReadyEvent event) {
         requestTracker.getSchedulesToDelete().forEach(this::deleteCreatedVm);
         requestTracker.getValidSchedulesToRestartFromBeginning().forEach(scheduleHandler::delegateScheduling);
         requestTracker.getValidSchedulesToReprovision().forEach(this::reprovision);
