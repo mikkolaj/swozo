@@ -1,46 +1,78 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
-import com.swozo.orchestrator.api.scheduling.persistence.entity.RequestStatus;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
+import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
-// TODO: add retrying of received, but not fulfilled requests
 public class UnfulfilledSchedulesHandler {
     private final ScheduleRequestTracker requestTracker;
-
     private final ScheduleHandler scheduleHandler;
     private final TimedVMProvider vmProvider;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @PostConstruct
     public void handleMissedSchedules() {
-        requestTracker.getSchedulesToDelete().forEach(this::deleteCreatedVmAndUpdateStatus);
+        requestTracker.getSchedulesToDelete().forEach(this::deleteCreatedVm);
         requestTracker.getValidSchedulesToRestartFromBeginning().forEach(scheduleHandler::delegateScheduling);
         requestTracker.getValidSchedulesToReprovision().forEach(this::reprovision);
+        requestTracker.getValidReadySchedules().forEach(this::scheduleDeletion);
     }
 
-    private void deleteCreatedVmAndUpdateStatus(ScheduleRequestEntity requestEntity) {
+    private void deleteCreatedVm(ScheduleRequestEntity requestEntity) {
         requestEntity.getVmResourceId().ifPresent(resourceId ->
                 CheckedExceptionConverter
                         .from(scheduleHandler::deleteInstance)
                         .accept(requestEntity, resourceId)
         );
-        requestTracker.updateStatus(requestEntity.getId(), RequestStatus.DELETED);
     }
 
     private void reprovision(ScheduleRequestEntity requestEntity) {
-        requestEntity.getVmResourceId().ifPresent(resourceId ->
-                vmProvider.getVMResourceDetails(resourceId)
-                        .thenAccept(possibleDetails -> possibleDetails.ifPresent(details ->
-                                scheduleHandler.provisionSoftwareAndScheduleDeletion(requestEntity)
-                                        .accept(details)
-                        ))
-        );
+        try {
+            var resourceId = requestEntity.getVmResourceId()
+                    .orElseThrow(getNoRegisteredVmException(requestEntity, "reprovision"));
+            vmProvider.getVMResourceDetails(resourceId)
+                    .thenAccept(extractDetailsAndReprovision(requestEntity));
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            logger.warn(ex.getMessage());
+        }
+    }
+
+    private Consumer<Optional<VMResourceDetails>> extractDetailsAndReprovision(ScheduleRequestEntity requestEntity) {
+        return possibleDetails -> {
+            var resourceDetails = possibleDetails.orElseThrow(getNoMatchingVmException(requestEntity));
+            scheduleHandler.provisionSoftwareAndScheduleDeletion(requestEntity).accept(resourceDetails);
+        };
+    }
+
+    private void scheduleDeletion(ScheduleRequestEntity requestEntity) {
+        try {
+            var resourceId =
+                    requestEntity.getVmResourceId().orElseThrow(getNoRegisteredVmException(requestEntity, "delete"));
+            scheduleHandler.scheduleInstanceDeletion(requestEntity, resourceId);
+        } catch (IllegalArgumentException ex) {
+            logger.warn(ex.getMessage());
+        }
+    }
+
+    private Supplier<IllegalArgumentException> getNoRegisteredVmException(ScheduleRequestEntity requestEntity, String action) {
+        return () -> new IllegalArgumentException(String.format("Request to %s must already have a Vm created. Request: %s", action, requestEntity));
+    }
+
+    private Supplier<IllegalStateException> getNoMatchingVmException(ScheduleRequestEntity requestEntity) {
+        return () -> new IllegalStateException(String.format("Can't find a VM associated to request: %s", requestEntity));
     }
 }

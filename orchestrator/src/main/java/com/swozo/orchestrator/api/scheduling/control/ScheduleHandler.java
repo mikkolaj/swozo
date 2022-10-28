@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -101,17 +102,27 @@ public class ScheduleHandler {
     ) {
         return resourceDetails -> {
             try {
-                scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING);
-                scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
+                switchToProvisioningState(request, resourceDetails);
                 var links = delegateProvisioning(request, provisioner, resourceDetails);
-                scheduleRequestTracker.updateStatus(request.getId(), READY);
-                scheduleRequestTracker.saveLinks(request.getId(), links);
+                switchToReadyState(request, links);
                 scheduleInstanceDeletion(request, resourceDetails.internalResourceId());
             } catch (ProvisioningFailed e) {
                 logger.error("Provisioning software on: {} failed.", resourceDetails, e);
                 scheduleRequestTracker.markAsFailure(request.getId());
             }
         };
+    }
+
+    @Transactional
+    protected void switchToProvisioningState(ScheduleRequestEntity request, VMResourceDetails resourceDetails) {
+        scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING);
+        scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
+    }
+
+    @Transactional
+    protected void switchToReadyState(ScheduleRequestEntity request, List<ActivityLinkInfo> links) {
+        scheduleRequestTracker.updateStatus(request.getId(), READY);
+        scheduleRequestTracker.saveLinks(request.getId(), links);
     }
 
     private List<ActivityLinkInfo> delegateProvisioning(ScheduleRequestEntity request, TimedSoftwareProvisioner provisioner, VMResourceDetails resourceDetails) {

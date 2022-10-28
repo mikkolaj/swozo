@@ -19,5 +19,5 @@ public class VMEntity extends BaseEntity {
     private String zone;
     private String networkName;
     private String vmName;
-    private VMStatus status = VMStatus.CREATING;
+    private VMStatus status = VMStatus.CREATED;
 }

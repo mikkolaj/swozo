@@ -46,9 +46,10 @@ public class ScheduleRequestTracker {
     public List<ScheduleRequestEntity> getValidSchedulesToRestartFromBeginning() {
         var timeThreshold = getFurthestProvisioningThreshold();
         var submittedSchedules = getValidSchedulesWithStatus(timeThreshold, RequestStatus.SUBMITTED);
+        var schedulesFailedDuringVmCreation = getValidSchedulesWithStatus(timeThreshold, RequestStatus.VM_CREATING);
         var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(timeThreshold, RequestStatus.VM_CREATION_FAILED);
 
-        return combineLists(submittedSchedules, schedulesFailedOnVmCreation);
+        return combineLists(submittedSchedules, schedulesFailedDuringVmCreation, schedulesFailedOnVmCreation);
     }
 
     public List<ScheduleRequestEntity> getValidSchedulesToReprovision() {
@@ -57,6 +58,11 @@ public class ScheduleRequestTracker {
         var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(timeThreshold, RequestStatus.PROVISIONING_FAILED);
 
         return combineLists(submittedSchedules, schedulesFailedOnVmCreation);
+    }
+
+    public List<ScheduleRequestEntity> getValidReadySchedules() {
+        var timeThreshold = getFurthestProvisioningThreshold();
+        return getValidSchedulesWithStatus(timeThreshold, RequestStatus.READY);
     }
 
     private LocalDateTime getFurthestProvisioningThreshold() {
@@ -115,6 +121,7 @@ public class ScheduleRequestTracker {
         requestRepository.save(scheduleRequestEntity);
     }
 
+    // TODO: use this sometime, maybe after a while it'd be nice to clean the db from old requests
     public void stopTracking(Long scheduleRequestId) {
         requestRepository.deleteById(scheduleRequestId);
     }

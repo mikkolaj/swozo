@@ -51,7 +51,6 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
         try {
             var vmAddress = handleVmNameCollisions(psm, namePrefix);
             var vmEntity = vmRepository.save(vmMapper.toPersistence(vmAddress));
-            updateStatus(vmEntity, VMStatus.CREATED);
             var publicIPAddress = manager.getInstanceExternalIP(vmAddress);
             return CompletableFuture
                     .completedFuture(getVMResourceDetails(publicIPAddress, vmEntity.getId()))

@@ -10,4 +10,5 @@ import java.util.List;
 public interface ScheduleRequestRepository extends JpaRepository<ScheduleRequestEntity, Long> {
     List<ScheduleRequestEntity> findByEndTimeLessThanAndStatusNot(LocalDateTime dateTime, RequestStatus status);
     List<ScheduleRequestEntity> findByEndTimeGreaterThanAndStatusEquals(LocalDateTime dateTime, RequestStatus status);
+    boolean existsByVmResourceIdEquals(Long vmResourceId);
 }
