@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 @Component
 @Profile("!test")
@@ -28,10 +29,11 @@ public class BrokenVmCleaner {
         logger.info("Successfully deleted {} broken vms", deletedVms);
     }
 
-    private long deleteVmsWithBrokenMetadata() {
+    @Transactional
+    protected long deleteVmsWithBrokenMetadata() {
         return vmRepository.findAllByStatusEquals(VMStatus.CREATED)
                 .filter(vmEntity -> !requestRepository.existsByVmResourceIdEquals(vmEntity.getId()))
-                .peek(vmEntity -> CheckedExceptionConverter.from(vmProvider::deleteInstance).apply(vmEntity.getId()))
+                .map(vmEntity -> CheckedExceptionConverter.from(vmProvider::deleteInstance).apply(vmEntity.getId()))
                 .count();
     }
 }
