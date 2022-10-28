@@ -2,6 +2,7 @@ package com.swozo.orchestrator.cloud.software.jupyter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.swozo.communication.http.RequestSender;
+import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.ScheduleType;
@@ -15,7 +16,6 @@ import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.NotebookFailed;
 import com.swozo.orchestrator.configuration.ApplicationProperties;
-import com.swozo.utils.SupportedLanguage;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -37,7 +37,8 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
-    private static final String MAIN_LINK_DESCRIPTION = "Hasło: swozo123"; // TODO
+    private static final String MAIN_LINK_DESCRIPTION = "swozo123"; // TODO
+    private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
     private final ApplicationProperties properties;
@@ -46,7 +47,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
 
     @Override
     public ServiceConfig getServiceConfig() {
-        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), JupyterParameters.getParameterDescriptions());
+        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), JupyterParameters.getParameterDescriptions(translationsProvider));
     }
 
     @Override
@@ -90,12 +91,9 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
         return List.of(new ActivityLinkInfo(
                 formattedLink,
-                // TODO refactor this
-                Map.of(
-                        SupportedLanguage.PL, "<ol>" +
-                                "<li>Otwórz link</li>" +
-                                "<li>Wpisz hasło w formularzu:" + MAIN_LINK_DESCRIPTION + " </li>" +
-                                "</ol>"
+                translationsProvider.t(
+                        "services.jupyter.connectionInstruction",
+                        Map.of("password", MAIN_LINK_DESCRIPTION)
                 )
         ));
     }

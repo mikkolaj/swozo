@@ -1,8 +1,8 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
+import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
-import com.swozo.utils.SupportedLanguage;
 
 import java.util.List;
 import java.util.Map;
@@ -17,14 +17,11 @@ public record JupyterParameters(String notebookLocation) {
         return new JupyterParameters(notebookLocation);
     }
 
-    public static List<ParameterDescription> getParameterDescriptions() {
+    public static List<ParameterDescription> getParameterDescriptions(TranslationsProvider translationsProvider) {
         return List.of(
                 ParameterDescription.builder(NOTEBOOK_LOCATION_PARAM)
                         .withTranslatedLabel(
-                                Map.of(
-                                        SupportedLanguage.PL, "Startowy notebook",
-                                        SupportedLanguage.EN, "Initial notebook"
-                                )
+                            translationsProvider.t("services.jupyter.dynamicParams.notebookLocation.label")
                         )
                         .ofFile()
                         .withAllowedExtensions(List.of("ipynb"))

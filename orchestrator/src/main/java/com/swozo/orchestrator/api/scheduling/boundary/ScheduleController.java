@@ -3,13 +3,13 @@ package com.swozo.orchestrator.api.scheduling.boundary;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.swozo.communication.http.RequestSender;
 import com.swozo.config.Config;
+import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.orchestrator.api.scheduling.control.ScheduleService;
-import com.swozo.utils.SupportedLanguage;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,6 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -32,6 +31,7 @@ public class ScheduleController {
     private final RequestSender requestSender;
     private final ScheduleService service;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final TranslationsProvider translationsProvider;
 
     @PostMapping
     public ScheduleResponse schedule(@RequestBody ScheduleRequest request) {
@@ -48,10 +48,10 @@ public class ScheduleController {
         s.addLast(new ServiceConfig(ScheduleType.DOCKER.toString(),
                 List.of(
                         ParameterDescription.builder("dockerImageUrl")
-                                .withTranslatedLabel(Map.of(SupportedLanguage.PL, "Link do publicznego obrazu"))
+                                .withTranslatedLabel(translationsProvider.t("services.docker.dynamicParams.dockerImageUrl.label"))
                                 .ofText().build(),
                         ParameterDescription.builder("resultFilePath", false)
-                                .withTranslatedLabel(Map.of(SupportedLanguage.PL, "Ścieżka do pliku wynikowego"))
+                                .withTranslatedLabel(translationsProvider.t("services.docker.dynamicParams.resultFilePath.label"))
                                 .ofText().build()
                 )));
         return s;
