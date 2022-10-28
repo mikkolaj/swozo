@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ActivityModuleRepository extends JpaRepository<ActivityModule, Long> {
     int countActivityModulesByServiceModuleId(Long serviceModuleId);
@@ -19,4 +20,6 @@ public interface ActivityModuleRepository extends JpaRepository<ActivityModule, 
             "offset ?2 limit ?3"
     )
     List<ActivityModule> getActivityModulesThatUseServiceModule(Long serviceModuleId, Long offset, Long limit);
+
+    Optional<ActivityModule> findByRequestId(Long requestId);
 }

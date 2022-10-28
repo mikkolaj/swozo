@@ -162,7 +162,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activity.addActivityModule(new ActivityModule(
                 serviceModule,
                 activity,
-                1L,
+                9999999L,
                 List.of(activityLink1)
         ));
         course.addActivity(activity);
@@ -180,7 +180,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activity2.addActivityModule(new ActivityModule(
                 serviceModule,
                 activity2,
-                1L,
+                99999L,
                 List.of(activityLink1)
         ));
         course.addActivity(activity2);

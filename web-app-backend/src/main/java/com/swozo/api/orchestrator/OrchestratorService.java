@@ -1,7 +1,5 @@
 package com.swozo.api.orchestrator;
 
-import com.swozo.exceptions.ServiceUnavailableException;
-import com.swozo.model.links.OrchestratorLinkResponse;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
@@ -15,10 +13,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrchestratorService {
     private final OrchestratorRequestSender requestSender;
-
-    public OrchestratorLinkResponse getActivityLinks(Long scheduleRequestId) throws ServiceUnavailableException {
-        return requestSender.getActivityLinks(scheduleRequestId).join();
-    }
 
     public ScheduleResponse sendScheduleRequest(ScheduleRequest scheduleRequest) {
         return requestSender.sendScheduleRequest(scheduleRequest).join();

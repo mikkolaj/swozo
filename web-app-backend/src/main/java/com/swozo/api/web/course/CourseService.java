@@ -1,7 +1,6 @@
 package com.swozo.api.web.course;
 
 import com.swozo.api.orchestrator.ScheduleService;
-import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
@@ -32,7 +31,6 @@ public class CourseService {
     private final UserService userService;
     private final CourseMapper courseMapper;
     private final ScheduleService scheduleService;
-    private final ActivityModuleService activityModuleService;
     private final CourseValidator courseValidator;
 
     public List<Course> getAllCourses() {
@@ -51,10 +49,6 @@ public class CourseService {
 
     public CourseDetailsDto getCourseDetails(Long courseId, Long userId) {
         var course = courseRepository.getById(courseId);
-        // TODO this will let us check if they are present by refreshing the page MAKE IT BeTtEr
-        activityModuleService
-                .provideLinksForActivityModules(course.getActivities().stream().flatMap(x -> x.getModules().stream()).toList());
-
         return courseMapper.toDto(course, course.isCreator(userId));
     }
 

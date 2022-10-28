@@ -37,7 +37,7 @@ public class SwaggerConfig {
         String[] pathsToExclude = {
                 "/courses/all-system-courses",
                 "/service-modules/all-system-modules",
-                "/files/internal/**"
+                "/*/internal/**"
         };
 
         return GroupedOpenApi.builder()

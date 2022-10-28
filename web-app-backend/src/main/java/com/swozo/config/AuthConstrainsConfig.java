@@ -32,7 +32,7 @@ public class AuthConstrainsConfig {
     public List<AuthConstraint> authConstraints() {
         var orchestratorMatcher = EndpointMatcher.of(
                 EndpointsConfig.of("/orchestrator-test", HttpMethod.GET),
-                EndpointsConfig.of("/files/internal/**")
+                EndpointsConfig.of("/*/internal/**")
         );
 
         var jwtMatcher = AllExceptEndpointMatcher.of(

@@ -29,7 +29,7 @@ public abstract class ActivityModuleMapper {
     public ActivityLink toPersistence(ActivityLinkInfo activityLinkInfo) {
         var activityLink = toBasicPersistence(activityLinkInfo);
         activityLinkInfo.connectionInstructionHtml()
-                .forEach((key, value) -> activityLink.setTranslation(new TranslatableActivityLink(key, value)));
+                .forEach((language, value) -> activityLink.setTranslation(new TranslatableActivityLink(language, value)));
 
         return activityLink;
     }
