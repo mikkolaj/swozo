@@ -80,7 +80,7 @@ public class ScheduleHandler {
     }
 
     private void handleFailedVmCreation(ScheduleRequestEntity request, VMOperationFailed ex) {
-        logger.error("Error while creating instance. Request: {}", request, ex);
+        logger.error("Error while creating instance for request [id: {}]", request.getId(), ex);
         scheduleRequestTracker.markAsFailure(request.getId());
     }
 
@@ -107,7 +107,7 @@ public class ScheduleHandler {
                 switchToReadyState(request, links);
                 scheduleInstanceDeletion(request, resourceDetails.internalResourceId());
             } catch (ProvisioningFailed e) {
-                logger.error("Provisioning software on: {} failed.", resourceDetails, e);
+                logger.error("Provisioning request [id: {}] on: {} failed.", request.getId(), resourceDetails, e);
                 scheduleRequestTracker.markAsFailure(request.getId());
             }
         };
@@ -133,9 +133,9 @@ public class ScheduleHandler {
     }
 
     public void scheduleInstanceDeletion(ScheduleRequestEntity requestEntity, long internalResourceId) {
-        scheduler.schedule(
-                () -> deleteInstance(requestEntity, internalResourceId),
-                timingService.getDeletionOffset(requestMapper.toDto(requestEntity), CLEANUP_SECONDS));
+        var deletionOffset = timingService.getDeletionOffset(requestMapper.toDto(requestEntity), CLEANUP_SECONDS);
+        logger.info("Scheduling instance deletion for request [id: {}] in {} seconds", requestEntity.getId(), deletionOffset);
+        scheduler.schedule(() -> deleteInstance(requestEntity, internalResourceId), deletionOffset);
     }
 
     public Void deleteInstance(ScheduleRequestEntity request, long internalResourceId) throws InterruptedException {
@@ -143,7 +143,7 @@ public class ScheduleHandler {
             timedVmProvider.deleteInstance(internalResourceId)
                     .thenRun(() -> scheduleRequestTracker.updateStatus(request.getId(), DELETED));
         } catch (VMOperationFailed e) {
-            logger.error("Deleting instance failed!", e);
+            logger.error("Deleting instance for request [id: {}] failed!", request, e);
         }
         return null;
     }
