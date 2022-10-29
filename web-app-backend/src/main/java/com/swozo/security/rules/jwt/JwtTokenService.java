@@ -1,8 +1,8 @@
 package com.swozo.security.rules.jwt;
 
 import com.swozo.config.EnvNames;
-import com.swozo.persistence.Role;
-import com.swozo.persistence.User;
+import com.swozo.persistence.user.Role;
+import com.swozo.persistence.user.User;
 import com.swozo.security.TokenService;
 import com.swozo.security.keys.KeyProvider;
 import com.swozo.security.util.AuthUtils;

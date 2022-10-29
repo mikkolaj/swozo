@@ -33,6 +33,9 @@ export const Navbar = () => {
                         <WithRole roles={[STUDENT]}>
                             <NavbarItem textI18n="navbar.myFiles" route={PageRoutes.FILES} />
                         </WithRole>
+                        <WithRole roles={[TEACHER]}>
+                            <NavbarItem textI18n="navbar.publicModules" route={PageRoutes.PUBLIC_MODULES} />
+                        </WithRole>
                         <WithPreference role={TECHNICAL_TEACHER}>
                             <NavbarItem textI18n="navbar.myModules" route={PageRoutes.MY_MODULES} />
                         </WithPreference>

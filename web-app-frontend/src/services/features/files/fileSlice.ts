@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { FileDto, InitFileUploadRequest, StorageAccessRequest, UploadAccessDto } from 'api';
 import { ApiError } from 'api/errors';
+import _ from 'lodash';
 import { AppDispatch, RootState } from 'services/store';
 import { FileHandler } from './FileHandler';
 import { GCloudFileHandler } from './GCloudFileHandler';
@@ -28,9 +29,11 @@ export type DownloadRequest = {
     fetcher: () => Promise<StorageAccessRequest>;
 };
 
-export type FileHandlerState = Record<FileStateKey, UploadState>;
+export type FileHandlerState = {
+    uploads: Record<FileStateKey, UploadState>;
+};
 
-const buildInitialState = (): FileHandlerState => ({});
+const buildInitialState = (): FileHandlerState => ({ uploads: {} });
 
 export const buildFileStateKey = (context: string, filename: string): FileStateKey =>
     `${context}/${filename}`;
@@ -51,7 +54,7 @@ export const upload = createAsyncThunk<
 >(
     'files/upload',
     async ({ file, uploadContext, preparator, acker, onSuccess, onError }, { getState, dispatch }) => {
-        if (getState().files[buildFileStateKey(uploadContext, file.name)]?.isUploading) return;
+        if (getState().files.uploads[buildFileStateKey(uploadContext, file.name)]?.isUploading) return;
 
         dispatch(receiveStartUpload({ filename: file.name, uploadContext }));
 
@@ -83,7 +86,7 @@ export const fileSlice = createSlice({
             state: FileHandlerState,
             action: PayloadAction<{ filename: string; uploadContext: string }>
         ) => {
-            state[buildFileStateKey(action.payload.uploadContext, action.payload.filename)] = {
+            state.uploads[buildFileStateKey(action.payload.uploadContext, action.payload.filename)] = {
                 filename: action.payload.filename,
                 uploadContext: action.payload.uploadContext,
                 isUploading: true,
@@ -94,11 +97,8 @@ export const fileSlice = createSlice({
             state: FileHandlerState,
             action: PayloadAction<{ filename: string; uploadContext: string }>
         ) => {
-            const key = buildFileStateKey(action.payload.filename, action.payload.uploadContext);
-            state[key] = {
-                ...state[key],
-                isUploading: false,
-            };
+            const key = buildFileStateKey(action.payload.uploadContext, action.payload.filename);
+            state.uploads = _.omit(state.uploads, key);
         },
     },
 });

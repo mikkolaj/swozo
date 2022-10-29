@@ -11,6 +11,7 @@ public record CreateCourseRequest(
         @Schema(required = true) String subject,
         @Schema(required = true) String description,
         @Schema(required = true) int expectedStudentCount,
+        @Schema(required = true) boolean isPublic,
         @Schema(required = true) List<CreateActivityRequest> activities,
         Optional<String> password
 ) {

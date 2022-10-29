@@ -16,7 +16,7 @@ public class TimedSoftwareProvisionerFactory {
     @Autowired
     public TimedSoftwareProvisionerFactory(List<TimedSoftwareProvisioner> provisioners) {
         this.provisioners = provisioners.stream()
-                .collect(Collectors.toMap(provisioner -> provisioner.getServiceConfig().scheduleType(), p -> p));
+                .collect(Collectors.toMap(TimedSoftwareProvisioner::getScheduleType, p -> p));
     }
 
     public TimedSoftwareProvisioner getProvisioner(ScheduleType type) {

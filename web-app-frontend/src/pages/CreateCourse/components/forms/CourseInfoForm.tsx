@@ -1,7 +1,10 @@
+import { Checkbox, FormControlLabel } from '@mui/material';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormPasswordField } from 'common/Input/FormPasswordField';
 import { SlideProps } from 'common/SlideForm/util';
 import { CourseValues } from 'pages/CreateCourse/util';
+import { ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ValidationSchema } from 'utils/types';
 import * as Yup from 'yup';
 
@@ -9,7 +12,15 @@ export const courseValidationSchema: ValidationSchema<CourseValues> = {
     name: Yup.string().max(1000, 'e1').required('e2'),
 };
 
-export const CourseInfoForm = ({ nameBuilder }: SlideProps) => {
+type Props = SlideProps & {
+    values: CourseValues;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handleChange: (e: ChangeEvent<any>) => void;
+};
+
+export const CourseInfoForm = ({ nameBuilder, handleChange, values }: Props) => {
+    const { t } = useTranslation();
+
     return (
         <>
             <FormInputField
@@ -49,6 +60,13 @@ export const CourseInfoForm = ({ nameBuilder }: SlideProps) => {
             <FormPasswordField
                 name={nameBuilder('password')}
                 i18nLabel="createCourse.slides.0.form.password"
+            />
+            <FormControlLabel
+                sx={{ mt: 2 }}
+                control={<Checkbox checked={values.isPublic} value={values.isPublic} />}
+                label={t('createCourse.slides.0.form.public')}
+                name={nameBuilder('isPublic')}
+                onChange={handleChange}
             />
 
             {/* // TODO: this probably only complicates things, leaving it here just in case */}

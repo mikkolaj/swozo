@@ -52,6 +52,12 @@ export interface CreateCourseRequest {
     expectedStudentCount: number;
     /**
      * 
+     * @type {boolean}
+     * @memberof CreateCourseRequest
+     */
+    isPublic: boolean;
+    /**
+     * 
      * @type {Array<CreateActivityRequest>}
      * @memberof CreateCourseRequest
      */
@@ -78,6 +84,7 @@ export function CreateCourseRequestFromJSONTyped(json: any, ignoreDiscriminator:
         'subject': json['subject'],
         'description': json['description'],
         'expectedStudentCount': json['expectedStudentCount'],
+        'isPublic': json['isPublic'],
         'activities': ((json['activities'] as Array<any>).map(CreateActivityRequestFromJSON)),
         'password': !exists(json, 'password') ? undefined : json['password'],
     };
@@ -96,6 +103,7 @@ export function CreateCourseRequestToJSON(value?: CreateCourseRequest | null): a
         'subject': value.subject,
         'description': value.description,
         'expectedStudentCount': value.expectedStudentCount,
+        'isPublic': value.isPublic,
         'activities': ((value.activities as Array<any>).map(CreateActivityRequestToJSON)),
         'password': value.password,
     };

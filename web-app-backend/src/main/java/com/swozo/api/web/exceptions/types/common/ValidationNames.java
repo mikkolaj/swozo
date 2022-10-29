@@ -17,5 +17,6 @@ public interface ValidationNames {
         String MIN_DURATION = "minDuration";
         String MIN_START_TIME = "minStartTime";
         String MIN_TIME_BETWEEN = "minTimeBetween";
+        String FORBIDDEN_CHARACTERS = "forbiddenCharacters";
     }
 }

@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    InstructionDto,
+    InstructionDtoFromJSON,
+    InstructionDtoFromJSONTyped,
+    InstructionDtoToJSON,
+} from './InstructionDto';
+
 /**
  * 
  * @export
@@ -21,28 +28,16 @@ import { exists, mapValues } from '../runtime';
 export interface ServiceConnectionDetailsDto {
     /**
      * 
-     * @type {string}
+     * @type {{ [key: string]: InstructionDto; }}
      * @memberof ServiceConnectionDetailsDto
      */
-    serviceName: string;
+    connectionInstructions: { [key: string]: InstructionDto; };
     /**
      * 
      * @type {string}
      * @memberof ServiceConnectionDetailsDto
      */
-    connectionInstruction: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServiceConnectionDetailsDto
-     */
-    url?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServiceConnectionDetailsDto
-     */
-    connectionInfo?: string;
+    url: string;
 }
 
 export function ServiceConnectionDetailsDtoFromJSON(json: any): ServiceConnectionDetailsDto {
@@ -55,10 +50,8 @@ export function ServiceConnectionDetailsDtoFromJSONTyped(json: any, ignoreDiscri
     }
     return {
         
-        'serviceName': json['serviceName'],
-        'connectionInstruction': json['connectionInstruction'],
-        'url': !exists(json, 'url') ? undefined : json['url'],
-        'connectionInfo': !exists(json, 'connectionInfo') ? undefined : json['connectionInfo'],
+        'connectionInstructions': (mapValues(json['connectionInstructions'], InstructionDtoFromJSON)),
+        'url': json['url'],
     };
 }
 
@@ -71,10 +64,8 @@ export function ServiceConnectionDetailsDtoToJSON(value?: ServiceConnectionDetai
     }
     return {
         
-        'serviceName': value.serviceName,
-        'connectionInstruction': value.connectionInstruction,
+        'connectionInstructions': (mapValues(value.connectionInstructions, InstructionDtoToJSON)),
         'url': value.url,
-        'connectionInfo': value.connectionInfo,
     };
 }
 

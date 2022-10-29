@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { triggerError } from 'services/features/error/errorSlice';
 import { useAppDispatch } from 'services/store';
+import { PageRoutes } from 'utils/routes';
 
 export const buildErrorPageHandler = (navButtonMsg: string, navigateTo: string): ErrorHandler => {
     return buildErrorHandler(
@@ -28,6 +29,24 @@ export const useFileErrorHandlers = () => {
     });
 
     return commonHandlers;
+};
+
+export const useNoCourseOrNoActivityErrorHandlers = (
+    courseId: string,
+    _activityId: string
+): HandlerConfig => {
+    const { t } = useTranslation();
+
+    return {
+        [ErrorType.COURSE_NOT_FOUND]: buildErrorPageHandler(
+            t('activityInstructions.error.noCourse'),
+            PageRoutes.MY_COURSES
+        ),
+        [ErrorType.ACTIVITY_NOT_FOUND]: buildErrorPageHandler(
+            t('activityInstructions.error.noActivity'),
+            PageRoutes.Course(courseId)
+        ),
+    };
 };
 
 export const useCommonErrorHandlers = () => {
