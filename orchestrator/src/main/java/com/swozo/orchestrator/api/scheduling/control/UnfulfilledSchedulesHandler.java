@@ -1,10 +1,12 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
+import com.swozo.exceptions.PropagatingException;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -26,19 +28,31 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
         requestTracker.getSchedulesToDelete().forEach(this::deleteCreatedVm);
-        requestTracker.getValidSchedulesToRestartFromBeginning().forEach(scheduleHandler::delegateScheduling);
+        requestTracker.getValidSchedulesToRestartFromBeginning().forEach(this::delegateScheduling);
         requestTracker.getValidSchedulesToReprovision().forEach(this::reprovision);
         requestTracker.getValidReadySchedules().forEach(this::scheduleDeletion);
     }
 
     private void deleteCreatedVm(ScheduleRequestEntity requestEntity) {
-        requestEntity.getVmResourceId().ifPresent(resourceId ->
-                CheckedExceptionConverter
-                        .from(scheduleHandler::deleteInstance)
-                        .accept(requestEntity, resourceId)
-        );
+        try {
+            requestEntity.getVmResourceId().ifPresent(resourceId ->
+                    CheckedExceptionConverter
+                            .from(scheduleHandler::deleteInstance)
+                            .accept(requestEntity, resourceId)
+            );
+        } catch (RuntimeException ex) {
+            handleRuntimeException(ex);
+        }
+    }
+
+    private void delegateScheduling(ScheduleRequestEntity requestEntity) {
+        try {
+            scheduleHandler.delegateScheduling(requestEntity);
+        } catch (RuntimeException ex) {
+            handleRuntimeException(ex);
+        }
     }
 
     private void reprovision(ScheduleRequestEntity requestEntity) {
@@ -49,6 +63,8 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
                     .thenAccept(extractDetailsAndReprovision(requestEntity));
         } catch (IllegalArgumentException | IllegalStateException ex) {
             logger.warn(ex.getMessage());
+        } catch (RuntimeException ex) {
+            handleRuntimeException(ex);
         }
     }
 
@@ -66,6 +82,8 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
             scheduleHandler.scheduleInstanceDeletion(requestEntity, resourceId);
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());
+        } catch (RuntimeException ex) {
+            handleRuntimeException(ex);
         }
     }
 
@@ -75,5 +93,13 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
 
     private Supplier<IllegalStateException> getNoMatchingVmException(ScheduleRequestEntity requestEntity) {
         return () -> new IllegalStateException(String.format("Can't find a VM associated to request: %s", requestEntity));
+    }
+
+    private void handleRuntimeException(RuntimeException ex) {
+        if (ex instanceof PropagatingException) {
+            throw ex;
+        } else {
+            logger.error("Exception during recovery phase.", ex);
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.swozo.orchestrator.api.links.persistence.repository.ActivityLinkInfoR
 import com.swozo.orchestrator.api.scheduling.persistence.entity.RequestStatus;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
+import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleTypeMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ScheduleRequestRepository;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
@@ -26,6 +27,7 @@ public class ScheduleRequestTracker {
     private final ScheduleRequestRepository requestRepository;
     private final ActivityLinkInfoRepository linkRepository;
     private final ScheduleRequestMapper requestMapper;
+    private final ScheduleTypeMapper scheduleTypeMapper;
     private final ActivityLinkInfoMapper linkMapper;
     private final TimedSoftwareProvisionerFactory provisionerFactory;
 
@@ -97,8 +99,8 @@ public class ScheduleRequestTracker {
 
 
     private LocalDateTime getTargetAvailability(ScheduleRequestEntity requestEntity) {
-        var dto = requestMapper.toDto(requestEntity);
-        var provisioningSeconds = provisionerFactory.getProvisioner(dto.scheduleType()).getProvisioningSeconds();
+        var scheduleType = scheduleTypeMapper.toDto(requestEntity.getScheduleType());
+        var provisioningSeconds = provisionerFactory.getProvisioner(scheduleType).getProvisioningSeconds();
         return LocalDateTime.now().plusSeconds(provisioningSeconds);
     }
 

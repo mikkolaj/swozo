@@ -4,6 +4,7 @@ import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
+import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleTypeMapper;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -35,8 +37,10 @@ public class ScheduleHandler {
     private final TimedSoftwareProvisionerFactory provisionerFactory;
     private final ScheduleRequestTracker scheduleRequestTracker;
     private final ScheduleRequestMapper requestMapper;
+    private final ScheduleTypeMapper scheduleTypeMapper;
     private final TimingService timingService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-HH-mm-ss");
 
     public ScheduleEntityWithProvisioner startTracking(ScheduleRequest request) throws InvalidParametersException {
         var provisioner = getProvisioner(request);
@@ -51,7 +55,7 @@ public class ScheduleHandler {
 
     public void delegateScheduling(ScheduleRequestEntity requestEntity, TimedSoftwareProvisioner provisioner) {
         var offset =
-                timingService.getSchedulingOffset(requestMapper.toDto(requestEntity), provisioner.getProvisioningSeconds());
+                timingService.getSchedulingOffset(requestEntity, provisioner.getProvisioningSeconds());
         logger.info("Scheduling request [id: {}] in {} seconds.", requestEntity.getId(), offset);
         scheduler.schedule(() -> scheduleCreationAndDeletion(requestEntity, provisioner), offset);
     }
@@ -64,7 +68,7 @@ public class ScheduleHandler {
             scheduleRequestTracker.updateStatus(request.getId(), VM_CREATING);
             var requestDto = requestMapper.toDto(request);
             timedVmProvider
-                    .createInstance(requestDto.psm(), requestDto.buildVmNamePrefix())
+                    .createInstance(requestDto.psm(), buildVmNamePrefix(request))
                     .thenAccept(provisionSoftwareAndScheduleDeletion(request, provisioner))
                     .get();
         } catch (ExecutionException e) {
@@ -133,7 +137,7 @@ public class ScheduleHandler {
     }
 
     public void scheduleInstanceDeletion(ScheduleRequestEntity requestEntity, long internalResourceId) {
-        var deletionOffset = timingService.getDeletionOffset(requestMapper.toDto(requestEntity), CLEANUP_SECONDS);
+        var deletionOffset = timingService.getDeletionOffset(requestEntity, CLEANUP_SECONDS);
         logger.info("Scheduling instance deletion for request [id: {}] in {} seconds", requestEntity.getId(), deletionOffset);
         scheduler.schedule(() -> deleteInstance(requestEntity, internalResourceId), deletionOffset);
     }
@@ -149,11 +153,21 @@ public class ScheduleHandler {
     }
 
     public TimedSoftwareProvisioner getProvisioner(ScheduleRequestEntity requestEntity) {
-        return getProvisioner(requestMapper.toDto(requestEntity));
+        return provisionerFactory.getProvisioner(scheduleTypeMapper.toDto(requestEntity.getScheduleType()));
     }
 
     public TimedSoftwareProvisioner getProvisioner(ScheduleRequest request) {
         return provisionerFactory.getProvisioner(request.scheduleType());
+    }
+
+
+    public String buildVmNamePrefix(ScheduleRequestEntity request) {
+        return String.format("%s-%s--%s--%s",
+                request.getScheduleType().toString().toLowerCase(),
+                request.getStartTime().format(formatter),
+                request.getEndTime().format(formatter),
+                request.getId()
+        );
     }
 
     public record ScheduleEntityWithProvisioner(ScheduleRequestEntity entity, TimedSoftwareProvisioner provisioner) {

@@ -61,15 +61,12 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     }
 
     private VMAddress handleVmNameCollisions(Psm psm, String namePrefix) throws IOException, ExecutionException, TimeoutException, InterruptedException {
-        var suffix = 0;
-        Optional<VMAddress> vmAddress = Optional.empty();
-
-        while (vmAddress.isEmpty()) {
+        for (var suffix = 0; ; suffix += 1) {
             var nameToTry = String.format("%s-%d", namePrefix, suffix);
-            vmAddress = tryCreatingVmWithName(psm, String.format(nameToTry));
-            suffix += 1;
+            var vmAddress = tryCreatingVmWithName(psm, String.format(nameToTry));
+            if (vmAddress.isPresent())
+                return vmAddress.get();
         }
-        return vmAddress.get();
     }
 
     private Optional<VMAddress> tryCreatingVmWithName(Psm psm, String name) throws IOException, ExecutionException, TimeoutException, InterruptedException {
