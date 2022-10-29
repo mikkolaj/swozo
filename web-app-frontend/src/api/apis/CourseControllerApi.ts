@@ -15,15 +15,6 @@
 
 import * as runtime from '../runtime';
 import {
-    Activity,
-    ActivityFromJSON,
-    ActivityToJSON,
-    AddStudentRequest,
-    AddStudentRequestFromJSON,
-    AddStudentRequestToJSON,
-    Course,
-    CourseFromJSON,
-    CourseToJSON,
     CourseDetailsDto,
     CourseDetailsDtoFromJSON,
     CourseDetailsDtoToJSON,
@@ -36,9 +27,9 @@ import {
     JoinCourseRequest,
     JoinCourseRequestFromJSON,
     JoinCourseRequestToJSON,
-    User,
-    UserFromJSON,
-    UserToJSON,
+    ModifyParticipantRequest,
+    ModifyParticipantRequestFromJSON,
+    ModifyParticipantRequestToJSON,
 } from '../models';
 
 export interface AddCourseRequest {
@@ -47,23 +38,14 @@ export interface AddCourseRequest {
 
 export interface AddStudentToCourseRequest {
     courseId: number;
-    addStudentRequest: AddStudentRequest;
+    modifyParticipantRequest: ModifyParticipantRequest;
 }
 
 export interface DeleteCourseRequest {
     id: number;
 }
 
-export interface EditCourseRequest {
-    id: number;
-    createCourseRequest: CreateCourseRequest;
-}
-
 export interface GetCourseRequest {
-    id: number;
-}
-
-export interface GetCourseActivityListRequest {
     id: number;
 }
 
@@ -77,7 +59,7 @@ export interface JoinCourseOperationRequest {
 
 export interface RemoveStudentFromCourseRequest {
     courseId: number;
-    user: User;
+    modifyParticipantRequest: ModifyParticipantRequest;
 }
 
 /**
@@ -131,8 +113,8 @@ export class CourseControllerApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('courseId','Required parameter requestParameters.courseId was null or undefined when calling addStudentToCourse.');
         }
 
-        if (requestParameters.addStudentRequest === null || requestParameters.addStudentRequest === undefined) {
-            throw new runtime.RequiredError('addStudentRequest','Required parameter requestParameters.addStudentRequest was null or undefined when calling addStudentToCourse.');
+        if (requestParameters.modifyParticipantRequest === null || requestParameters.modifyParticipantRequest === undefined) {
+            throw new runtime.RequiredError('modifyParticipantRequest','Required parameter requestParameters.modifyParticipantRequest was null or undefined when calling addStudentToCourse.');
         }
 
         const queryParameters: any = {};
@@ -154,7 +136,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: AddStudentRequestToJSON(requestParameters.addStudentRequest),
+            body: ModifyParticipantRequestToJSON(requestParameters.modifyParticipantRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsDtoFromJSON(jsonValue));
@@ -204,49 +186,6 @@ export class CourseControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async editCourseRaw(requestParameters: EditCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Course>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling editCourse.');
-        }
-
-        if (requestParameters.createCourseRequest === null || requestParameters.createCourseRequest === undefined) {
-            throw new runtime.RequiredError('createCourseRequest','Required parameter requestParameters.createCourseRequest was null or undefined when calling editCourse.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("JWT_AUTH", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/courses/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
-            method: 'PUT',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CreateCourseRequestToJSON(requestParameters.createCourseRequest),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CourseFromJSON(jsonValue));
-    }
-
-    /**
-     */
-    async editCourse(requestParameters: EditCourseRequest, initOverrides?: RequestInit): Promise<Course> {
-        const response = await this.editCourseRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
     async getCourseRaw(requestParameters: GetCourseRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsDto>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getCourse.');
@@ -278,42 +217,6 @@ export class CourseControllerApi extends runtime.BaseAPI {
      */
     async getCourse(requestParameters: GetCourseRequest, initOverrides?: RequestInit): Promise<CourseDetailsDto> {
         const response = await this.getCourseRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     */
-    async getCourseActivityListRaw(requestParameters: GetCourseActivityListRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<Activity>>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getCourseActivityList.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        if (this.configuration && this.configuration.accessToken) {
-            const token = this.configuration.accessToken;
-            const tokenString = await token("JWT_AUTH", []);
-
-            if (tokenString) {
-                headerParameters["Authorization"] = `Bearer ${tokenString}`;
-            }
-        }
-        const response = await this.request({
-            path: `/courses/{id}/activities`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ActivityFromJSON));
-    }
-
-    /**
-     */
-    async getCourseActivityList(requestParameters: GetCourseActivityListRequest, initOverrides?: RequestInit): Promise<Array<Activity>> {
-        const response = await this.getCourseActivityListRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -431,8 +334,8 @@ export class CourseControllerApi extends runtime.BaseAPI {
             throw new runtime.RequiredError('courseId','Required parameter requestParameters.courseId was null or undefined when calling removeStudentFromCourse.');
         }
 
-        if (requestParameters.user === null || requestParameters.user === undefined) {
-            throw new runtime.RequiredError('user','Required parameter requestParameters.user was null or undefined when calling removeStudentFromCourse.');
+        if (requestParameters.modifyParticipantRequest === null || requestParameters.modifyParticipantRequest === undefined) {
+            throw new runtime.RequiredError('modifyParticipantRequest','Required parameter requestParameters.modifyParticipantRequest was null or undefined when calling removeStudentFromCourse.');
         }
 
         const queryParameters: any = {};
@@ -454,7 +357,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
-            body: UserToJSON(requestParameters.user),
+            body: ModifyParticipantRequestToJSON(requestParameters.modifyParticipantRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsDtoFromJSON(jsonValue));

@@ -28,4 +28,8 @@ public class ScheduleService {
                 .map(TimedSoftwareProvisioner::getServiceConfig)
                 .toList();
     }
+
+    public ServiceConfig getServiceConfig(ScheduleType scheduleType) {
+        return provisionerFactory.getProvisioner(scheduleType).getServiceConfig();
+    }
 }

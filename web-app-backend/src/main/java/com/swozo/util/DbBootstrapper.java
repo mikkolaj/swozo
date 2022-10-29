@@ -1,5 +1,6 @@
 package com.swozo.util;
 
+import com.swozo.api.common.files.FileRepository;
 import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activitymodule.ActivityModuleRepository;
 import com.swozo.api.web.auth.dto.RoleDto;
@@ -8,20 +9,31 @@ import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.model.scheduling.properties.ScheduleType;
-import com.swozo.persistence.*;
+import com.swozo.persistence.Course;
+import com.swozo.persistence.RemoteFile;
+import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.activity.Activity;
+import com.swozo.persistence.activity.ActivityLink;
+import com.swozo.persistence.activity.ActivityModule;
+import com.swozo.persistence.activity.utils.TranslatableActivityLink;
+import com.swozo.persistence.user.Role;
+import com.swozo.persistence.user.User;
+import com.swozo.persistence.user.UserCourseData;
+import com.swozo.utils.SupportedLanguage;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -35,6 +47,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final ActivityRepository activityRepository;
     private final ServiceModuleRepository serviceModuleRepository;
     private final ActivityModuleRepository activityModuleRepository;
+    private final FileRepository fileRepository;
+    private final Environment environment;
     private boolean alreadySetup = false;
 
     @Override
@@ -46,7 +60,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         logger.info("preparing database...");
 
         prepareRoles();
-        setupTestData();
+
+        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+            setupTestData();
+        }
 
         logger.info("database ready");
         alreadySetup = true;
@@ -59,7 +76,6 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 .forEach(name -> roleRepository.save(new Role(name)));
     }
 
-    // TODO assert dev env
     private void setupTestData() {
         var adminRole = roleRepository.findByName(RoleDto.ADMIN.toString());
         userRepository.save(new User("Bolek", "Kowalski", "admin@gmail.com", "admin", List.of(adminRole)));
@@ -86,29 +102,52 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.setPassword("haslo");
         course.setJoinUUID(UUID.randomUUID().toString());
         course.setStudents(List.of(new UserCourseData(student1, course), new UserCourseData(student2, course)));
-
+        course.setSandboxMode(false);
+        course.setPublic(false);
         courseRepository.save(course);
+
+//        FILES
+        var mockFile = new RemoteFile();
+        mockFile.setPath("/test");
+        mockFile.setSizeBytes(2000L);
+
+        fileRepository.save(mockFile);
 
 //        ServiceModule
         ServiceModule serviceModule = new ServiceModule();
         serviceModule.setName("Klasy w Pythonie");
-        serviceModule.setInstructionsFromTechnicalTeacher("instrukcja do klas w pythonie trzeba miec klase");
-        serviceModule.setCreatorName("Boleslaw");
+        serviceModule.setTeacherInstructionHtml("teach");
+        serviceModule.setStudentInstructionHtml("stud");
+        serviceModule.setCreator(teacher);
+        serviceModule.setDescription("opis1");
         serviceModule.setSubject("INFORMATYKA");
-        serviceModule.setScheduleType(ScheduleType.JUPYTER);
-        serviceModule.setCreationTime(LocalDateTime.of(2022,
+        serviceModule.setScheduleTypeName(ScheduleType.JUPYTER.toString());
+        serviceModule.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
+        serviceModule.setPublic(true);
+        serviceModule.setReady(true);
+        serviceModule.setCreatedAt(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule);
 
         ServiceModule serviceModule2 = new ServiceModule();
         serviceModule2.setName("Funkcje w Pythonie");
-        serviceModule2.setInstructionsFromTechnicalTeacher("instrukcja do funkcji w pythonie trzeba funkcjonowac");
-        serviceModule2.setCreatorName("Boleslaw");
+        serviceModule2.setTeacherInstructionHtml("teach");
+        serviceModule2.setStudentInstructionHtml("stud");
+        serviceModule2.setCreator(teacher);
+        serviceModule2.setDescription("opis2");
         serviceModule2.setSubject("INFORMATYKA");
-        serviceModule2.setScheduleType(ScheduleType.JUPYTER);
-        serviceModule2.setCreationTime(LocalDateTime.of(2022,
+        serviceModule2.setScheduleTypeName(ScheduleType.JUPYTER.toString());
+        serviceModule2.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
+        serviceModule2.setPublic(true);
+        serviceModule2.setReady(true);
+        serviceModule2.setCreatedAt(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule2);
+
+        var activityLink1 = new ActivityLink();
+        activityLink1.setUrl("http://34.118.97.16/lab");
+        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
+        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
 
 //        ACTIVITIES:
         Activity activity = new Activity();
@@ -118,15 +157,14 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.JULY, 29, 17, 30, 40));
         activity.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 29, 19, 30, 40));
-        activity.setInstructionsFromTeacher(List.of(new ActivityInstruction( "Przed zajęciami należy przeczytać dokumentacje Pythona")));
+        activity.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
         activity.setCourse(course);
         activity.addActivityModule(new ActivityModule(
                 serviceModule,
                 activity,
-                "1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki",
-                null,
-                List.of(new ActivityLink("http://34.118.97.16/lab", "Login: student@123.swozo.com\nHasło: 123123")
-                )));
+                9999999L,
+                List.of(activityLink1)
+        ));
         course.addActivity(activity);
         activityRepository.save(activity);
 
@@ -137,27 +175,15 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.JULY, 30, 15, 30, 40));
         activity2.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 30, 17, 0, 40));
-        activity2.setInstructionsFromTeacher(List.of(new ActivityInstruction("Przed zajęciami należy przeczytać dokumentacje Pythona")));
+        activity2.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
         activity2.setCourse(course);
         activity2.addActivityModule(new ActivityModule(
                 serviceModule,
-                activity,
-                "1. Wejdź w link\n2. Wpisz podany wyżej login i hasło w formularzu\n3. Otwórz zakładkę pliki",
-                null,
-                List.of(new ActivityLink("http://34.118.97.16/lab", "Login: student@123.swozo.com\nHasło: 123123")
-                )));
+                activity2,
+                99999L,
+                List.of(activityLink1)
+        ));
         course.addActivity(activity2);
         activityRepository.save(activity2);
-
-
-//        ActivityModule
-        ActivityModule activityModule = new ActivityModule(
-                serviceModule,
-                activity,
-                "instrukcja",
-                null,
-                new LinkedList<>()
-        );
-        activityModuleRepository.save(activityModule);
     }
 }

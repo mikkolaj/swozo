@@ -1,30 +1,32 @@
 package com.swozo.api.web.activitymodule;
 
-import com.swozo.api.orchestrator.OrchestratorService;
 import com.swozo.mapper.ActivityModuleMapper;
-import com.swozo.persistence.ActivityModule;
+import com.swozo.model.links.ActivityLinkInfo;
+import com.swozo.persistence.activity.ActivityModule;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ActivityModuleService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final ActivityModuleRepository activityModuleRepository;
     private final ActivityModuleMapper activityModuleMapper;
-    private final OrchestratorService orchestratorService;
 
-    public void provideLinksForActivityModules(Collection<ActivityModule> activityModules) {
-        activityModules.stream()
-                .filter(activityModule -> activityModule.getLinks().isEmpty())
-                .filter(activityModule -> activityModule.getRequestId().isPresent())
-                .forEach(activityModule -> {
-                    orchestratorService.getActivityLinks(activityModule.getRequestId().get()).links().stream()
-                            .map(activityModuleMapper::toPersistence)
-                            .forEach(activityModule::addLink);
+    public void setActivityLinks(Long requestId, List<ActivityLinkInfo> links) {
+        var activityModule = activityModuleRepository.findByRequestId(requestId).orElseThrow();
+        addLinksToActivityModule(activityModule, links);
+        activityModuleRepository.save(activityModule);
+    }
 
-                    activityModuleRepository.save(activityModule);
-                });
+    private void addLinksToActivityModule(ActivityModule activityModule, List<ActivityLinkInfo> links) {
+        links.stream()
+            .map(activityModuleMapper::toPersistence)
+            .forEach(activityModule::addLink);
     }
 }

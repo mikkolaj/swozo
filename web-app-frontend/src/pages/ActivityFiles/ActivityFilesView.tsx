@@ -1,7 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import { Box, Button, Container, Divider, Grid, IconButton, Tab, Tabs, Typography } from '@mui/material';
 import { ActivityDetailsDto } from 'api';
-import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { FileInputButton } from 'common/Input/FileInputButton';
 import { PageContainer } from 'common/PageContainer/PageContainer';
@@ -14,13 +13,13 @@ import {
     stylesRowWithItemsAtTheEnd,
 } from 'common/styles';
 import { useDownload } from 'hooks/query/useDownload';
-import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useUpload } from 'hooks/query/useUpload';
 import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
-import { buildErrorPageHandler, useFileErrorHandlers } from 'hooks/useCommonErrorHandlers';
+import { useFileErrorHandlers, useNoCourseOrNoActivityErrorHandlers } from 'hooks/useCommonErrorHandlers';
+import { useCourseWithActivity } from 'hooks/useCourseActivity';
 import { useRequiredParams } from 'hooks/useRequiredParams';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
@@ -37,41 +36,21 @@ export const ActivityFilesView = () => {
     const queryClient = useQueryClient();
 
     const [currentTab, setCurrentTab] = useState(0);
-    const [activity, setActivity] = useState<ActivityDetailsDto>();
-    const [errorHandlers] = useState<HandlerConfig>({
-        [ErrorType.COURSE_NOT_FOUND]: buildErrorPageHandler(
-            t('activityInstructions.error.noCourse'),
-            PageRoutes.MY_COURSES
-        ),
-        [ErrorType.ACTIVITY_NOT_FOUND]: buildErrorPageHandler(
-            t('activityInstructions.error.noActivity'),
-            PageRoutes.Course(courseId)
-        ),
+    const errorHandlers: HandlerConfig = {
+        ...useNoCourseOrNoActivityErrorHandlers(courseId, activityId),
         ...useFileErrorHandlers(),
-    });
+    };
+
     const { isApiError, errorHandler, isApiErrorSet, consumeErrorAction, pushApiError, removeApiError } =
         useApiErrorHandling(errorHandlers);
 
-    const { data: course } = useErrorHandledQuery(
-        ['courses', courseId],
-        () => getApis().courseApi.getCourse({ id: +courseId }),
+    const { course, activity } = useCourseWithActivity(
+        courseId,
+        activityId,
+        isApiErrorSet,
         pushApiError,
         removeApiError
     );
-
-    useEffect(() => {
-        const activity = course?.activities.find((activity) => activity.id === +activityId);
-        const activityNotFoundError = { errorType: ErrorType.ACTIVITY_NOT_FOUND };
-
-        if (activity) {
-            setActivity(activity);
-            if (isApiErrorSet(activityNotFoundError)) {
-                removeApiError(activityNotFoundError);
-            }
-        } else if (course) {
-            pushApiError(activityNotFoundError);
-        }
-    }, [course, activityId, pushApiError, removeApiError, isApiErrorSet]);
 
     const { download } = useDownload({
         fetcher: (file) =>

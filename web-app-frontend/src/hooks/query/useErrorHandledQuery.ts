@@ -6,9 +6,10 @@ export const useErrorHandledQuery = <T>(
     queryKey: QueryKey,
     queryFn: QueryFunction<T>,
     pushApiError: (apiError: ApiError) => void,
-    removeApiError: (apiError: ApiError) => void
+    removeApiError: (apiError: ApiError) => void,
+    enabled: boolean = true
 ) => {
-    const { isError, error, ...rest } = useQuery(queryKey, queryFn);
+    const { isError, error, ...rest } = useQuery(queryKey, queryFn, { enabled });
     const memoedError = useRef<ApiError>();
 
     useEffect(() => {

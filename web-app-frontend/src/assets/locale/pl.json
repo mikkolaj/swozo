@@ -8,7 +8,8 @@
     "navbar": {
         "logo": "SWOZO",
         "myCourses": "kursy",
-        "myModules": "moduły",
+        "myModules": "moje moduły",
+        "publicModules": "moduły",
         "myFiles": "pliki",
         "menu": {
             "logout": "wyloguj",
@@ -63,6 +64,8 @@
             "timeRange": "{{startTime}} - {{endTime}}",
             "linksInfo": {
                 "info": "Linki dla: {{courseName}} - {{activityName}}",
+                "title": "{{serviceModuleName}} ({{serviceName}})",
+                "linksUnavailable": "Linki nie są jeszcze dostępne, odśwież stronę przed rozpoczęciem zajęć",
                 "connectionInstruction": "Instrukcja podłączenia",
                 "closeButton": "Zamknij"
             }
@@ -100,7 +103,8 @@
                     "description": "opis",
                     "numberOfActivities": "liczba zajęć",
                     "expectedStudentCount": "planowana liczba uczestników",
-                    "password": "Hasło do dołączenia"
+                    "password": "Hasło do dołączenia",
+                    "public": "Kurs publiczny"
                 }
             },
             "1": {
@@ -158,12 +162,53 @@
             }
         }
     },
+    "myModule": {
+        "header": "Moduł: {{name}}",
+        "sandbox": "Przetestuj moduł",
+        "edit": "edytuj",
+        "delete": "usuń",
+        "generalInfo": "Informacje ogólne",
+        "subject": "Tematyka",
+        "description": "Opis",
+        "serviceName": "Wykorzystywany serwis",
+        "teacherInstruction": "Instrukcje dla nauczyciela",
+        "studentInstruction": "Instrukcje dla ucznia",
+        "usedBy": {
+            "label": "Informacje o wykorzystaniu",
+            "unused": "Moduł nie jest jeszcze wykorzystywany",
+            "info": {
+                "courseName": "Nazwa kursu",
+                "activityName": "Nazwa aktywności",
+                "teacherEmail": "Email założyciela",
+                "addedAt": "Data dodania"
+            }
+        }
+    },
+    "publicModules": {
+        "header": "Publiczne moduły",
+        "searchBoxPlaceholder": "Nazwa modułu, autor...",
+        "filters": "Zaawansowane filtry",
+        "author": "Autor: {{email}}",
+        "description": "Opis: {{description}}",
+        "any": "Wszystkie"
+    },
+    "publicModule": {
+        "authorName": "Autor",
+        "authorEmail": "Email autora",
+        "createdAt": "Data utworzenia",
+        "usedBy": "Liczba użyć"
+    },
     "createModule": {
         "title": "Nowy moduł",
         "finish": "Utwórz moduł",
+        "finishEditMode": "Zapisz zmiany",
         "buttons": {
             "next": "Dalej",
             "back": "Wróć"
+        },
+        "modal": {
+            "creating": "Tworzę moduł, proszę nie zamykać okna przeglądarki.",
+            "updating": "Aktualizuję moduł, proszę nie zamykać okna przeglądarki."
         },
         "slides": {
             "0": {
@@ -174,7 +219,13 @@
                     "description": "opis",
                     "service": "Serwis",
                     "serviceConfig": "Konfiguracja serwisu",
-                    "instructions": "Ogólne instrukcje",
+                    "dynamicParams": {
+                        "file": "plik"
+                    },
+                    "instructions": {
+                        "teacher": "Instrukcja dla nauczyciela",
+                        "student": "Instrukcja dla studenta"
+                    },
                     "public": "Moduł publiczny"
                 }
             },
@@ -188,7 +239,38 @@
                 }
             },
             "2": {
-                "title": "Podsumowanie"
+                "title": "Podsumowanie",
+                "service": "Wykorzystywany serwis: {{serviceName}}",
+                "accessibility": {
+                    "public": {
+                        "label": "Moduł jest ustawiony jako publiczny.",
+                        "info": "Wszyscy będą mogli z niego skorzystać zaraz po utworzeniu"
+                    },
+                    "private": {
+                        "label": "Moduł jest ustawiony jako prywatny.",
+                        "info": "Tylko ty będziesz mógł z niego skorzystać."
+                    }
+                },
+                "disclaimer": {
+                    "title": "Pamiętaj",
+                    "lines": [
+                        {
+                            "text": "- Tworzenie modułu może chwilę potrwać",
+                            "editMode": false
+                        },
+                        {
+                            "text": "- Aktualizacja modułu może chwilę potrwać",
+                            "editMode": true
+                        },
+                        {
+                            "text": "- Początkowo zaleca się ustawienie modułu jako prywatny i przetestowanie czy działa poprawnie korzystając z opcji 'Przetestuj moduł' w panelu modułu",
+                            "editMode": false
+                        },
+                        "- Moduł może zostać usunięty tylko gdy nikt z niego jeszcze nie skorzystał",
+                        "- Żeby zablokować przyszłe korzystanie z modułu możesz wyłączyć opcję 'Moduł publiczny', jednak osoby które już go wybrały wciąż będą w stanie go użyć",
+                        "- Zmiana typu serwisu nie będzie możliwa, będziesz mógł jednak zmienić jego konfigurację, w szczególności zawartość plików i wymagania techniczne"
+                    ]
+                }
             }
         }
     },
@@ -205,7 +287,10 @@
                 }
             },
             "modules": {
-                "label": "Informacje o używanych modułach"
+                "label": "Informacje o używanych modułach",
+                "serviceModuleTitle": "{{serviceModuleName}} ({{serviceName}})",
+                "teacherInstructionLabel": "Instrukcje dla nauczyciela",
+                "studentInstructionLabel": "Instrukcje dla studenta"
             }
         },
         "error": {
@@ -236,6 +321,30 @@
         "courseName": "Nazwa kursu",
         "creationDate": "Data utworzenia"
     },
+    "moduleSandbox": {
+        "modal": {
+            "title": "Testowanie modułu: {{name}}",
+            "setup": {
+                "instruction": "Instrukcja",
+                "mainInfo": "Zostanie utworzony testowy, prywatny kurs z wybraną liczbą testowych studentów ({{studentCount}}). Dostaniesz dane logowania do ich kont oraz link do kursu. Zaraz po uruchomieniu modułu zostaną dostarczone linki umożliwiające wykonanie testu.",
+                "moreInfo": "Po upływie {{validForMinutes}}min (od czasu uruchomienia) moduł zostanie wyłączony, jeśli serwis wspiera zbieranie wyników prac uczniów zostaną one dostarczone i będą dostępne przez kolejne {{resultsValidForMinutes}}min w zakładce 'Pliki' kursu. Po upływie tego czasu kurs, konta studentów i wszystkie pliki zostaną usunięte automatycznie. Nie będziesz mógł ręcznie edytować tego kursu.",
+                "limit": "Pamiętaj że jednocześnie możesz mieć dostęp do tylko jednego środowiska testowego, nie będziesz mógł wcześniej go usunąć.",
+                "form": {
+                    "createButton": "Utwórz środowisko testowe",
+                    "studentCount": "Liczba studentów",
+                    "validForMinutes": "Czas dostępu do modułu (min)",
+                    "resultsValidForMinutes": "Czas dostępu do wyników (min)"
+                }
+            },
+            "result": {
+                "success": "Kurs został utworzony, poczkaj chwilę na utworzenie modułu i przejdź do testowania",
+                "courseLink": "Link do utworzonego kursu (kurs znajdziesz również w zakładce 'Kursy')",
+                "userData": "Poniżej znajdują się dane dostępu do testowych kont studentów, zapisz je w osobnym pliku tekstowym, po zamknięciu okna nie będzie można ich już sprawdzić. Użyj tych danych do logowania po czym przejdź do utworzonego kursu.",
+                "email": "Adres Email: ",
+                "password": "Hasło: "
+            }
+        }
+    },
     "error": {
         "defaultMessage": "Coś poszło nie tak...",
         "defaultNavigationBtn": "Wróć do strony głównej",
@@ -243,11 +352,24 @@
     },
     "toast": {
         "courseCreated": "Kurs został utworzony!",
+        "serviceModuleCreated": "Moduł został utworzony!",
+        "serviceModuleUpdated": "Moduł został zaaktualizowany!",
+        "serviceModuleDeleted": "Moduł został usunięty!",
         "fileUploaded": "Plik został przesłany!"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",
         "DUPLICATE_FILE": "Plik już istnieje",
         "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie"
+    },
+    "dynamicForm": {
+        "file": {
+            "button": "Wybierz plik"
+        }
+    },
+    "dynamicDisplay": {
+        "file": {
+            "button": "Pobierz plik"
+        }
     }
 }

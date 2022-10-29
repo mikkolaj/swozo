@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
@@ -52,7 +52,6 @@ export const CoursesListView = () => {
                         <CourseSummaryView key={course.id} courseSummary={course} />
                     ))}
                 </Stack>
-                <Box sx={{ height: 1000 }} />
             </Container>
         </PageContainer>
     );

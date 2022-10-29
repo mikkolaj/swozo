@@ -13,6 +13,25 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    DynamicFieldDto,
+    DynamicFieldDtoFromJSON,
+    DynamicFieldDtoFromJSONTyped,
+    DynamicFieldDtoToJSON,
+} from './DynamicFieldDto';
+import {
+    InstructionDto,
+    InstructionDtoFromJSON,
+    InstructionDtoFromJSONTyped,
+    InstructionDtoToJSON,
+} from './InstructionDto';
+import {
+    UserDetailsDto,
+    UserDetailsDtoFromJSON,
+    UserDetailsDtoFromJSONTyped,
+    UserDetailsDtoToJSON,
+} from './UserDetailsDto';
+
 /**
  * 
  * @export
@@ -36,25 +55,61 @@ export interface ServiceModuleDetailsDto {
      * @type {string}
      * @memberof ServiceModuleDetailsDto
      */
-    instructionsFromTechnicalTeacher: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServiceModuleDetailsDto
-     */
-    creatorName: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ServiceModuleDetailsDto
-     */
     subject: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServiceModuleDetailsDto
+     */
+    description: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServiceModuleDetailsDto
+     */
+    serviceName: string;
+    /**
+     * 
+     * @type {InstructionDto}
+     * @memberof ServiceModuleDetailsDto
+     */
+    teacherInstruction: InstructionDto;
+    /**
+     * 
+     * @type {InstructionDto}
+     * @memberof ServiceModuleDetailsDto
+     */
+    studentInstruction: InstructionDto;
+    /**
+     * 
+     * @type {UserDetailsDto}
+     * @memberof ServiceModuleDetailsDto
+     */
+    creator: UserDetailsDto;
     /**
      * 
      * @type {Date}
      * @memberof ServiceModuleDetailsDto
      */
-    creationTime: Date;
+    createdAt: Date;
+    /**
+     * 
+     * @type {number}
+     * @memberof ServiceModuleDetailsDto
+     */
+    usedInActivitiesCount: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ServiceModuleDetailsDto
+     */
+    isPublic: boolean;
+    /**
+     * 
+     * @type {{ [key: string]: DynamicFieldDto; }}
+     * @memberof ServiceModuleDetailsDto
+     */
+    dynamicFields: { [key: string]: DynamicFieldDto; };
 }
 
 export function ServiceModuleDetailsDtoFromJSON(json: any): ServiceModuleDetailsDto {
@@ -69,10 +124,16 @@ export function ServiceModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscrimina
         
         'id': json['id'],
         'name': json['name'],
-        'instructionsFromTechnicalTeacher': json['instructionsFromTechnicalTeacher'],
-        'creatorName': json['creatorName'],
         'subject': json['subject'],
-        'creationTime': (new Date(json['creationTime'])),
+        'description': json['description'],
+        'serviceName': json['serviceName'],
+        'teacherInstruction': InstructionDtoFromJSON(json['teacherInstruction']),
+        'studentInstruction': InstructionDtoFromJSON(json['studentInstruction']),
+        'creator': UserDetailsDtoFromJSON(json['creator']),
+        'createdAt': (new Date(json['createdAt'])),
+        'usedInActivitiesCount': json['usedInActivitiesCount'],
+        'isPublic': json['isPublic'],
+        'dynamicFields': (mapValues(json['dynamicFields'], DynamicFieldDtoFromJSON)),
     };
 }
 
@@ -87,10 +148,16 @@ export function ServiceModuleDetailsDtoToJSON(value?: ServiceModuleDetailsDto | 
         
         'id': value.id,
         'name': value.name,
-        'instructionsFromTechnicalTeacher': value.instructionsFromTechnicalTeacher,
-        'creatorName': value.creatorName,
         'subject': value.subject,
-        'creationTime': (value.creationTime.toISOString()),
+        'description': value.description,
+        'serviceName': value.serviceName,
+        'teacherInstruction': InstructionDtoToJSON(value.teacherInstruction),
+        'studentInstruction': InstructionDtoToJSON(value.studentInstruction),
+        'creator': UserDetailsDtoToJSON(value.creator),
+        'createdAt': (value.createdAt.toISOString()),
+        'usedInActivitiesCount': value.usedInActivitiesCount,
+        'isPublic': value.isPublic,
+        'dynamicFields': (mapValues(value.dynamicFields, DynamicFieldDtoToJSON)),
     };
 }
 

@@ -1,14 +1,14 @@
 package com.swozo.api.web.course;
 
+import com.swozo.api.web.activity.request.CreateActivityRequest;
+import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.api.web.exceptions.types.common.ValidationError;
 import com.swozo.api.web.exceptions.types.common.ValidationErrors;
 import com.swozo.api.web.exceptions.types.common.ValidationNames;
 import com.swozo.api.web.exceptions.types.course.AlreadyAMemberException;
 import com.swozo.api.web.exceptions.types.course.NotACreatorException;
-import com.swozo.api.web.activity.request.CreateActivityRequest;
-import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.persistence.Course;
-import com.swozo.persistence.User;
+import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class CourseValidator {
     // TODO: policy based?
     private static final Duration minActivityDuration = Duration.ofMinutes(1);
     private static final Duration maxActivityDuration = Duration.ofMinutes(180);
-    private static final Duration minTimeBeforeActivityStart = Duration.ofMinutes(10);
+    private static final Duration minTimeBeforeActivityStart = Duration.ofMinutes(0);
     private static final Duration minTimeBetweenActivities = minTimeBeforeActivityStart;
     private static final int MIN_STUDENT_COUNT = 1;
     private static final int MAX_STUDENT_COUNT = 100;

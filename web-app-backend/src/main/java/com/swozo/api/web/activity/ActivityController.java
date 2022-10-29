@@ -2,10 +2,12 @@ package com.swozo.api.web.activity;
 
 import com.swozo.api.common.files.dto.UploadAccessDto;
 import com.swozo.api.common.files.request.InitFileUploadRequest;
-import com.swozo.api.common.files.request.StorageAccessRequest;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
+import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.model.links.ActivityLinkInfo;
+import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -23,6 +27,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 public class ActivityController {
     private final Logger logger = LoggerFactory.getLogger(ActivityController.class);
     private final ActivityService activityService;
+    private final ActivityModuleService activityModuleService;
     private final AuthService authService;
 
 
@@ -39,10 +44,11 @@ public class ActivityController {
     @PutMapping("/{activityId}/files")
     @PreAuthorize("hasRole('TEACHER')")
     public ActivityDetailsDto ackPublicActivityFileUpload(
+            AccessToken accessToken,
             @PathVariable Long activityId,
             @RequestBody UploadAccessDto uploadAccessDto
     ) {
-        return activityService.ackPublicActivityFileUpload(activityId, uploadAccessDto);
+        return activityService.ackPublicActivityFileUpload(activityId, accessToken.getUserId(), uploadAccessDto);
     }
     
     @GetMapping("/{activityId}/files/{fileId}")
@@ -54,6 +60,14 @@ public class ActivityController {
     ) {
         var role = authService.oneOf(accessToken, RoleDto.STUDENT, RoleDto.TEACHER);
         return activityService.getPublicActivityFileDownloadRequest(accessToken.getUserId(), activityId, fileId, role);
+    }
+
+    @PutMapping("/internal/links/{requestId}")
+    public void setActivityLinks(
+            @PathVariable Long requestId,
+            @RequestBody List<ActivityLinkInfo> links
+    ) {
+        activityModuleService.setActivityLinks(requestId, links);
     }
     
 
@@ -84,21 +98,21 @@ public class ActivityController {
 //    @GetMapping("/{id}/service-modules")
 //    @PreAuthorize("hasRole('TEACHER')")
 //    public Collection<ActivityModule> getCourseActivityList(AccessToken token, @PathVariable Long id) {
-//        logger.info("service module list from activity with id: {}", id);
+//        logger.info("service serviceModule list from activity with id: {}", id);
 //        return activityService.getActivityModulesList(id);
 //    }
 //
 //    @PostMapping("/{activityId}/service-modules/{activityModuleId}")
 //    @PreAuthorize("hasRole('TEACHER')")
 //    public Activity addModuleToActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
-//        logger.info("adding module with id: {} to activity with id: {}", activityModuleId, activityId);
+//        logger.info("adding serviceModule with id: {} to activity with id: {}", activityModuleId, activityId);
 //        return activityService.addModuleToActivity(activityId, activityModuleId);
 //    }
 //
 //    @DeleteMapping("/{activityId}/service-modules/{activityModuleId}")
 //    @PreAuthorize("hasRole('TEACHER')")
 //    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
-//        logger.info("removing module with id: {} from activity with id: {}", activityModuleId, activityId);
+//        logger.info("removing serviceModule with id: {} from activity with id: {}", activityModuleId, activityId);
 //        return activityService.deleteModuleFromActivity(activityId, activityModuleId);
 //    }
 //

@@ -6,6 +6,7 @@ type Props = {
     currentSlide: number;
     slideCount: number;
     label: string;
+    disabled?: boolean;
     lastSlideLabel?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     slideValidator?: FormikProps<any>;
@@ -17,6 +18,7 @@ export const NextSlideButton = ({
     currentSlide,
     slideCount,
     label,
+    disabled = false,
     lastSlideLabel,
     slideValidator,
     onNext,
@@ -26,6 +28,7 @@ export const NextSlideButton = ({
 
     return (
         <Button
+            disabled={disabled}
             onClick={async () => {
                 if (isLastSlide) {
                     onFinish();

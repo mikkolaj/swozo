@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface ActivityLinkInfoMapper {
     default ActivityLinkInfoEntity toPersistence(ActivityLinkInfo request, ScheduleRequestEntity requestEntity) {
-        return new ActivityLinkInfoEntity(request.url(), request.connectionInfo(), requestEntity);
+        return new ActivityLinkInfoEntity(request.url(), "TODO", requestEntity);
     }
 
     ActivityLinkInfo toDto(ActivityLinkInfoEntity request);

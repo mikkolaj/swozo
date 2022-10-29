@@ -6,13 +6,13 @@ import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.properties.Psm;
 import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
-import com.swozo.persistence.Activity;
-import com.swozo.persistence.ActivityModule;
+import com.swozo.persistence.activity.Activity;
+import com.swozo.persistence.activity.ActivityModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashMap;
 
 import static com.swozo.util.CollectionUtils.iterateSimultaneously;
 
@@ -44,6 +44,11 @@ public class ScheduleService {
         moduleRepository.saveAll(allActivityModules);
     }
 
+    public LocalDateTime getAsapScheduleAvailability() {
+        // TODO don't hardcode this
+        return LocalDateTime.now().plusMinutes(10);
+    }
+
     private Psm providePsm(Activity activity) {
         return new Psm("e2-medium", 10);
     }
@@ -53,13 +58,11 @@ public class ScheduleService {
     }
 
     private ScheduleRequest buildScheduleServiceRequest(ActivityWithModule activityWithModule) {
-        var hardcodedParameters = new HashMap<String, String>();
-        hardcodedParameters.put("notebookLocation", "somewhereOverTheRainbow");
         return new ScheduleRequest(
                 provideServiceLifespan(activityWithModule.activity()),
                 providePsm(activityWithModule.activity()),
                 ScheduleType.JUPYTER,
-                hardcodedParameters
+                activityWithModule.module.getServiceModule().getDynamicProperties()
         );
     }
 

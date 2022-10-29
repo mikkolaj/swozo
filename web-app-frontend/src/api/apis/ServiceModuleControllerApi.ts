@@ -15,13 +15,72 @@
 
 import * as runtime from '../runtime';
 import {
+    FinishServiceModuleCreationRequest,
+    FinishServiceModuleCreationRequestFromJSON,
+    FinishServiceModuleCreationRequestToJSON,
+    ReserveServiceModuleRequest,
+    ReserveServiceModuleRequestFromJSON,
+    ReserveServiceModuleRequestToJSON,
+    ServiceConfig,
+    ServiceConfigFromJSON,
+    ServiceConfigToJSON,
     ServiceModuleDetailsDto,
     ServiceModuleDetailsDtoFromJSON,
     ServiceModuleDetailsDtoToJSON,
+    ServiceModuleReservationDto,
+    ServiceModuleReservationDtoFromJSON,
+    ServiceModuleReservationDtoToJSON,
+    ServiceModuleSummaryDto,
+    ServiceModuleSummaryDtoFromJSON,
+    ServiceModuleSummaryDtoToJSON,
+    ServiceModuleUsageDto,
+    ServiceModuleUsageDtoFromJSON,
+    ServiceModuleUsageDtoToJSON,
 } from '../models';
 
+export interface DeleteServiceModuleRequest {
+    serviceModuleId: number;
+}
+
+export interface FinishServiceConfigUpdateRequest {
+    serviceModuleId: number;
+    finishServiceModuleCreationRequest: FinishServiceModuleCreationRequest;
+}
+
+export interface FinishServiceModuleCreationOperationRequest {
+    finishServiceModuleCreationRequest: FinishServiceModuleCreationRequest;
+}
+
+export interface GetFormDataForEditRequest {
+    serviceModuleId: number;
+}
+
 export interface GetServiceModuleRequest {
-    id: number;
+    serviceModuleId: number;
+}
+
+export interface GetServiceModuleSummaryRequest {
+    serviceModuleId: number;
+}
+
+export interface GetUsageRequest {
+    serviceModuleId: number;
+    offset?: number;
+    limit?: number;
+}
+
+export interface InitServiceConfigUpdateRequest {
+    serviceModuleId: number;
+    reserveServiceModuleRequest: ReserveServiceModuleRequest;
+}
+
+export interface InitServiceModuleCreationRequest {
+    reserveServiceModuleRequest: ReserveServiceModuleRequest;
+}
+
+export interface UpdateCommonDataRequest {
+    serviceModuleId: number;
+    reserveServiceModuleRequest: ReserveServiceModuleRequest;
 }
 
 /**
@@ -31,10 +90,95 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getModuleListRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleDetailsDto>>> {
+    async deleteServiceModuleRaw(requestParameters: DeleteServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling deleteServiceModule.');
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/{serviceModuleId}`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async deleteServiceModule(requestParameters: DeleteServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
+        const response = await this.deleteServiceModuleRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async finishServiceConfigUpdateRaw(requestParameters: FinishServiceConfigUpdateRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling finishServiceConfigUpdate.');
+        }
+
+        if (requestParameters.finishServiceModuleCreationRequest === null || requestParameters.finishServiceModuleCreationRequest === undefined) {
+            throw new runtime.RequiredError('finishServiceModuleCreationRequest','Required parameter requestParameters.finishServiceModuleCreationRequest was null or undefined when calling finishServiceConfigUpdate.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/{serviceModuleId}/edit/service-config/finish`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: FinishServiceModuleCreationRequestToJSON(requestParameters.finishServiceModuleCreationRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async finishServiceConfigUpdate(requestParameters: FinishServiceConfigUpdateRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
+        const response = await this.finishServiceConfigUpdateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async finishServiceModuleCreationRaw(requestParameters: FinishServiceModuleCreationOperationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
+        if (requestParameters.finishServiceModuleCreationRequest === null || requestParameters.finishServiceModuleCreationRequest === undefined) {
+            throw new runtime.RequiredError('finishServiceModuleCreationRequest','Required parameter requestParameters.finishServiceModuleCreationRequest was null or undefined when calling finishServiceModuleCreation.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
         if (this.configuration && this.configuration.accessToken) {
             const token = this.configuration.accessToken;
@@ -46,26 +190,59 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
         }
         const response = await this.request({
             path: `/service-modules`,
-            method: 'GET',
+            method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
+            body: FinishServiceModuleCreationRequestToJSON(requestParameters.finishServiceModuleCreationRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleDetailsDtoFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async getModuleList(initOverrides?: RequestInit): Promise<Array<ServiceModuleDetailsDto>> {
-        const response = await this.getModuleListRaw(initOverrides);
+    async finishServiceModuleCreation(requestParameters: FinishServiceModuleCreationOperationRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
+        const response = await this.finishServiceModuleCreationRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async getServiceModuleRaw(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling getServiceModule.');
+    async getAllPublicServiceModulesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleSummaryDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/summary`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleSummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getAllPublicServiceModules(initOverrides?: RequestInit): Promise<Array<ServiceModuleSummaryDto>> {
+        const response = await this.getAllPublicServiceModulesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getFormDataForEditRaw(requestParameters: GetFormDataForEditRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ReserveServiceModuleRequest>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling getFormDataForEdit.');
         }
 
         const queryParameters: any = {};
@@ -81,7 +258,43 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/service-modules/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            path: `/service-modules/{serviceModuleId}/edit`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ReserveServiceModuleRequestFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getFormDataForEdit(requestParameters: GetFormDataForEditRequest, initOverrides?: RequestInit): Promise<ReserveServiceModuleRequest> {
+        const response = await this.getFormDataForEditRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getServiceModuleRaw(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling getServiceModule.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/{serviceModuleId}`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -94,6 +307,275 @@ export class ServiceModuleControllerApi extends runtime.BaseAPI {
      */
     async getServiceModule(requestParameters: GetServiceModuleRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
         const response = await this.getServiceModuleRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getServiceModuleSummaryRaw(requestParameters: GetServiceModuleSummaryRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleSummaryDto>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling getServiceModuleSummary.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/{serviceModuleId}/summary`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleSummaryDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getServiceModuleSummary(requestParameters: GetServiceModuleSummaryRequest, initOverrides?: RequestInit): Promise<ServiceModuleSummaryDto> {
+        const response = await this.getServiceModuleSummaryRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getSupportedServicesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceConfig>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/config`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceConfigFromJSON));
+    }
+
+    /**
+     */
+    async getSupportedServices(initOverrides?: RequestInit): Promise<Array<ServiceConfig>> {
+        const response = await this.getSupportedServicesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUsageRaw(requestParameters: GetUsageRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleUsageDto>>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling getUsage.');
+        }
+
+        const queryParameters: any = {};
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/usage/{serviceModuleId}`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleUsageDtoFromJSON));
+    }
+
+    /**
+     */
+    async getUsage(requestParameters: GetUsageRequest, initOverrides?: RequestInit): Promise<Array<ServiceModuleUsageDto>> {
+        const response = await this.getUsageRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUserModulesSummaryRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ServiceModuleSummaryDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/user/summary`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ServiceModuleSummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getUserModulesSummary(initOverrides?: RequestInit): Promise<Array<ServiceModuleSummaryDto>> {
+        const response = await this.getUserModulesSummaryRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async initServiceConfigUpdateRaw(requestParameters: InitServiceConfigUpdateRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<{ [key: string]: object; }>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling initServiceConfigUpdate.');
+        }
+
+        if (requestParameters.reserveServiceModuleRequest === null || requestParameters.reserveServiceModuleRequest === undefined) {
+            throw new runtime.RequiredError('reserveServiceModuleRequest','Required parameter requestParameters.reserveServiceModuleRequest was null or undefined when calling initServiceConfigUpdate.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/{serviceModuleId}/edit/service-config/init`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ReserveServiceModuleRequestToJSON(requestParameters.reserveServiceModuleRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     */
+    async initServiceConfigUpdate(requestParameters: InitServiceConfigUpdateRequest, initOverrides?: RequestInit): Promise<{ [key: string]: object; }> {
+        const response = await this.initServiceConfigUpdateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async initServiceModuleCreationRaw(requestParameters: InitServiceModuleCreationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleReservationDto>> {
+        if (requestParameters.reserveServiceModuleRequest === null || requestParameters.reserveServiceModuleRequest === undefined) {
+            throw new runtime.RequiredError('reserveServiceModuleRequest','Required parameter requestParameters.reserveServiceModuleRequest was null or undefined when calling initServiceModuleCreation.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ReserveServiceModuleRequestToJSON(requestParameters.reserveServiceModuleRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleReservationDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async initServiceModuleCreation(requestParameters: InitServiceModuleCreationRequest, initOverrides?: RequestInit): Promise<ServiceModuleReservationDto> {
+        const response = await this.initServiceModuleCreationRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async updateCommonDataRaw(requestParameters: UpdateCommonDataRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ServiceModuleDetailsDto>> {
+        if (requestParameters.serviceModuleId === null || requestParameters.serviceModuleId === undefined) {
+            throw new runtime.RequiredError('serviceModuleId','Required parameter requestParameters.serviceModuleId was null or undefined when calling updateCommonData.');
+        }
+
+        if (requestParameters.reserveServiceModuleRequest === null || requestParameters.reserveServiceModuleRequest === undefined) {
+            throw new runtime.RequiredError('reserveServiceModuleRequest','Required parameter requestParameters.reserveServiceModuleRequest was null or undefined when calling updateCommonData.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/service-modules/{serviceModuleId}/edit/common`.replace(`{${"serviceModuleId"}}`, encodeURIComponent(String(requestParameters.serviceModuleId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ReserveServiceModuleRequestToJSON(requestParameters.reserveServiceModuleRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ServiceModuleDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async updateCommonData(requestParameters: UpdateCommonDataRequest, initOverrides?: RequestInit): Promise<ServiceModuleDetailsDto> {
+        const response = await this.updateCommonDataRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
