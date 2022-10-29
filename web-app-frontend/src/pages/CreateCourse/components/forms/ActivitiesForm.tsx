@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { ServiceModuleDetailsDto } from 'api';
+import { ServiceModuleSummaryDto } from 'api';
 import { AutocompleteWithChips } from 'common/Input/AutocompleteWithChips';
 import { FormDatePicker } from 'common/Input/FormDatePicker';
 import { FormInputField } from 'common/Input/FormInputField';
@@ -18,8 +18,8 @@ type Props = SlideProps & {
     values: { activities: ActivityValues[] };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setFieldValue: (name: string, value: any) => void;
-    availableLessonModules: ServiceModuleDetailsDto[];
-    availableGeneralModules: ServiceModuleDetailsDto[];
+    availableLessonModules: ServiceModuleSummaryDto[];
+    availableGeneralModules: ServiceModuleSummaryDto[];
 };
 
 export const activityValidationSchema: ValidationSchema<ActivityValues> = {

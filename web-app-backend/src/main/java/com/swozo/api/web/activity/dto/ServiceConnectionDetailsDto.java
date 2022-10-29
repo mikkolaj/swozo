@@ -1,13 +1,13 @@
 package com.swozo.api.web.activity.dto;
 
+import com.swozo.model.utils.InstructionDto;
+import com.swozo.utils.SupportedLanguage;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.Optional;
+import java.util.Map;
 
 public record ServiceConnectionDetailsDto(
-        @Schema(required = true) String serviceName,
-        @Schema(required = true) String connectionInstruction,
-        Optional<String> url,
-        Optional<String> connectionInfo
+        @Schema(required = true) Map<SupportedLanguage, InstructionDto> connectionInstructions,
+        @Schema(required = true) String url
 ) {
 }

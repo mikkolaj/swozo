@@ -37,7 +37,7 @@ export const useDownload = ({ fetcher, onError, deps }: Props) => {
     );
 
     const throttledDownload = useMemo(() => {
-        return _.throttle(download, DOWNLOAD_DEBOUNCE_MILLIS);
+        return _.debounce(download, DOWNLOAD_DEBOUNCE_MILLIS, { leading: true });
     }, [download]);
 
     return { download: throttledDownload, isDownloading };

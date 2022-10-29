@@ -3,7 +3,6 @@ import { CourseDetailsDto } from 'api';
 import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
@@ -64,28 +63,24 @@ export const CourseView = () => {
         return consumeErrorAction() ?? <></>;
     }
 
-    if (!course) {
-        return <PageContainerWithLoader />;
-    }
-
     return (
         <CourseContext.Provider value={course}>
             <PageContainer
                 sx={{ p: 0 }}
                 header={
                     <>
-                        <Grid item xs={6}>
+                        <Grid item xs={8}>
                             <Typography variant="h4" component="div">
                                 {course?.name}
                             </Typography>
                         </Grid>
-                        <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
+                        <Grid item xs={4} sx={stylesRowWithItemsAtTheEnd}>
                             {Object.entries(tabs).map(([type, config]) => (
                                 <Button
                                     key={type}
                                     onClick={() => setTab(config)}
                                     variant={tab.type === type ? 'contained' : 'outlined'}
-                                    sx={{ mr: 0.5 }}
+                                    sx={{ mr: 0.5, height: '50px' }}
                                 >
                                     {t(`course.options.${type}.button`)}
                                 </Button>
@@ -94,7 +89,7 @@ export const CourseView = () => {
                     </>
                 }
             >
-                <Container>{tab.tabRenderer(course)}</Container>
+                <Container>{course && tab.tabRenderer(course)}</Container>
             </PageContainer>
         </CourseContext.Provider>
     );

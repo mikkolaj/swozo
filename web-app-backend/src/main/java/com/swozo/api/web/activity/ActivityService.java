@@ -1,15 +1,16 @@
 package com.swozo.api.web.activity;
 
-import com.swozo.api.common.files.dto.UploadAccessDto;
-import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.common.files.FileService;
+import com.swozo.api.common.files.dto.UploadAccessDto;
 import com.swozo.api.common.files.request.InitFileUploadRequest;
-import com.swozo.api.common.files.request.StorageAccessRequest;
+import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.exceptions.types.course.ActivityNotFoundException;
 import com.swozo.api.web.exceptions.types.files.FileNotFoundException;
+import com.swozo.api.web.user.UserService;
 import com.swozo.mapper.ActivityMapper;
+import com.swozo.model.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class ActivityService {
     private final FileService fileService;
     private final FilePathProvider filePathProvider;
     private final ActivityMapper activityMapper;
+    private final UserService userService;
 
 
     public StorageAccessRequest preparePublicActivityFileUpload(
@@ -39,10 +41,12 @@ public class ActivityService {
 
     public ActivityDetailsDto ackPublicActivityFileUpload(
             Long activityId,
+            Long uploaderId,
             UploadAccessDto uploadAccessDto
     ) {
         return activityMapper.toDto(
                 fileService.acknowledgeExternalUpload(
+                    userService.getUserById(uploaderId),
                     uploadAccessDto,
                     () -> activityRepository.findById(activityId).orElseThrow(),
                     (file, activity) -> {

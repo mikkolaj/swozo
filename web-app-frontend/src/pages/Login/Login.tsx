@@ -21,7 +21,7 @@ export const Login = () => {
                 initialValues={{ email: '', password: '' }}
                 onSubmit={async (values) => {
                     await dispatch(login(values));
-                    const { redirectTo } = location.state as RedirectState;
+                    const { redirectTo } = (location.state as RedirectState) ?? { redirectTo: undefined };
                     if (redirectTo) {
                         navigate(redirectTo);
                     }

@@ -1,7 +1,7 @@
 package com.swozo.security;
 
 
-import com.swozo.persistence.User;
+import com.swozo.persistence.user.User;
 
 public interface TokenService {
     AccessToken createAccessToken(User user);

@@ -4,12 +4,10 @@ import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
-import com.swozo.api.web.course.request.AddStudentRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
 import com.swozo.api.web.course.request.JoinCourseRequest;
-import com.swozo.persistence.Activity;
+import com.swozo.api.web.course.request.ModifyParticipantRequest;
 import com.swozo.persistence.Course;
-import com.swozo.persistence.User;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -68,7 +66,7 @@ public class CourseController {
     @PreAuthorize("hasRole('TEACHER')")
     public CourseDetailsDto addCourse(AccessToken token, @RequestBody CreateCourseRequest createCourseRequest) {
         logger.info("creating new course with name: {}", createCourseRequest.name());
-        return courseService.createCourse(createCourseRequest, token.getUserId());
+        return courseService.createCourse(createCourseRequest, token.getUserId(), false);
     }
 
     @DeleteMapping("/{id}")
@@ -78,34 +76,17 @@ public class CourseController {
         courseService.deleteCourse(id);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('TEACHER')")
-    public Course editCourse(AccessToken token, @PathVariable Long id, @RequestBody CreateCourseRequest createCourseRequest) {
-        logger.info("editing course with id: {}", id);
-        return courseService.updateCourse(id, token.getUserId(), createCourseRequest);
-    }
-
-    @GetMapping("/{id}/activities")
-    @PreAuthorize("hasRole('TEACHER')")
-    public Collection<Activity> getCourseActivityList(AccessToken token, @PathVariable Long id) {
-        // TODO not sure if this endpoint is needed since we return this data in getCourse
-        logger.info("activity list from course with id: {}", id);
-        return courseService.courseActivityList(id);
-    }
-
     @PostMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
-    public CourseDetailsDto addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody AddStudentRequest addStudentRequest) {
-        logger.info("adding student with email: {} to course with id: {}", addStudentRequest.email(), courseId);
-        return courseService.addStudent(token.getUserId(), courseId, addStudentRequest);
+    public CourseDetailsDto addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody ModifyParticipantRequest student) {
+        logger.info("adding student with email: {} to course with id: {}", student.email(), courseId);
+        return courseService.addStudent(token.getUserId(), courseId, student);
     }
 
     @DeleteMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
-    public CourseDetailsDto removeStudentFromCourse(AccessToken token, @PathVariable Long courseId, @RequestBody User student) {
-        // TODO email - not User in RequestBody
-        logger.info("removing student with email: {} from course with id: {}", student.getEmail(), courseId);
-        return courseService.deleteStudent(token.getUserId(), courseId, student.getEmail());
+    public CourseDetailsDto removeStudentFromCourse(AccessToken token, @PathVariable Long courseId, @RequestBody ModifyParticipantRequest student) {
+        logger.info("removing student with email: {} from course with id: {}", student.email(), courseId);
+        return courseService.deleteStudent(token.getUserId(), courseId, student.email());
     }
-
 }

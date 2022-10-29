@@ -1,6 +1,6 @@
 package com.swozo.api.web.user;
 
-import com.swozo.persistence.User;
+import com.swozo.persistence.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

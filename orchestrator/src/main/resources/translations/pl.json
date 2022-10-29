@@ -1,0 +1,22 @@
+{
+  "services": {
+    "jupyter": {
+      "dynamicParams": {
+        "notebookLocation": {
+          "label": "Startowy notebook"
+        }
+      },
+      "connectionInstruction": "<ol><li>Otwórz link</li><li>Wpisz hasło w formularzu: {{password}}</li></ol>"
+    },
+    "docker": {
+      "dynamicParams": {
+        "dockerImageUrl": {
+          "label": "Link do publicznego obrazu"
+        },
+        "resultFilePath": {
+          "label": "Ścieżka do pliku wynikowego"
+        }
+      }
+    }
+  }
+}

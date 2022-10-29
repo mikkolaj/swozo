@@ -20,11 +20,11 @@ import {
     ServiceConnectionDetailsDtoToJSON,
 } from './ServiceConnectionDetailsDto';
 import {
-    ServiceModuleDetailsDto,
-    ServiceModuleDetailsDtoFromJSON,
-    ServiceModuleDetailsDtoFromJSONTyped,
-    ServiceModuleDetailsDtoToJSON,
-} from './ServiceModuleDetailsDto';
+    ServiceModuleSummaryDto,
+    ServiceModuleSummaryDtoFromJSON,
+    ServiceModuleSummaryDtoFromJSONTyped,
+    ServiceModuleSummaryDtoToJSON,
+} from './ServiceModuleSummaryDto';
 
 /**
  * 
@@ -40,16 +40,10 @@ export interface ActivityModuleDetailsDto {
     id: number;
     /**
      * 
-     * @type {ServiceModuleDetailsDto}
+     * @type {ServiceModuleSummaryDto}
      * @memberof ActivityModuleDetailsDto
      */
-    module: ServiceModuleDetailsDto;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivityModuleDetailsDto
-     */
-    instruction: string;
+    serviceModule: ServiceModuleSummaryDto;
     /**
      * 
      * @type {Array<ServiceConnectionDetailsDto>}
@@ -69,8 +63,7 @@ export function ActivityModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscrimin
     return {
         
         'id': json['id'],
-        'module': ServiceModuleDetailsDtoFromJSON(json['module']),
-        'instruction': json['instruction'],
+        'serviceModule': ServiceModuleSummaryDtoFromJSON(json['serviceModule']),
         'connectionDetails': ((json['connectionDetails'] as Array<any>).map(ServiceConnectionDetailsDtoFromJSON)),
     };
 }
@@ -85,8 +78,7 @@ export function ActivityModuleDetailsDtoToJSON(value?: ActivityModuleDetailsDto 
     return {
         
         'id': value.id,
-        'module': ServiceModuleDetailsDtoToJSON(value.module),
-        'instruction': value.instruction,
+        'serviceModule': ServiceModuleSummaryDtoToJSON(value.serviceModule),
         'connectionDetails': ((value.connectionDetails as Array<any>).map(ServiceConnectionDetailsDtoToJSON)),
     };
 }

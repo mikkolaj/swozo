@@ -7,6 +7,10 @@ export class PageRoutes {
     static readonly CREATE_COURSE = `${this.MY_COURSES}/creator`;
     static readonly MY_MODULES = '/my-modules';
     static readonly CREATE_MODULE = `${this.MY_MODULES}/creator`;
+    static readonly MY_MODULE = `${this.MY_MODULES}/:moduleId`;
+    static readonly EDIT_MODULE = `${this.MY_MODULE}/editor`;
+    static readonly PUBLIC_MODULES = '/public-moduels';
+    static readonly PUBLIC_MODULE = `${this.PUBLIC_MODULES}/:moduleId`;
     static readonly ACTIVITIES = `${this.COURSE}/activities`;
     static readonly ACTIVITY = `${this.ACTIVITIES}/:activityId`;
     static readonly ACTIVITY_INSTRUCTIONS = `${this.ACTIVITY}/instructions`;
@@ -15,6 +19,18 @@ export class PageRoutes {
 
     static Course(courseId: string | number): string {
         return RouteBuilder.of(this.COURSE).withReplaced('courseId', courseId).build();
+    }
+
+    static MyModule(moduleId: string | number): string {
+        return RouteBuilder.of(this.MY_MODULE).withReplaced('moduleId', moduleId).build();
+    }
+
+    static EditModule(moduleId: string | number): string {
+        return RouteBuilder.of(this.EDIT_MODULE).withPrefix(this.MyModule(moduleId)).build();
+    }
+
+    static PublicModule(moduleId: string | number): string {
+        return RouteBuilder.of(this.PUBLIC_MODULE).withReplaced('moduleId', moduleId).build();
     }
 
     static Activity(courseId: string | number, activityId: string | number): string {

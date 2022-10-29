@@ -12,9 +12,13 @@ import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
 import { FilesListView } from 'pages/FilesList/FilesListView';
 import { Home } from 'pages/Home/Home';
 import { Login } from 'pages/Login/Login';
-import { ModulesListView } from 'pages/ModulesList/ModulesListView';
+import { MyModuleView } from 'pages/Module/MyModuleView';
+import { PublicModuleView } from 'pages/Module/PublicModuleView';
+import { MyModulesListView } from 'pages/ModulesList/MyModulesListView';
+import { PublicModulesListView } from 'pages/ModulesList/PublicModulesListView';
 import { Route, Routes } from 'react-router-dom';
 import { PopupError } from 'services/features/error/PopupError';
+import { ModalContainer } from 'services/features/modal/ModalContainer';
 import { useAppSelector } from 'services/store';
 import {
     ANY_LOGGED_IN,
@@ -60,11 +64,27 @@ function App() {
                 />
                 <Route
                     path={PageRoutes.MY_MODULES}
-                    element={guarded(<ModulesListView />, withRole(TEACHER, TECHNICAL_TEACHER))}
+                    element={guarded(<MyModulesListView />, withRole(TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.MY_MODULE}
+                    element={guarded(<MyModuleView />, withRole(TECHNICAL_TEACHER))}
                 />
                 <Route
                     path={PageRoutes.CREATE_MODULE}
                     element={guarded(<CreateModuleView />, withRole(TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.EDIT_MODULE}
+                    element={guarded(<CreateModuleView editMode />, withRole(TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.PUBLIC_MODULES}
+                    element={guarded(<PublicModulesListView />, withRole(TEACHER, TECHNICAL_TEACHER))}
+                />
+                <Route
+                    path={PageRoutes.PUBLIC_MODULE}
+                    element={guarded(<PublicModuleView />, withRole(TEACHER))}
                 />
                 <Route
                     path={PageRoutes.ACTIVITY_INSTRUCTIONS}
@@ -80,6 +100,7 @@ function App() {
 
             <Toaster />
             <PopupError />
+            <ModalContainer />
         </>
     );
 }

@@ -1,4 +1,4 @@
-import { CreateActivityRequest, CreateCourseRequest, ServiceModuleDetailsDto } from 'api';
+import { CreateActivityRequest, CreateCourseRequest, ServiceModuleSummaryDto } from 'api';
 import { ApiError } from 'api/errors';
 import { SlideValues2 } from 'common/SlideForm/util';
 import dayjs, { Dayjs } from 'dayjs';
@@ -7,8 +7,8 @@ import _ from 'lodash';
 import { TFunction } from 'react-i18next';
 import { formatDateTime, prepareErrorForDisplay, prepareFormikValidationErrors, withDate } from 'utils/util';
 
-export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 90;
-export const DEFAULT_MIN_TIME_OFFSET = 30;
+export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 30;
+export const DEFAULT_MIN_TIME_OFFSET = 5;
 
 export type FormValues = SlideValues2<CourseValues, ActivitesFormValues>;
 
@@ -21,8 +21,8 @@ export const ACTIVITIES_SLIDE = '1';
 export type ActivityValues = {
     name: string;
     description: string;
-    lessonModules: ServiceModuleDetailsDto[];
-    generalModules: ServiceModuleDetailsDto[];
+    lessonModules: ServiceModuleSummaryDto[];
+    generalModules: ServiceModuleSummaryDto[];
     instructions: string;
     date: Dayjs;
     startTime: Dayjs;
@@ -36,6 +36,7 @@ export type CourseValues = {
     numberOfActivities: number;
     expectedStudentCount: number;
     password?: string;
+    isPublic: boolean;
 };
 
 export type ActivitesFormValues = {
@@ -49,6 +50,7 @@ export const initialCourseValues = (): CourseValues => ({
     numberOfActivities: 1,
     expectedStudentCount: 2,
     password: undefined,
+    isPublic: true,
 });
 
 export const initialActivityValues = (): ActivityValues => ({
@@ -81,11 +83,9 @@ const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityReq
         description: activity.description,
         startTime: withDate(activity.startTime, activity.date).toDate(),
         endTime: withDate(activity.endTime, activity.date).toDate(),
-        instructionsFromTeacher: [
-            {
-                untrustedPossiblyDangerousHtml: activity.instructions,
-            },
-        ],
+        instructionFromTeacher: {
+            untrustedPossiblyDangerousHtml: activity.instructions,
+        },
         selectedModulesIds: [...activity.lessonModules /*, ...activity.generalModules*/].map(({ id }) => id), // TODO
     };
 };
@@ -123,5 +123,6 @@ export const buildCreateCourseRequest = (
         expectedStudentCount: course.expectedStudentCount,
         activities: activities.map(buildCreateActivityRequest),
         password: course.password,
+        isPublic: course.isPublic,
     };
 };

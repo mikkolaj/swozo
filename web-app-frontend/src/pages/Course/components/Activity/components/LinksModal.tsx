@@ -15,10 +15,13 @@ import {
 } from '@mui/material';
 import { ActivityDetailsDto } from 'api';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
-import { stylesColumn } from 'common/styles';
+import { InstructionView } from 'common/Styled/InstructionView';
+import { stylesColumnCenteredVertical } from 'common/styles';
+import _ from 'lodash';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getTranslated } from 'utils/util';
 
 type Props = {
     activity: ActivityDetailsDto;
@@ -27,7 +30,7 @@ type Props = {
 };
 
 export const LinksModal = ({ activity, open, onClose }: Props) => {
-    const { t } = useTranslation();
+    const { i18n, t } = useTranslation();
     const course = useContext(CourseContext);
 
     return (
@@ -84,49 +87,25 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                     component="h3"
                                                     variant="h6"
                                                 >
-                                                    {/* {activityModule.module.name} */}
-                                                    Jupyter
+                                                    {t('course.activity.linksInfo.title', {
+                                                        serviceName: _.capitalize(
+                                                            activityModule.serviceModule.serviceName
+                                                        ),
+                                                        serviceModuleName: activityModule.serviceModule.name,
+                                                    })}
                                                 </Typography>
-                                                {/* TODO */}
                                                 {activityModule.connectionDetails.length === 0 && (
                                                     <Typography>
-                                                        {' '}
-                                                        Linki nie są jeszcze dostępne, odśwież stronę przed
-                                                        rozpoczęciem zajęć
+                                                        {t('course.activity.linksInfo.linksUnavailable')}
                                                     </Typography>
                                                 )}
-                                                {activityModule.connectionDetails.map(
-                                                    ({ url, serviceName }) => (
-                                                        <Link
-                                                            key={serviceName}
-                                                            target="_blank"
-                                                            rel="noopener"
-                                                            href={url}
-                                                        >
-                                                            {/* TODO */}
-                                                            {url ?? 'Link nie jest jeszcze dostępny'}
+                                                {activityModule.connectionDetails.map(({ url }) => (
+                                                    <Box key={url} sx={stylesColumnCenteredVertical}>
+                                                        <Link target="_blank" rel="noopener" href={url}>
+                                                            {url}
                                                         </Link>
-                                                    )
-                                                )}
-                                                <Box
-                                                    sx={{
-                                                        ...stylesColumn,
-                                                        userSelect: 'text',
-                                                        ':hover': { cursor: 'text' },
-                                                    }}
-                                                >
-                                                    {/* TODO use more advanced/flexible format // fix this xD*/}
-                                                    {activityModule.connectionDetails
-                                                        .flatMap(
-                                                            ({ connectionInstruction }) =>
-                                                                connectionInstruction?.split('\n') ?? ''
-                                                        )
-                                                        .map((line, idx) => (
-                                                            <Box key={idx}>
-                                                                <Typography>{line}</Typography>
-                                                            </Box>
-                                                        ))}
-                                                </Box>
+                                                    </Box>
+                                                ))}
                                             </Box>
                                         </AccordionSummary>
                                         <AccordionDetails sx={{ mt: -1 }}>
@@ -135,17 +114,25 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                             </Typography>
                                             <Divider />
                                             <Box sx={{ mt: 1 }}>
-                                                {/* TODO  */}
-                                                {activityModule.connectionDetails
-                                                    .flatMap(
-                                                        ({ connectionInstruction }) =>
-                                                            connectionInstruction?.split('\n') ?? ''
-                                                    )
-                                                    .map((line, idx) => (
-                                                        <Box key={idx}>
-                                                            <Typography variant="body2">{line}</Typography>
+                                                {activityModule.connectionDetails.map(
+                                                    ({ connectionInstructions }, idx) => (
+                                                        <Box key={idx} sx={{ mt: 2 }}>
+                                                            <InstructionView
+                                                                instruction={{
+                                                                    untrustedPossiblyDangerousHtml:
+                                                                        getTranslated(
+                                                                            i18n,
+                                                                            _.mapValues(
+                                                                                connectionInstructions,
+                                                                                (v) =>
+                                                                                    v.untrustedPossiblyDangerousHtml
+                                                                            )
+                                                                        ),
+                                                                }}
+                                                            />
                                                         </Box>
-                                                    ))}
+                                                    )
+                                                )}
                                             </Box>
                                         </AccordionDetails>
                                     </Accordion>

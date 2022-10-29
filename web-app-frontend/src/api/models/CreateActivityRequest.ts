@@ -14,11 +14,11 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    ActivityInstructionDto,
-    ActivityInstructionDtoFromJSON,
-    ActivityInstructionDtoFromJSONTyped,
-    ActivityInstructionDtoToJSON,
-} from './ActivityInstructionDto';
+    InstructionDto,
+    InstructionDtoFromJSON,
+    InstructionDtoFromJSONTyped,
+    InstructionDtoToJSON,
+} from './InstructionDto';
 
 /**
  * 
@@ -52,10 +52,10 @@ export interface CreateActivityRequest {
     endTime: Date;
     /**
      * 
-     * @type {Array<ActivityInstructionDto>}
+     * @type {InstructionDto}
      * @memberof CreateActivityRequest
      */
-    instructionsFromTeacher: Array<ActivityInstructionDto>;
+    instructionFromTeacher: InstructionDto;
     /**
      * 
      * @type {Array<number>}
@@ -78,7 +78,7 @@ export function CreateActivityRequestFromJSONTyped(json: any, ignoreDiscriminato
         'description': json['description'],
         'startTime': (new Date(json['startTime'])),
         'endTime': (new Date(json['endTime'])),
-        'instructionsFromTeacher': ((json['instructionsFromTeacher'] as Array<any>).map(ActivityInstructionDtoFromJSON)),
+        'instructionFromTeacher': InstructionDtoFromJSON(json['instructionFromTeacher']),
         'selectedModulesIds': json['selectedModulesIds'],
     };
 }
@@ -96,7 +96,7 @@ export function CreateActivityRequestToJSON(value?: CreateActivityRequest | null
         'description': value.description,
         'startTime': (value.startTime.toISOString()),
         'endTime': (value.endTime.toISOString()),
-        'instructionsFromTeacher': ((value.instructionsFromTeacher as Array<any>).map(ActivityInstructionDtoToJSON)),
+        'instructionFromTeacher': InstructionDtoToJSON(value.instructionFromTeacher),
         'selectedModulesIds': value.selectedModulesIds,
     };
 }
