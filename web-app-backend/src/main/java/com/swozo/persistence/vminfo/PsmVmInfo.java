@@ -1,4 +1,4 @@
-package com.swozo.persistence.vmInfo;
+package com.swozo.persistence.vminfo;
 
 import lombok.*;
 

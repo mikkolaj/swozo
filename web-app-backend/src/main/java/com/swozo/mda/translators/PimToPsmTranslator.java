@@ -2,8 +2,8 @@ package com.swozo.mda.translators;
 
 import com.swozo.persistence.models.Pim;
 import com.swozo.persistence.models.Psm;
-import com.swozo.persistence.vmInfo.PimVmInfo;
-import com.swozo.persistence.vmInfo.PsmVmInfo;
+import com.swozo.persistence.vminfo.PimVmInfo;
+import com.swozo.persistence.vminfo.PsmVmInfo;
 import lombok.*;
 
 import java.util.Optional;

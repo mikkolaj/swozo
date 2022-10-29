@@ -1,6 +1,6 @@
 package com.swozo.util.mock;
 
-import com.swozo.persistence.vmInfo.PimVmInfo;
+import com.swozo.persistence.vminfo.PimVmInfo;
 import lombok.*;
 
 @NoArgsConstructor

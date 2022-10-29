@@ -2,7 +2,7 @@ package com.swozo.mda.translators;
 
 import com.swozo.persistence.models.Cim;
 import com.swozo.persistence.models.Pim;
-import com.swozo.persistence.vmInfo.PimVmInfo;
+import com.swozo.persistence.vminfo.PimVmInfo;
 import com.swozo.util.mock.ModuleMock;
 import lombok.*;
 
