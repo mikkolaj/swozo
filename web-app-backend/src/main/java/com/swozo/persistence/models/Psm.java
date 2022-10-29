@@ -1,6 +1,6 @@
 package com.swozo.persistence.models;
 
-import com.swozo.persistence.vmInfo.PSMVmInfo;
+import com.swozo.persistence.vmInfo.PsmVmInfo;
 import lombok.*;
 
 import java.util.Optional;
@@ -11,6 +11,6 @@ import java.util.Optional;
 @Setter
 @ToString
 public class Psm{
-    private PSMVmInfo teacherVm;
-    private Optional<PSMVmInfo> studentsVms;
+    private PsmVmInfo teacherVm;
+    private Optional<PsmVmInfo> studentsVms;
 }

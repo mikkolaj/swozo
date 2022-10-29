@@ -1,6 +1,6 @@
 package com.swozo.persistence.models;
 
-import com.swozo.persistence.vmInfo.PIMVmInfo;
+import com.swozo.persistence.vmInfo.PimVmInfo;
 import lombok.*;
 
 import java.util.Optional;
@@ -11,7 +11,7 @@ import java.util.Optional;
 @Setter
 @ToString
 public class Pim{
-    private PIMVmInfo teacherVm;
-    private Optional<PIMVmInfo> studentsVms = Optional.empty();
+    private PimVmInfo teacherVm;
+    private Optional<PimVmInfo> studentsVms = Optional.empty();
 
 }

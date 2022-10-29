@@ -1,5 +1,6 @@
 package com.swozo.util.mock;
 
+import com.swozo.persistence.vmInfo.PimVmInfo;
 import lombok.*;
 
 @NoArgsConstructor
@@ -19,4 +20,16 @@ public class ModuleMock {
     private Integer usersPerAdditionalDiskGb;
     private Integer usersPerAdditionalBandiwthGbps;
     private Boolean isolated;
+
+    public PimVmInfo getPimVmInfo(Integer vmAmount){
+        PimVmInfo translation = new PimVmInfo();
+        Integer additionalVms = vmAmount - 1;
+        translation.addModule(this.getId());
+        translation.setVCPUs(this.getBaseVcpu() + additionalVms / this.getUsersPerAdditionalCore());
+        translation.setRam(this.getBaseRam() + additionalVms / this.getUsersPerAdditionalRamGb());
+        translation.setDisk(this.getBaseDisk() + additionalVms / this.getUsersPerAdditionalDiskGb());
+        translation.setBandiwth(this.getBaseBanwidth() + additionalVms / this.getUsersPerAdditionalBandiwthGbps());
+
+        return translation;
+    }
 }

@@ -2,8 +2,8 @@ package com.swozo.mda.translators;
 
 import com.swozo.persistence.models.Pim;
 import com.swozo.persistence.models.Psm;
-import com.swozo.persistence.vmInfo.PIMVmInfo;
-import com.swozo.persistence.vmInfo.PSMVmInfo;
+import com.swozo.persistence.vmInfo.PimVmInfo;
+import com.swozo.persistence.vmInfo.PsmVmInfo;
 import lombok.*;
 
 import java.util.Optional;
@@ -19,8 +19,8 @@ public class PimToPsmTranslator{
         return "e2-medium";
     }
 
-    private PSMVmInfo getPsmVmInfo(PIMVmInfo pimVmInfo){
-        PSMVmInfo psmVmInfo = new PSMVmInfo();
+    private PsmVmInfo getPsmVmInfo(PimVmInfo pimVmInfo){
+        PsmVmInfo psmVmInfo = new PsmVmInfo();
         psmVmInfo.setAmount(pimVmInfo.getAmount());
         psmVmInfo.setModuleIds(pimVmInfo.getModuleIds());
         psmVmInfo.setMachine_type(getMachineType(pimVmInfo.getVCPUs(), pimVmInfo.getRam(),
@@ -31,12 +31,8 @@ public class PimToPsmTranslator{
     }
 
     public Psm getPsm(Pim pim) {
-        PSMVmInfo psmTeacherVmInfo = getPsmVmInfo(pim.getTeacherVm());
-        Optional<PSMVmInfo> psmStudentsVmsInfo = Optional.empty();
-
-        if(pim.getStudentsVms().isPresent()){
-            psmStudentsVmsInfo = Optional.of(getPsmVmInfo(pim.getStudentsVms().get()));
-        }
+        PsmVmInfo psmTeacherVmInfo = getPsmVmInfo(pim.getTeacherVm());
+        Optional<PsmVmInfo> psmStudentsVmsInfo = pim.getStudentsVms().map(this::getPsmVmInfo);
 
         return new Psm(psmTeacherVmInfo, psmStudentsVmsInfo);
     }
