@@ -268,20 +268,16 @@ services:
       - backend
 
   sozisel:
-    image: sozisel
+    image: deutscher862/sozisel
     ports:
       - "4000:4000"
     depends_on:
       - postgres
     environment:
-      - DATABASE_USER=postgres
-      - DATABASE_PASS=postgres
-      - DATABASE_NAME=sozisel_dev
       - DATABASE_PORT=5432
       - DATABASE_URL=postgres://postgres:postgres@db:5432/sozisel_dev
       - HOST=localhost
       - PORT=4000
-      - SECRET_KEY_BASE=5ZddLiYfufVtVfpB2ZxEpmulcNDXTaVWaoJAeg9Tr0MzZ3yntRFeAZF21i/Gv5IE
     networks:
       - backend
       - meet.jitsi

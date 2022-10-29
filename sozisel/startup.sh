@@ -1,4 +1,4 @@
 #!/bin/bash
-cd backend/sozisel/
+cd /backend/sozisel/
 mix ecto.setup
 mix phx.server
