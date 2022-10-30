@@ -89,6 +89,6 @@ public class RequestSenderEnhancerDecorator extends RequestSenderDecorator {
             }
         }
 
-        throw new PropagatingException(previousErr);
+        throw new RuntimeException(previousErr);
     }
 }

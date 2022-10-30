@@ -9,11 +9,13 @@ import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.orchestrator.api.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.control.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -29,9 +31,12 @@ import java.util.concurrent.ExecutionException;
 public class ScheduleController {
     @Qualifier("web-server")
     private final RequestSender requestSender;
+    private final BackendRequestSender back;
     private final ScheduleService service;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final TranslationsProvider translationsProvider;
+    @Value("${backend.server.url}")
+    private final String backendUrl;
 
     @PostMapping
     public ScheduleResponse schedule(@RequestBody ScheduleRequest request) {
@@ -42,7 +47,7 @@ public class ScheduleController {
     @GetMapping(Config.CONFIGURATION)
     public List<ServiceConfig> getSupportedServices() {
         logger.info("Serving config request.");
-//        return service.getSupportedServices();
+        //        return service.getSupportedServices();
         // TODO: mock for testing multiple services, remove this
         var s = new LinkedList<>(service.getSupportedServices());
         s.addLast(new ServiceConfig(ScheduleType.DOCKER.toString(),
@@ -72,7 +77,8 @@ public class ScheduleController {
     @GetMapping("/test-request-to-server")
     public void testRequestToServer() throws URISyntaxException, ExecutionException, InterruptedException {
         // TODO remove this one day
-        requestSender.sendGet(new URI("http://localhost:5000/orchestrator-test"), new TypeReference<Void>(){}).get();
+        requestSender.sendGet(new URI(backendUrl + "/orchestrator-test"), new TypeReference<Void>() {
+        }).get();
         System.out.println("DONE");
     }
 }

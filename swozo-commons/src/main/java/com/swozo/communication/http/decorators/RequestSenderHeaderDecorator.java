@@ -36,4 +36,14 @@ public class RequestSenderHeaderDecorator extends RequestSenderDecorator {
     public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, TypeReference<RespBody> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
         return super.sendPost(uri, body, type, headerDecorator.andThen(builderDecorator));
     }
+
+    @Override
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(URI uri, ReqBody body, TypeReference<RespBody> type) {
+        return this.sendPut(uri, body, type, Function.identity());
+    }
+
+    @Override
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(URI uri, ReqBody body, TypeReference<RespBody> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
+        return super.sendPut(uri, body, type, headerDecorator.andThen(builderDecorator));
+    }
 }

@@ -1,20 +1,24 @@
 package com.swozo.api.orchestrator;
 
 import com.swozo.config.Config;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 @Component
-@RequiredArgsConstructor
+@Profile("!test")
 public class UriFactory {
-    @Value("${orchestrator.server.url}")
+
     private final String orchestratorServerUrl;
     private static final String SEPARATOR = "/";
+
+    public UriFactory(@Value("${orchestrator.server.url}") String orchestratorServerUrl) {
+        this.orchestratorServerUrl = orchestratorServerUrl;
+    }
 
     public URI createActivityLinksURI(Long moduleActivityID) {
         return createURI(orchestratorServerUrl +

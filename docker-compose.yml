@@ -11,6 +11,15 @@ services:
       service: swozo-orchestrator
     depends_on:
       - swozo-web-postgres
+      - swozo-web-app-backend
+    networks:
+      - swozo
+  swozo-web-app-backend:
+    extends:
+      file: ./web-app-backend/docker-compose-dev.yml
+      service: swozo-web-app-backend
+    depends_on:
+      - swozo-web-postgres
     networks:
       - swozo
 

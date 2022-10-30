@@ -10,6 +10,7 @@ services:
       - "22000:22000"
       - "24000:24000"
     environment:
+      BACKEND_URL: http://swozo-backend:5000
       GCP_PROJECT: swozo-362919
       GCP_ZONE: europe-central2-a
       GCP_SSH_USER: swozo

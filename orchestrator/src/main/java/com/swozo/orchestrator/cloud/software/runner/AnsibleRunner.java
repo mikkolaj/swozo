@@ -58,6 +58,7 @@ public class AnsibleRunner {
         try {
             handleSshStartup(connectionDetails);
             tryExecutingPlaybook(() -> createAnsibleProcess(connectionDetails, playbookPath, userVars), timeoutMinutes);
+            logger.info("Playbook successful.");
         } catch (ProcessFailed | ConnectionFailed e) {
             throw new NotebookFailed(e);
         }

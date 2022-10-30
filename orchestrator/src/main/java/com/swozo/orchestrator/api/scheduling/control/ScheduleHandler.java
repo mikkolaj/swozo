@@ -1,7 +1,9 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
+import com.swozo.exceptions.PropagatingException;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.orchestrator.api.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleTypeMapper;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -32,6 +35,7 @@ import static com.swozo.orchestrator.api.scheduling.persistence.entity.RequestSt
 public class ScheduleHandler {
     // TODO: probably will change if we decide to execute tasks (e.g. saving user's files) before deleting the instance
     private static final int CLEANUP_SECONDS = 0;
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-HH-mm-ss");
     private final InternalTaskScheduler scheduler;
     private final TimedVMProvider timedVmProvider;
     private final TimedSoftwareProvisionerFactory provisionerFactory;
@@ -39,14 +43,33 @@ public class ScheduleHandler {
     private final ScheduleRequestMapper requestMapper;
     private final ScheduleTypeMapper scheduleTypeMapper;
     private final TimingService timingService;
+    private final BackendRequestSender requestSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-HH-mm-ss");
 
     public ScheduleEntityWithProvisioner startTracking(ScheduleRequest request) throws InvalidParametersException {
         var provisioner = getProvisioner(request);
-        provisioner.validateParameters(request.dynamicProperties());
-        var requestEntity = scheduleRequestTracker.startTracking(request);
-        return new ScheduleEntityWithProvisioner(requestEntity, provisioner);
+        if (isTooLate(request, provisioner)) {
+            throw new IllegalArgumentException("End time is before earliest possible ready time.");
+        } else if (lastsNotLongEnough(request, provisioner)) {
+            throw new IllegalArgumentException("End time is before estimated ready time.");
+        } else {
+            provisioner.validateParameters(request.dynamicProperties());
+            var requestEntity = scheduleRequestTracker.startTracking(request);
+            return new ScheduleEntityWithProvisioner(requestEntity, provisioner);
+        }
+    }
+
+    private boolean isTooLate(ScheduleRequest request, TimedSoftwareProvisioner provisioner) {
+        var earliestReadyTime = LocalDateTime.now().plusSeconds(provisioner.getProvisioningSeconds());
+        return request.serviceLifespan().endTime()
+                .isBefore(earliestReadyTime);
+    }
+
+    private boolean lastsNotLongEnough(ScheduleRequest request, TimedSoftwareProvisioner provisioner) {
+        var estimatedReadyTime =
+                request.serviceLifespan().startTime().plusSeconds(provisioner.getProvisioningSeconds());
+        return request.serviceLifespan().endTime()
+                .isBefore(estimatedReadyTime);
     }
 
     public void delegateScheduling(ScheduleRequestEntity requestEntity) {
@@ -123,10 +146,19 @@ public class ScheduleHandler {
         scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
     }
 
-    @Transactional
     protected void switchToReadyState(ScheduleRequestEntity request, List<ActivityLinkInfo> links) {
         scheduleRequestTracker.updateStatus(request.getId(), READY);
-        scheduleRequestTracker.saveLinks(request.getId(), links);
+        try {
+            /// WHY DOES IT NOT CATCH IT?
+            CheckedExceptionConverter.from(() -> requestSender.putActivityLinks(request.getId(), links).get()).get();
+        } catch (PropagatingException ex) {
+            logger.error("fdsfdsafsd", ex);
+            throw ex;
+        } catch (RuntimeException ex) {
+            logger.error("Unable to send links to backend.", ex);
+        } catch (Exception e) {
+            logger.error("ex", e);
+        }
     }
 
     private List<ActivityLinkInfo> delegateProvisioning(ScheduleRequestEntity request, TimedSoftwareProvisioner provisioner, VMResourceDetails resourceDetails) {

@@ -3,10 +3,13 @@ package com.swozo.orchestrator.api.scheduling.control;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -17,9 +20,13 @@ public class ScheduleService {
     private final ScheduleHandler scheduleHandler;
 
     public ScheduleResponse schedule(ScheduleRequest request) {
-        var response = scheduleHandler.startTracking(request);
-        scheduleHandler.delegateScheduling(response.entity(), response.provisioner());
-        return new ScheduleResponse(response.entity().getId());
+        try {
+            var response = scheduleHandler.startTracking(request);
+            scheduleHandler.delegateScheduling(response.entity(), response.provisioner());
+            return new ScheduleResponse(response.entity().getId());
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
     }
 
     public List<ServiceConfig> getSupportedServices() {

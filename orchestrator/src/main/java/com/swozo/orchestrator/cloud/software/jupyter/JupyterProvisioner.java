@@ -65,6 +65,18 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
+    public List<ActivityLinkInfo> createLinks(VMResourceDetails vmResourceDetails) {
+        var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
+        return List.of(new ActivityLinkInfo(
+                formattedLink,
+                translationsProvider.t(
+                        "services.jupyter.connectionInstruction",
+                        Map.of("password", MAIN_LINK_DESCRIPTION)
+                )
+        ));
+    }
+
+    @Override
     public void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException {
         JupyterParameters.from(dynamicParameters);
     }
@@ -85,17 +97,6 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
                 properties.jupyterPlaybookPath(),
                 PROVISIONING_SECONDS / MINUTES_FACTOR
         );
-    }
-
-    private List<ActivityLinkInfo> createLinks(VMResourceDetails vmResourceDetails) {
-        var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
-        return List.of(new ActivityLinkInfo(
-                formattedLink,
-                translationsProvider.t(
-                        "services.jupyter.connectionInstruction",
-                        Map.of("password", MAIN_LINK_DESCRIPTION)
-                )
-        ));
     }
 
     @SneakyThrows

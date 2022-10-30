@@ -61,23 +61,50 @@ public class JsonRequestSender implements RequestSender {
             Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
     ) {
         var request = builderDecorator.apply(
-                HttpRequest.newBuilder()
-                        .uri(uri)
-                        .headers(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                        .headers(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                requestToUriWithJsonHeaders(uri)
                         .POST(HttpRequest.BodyPublishers.ofString(mapper.toJson(body)))
-                ).build();
+        ).build();
+
+        return sendRequest(request, type);
+    }
+
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(
+            URI uri,
+            ReqBody body,
+            TypeReference<RespBody> type
+    ) {
+        return sendPut(uri, body, type, Function.identity());
+    }
+
+    @Override
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(
+            URI uri,
+            ReqBody body,
+            TypeReference<RespBody> type,
+            Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
+    ) {
+        var request = builderDecorator.apply(
+                requestToUriWithJsonHeaders(uri)
+                        .PUT(HttpRequest.BodyPublishers.ofString(mapper.toJson(body)))
+        ).build();
 
         return sendRequest(request, type);
     }
 
     private <T> CompletableFuture<HttpResponse<T>> sendRequest(HttpRequest request, TypeReference<T> type) {
         return httpClient.sendAsync(
-                    request,
-                    responseInfo -> HttpResponse.BodySubscribers.mapping(
+                request,
+                responseInfo -> HttpResponse.BodySubscribers.mapping(
                         HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8),
                         json -> type.getType().equals(Void.class) ? null : mapper.fromJson(json, type)
-               )
-            );
+                )
+        );
+    }
+
+    private HttpRequest.Builder requestToUriWithJsonHeaders(URI uri) {
+        return HttpRequest.newBuilder()
+                .uri(uri)
+                .headers(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .headers(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
     }
 }

@@ -20,7 +20,7 @@ public abstract class RequestSenderDecorator implements RequestSender {
     }
 
     @Override
-    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T>type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
+    public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
         return wrappee.sendGet(uri, type, builderDecorator);
     }
 
@@ -32,5 +32,15 @@ public abstract class RequestSenderDecorator implements RequestSender {
     @Override
     public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, TypeReference<RespBody> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
         return wrappee.sendPost(uri, body, type, builderDecorator);
+    }
+
+    @Override
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(URI uri, ReqBody body, TypeReference<RespBody> type) {
+        return wrappee.sendPut(uri, body, type);
+    }
+
+    @Override
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(URI uri, ReqBody body, TypeReference<RespBody> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
+        return wrappee.sendPut(uri, body, type, builderDecorator);
     }
 }

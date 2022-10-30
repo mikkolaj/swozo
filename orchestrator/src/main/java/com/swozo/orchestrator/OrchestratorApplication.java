@@ -9,7 +9,7 @@ import org.springframework.context.event.EventListener;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-@ConfigurationPropertiesScan("com.swozo.orchestrator")
+@ConfigurationPropertiesScan("com.swozo")
 public class OrchestratorApplication {
     private final Playground playground;
 
