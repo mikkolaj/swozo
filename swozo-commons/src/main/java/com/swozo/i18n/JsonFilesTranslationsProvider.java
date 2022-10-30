@@ -1,5 +1,6 @@
 package com.swozo.i18n;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -8,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,15 +25,13 @@ public class JsonFilesTranslationsProvider implements TranslationsProvider{
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Map<SupportedLanguage, JsonNode> translations;
-    private final ObjectMapper mapper;
 
     public JsonFilesTranslationsProvider() {
         translations = new HashMap<>();
-        this.mapper = new ObjectMapper();
     }
 
-    public JsonFilesTranslationsProvider withSupportFor(SupportedLanguage language, Path translationsFilePath) throws IOException  {
-        translations.put(language, readTranslations(translationsFilePath));
+    public JsonFilesTranslationsProvider withSupportFor(SupportedLanguage language, String jsonTranslations) throws IOException  {
+        translations.put(language, readTranslations(jsonTranslations));
         return this;
     }
 
@@ -75,7 +73,7 @@ public class JsonFilesTranslationsProvider implements TranslationsProvider{
         });
     }
 
-    private JsonNode readTranslations(Path translationsFilePath) throws IOException {
-        return mapper.readTree(translationsFilePath.toFile());
+    private JsonNode readTranslations(String jsonTranslations) throws JsonProcessingException {
+        return new ObjectMapper().readTree(jsonTranslations);
     }
 }
