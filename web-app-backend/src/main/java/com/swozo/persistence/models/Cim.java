@@ -1,6 +1,6 @@
 package com.swozo.persistence.models;
 
-import com.swozo.util.mock.ModuleMock;
+import com.swozo.util.mock.ServiceModule;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @Setter
 @ToString
 public class Cim{
-    private ArrayList<ModuleMock> selectedModules = new ArrayList<>();
+    private ArrayList<ServiceModule> selectedModules = new ArrayList<>();
     private Long userId;
     private Integer studentsNumber;
 }

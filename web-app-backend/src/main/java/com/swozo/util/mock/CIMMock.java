@@ -14,9 +14,9 @@ import java.util.List;
 @ToString
 public class CIMMock {
     public Cim generateMockCIM(){
-        ModuleMock moduleMock1 = new ModuleMock(1L,4,64,14,8,3,3,1,1,true);
-        ModuleMock moduleMock2 = new ModuleMock(2L,4,64,28,8,3,3,1,1,false);
-        ArrayList<ModuleMock> selectedModules = new ArrayList<>(List.of(moduleMock1, moduleMock2));
+        IsolatedServiceModule moduleMock1 = new IsolatedServiceModule(1L,4,64,14,8);
+        SharedServiceModule moduleMock2 = new SharedServiceModule(2L,4,64,28,8,3,3,1,1);
+        ArrayList<ServiceModule> selectedModules = new ArrayList<>(List.of(moduleMock1, moduleMock2));
         return new Cim(selectedModules, 1L, 20);
     }
 }
