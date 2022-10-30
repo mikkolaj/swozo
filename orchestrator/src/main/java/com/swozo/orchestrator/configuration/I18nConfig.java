@@ -7,24 +7,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Configuration
 public class I18nConfig {
     private final static String TRANSLATIONS_DIR = "translations";
 
     @Bean
-    public TranslationsProvider provideTranslationsProvider() throws URISyntaxException, IOException {
+    public TranslationsProvider provideTranslationsProvider() throws IOException {
         return new JsonFilesTranslationsProvider()
-                .withSupportFor(SupportedLanguage.PL, getPathToTranslationsFile(SupportedLanguage.PL));
+                .withSupportFor(SupportedLanguage.PL, getJsonTranslations(SupportedLanguage.PL));
     }
 
-    private Path getPathToTranslationsFile(SupportedLanguage language) throws URISyntaxException {
-        return Paths.get(getClass().getClassLoader()
-                .getResource(Path.of(TRANSLATIONS_DIR, language.toString().toLowerCase() + ".json").toString())
-                .toURI()
-        );
+    private String getJsonTranslations(SupportedLanguage language) throws IOException {
+        var path = Path.of(TRANSLATIONS_DIR, language.toString().toLowerCase() + ".json").toString();
+        try (var inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
+            assert inputStream != null;
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
     }
 }
