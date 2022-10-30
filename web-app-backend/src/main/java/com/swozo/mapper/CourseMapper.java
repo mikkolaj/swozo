@@ -32,5 +32,6 @@ public abstract class CourseMapper {
     public abstract CourseDetailsDto toDto(Course course, boolean shouldUsePassword);
 
     @Mapping(target = "isPasswordProtected", expression= "java(course.getPassword().isPresent())")
+    @Mapping(target = "teacher", expression = "java(userMapper.toDto(course.getTeacher()))")
     public abstract CourseSummaryDto toDto(Course course);
 }

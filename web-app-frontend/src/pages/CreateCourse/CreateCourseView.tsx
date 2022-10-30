@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material';
-import { CourseDetailsDto, CreateCourseRequest } from 'api';
+import { CreateCourseRequest } from 'api';
 import { ApiError, ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
@@ -11,6 +11,7 @@ import { FormikErrors, FormikProps } from 'formik';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import _ from 'lodash';
+import { updateCourseCache } from 'pages/Course/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
@@ -63,12 +64,8 @@ export const CreateCourseView = () => {
         (createCourseRequest: CreateCourseRequest) => getApis().courseApi.addCourse({ createCourseRequest }),
         {
             onSuccess: (courseDetailsResp) => {
-                queryClient.setQueryData('courses', (allCourses: CourseDetailsDto[] = []) => [
-                    courseDetailsResp,
-                    ...allCourses,
-                ]);
-                queryClient.setQueryData(['courses', `${courseDetailsResp.id}`], courseDetailsResp);
-                toast(t('toast.courseCreated'));
+                updateCourseCache(queryClient, courseDetailsResp);
+                toast.success(t('toast.courseCreated'));
                 navigate(PageRoutes.Course(courseDetailsResp.id));
             },
             onError: (error: ApiError) => {
@@ -167,7 +164,16 @@ export const CreateCourseView = () => {
                                         clearErrorsForSlide(formattedApiErrors, currentSlide)
                                     );
                                 }
-                                setCurrentSlide(toSlide);
+
+                                if (
+                                    values &&
+                                    values[COURSE_SLIDE].numberOfActivities === 0 &&
+                                    toSlide === 1
+                                ) {
+                                    setCurrentSlide(toSlide + 1);
+                                } else {
+                                    setCurrentSlide(toSlide);
+                                }
                             }}
                             onFinish={() => {
                                 formRef.current?.handleSubmit();

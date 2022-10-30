@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -50,6 +51,15 @@ public class CourseController {
     public CourseDetailsDto getCourse(AccessToken token, @PathVariable Long id) {
         logger.info("course info getter for id: {}", id);
         return courseService.getCourseDetails(id, token.getUserId());
+    }
+
+    @GetMapping("/summary")
+    public List<CourseSummaryDto> getPublicCourses(
+            AccessToken token,
+            @RequestParam(defaultValue = "0") Long offset,
+            @RequestParam(defaultValue = "100") Long limit
+    ) {
+        return courseService.getPublicCoursesNotParticipatedBy(token.getUserId(), offset, limit);
     }
 
     @GetMapping("/summary/{uuid}")

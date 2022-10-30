@@ -62,6 +62,19 @@ public class CourseService {
                .orElseThrow(() -> CourseNotFoundException.withUUID(joinUUID));
     }
 
+    public List<CourseSummaryDto> getPublicCoursesNotParticipatedBy(Long userId, Long offset, Long limit) {
+        // TODO: proper pagination
+
+        return courseRepository.getCoursesByIsPublicTrue().stream()
+                .filter(course -> course.getStudents().stream()
+                        .map(userCourseData -> userCourseData.getId().getUserId())
+                        .noneMatch(id -> id.equals(userId))
+                )
+                .filter(course -> !course.getTeacher().getId().equals(userId))
+                .map(courseMapper::toDto)
+                .toList();
+    }
+
     @Transactional
     public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId, boolean sandboxMode) {
         if (!sandboxMode) {

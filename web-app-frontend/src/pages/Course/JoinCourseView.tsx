@@ -21,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { PageRoutes } from 'utils/routes';
 import { AlreadyJoinedError, InvalidJoinUUidError } from './ErrorHandlers';
+import { updateCourseCache } from './utils';
 
 export const JoinCourseView = () => {
     const { t } = useTranslation();
@@ -46,7 +47,7 @@ export const JoinCourseView = () => {
     );
 
     const { data: course } = useErrorHandledQuery(
-        ['courses', 'public', joinUUID],
+        ['courses', 'summary', joinUUID],
         () => getApis().courseApi.getPublicCourseData({ uuid: joinUUID }),
         pushApiError,
         removeApiError
@@ -64,7 +65,7 @@ export const JoinCourseView = () => {
         },
         {
             onSuccess: (course) => {
-                queryClient.setQueryData(['courses', `${course.id}`], course);
+                updateCourseCache(queryClient, course);
                 toast.success(t('course.join.joinedMessage'));
                 navigate(PageRoutes.Course(course.id));
             },

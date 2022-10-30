@@ -7,9 +7,10 @@
     },
     "navbar": {
         "logo": "SWOZO",
-        "myCourses": "kursy",
+        "myCourses": "moje kursy",
         "myModules": "moje moduły",
-        "publicModules": "moduły",
+        "publicCourses": "wszystkie kursy",
+        "publicModules": "wszystkie moduły",
         "myFiles": "pliki",
         "menu": {
             "logout": "wyloguj",
@@ -20,16 +21,27 @@
     "myCourses": {
         "header": "Moje kursy",
         "createCourseButton": "Utwórz kurs",
+        "empty": "Nie utworzyłeś jeszcze żadnego kursu",
         "course": {
             "lastActivity": "Ostatnia aktywność:",
             "teacher": "Prowadzący: {{firstName}} {{lastName}}",
             "button": "szczegóły"
         }
     },
+    "publicCourses": {
+        "header": "Publiczne kursy",
+        "searchBoxPlaceholder": "Nazwa kursu, nauczyciel...",
+        "createdAt": "Data utworzenia:",
+        "teacher": "Prowadzący: {{firstName}} {{lastName}}",
+        "join": "Dołącz do kursu",
+        "empty": "Wygląda na to że nic tu nie ma :("
+    },
     "course": {
         "options": {
             "activities": {
-                "button": "Aktywności"
+                "button": "Aktywności",
+                "empty": "Nie utworzyłeś jeszcze żadnej aktywności w tym kursie",
+                "emptyButton": "Dodaj aktywności"
             },
             "participants": {
                 "button": "Uczestnicy",
@@ -166,6 +178,7 @@
     "myModules": {
         "header": "Moje moduły",
         "createModuleButton": "Utwórz moduł",
+        "empty": "Nie utworzyłeś jeszcze żadnego modułu",
         "module": {
             "creationDate": "Data utworzenia:",
             "usedBy": "Liczba korzystających aktywności: {{activitiesCount}}",
@@ -200,6 +213,7 @@
     },
     "publicModules": {
         "header": "Publiczne moduły",
+        "empty": "Wygląda na to że nic tu nie ma :(",
         "searchBoxPlaceholder": "Nazwa modułu, autor...",
         "filters": "Więcej filtrów",
         "author": "Autor: {{email}}",

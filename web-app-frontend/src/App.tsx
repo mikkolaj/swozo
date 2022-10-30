@@ -6,7 +6,8 @@ import { ActivityFilesView } from 'pages/ActivityFiles/ActivityFilesView';
 import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
 import { CourseView } from 'pages/Course/CourseView';
 import { JoinCourseView } from 'pages/Course/JoinCourseView';
-import { CoursesListView } from 'pages/CoursesList/CoursesListView';
+import { MyCoursesListView } from 'pages/CoursesList/MyCoursesListView';
+import { PublicCourseListView } from 'pages/CoursesList/PublicCourseListView';
 import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
 import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
 import { FilesListView } from 'pages/FilesList/FilesListView';
@@ -39,9 +40,13 @@ function App() {
             <CssBaseline />
             {isLoggedIn && <Navbar />}
             <Routes>
-                <Route path={PageRoutes.HOME} element={guarded(<Home />, ANY_LOGGED_IN)} />
                 <Route path={PageRoutes.LOGIN} element={guarded(<Login />, NOT_LOGGED_IN)} />
-                <Route path={PageRoutes.MY_COURSES} element={guarded(<CoursesListView />, ANY_LOGGED_IN)} />
+                <Route path={PageRoutes.HOME} element={guarded(<Home />, ANY_LOGGED_IN)} />
+                <Route
+                    path={PageRoutes.PUBLIC_COURSES}
+                    element={guarded(<PublicCourseListView />, ANY_LOGGED_IN)}
+                />
+                <Route path={PageRoutes.MY_COURSES} element={guarded(<MyCoursesListView />, ANY_LOGGED_IN)} />
                 <Route path={PageRoutes.COURSE} element={guarded(<CourseView />, ANY_LOGGED_IN)} />
                 <Route
                     path={PageRoutes.JOIN_COURSE}

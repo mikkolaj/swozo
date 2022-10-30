@@ -105,3 +105,7 @@ export async function withExponentialBackoff<T>(
 
     throw lastErr;
 }
+
+export const naiveTextCompare = (testedValue: string, matcher: string): boolean => {
+    return testedValue.toLowerCase().includes(matcher.toLowerCase());
+};

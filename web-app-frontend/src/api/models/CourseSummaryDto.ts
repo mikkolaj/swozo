@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    UserDetailsDto,
+    UserDetailsDtoFromJSON,
+    UserDetailsDtoFromJSONTyped,
+    UserDetailsDtoToJSON,
+} from './UserDetailsDto';
+
 /**
  * 
  * @export
@@ -25,6 +32,30 @@ export interface CourseSummaryDto {
      * @memberof CourseSummaryDto
      */
     name: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CourseSummaryDto
+     */
+    description: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CourseSummaryDto
+     */
+    subject: string;
+    /**
+     * 
+     * @type {Date}
+     * @memberof CourseSummaryDto
+     */
+    creationTime: Date;
+    /**
+     * 
+     * @type {UserDetailsDto}
+     * @memberof CourseSummaryDto
+     */
+    teacher: UserDetailsDto;
     /**
      * 
      * @type {boolean}
@@ -50,6 +81,10 @@ export function CourseSummaryDtoFromJSONTyped(json: any, ignoreDiscriminator: bo
     return {
         
         'name': json['name'],
+        'description': json['description'],
+        'subject': json['subject'],
+        'creationTime': (new Date(json['creationTime'])),
+        'teacher': UserDetailsDtoFromJSON(json['teacher']),
         'isPasswordProtected': json['isPasswordProtected'],
         'joinUUID': json['joinUUID'],
     };
@@ -65,6 +100,10 @@ export function CourseSummaryDtoToJSON(value?: CourseSummaryDto | null): any {
     return {
         
         'name': value.name,
+        'description': value.description,
+        'subject': value.subject,
+        'creationTime': (value.creationTime.toISOString()),
+        'teacher': UserDetailsDtoToJSON(value.teacher),
         'isPasswordProtected': value.isPasswordProtected,
         'joinUUID': value.joinUUID,
     };

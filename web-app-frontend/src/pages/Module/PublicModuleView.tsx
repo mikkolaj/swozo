@@ -71,6 +71,8 @@ export const PublicModuleView = () => {
                                 value={serviceModule.creator.email}
                                 i18nLabel="publicModule.authorEmail"
                             />
+                        </Box>
+                        <Box sx={{ ...stylesRow }}>
                             <StyledReadonlyField
                                 value={formatDate(serviceModule.createdAt)}
                                 i18nLabel="publicModule.createdAt"

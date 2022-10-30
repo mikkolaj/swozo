@@ -1,13 +1,17 @@
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Box, Container, Grid, Stack } from '@mui/material';
+import { Box, Container, Grid, Stack, Typography } from '@mui/material';
 import { ServiceModuleSummaryDto } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
 import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { SearchBar } from 'common/Styled/SearchBar';
-import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
+import {
+    stylesRowCenteredHorizontal,
+    stylesRowCenteredVertical,
+    stylesRowWithItemsAtTheEnd,
+} from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useEffect, useState } from 'react';
@@ -27,7 +31,7 @@ export const PublicModulesListView = () => {
     const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
-    const { data: modules } = useErrorHandledQuery(
+    const { data: modules, isLoading } = useErrorHandledQuery(
         ['modules', 'summary'],
         () => getApis().serviceModuleApi.getAllPublicServiceModules(),
         pushApiError,
@@ -86,11 +90,19 @@ export const PublicModulesListView = () => {
             }
         >
             <Container>
-                <Stack spacing={2} px={2}>
-                    {orderedModules.map((module) => (
-                        <PublicModuleSummaryView key={module.id} moduleSummary={module} />
-                    ))}
-                </Stack>
+                {isLoading || (orderedModules && orderedModules.length > 0) ? (
+                    <Stack spacing={2} px={2}>
+                        {orderedModules.map((module) => (
+                            <PublicModuleSummaryView key={module.id} moduleSummary={module} />
+                        ))}
+                    </Stack>
+                ) : (
+                    <Box sx={{ ...stylesRowCenteredHorizontal, justifyContent: 'center', mt: 8 }}>
+                        <Typography sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }} variant="h4">
+                            {t('publicCourses.empty')}
+                        </Typography>
+                    </Box>
+                )}
             </Container>
         </PageContainer>
     );

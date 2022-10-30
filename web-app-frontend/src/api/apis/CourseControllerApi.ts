@@ -69,6 +69,11 @@ export interface GetPublicCourseDataRequest {
     uuid: string;
 }
 
+export interface GetPublicCoursesRequest {
+    offset?: number;
+    limit?: number;
+}
+
 export interface JoinCourseOperationRequest {
     joinCourseRequest: JoinCourseRequest;
 }
@@ -355,6 +360,46 @@ export class CourseControllerApi extends runtime.BaseAPI {
      */
     async getPublicCourseData(requestParameters: GetPublicCourseDataRequest, initOverrides?: RequestInit): Promise<CourseSummaryDto> {
         const response = await this.getPublicCourseDataRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getPublicCoursesRaw(requestParameters: GetPublicCoursesRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<CourseSummaryDto>>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.offset !== undefined) {
+            queryParameters['offset'] = requestParameters.offset;
+        }
+
+        if (requestParameters.limit !== undefined) {
+            queryParameters['limit'] = requestParameters.limit;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/courses/summary`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(CourseSummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getPublicCourses(requestParameters: GetPublicCoursesRequest = {}, initOverrides?: RequestInit): Promise<Array<CourseSummaryDto>> {
+        const response = await this.getPublicCoursesRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

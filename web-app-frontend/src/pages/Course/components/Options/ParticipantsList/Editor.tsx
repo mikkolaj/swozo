@@ -22,23 +22,24 @@ import { useTranslation } from 'react-i18next';
 
 type Props = {
     course: CourseDetailsDto;
+    initialTab?: Options;
 };
 
 type Options = 'course' | 'addActivity';
 
-export const Editor = ({ course }: Props) => {
+export const Editor = ({ course, initialTab = 'course' }: Props) => {
     const { t } = useTranslation();
     const { pushApiError, removeApiError } = useApiErrorHandling({});
-    const [option, setOption] = useState<Options>('course');
+    const [option, setOption] = useState<Options>(initialTab);
     const courseFormRef = useRef<FormikProps<CourseValues>>(null);
     const activityFormRef = useRef<FormikProps<{ activities: ActivityValues[] }>>(null);
+
     const { data: availableLessonModules } = useErrorHandledQuery(
         ['modules', 'summary', 'public'],
         () => getApis().serviceModuleApi.getAllPublicServiceModules(),
         pushApiError,
         removeApiError
     );
-
     const { editCourseMutation } = useEditCourse(course, courseFormRef, pushApiError);
     const { addActivityMutation } = useAddSingleActivity(course, activityFormRef, pushApiError);
 
@@ -84,16 +85,14 @@ export const Editor = ({ course }: Props) => {
                                             values={values}
                                             handleChange={handleChange}
                                         />
-                                        <Box sx={{ margin: 'auto', mt: 5 }}>
-                                            <Button
-                                                sx={{ p: 2, minWidth: '200px' }}
-                                                type="submit"
-                                                disabled={editCourseMutation.isLoading}
-                                                variant="contained"
-                                            >
-                                                {t('course.options.editor.tabs.course.button')}
-                                            </Button>
-                                        </Box>
+                                        <Button
+                                            sx={{ p: 2, width: '200px', mt: 5 }}
+                                            type="submit"
+                                            disabled={editCourseMutation.isLoading}
+                                            variant="contained"
+                                        >
+                                            {t('course.options.editor.tabs.course.button')}
+                                        </Button>
                                     </Box>
                                 </Form>
                             )}

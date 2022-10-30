@@ -1,10 +1,10 @@
-import { Button, Container, Grid, Stack } from '@mui/material';
-import { CourseDetailsDto } from 'api';
+import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { AuthDetailsDtoRolesEnum, CourseDetailsDto } from 'api';
 import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageHeaderText } from 'common/Styled/PageHeaderText';
-import { stylesRowWithItemsAtTheEnd } from 'common/styles';
+import { stylesColumnCenteredHorizontal, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { buildErrorPageHandler } from 'hooks/useCommonErrorHandlers';
@@ -23,6 +23,7 @@ export const CourseContext = React.createContext<CourseDetailsDto | undefined>(u
 type Tab = 'activities' | 'participants' | 'editor';
 type TabConfig = {
     type: Tab;
+    roles?: AuthDetailsDtoRolesEnum[];
     tabRenderer: (course: CourseDetailsDto) => JSX.Element;
 };
 
@@ -43,10 +44,9 @@ const tabs: Record<Tab, TabConfig> = {
     },
     editor: {
         type: 'editor',
+        roles: [TEACHER],
         tabRenderer: (course) => (
-            <WithRole roles={[TEACHER]}>
-                <Editor course={course} />
-            </WithRole>
+            <Editor course={course} initialTab={course.activities.length > 0 ? 'course' : 'addActivity'} />
         ),
     },
 };
@@ -86,20 +86,44 @@ export const CourseView = () => {
                         </Grid>
                         <Grid item xs={5} sx={stylesRowWithItemsAtTheEnd}>
                             {Object.entries(tabs).map(([type, config]) => (
-                                <Button
-                                    key={type}
-                                    onClick={() => setTab(config)}
-                                    variant={tab.type === type ? 'contained' : 'outlined'}
-                                    sx={{ mr: 0.5, height: '50px' }}
-                                >
-                                    {t(`course.options.${type}.button`)}
-                                </Button>
+                                <WithRole roles={config.roles ?? []} key={type}>
+                                    <Button
+                                        onClick={() => setTab(config)}
+                                        variant={tab.type === type ? 'contained' : 'outlined'}
+                                        sx={{ mr: 0.5, height: '50px' }}
+                                    >
+                                        {t(`course.options.${type}.button`)}
+                                    </Button>
+                                </WithRole>
                             ))}
                         </Grid>
                     </>
                 }
             >
-                <Container>{course && tab.tabRenderer(course)}</Container>
+                <Container>
+                    {course &&
+                        (tab.type !== 'activities' || course.activities.length > 0 ? (
+                            tab.tabRenderer(course)
+                        ) : (
+                            <Box sx={{ ...stylesColumnCenteredHorizontal, justifyContent: 'center', mt: 8 }}>
+                                <Typography
+                                    sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}
+                                    variant="h4"
+                                >
+                                    {t('course.options.activities.empty')}
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    sx={{ mt: 4, px: 4, py: 2 }}
+                                    onClick={() => setTab(tabs['editor'])}
+                                >
+                                    <Typography variant="h5">
+                                        {t('course.options.activities.emptyButton')}
+                                    </Typography>
+                                </Button>
+                            </Box>
+                        ))}
+                </Container>
             </PageContainer>
         </CourseContext.Provider>
     );

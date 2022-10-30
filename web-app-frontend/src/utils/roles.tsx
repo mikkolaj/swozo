@@ -40,7 +40,8 @@ export const WithRole = ({
     roles,
 }: React.PropsWithChildren<{ roles: AuthDetailsDtoRolesEnum[] }>) => {
     const auth = useAppSelector((state) => state.auth.authData);
-    return <>{hasRole(auth, ...roles) && children}</>;
+
+    return roles.length > 0 ? <>{hasRole(auth, ...roles) && children}</> : <>{children}</>;
 };
 
 export const WithPreference = ({

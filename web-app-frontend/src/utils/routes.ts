@@ -2,14 +2,15 @@ export class PageRoutes {
     static readonly HOME = '/';
     static readonly LOGIN = '/login';
     static readonly MY_COURSES = '/my-courses';
-    static readonly JOIN_COURSE = `${this.MY_COURSES}/join/:joinUUID`;
     static readonly COURSE = `${this.MY_COURSES}/:courseId`;
     static readonly CREATE_COURSE = `${this.MY_COURSES}/creator`;
+    static readonly PUBLIC_COURSES = '/courses';
+    static readonly JOIN_COURSE = `${this.PUBLIC_COURSES}/join/:joinUUID`;
     static readonly MY_MODULES = '/my-modules';
     static readonly CREATE_MODULE = `${this.MY_MODULES}/creator`;
     static readonly MY_MODULE = `${this.MY_MODULES}/:moduleId`;
     static readonly EDIT_MODULE = `${this.MY_MODULE}/editor`;
-    static readonly PUBLIC_MODULES = '/public-moduels';
+    static readonly PUBLIC_MODULES = '/modules';
     static readonly PUBLIC_MODULE = `${this.PUBLIC_MODULES}/:moduleId`;
     static readonly ACTIVITIES = `${this.COURSE}/activities`;
     static readonly ACTIVITY = `${this.ACTIVITIES}/:activityId`;

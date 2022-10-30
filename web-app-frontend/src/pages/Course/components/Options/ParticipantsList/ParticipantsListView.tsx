@@ -12,6 +12,7 @@ import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { buildErrorHandler, HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { updateCourseCache } from 'pages/Course/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
@@ -55,7 +56,7 @@ export const ParticipantsListView = ({ course }: Props) => {
         {
             onSuccess: (mutatedCourse, email) => {
                 toast.success(t('course.options.participants.addStudent.success', { email }));
-                queryClient.setQueryData(['courses', `${mutatedCourse.id}`], mutatedCourse);
+                updateCourseCache(queryClient, mutatedCourse);
             },
             onError: (error: ApiError) => {
                 pushApiError(error);
