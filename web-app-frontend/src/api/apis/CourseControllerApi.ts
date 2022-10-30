@@ -197,7 +197,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
         }
         const response = await this.request({
             path: `/courses/{courseId}/students`.replace(`{${"courseId"}}`, encodeURIComponent(String(requestParameters.courseId))),
-            method: 'POST',
+            method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
             body: ModifyParticipantRequestToJSON(requestParameters.modifyParticipantRequest),
@@ -275,7 +275,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
         }
         const response = await this.request({
             path: `/courses/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
             body: EditCourseRequestToJSON(requestParameters.editCourseRequest),
@@ -458,7 +458,7 @@ export class CourseControllerApi extends runtime.BaseAPI {
         }
         const response = await this.request({
             path: `/courses/join`,
-            method: 'PATCH',
+            method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
             body: JoinCourseRequestToJSON(requestParameters.joinCourseRequest),

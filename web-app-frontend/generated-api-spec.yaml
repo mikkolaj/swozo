@@ -128,69 +128,6 @@ paths:
                 $ref: '#/components/schemas/ServiceModuleDetailsDto'
       security:
       - JWT_AUTH: []
-  /courses/{id}:
-    get:
-      tags:
-      - course-controller
-      operationId: getCourse
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CourseDetailsDto'
-      security:
-      - JWT_AUTH: []
-    put:
-      tags:
-      - course-controller
-      operationId: editCourse
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/EditCourseRequest'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CourseDetailsDto'
-      security:
-      - JWT_AUTH: []
-    delete:
-      tags:
-      - course-controller
-      operationId: deleteCourse
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        "200":
-          description: OK
-      security:
-      - JWT_AUTH: []
   /courses/{id}/activities:
     put:
       tags:
@@ -208,6 +145,79 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateActivityRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
+  /courses/{courseId}/students:
+    put:
+      tags:
+      - course-controller
+      operationId: addStudentToCourse
+      parameters:
+      - name: courseId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyParticipantRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
+    delete:
+      tags:
+      - course-controller
+      operationId: removeStudentFromCourse
+      parameters:
+      - name: courseId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifyParticipantRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
+  /courses/join:
+    put:
+      tags:
+      - course-controller
+      operationId: joinCourse
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinCourseRequest'
         required: true
       responses:
         "200":
@@ -333,59 +343,6 @@ paths:
                 $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
-  /courses/{courseId}/students:
-    post:
-      tags:
-      - course-controller
-      operationId: addStudentToCourse
-      parameters:
-      - name: courseId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifyParticipantRequest'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CourseDetailsDto'
-      security:
-      - JWT_AUTH: []
-    delete:
-      tags:
-      - course-controller
-      operationId: removeStudentFromCourse
-      parameters:
-      - name: courseId
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ModifyParticipantRequest'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            '*/*':
-              schema:
-                $ref: '#/components/schemas/CourseDetailsDto'
-      security:
-      - JWT_AUTH: []
   /auth/login:
     post:
       tags:
@@ -405,16 +362,59 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AuthDetailsDto'
-  /courses/join:
+  /courses/{id}:
+    get:
+      tags:
+      - course-controller
+      operationId: getCourse
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
+    delete:
+      tags:
+      - course-controller
+      operationId: deleteCourse
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
     patch:
       tags:
       - course-controller
-      operationId: joinCourse
+      operationId: editCourse
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JoinCourseRequest'
+              $ref: '#/components/schemas/EditCourseRequest'
         required: true
       responses:
         "200":
@@ -860,19 +860,33 @@ components:
             type: string
         isPublic:
           type: boolean
-    EditCourseRequest:
+    CreateActivityRequest:
+      required:
+      - description
+      - endTime
+      - instructionFromTeacher
+      - name
+      - selectedModulesIds
+      - startTime
       type: object
       properties:
         name:
           type: string
-        subject:
-          type: string
         description:
           type: string
-        password:
+        startTime:
           type: string
-        isPublic:
-          type: boolean
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        instructionFromTeacher:
+          $ref: '#/components/schemas/InstructionDto'
+        selectedModulesIds:
+          type: array
+          items:
+            type: integer
+            format: int64
     ActivityDetailsDto:
       required:
       - activityModules
@@ -1041,33 +1055,22 @@ components:
         usedInActivitiesCount:
           type: integer
           format: int32
-    CreateActivityRequest:
+    ModifyParticipantRequest:
       required:
-      - description
-      - endTime
-      - instructionFromTeacher
-      - name
-      - selectedModulesIds
-      - startTime
+      - email
       type: object
       properties:
-        name:
+        email:
           type: string
-        description:
+    JoinCourseRequest:
+      required:
+      - joinUUID
+      type: object
+      properties:
+        joinUUID:
           type: string
-        startTime:
+        password:
           type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
-        instructionFromTeacher:
-          $ref: '#/components/schemas/InstructionDto'
-        selectedModulesIds:
-          type: array
-          items:
-            type: integer
-            format: int64
     InitFileUploadRequest:
       required:
       - filename
@@ -1198,13 +1201,6 @@ components:
             $ref: '#/components/schemas/CreateActivityRequest'
         password:
           type: string
-    ModifyParticipantRequest:
-      required:
-      - email
-      type: object
-      properties:
-        email:
-          type: string
     LoginRequest:
       required:
       - email
@@ -1236,15 +1232,19 @@ components:
             - TEACHER
             - TECHNICAL_TEACHER
             - ADMIN
-    JoinCourseRequest:
-      required:
-      - joinUUID
+    EditCourseRequest:
       type: object
       properties:
-        joinUUID:
+        name:
+          type: string
+        subject:
+          type: string
+        description:
           type: string
         password:
           type: string
+        isPublic:
+          type: boolean
     ServiceModuleUsageDto:
       required:
       - activityName

@@ -68,7 +68,7 @@ public class CourseController {
         return courseService.getCourseSummary(uuid);
     }
 
-    @PatchMapping("/join")
+    @PutMapping("/join")
     @PreAuthorize("hasAnyRole('STUDENT')")
     public CourseDetailsDto joinCourse(AccessToken token, @RequestBody JoinCourseRequest joinCourseRequest) {
         return courseService.joinCourse(joinCourseRequest, token.getUserId());
@@ -88,7 +88,7 @@ public class CourseController {
         courseService.deleteCourse(id);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('TEACHER')")
     public CourseDetailsDto editCourse(AccessToken token, @PathVariable Long id, @RequestBody EditCourseRequest editCourseRequest) {
         logger.info("editing course with id: {}", id);
@@ -102,7 +102,7 @@ public class CourseController {
         return courseService.addSingleActivity(token.getUserId(), id, createActivityRequest);
     }
 
-    @PostMapping("/{courseId}/students")
+    @PutMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
     public CourseDetailsDto addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody ModifyParticipantRequest student) {
         logger.info("adding student with email: {} to course with id: {}", student.email(), courseId);
