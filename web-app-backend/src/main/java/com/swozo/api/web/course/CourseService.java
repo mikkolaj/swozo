@@ -1,10 +1,12 @@
 package com.swozo.api.web.course;
 
 import com.swozo.api.orchestrator.ScheduleService;
+import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
 import com.swozo.api.web.course.request.CreateCourseRequest;
+import com.swozo.api.web.course.request.EditCourseRequest;
 import com.swozo.api.web.course.request.JoinCourseRequest;
 import com.swozo.api.web.course.request.ModifyParticipantRequest;
 import com.swozo.api.web.exceptions.types.course.CourseNotFoundException;
@@ -12,6 +14,7 @@ import com.swozo.api.web.exceptions.types.course.InvalidCoursePasswordException;
 import com.swozo.api.web.exceptions.types.user.UserNotFoundException;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.api.web.user.UserService;
+import com.swozo.mapper.ActivityMapper;
 import com.swozo.mapper.CourseMapper;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.user.User;
@@ -30,6 +33,7 @@ public class CourseService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final CourseMapper courseMapper;
+    private final ActivityMapper activityMapper;
     private final ScheduleService scheduleService;
     private final CourseValidator courseValidator;
 
@@ -65,11 +69,10 @@ public class CourseService {
         }
 
         var course = courseMapper.toPersistence(createCourseRequest, userService.getUserById(teacherId));
+        var activities = createCourseRequest.activities().stream().map(activityMapper::toPersistence);
+
+        activities.forEach(course::addActivity);
         course.setJoinUUID(UUID.randomUUID().toString());
-        course.getActivities().forEach(activity -> {
-            activity.setCourse(course);
-            activity.getModules().forEach(activityModule -> activityModule.setActivity(activity));
-        });
         course.setSandboxMode(sandboxMode);
 
         courseRepository.save(course);
@@ -82,17 +85,6 @@ public class CourseService {
     public void deleteCourse(Long id) {
         courseRepository.deleteById(id);
         // TODO: remove all files
-    }
-
-    public Course updateCourse(Long id, Long teacherId, CreateCourseRequest createCourseRequest) {
-        // TODO validate that teacherId = id of creator etc...
-        var oldCourse = courseRepository.getById(id);
-        var course = courseMapper.toPersistence(createCourseRequest, oldCourse.getTeacher());
-        course.setId(oldCourse.getId());
-
-        // TODO maybe check what should be overwritten
-        courseRepository.save(course);
-        return course;
     }
 
     @Transactional
@@ -114,6 +106,35 @@ public class CourseService {
     }
 
     @Transactional
+    public CourseDetailsDto editCourse(Long userId, Long courseId, EditCourseRequest request) {
+        var course = getById(courseId);
+        courseValidator.validateEditCourseRequest(course, request, userId);
+
+        request.name().ifPresent(course::setName);
+        request.description().ifPresent(course::setDescription);
+        request.isPublic().ifPresent(course::setIsPublic);
+        request.subject().ifPresent(course::setSubject);
+        request.password().ifPresent(course::setPassword);
+
+        courseRepository.save(course);
+
+        return courseMapper.toDto(course, true);
+    }
+
+    @Transactional
+    public CourseDetailsDto addSingleActivity(Long userId, Long courseId, CreateActivityRequest request) {
+        var course = getById(courseId);
+        courseValidator.validateAddActivityRequest(course, request, userId);
+        var activity = activityMapper.toPersistence(request);
+
+        course.addActivity(activity);
+        scheduleService.scheduleActivities(List.of(activity));
+
+        courseRepository.save(course);
+        return courseMapper.toDto(course, true);
+    }
+
+    @Transactional
     public CourseDetailsDto addStudent(Long teacherId, Long courseId, ModifyParticipantRequest modifyParticipantRequest) {
         return modifyCourseParticipant(courseId, modifyParticipantRequest.email(), (student, course) -> {
             courseValidator.validateAddStudentRequest(student, teacherId, course);
@@ -127,13 +148,17 @@ public class CourseService {
     }
 
     private CourseDetailsDto modifyCourseParticipant(Long courseId, String studentEmail, BiConsumer<User, Course> modifier) {
-        var course = courseRepository.findById(courseId)
-                .orElseThrow(() -> CourseNotFoundException.withId(courseId));
+        var course = getById(courseId);
         var student = userRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> UserNotFoundException.withEmail(studentEmail));
 
         modifier.accept(student, course);
         courseRepository.save(course);
         return courseMapper.toDto(course, true);
+    }
+
+    private Course getById(Long courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> CourseNotFoundException.withId(courseId));
     }
 }

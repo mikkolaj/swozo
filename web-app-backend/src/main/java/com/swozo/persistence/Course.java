@@ -48,6 +48,7 @@ public class Course extends BaseEntity {
 
     public void addActivity(Activity activity) {
         activities.add(activity);
+        activity.setCourse(this);
     }
 
     public void deleteActivity(Activity activity) {

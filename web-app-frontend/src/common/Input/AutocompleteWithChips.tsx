@@ -1,6 +1,6 @@
 import { Autocomplete, Box, Chip } from '@mui/material';
 import { FORM_INPUT_WIDTH, stylesRow } from 'common/styles';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { FormInputField } from './FormInputField';
 
 type Props<T> = {
@@ -10,6 +10,7 @@ type Props<T> = {
     chosenOptions: T[];
     optionToString: (option: T) => string;
     setFieldValue: (fieldName: string, value: T[]) => void;
+    required?: boolean;
 };
 
 export function AutocompleteWithChips<T>({
@@ -19,28 +20,34 @@ export function AutocompleteWithChips<T>({
     chosenOptions,
     optionToString,
     setFieldValue,
+    required = true,
 }: Props<T>) {
     const optionsMap = useMemo<Record<string, T>>(
         () => Object.fromEntries(options.map((option) => [optionToString(option), option])),
         [options, optionToString]
     );
+    const [key, setKey] = useState(0);
 
     return (
         <>
             <Autocomplete
+                key={key}
                 freeSolo
                 disableClearable
                 options={options.filter((option) => !chosenOptions.includes(option)).map(optionToString)}
                 onChange={(_, val) => {
                     const selectedOption = optionsMap[val];
-                    if (selectedOption && !chosenOptions.includes(selectedOption))
+                    if (selectedOption && !chosenOptions.includes(selectedOption)) {
                         setFieldValue(name, [...chosenOptions, selectedOption]);
+                        setKey((key) => key + 1);
+                    }
                 }}
                 renderInput={({ InputProps, ...params }) => (
                     <FormInputField
                         name={'_' + name}
                         i18nLabel={labelPath}
                         textFieldProps={{
+                            required,
                             sx: { width: FORM_INPUT_WIDTH },
                             InputProps: {
                                 ...InputProps,

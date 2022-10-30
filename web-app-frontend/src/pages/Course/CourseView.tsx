@@ -8,15 +8,18 @@ import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { buildErrorPageHandler } from 'hooks/useCommonErrorHandlers';
 import { useRequiredParams } from 'hooks/useRequiredParams';
+import _ from 'lodash';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { TEACHER, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { ActivityView } from './components/Activity/ActivityView';
+import { Editor } from './components/Options/ParticipantsList/Editor';
 import { ParticipantsListView } from './components/Options/ParticipantsList/ParticipantsListView';
 
 export const CourseContext = React.createContext<CourseDetailsDto | undefined>(undefined);
 
-type Tab = 'activities' | 'participants';
+type Tab = 'activities' | 'participants' | 'editor';
 type TabConfig = {
     type: Tab;
     tabRenderer: (course: CourseDetailsDto) => JSX.Element;
@@ -27,7 +30,7 @@ const tabs: Record<Tab, TabConfig> = {
         type: 'activities',
         tabRenderer: (course) => (
             <Stack spacing={2} sx={{ px: 2 }}>
-                {course.activities.map((activity) => (
+                {_.sortBy(course.activities, (activity) => activity.startTime).map((activity) => (
                     <ActivityView key={activity.id} activity={activity} />
                 ))}
             </Stack>
@@ -36,6 +39,14 @@ const tabs: Record<Tab, TabConfig> = {
     participants: {
         type: 'participants',
         tabRenderer: (course) => <ParticipantsListView course={course} />,
+    },
+    editor: {
+        type: 'editor',
+        tabRenderer: (course) => (
+            <WithRole roles={[TEACHER]}>
+                <Editor course={course} />
+            </WithRole>
+        ),
     },
 };
 
@@ -69,12 +80,12 @@ export const CourseView = () => {
                 sx={{ p: 0 }}
                 header={
                     <>
-                        <Grid item xs={8}>
+                        <Grid item xs={7}>
                             <Typography variant="h4" component="div">
                                 {course?.name}
                             </Typography>
                         </Grid>
-                        <Grid item xs={4} sx={stylesRowWithItemsAtTheEnd}>
+                        <Grid item xs={5} sx={stylesRowWithItemsAtTheEnd}>
                             {Object.entries(tabs).map(([type, config]) => (
                                 <Button
                                     key={type}

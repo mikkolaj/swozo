@@ -1,10 +1,12 @@
 package com.swozo.api.web.course;
 
+import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
 import com.swozo.api.web.course.request.CreateCourseRequest;
+import com.swozo.api.web.course.request.EditCourseRequest;
 import com.swozo.api.web.course.request.JoinCourseRequest;
 import com.swozo.api.web.course.request.ModifyParticipantRequest;
 import com.swozo.persistence.Course;
@@ -74,6 +76,20 @@ public class CourseController {
     public void deleteCourse(AccessToken token, @PathVariable Long id) {
         logger.info("deleting course with id: {}", id);
         courseService.deleteCourse(id);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public CourseDetailsDto editCourse(AccessToken token, @PathVariable Long id, @RequestBody EditCourseRequest editCourseRequest) {
+        logger.info("editing course with id: {}", id);
+        return courseService.editCourse(token.getUserId(), id, editCourseRequest);
+    }
+
+    @PutMapping("/{id}/activities")
+    @PreAuthorize("hasRole('TEACHER')")
+    public CourseDetailsDto addSingleActivity(AccessToken token, @PathVariable Long id, @RequestBody CreateActivityRequest createActivityRequest) {
+        logger.info("editing course with id: {}", id);
+        return courseService.addSingleActivity(token.getUserId(), id, createActivityRequest);
     }
 
     @PostMapping("/{courseId}/students")

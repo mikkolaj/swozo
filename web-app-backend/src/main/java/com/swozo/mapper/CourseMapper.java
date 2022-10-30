@@ -18,9 +18,9 @@ public abstract class CourseMapper {
     protected ActivityMapper activityMapper;
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target="activities", ignore = true)
     @Mapping(target = "name", source = "createCourseRequest.name")
     @Mapping(target = "teacher", expression = "java(teacher)")
-    @Mapping(target = "activities", expression = "java(createCourseRequest.activities().stream().map(activityMapper::toPersistence).toList())")
     @Mapping(target = "password", expression = "java(createCourseRequest.password().orElse(null))")
     public abstract Course toPersistence(CreateCourseRequest createCourseRequest, User teacher);
 

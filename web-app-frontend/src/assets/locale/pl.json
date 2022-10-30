@@ -55,6 +55,20 @@
                         "joinDate": "Data dołączenia"
                     }
                 }
+            },
+            "editor": {
+                "button": "Edytor kursu",
+                "tabs": {
+                    "course": {
+                        "label": "Edycja kursu",
+                        "button": "Zapisz zmiany"
+                    },
+                    "addActivity": {
+                        "label": "Dodaj aktywność",
+                        "button": "Utwórz aktywność",
+                        "secondaryButton": "Wyczyść formularz"
+                    }
+                }
             }
         },
         "activity": {
@@ -187,7 +201,7 @@
     "publicModules": {
         "header": "Publiczne moduły",
         "searchBoxPlaceholder": "Nazwa modułu, autor...",
-        "filters": "Zaawansowane filtry",
+        "filters": "Więcej filtrów",
         "author": "Autor: {{email}}",
         "description": "Opis: {{description}}",
         "any": "Wszystkie"
@@ -352,6 +366,8 @@
     },
     "toast": {
         "courseCreated": "Kurs został utworzony!",
+        "courseUpdated": "Dane kursu zostały zaaktualizowane!",
+        "activityAdded": "Aktywność została utworzona!",
         "serviceModuleCreated": "Moduł został utworzony!",
         "serviceModuleUpdated": "Moduł został zaaktualizowany!",
         "serviceModuleDeleted": "Moduł został usunięty!",

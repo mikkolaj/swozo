@@ -20,6 +20,7 @@ type Props = SlideProps & {
     setFieldValue: (name: string, value: any) => void;
     availableLessonModules: ServiceModuleSummaryDto[];
     availableGeneralModules: ServiceModuleSummaryDto[];
+    createMode?: boolean;
 };
 
 export const activityValidationSchema: ValidationSchema<ActivityValues> = {
@@ -32,8 +33,10 @@ export const ActivitiesForm = ({
     nameBuilder,
     availableLessonModules,
     availableGeneralModules,
+    createMode = true,
 }: Props) => {
     const { t } = useTranslation();
+    const width = createMode ? '50%' : '55%';
 
     return (
         <>
@@ -43,22 +46,24 @@ export const ActivitiesForm = ({
                     <Box>
                         {values.activities.map((value, idx) => (
                             <Box key={idx} sx={{ mt: idx > 0 ? 8 : 0 }}>
-                                <Typography sx={{ ml: -4 }} variant="h5" component="div" gutterBottom>
-                                    {t('createCourse.slides.1.form.activityHeader', {
-                                        number: idx + 1,
-                                    })}
-                                </Typography>
+                                {createMode && (
+                                    <Typography sx={{ ml: -4 }} variant="h5" component="div" gutterBottom>
+                                        {t('createCourse.slides.1.form.activityHeader', {
+                                            number: idx + 1,
+                                        })}
+                                    </Typography>
+                                )}
 
                                 <FormInputField
                                     name={nameBuilder(`activities.${idx}.name`)}
                                     textFieldProps={{ fullWidth: true }}
-                                    wrapperSx={{ width: '50%' }}
+                                    wrapperSx={{ width }}
                                     type="text"
                                     i18nLabel="createCourse.slides.1.form.name"
                                 />
 
                                 <FormInputField
-                                    wrapperSx={{ width: '50%' }}
+                                    wrapperSx={{ width }}
                                     name={nameBuilder(`activities.${idx}.description`)}
                                     type="text"
                                     textFieldProps={{
@@ -76,7 +81,7 @@ export const ActivitiesForm = ({
                                     setFieldValue={setFieldValue}
                                 />
 
-                                <Box sx={{ ...stylesRowWithSpaceBetweenItems, width: '50%' }}>
+                                <Box sx={{ ...stylesRowWithSpaceBetweenItems, width }}>
                                     <FormTimePicker
                                         name={nameBuilder(`activities.${idx}.startTime`)}
                                         label={t('createCourse.slides.1.form.startTime')}
@@ -98,6 +103,7 @@ export const ActivitiesForm = ({
                                     options={availableLessonModules}
                                     optionToString={({ name }) => name}
                                     setFieldValue={setFieldValue}
+                                    required={false}
                                 />
 
                                 <AutocompleteWithChips
@@ -107,6 +113,7 @@ export const ActivitiesForm = ({
                                     options={availableGeneralModules}
                                     optionToString={({ name }) => name}
                                     setFieldValue={setFieldValue}
+                                    required={false}
                                 />
 
                                 <Typography sx={{ mt: 1 }} variant="subtitle1">

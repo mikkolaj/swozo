@@ -1,4 +1,4 @@
-import { CreateActivityRequest, CreateCourseRequest, ServiceModuleSummaryDto } from 'api';
+import { CourseDetailsDto, CreateActivityRequest, CreateCourseRequest, ServiceModuleSummaryDto } from 'api';
 import { ApiError } from 'api/errors';
 import { SlideValues2 } from 'common/SlideForm/util';
 import dayjs, { Dayjs } from 'dayjs';
@@ -13,7 +13,7 @@ export const DEFAULT_MIN_TIME_OFFSET = 5;
 export type FormValues = SlideValues2<CourseValues, ActivitesFormValues>;
 
 const COURSE_SLIDE_DATA_NAME = 'course';
-const FIELD_SEPARATOR = '.';
+export const FIELD_SEPARATOR = '.';
 
 export const COURSE_SLIDE = '0';
 export const ACTIVITIES_SLIDE = '1';
@@ -53,6 +53,16 @@ export const initialCourseValues = (): CourseValues => ({
     isPublic: true,
 });
 
+export const toCourseValues = (courseDetails: CourseDetailsDto): CourseValues => ({
+    expectedStudentCount: courseDetails.students.length,
+    isPublic: courseDetails.isPublic,
+    numberOfActivities: courseDetails.activities.length,
+    password: courseDetails.coursePassword,
+    description: courseDetails.description,
+    name: courseDetails.name,
+    subject: courseDetails.subject,
+});
+
 export const initialActivityValues = (): ActivityValues => ({
     name: 'Konstrukcje warunkowe',
     description: 'nauczymy się pisać if else',
@@ -77,7 +87,7 @@ export const resizeActivityValuesList = (
     return currentValues.slice(0, targetSize);
 };
 
-const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityRequest => {
+export const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityRequest => {
     return {
         name: activity.name,
         description: activity.description,
@@ -90,7 +100,7 @@ const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityReq
     };
 };
 
-const argFormatter = (argName: string, argVal: string) => {
+export const argFormatter = (argName: string, argVal: string) => {
     switch (argName) {
         case 'minStartTime':
             return formatDateTime(new Date(argVal));
