@@ -10,6 +10,7 @@ import { PageContainer } from 'common/PageContainer/PageContainer';
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesRow, stylesRowCenteredVertical } from 'common/styles';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,9 +29,7 @@ export const FilesListView = () => {
         <PageContainer
             header={
                 <Grid item xs={4}>
-                    <Typography variant="h4" component="div">
-                        {t('myFiles.header')}
-                    </Typography>
+                    <PageHeaderText text={t('myFiles.header')} />
                 </Grid>
             }
         >

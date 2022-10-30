@@ -12,6 +12,7 @@ import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
 import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesColumnCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useDeleteServiceModule } from 'hooks/query/useDeleteServiceModule';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
@@ -64,9 +65,7 @@ export const MyModuleView = () => {
             header={
                 <>
                     <Grid item xs={6}>
-                        <Typography variant="h4" component="div">
-                            {t('myModule.header', { name: serviceModule.name })}
-                        </Typography>
+                        <PageHeaderText text={t('myModule.header', { name: serviceModule.name })} />
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <ButtonWithIconAndText

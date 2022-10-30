@@ -1,10 +1,11 @@
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Box, Container, Grid, Stack, Typography } from '@mui/material';
+import { Box, Container, Grid, Stack } from '@mui/material';
 import { ServiceModuleSummaryDto } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { SearchBar } from 'common/Styled/SearchBar';
 import { stylesRowCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
@@ -56,9 +57,7 @@ export const PublicModulesListView = () => {
                 <>
                     <Grid item xs={6}>
                         <Box sx={{ ...stylesRowCenteredVertical }}>
-                            <Typography variant="h4" component="div">
-                                {t('publicModules.header')}
-                            </Typography>
+                            <PageHeaderText text={t('publicModules.header')} />
                             <SearchBar
                                 sx={{ ml: 3 }}
                                 placeholder={t('publicModules.searchBoxPlaceholder')}

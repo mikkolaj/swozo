@@ -1,8 +1,9 @@
-import { Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Button, Container, Grid, Stack } from '@mui/material';
 import { CourseDetailsDto } from 'api';
 import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
@@ -81,9 +82,7 @@ export const CourseView = () => {
                 header={
                     <>
                         <Grid item xs={7}>
-                            <Typography variant="h4" component="div">
-                                {course?.name}
-                            </Typography>
+                            <PageHeaderText text={course?.name} />
                         </Grid>
                         <Grid item xs={5} sx={stylesRowWithItemsAtTheEnd}>
                             {Object.entries(tabs).map(([type, config]) => (

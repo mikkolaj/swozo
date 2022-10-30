@@ -31,8 +31,13 @@ export const ActivityView = ({ activity }: Props) => {
         <Box>
             <Card sx={{ boxShadow: 3 }}>
                 <CardContent sx={{ position: 'relative' }}>
-                    <Box>
-                        <Typography component="h1" variant="h5" gutterBottom>
+                    <Box sx={{ maxWidth: '75%' }}>
+                        <Typography
+                            component="h1"
+                            variant="h5"
+                            gutterBottom
+                            sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}
+                        >
                             {activity.name}
                         </Typography>
                     </Box>

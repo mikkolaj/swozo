@@ -1,6 +1,7 @@
-import { Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Button, Container, Grid, Stack } from '@mui/material';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useDeleteServiceModule } from 'hooks/query/useDeleteServiceModule';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
@@ -35,9 +36,7 @@ export const MyModulesListView = () => {
             header={
                 <>
                     <Grid item xs={6}>
-                        <Typography variant="h4" component="div">
-                            {t('myModules.header')}
-                        </Typography>
+                        <PageHeaderText text={t('myModules.header')} />
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <WithRole roles={[TECHNICAL_TEACHER]}>

@@ -1,6 +1,7 @@
-import { Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Button, Container, Grid, Stack } from '@mui/material';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
@@ -32,9 +33,7 @@ export const CoursesListView = () => {
             header={
                 <>
                     <Grid item xs={6}>
-                        <Typography variant="h4" component="div">
-                            {t('myCourses.header')}
-                        </Typography>
+                        <PageHeaderText text={t('myCourses.header')} />
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <WithRole roles={[TEACHER]}>

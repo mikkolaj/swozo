@@ -80,6 +80,7 @@ public class GCloudVMLifecycleManager {
         var instance = createInstanceRepresentation(vmAddress, vmSpecs);
 
         return InsertInstanceRequest.newBuilder()
+                .setSourceMachineImage("https://www.googleapis.com/compute/v1/projects/swozo-362919/global/machineImages/e2-medium-docker")
                 .setProject(vmAddress.project())
                 .setZone(vmAddress.zone())
                 .setInstanceResource(instance)

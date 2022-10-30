@@ -4,6 +4,7 @@ import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesColumnCenteredVertical, stylesRow, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
@@ -43,9 +44,7 @@ export const PublicModuleView = () => {
             header={
                 <>
                     <Grid item xs={6}>
-                        <Typography variant="h4" component="div">
-                            {t('myModule.header', { name: serviceModule.name })}
-                        </Typography>
+                        <PageHeaderText text={t('myModule.header', { name: serviceModule.name })} />
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
                         <ButtonWithIconAndText

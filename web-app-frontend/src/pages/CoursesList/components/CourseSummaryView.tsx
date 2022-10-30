@@ -25,6 +25,7 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                         <LinkedTypography
                             variant="h4"
                             to={PageRoutes.Course(courseSummary.id)}
+                            sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}
                             text={courseSummary.name}
                         />
                         <Typography

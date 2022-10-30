@@ -1,5 +1,6 @@
-import { Box, Divider, Grid, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import { Box, Divider, Grid, Step, StepLabel, Stepper } from '@mui/material';
 import { PageContainer } from 'common/PageContainer/PageContainer';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { Form, Formik, FormikProps, FormikValues } from 'formik';
 import _ from 'lodash';
 import { ComponentProps, RefObject } from 'react';
@@ -43,9 +44,7 @@ export function SlideForm<T extends FormikValues>({
             header={
                 <>
                     <Grid item xs={12}>
-                        <Typography variant="h4" component="div">
-                            {t(titleI18n)}
-                        </Typography>
+                        <PageHeaderText text={t(titleI18n)} />
                     </Grid>
                     <Grid item xs={12}>
                         <Stepper sx={{ mt: 2 }} activeStep={currentSlide} alternativeLabel>
