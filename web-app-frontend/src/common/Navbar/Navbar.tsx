@@ -3,6 +3,7 @@ import { Avatar, Divider, IconButton, ListItemIcon, MenuItem } from '@mui/materi
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
+import { NotificationBell } from 'common/Styled/NotificationBell';
 import { stylesRowFullyCentered } from 'common/styles';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useState } from 'react';
@@ -43,6 +44,9 @@ export const Navbar = () => {
                             <NavbarItem textI18n="navbar.publicCourses" route={PageRoutes.PUBLIC_COURSES} />
                         </WithRole>
                         <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
+
+                        <NotificationBell notifications={[]} />
+
                         <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
                             <Avatar sx={{ width: AVATAR_WIDTH, height: AVATAR_HEIGHT }}>
                                 {me?.name[0]?.toUpperCase() ?? '?'}
