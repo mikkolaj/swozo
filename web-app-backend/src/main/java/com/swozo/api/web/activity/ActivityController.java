@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.swozo.config.Config.INTERNAL;
+import static com.swozo.config.Config.LINKS;
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
 @RestController
@@ -63,7 +65,7 @@ public class ActivityController {
         return activityService.getPublicActivityFileDownloadRequest(accessToken.getUserId(), activityId, fileId, role);
     }
 
-    @PutMapping(Config.INTERNAL + Config.LINKS + "/{requestId}")
+    @PutMapping(INTERNAL + LINKS + "/{requestId}")
     public void setActivityLinks(
             @PathVariable Long requestId,
             @RequestBody List<ActivityLinkInfo> links

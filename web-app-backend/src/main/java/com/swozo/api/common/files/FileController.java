@@ -9,21 +9,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.swozo.config.Config.*;
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
 @RestController
-@RequestMapping("/files")
+@RequestMapping(FILES)
 @RequiredArgsConstructor
 @SecurityRequirement(name = ACCESS_TOKEN)
 public class FileController {
     private final FileService fileService;
 
-    @GetMapping("/internal/download/{remoteFileId}")
+    @GetMapping(INTERNAL + DOWNLOAD + "/{remoteFileId}")
     public StorageAccessRequest getDownloadSignedAccessRequestInternal(@PathVariable Long remoteFileId) {
         return fileService.createInternalDownloadRequest(remoteFileId);
     }
 
-    @GetMapping("/external/download/{remoteFileId}")
+    @GetMapping(EXTERNAL + DOWNLOAD + "/{remoteFileId}")
     public StorageAccessRequest getDownloadSignedAccessRequestExternal(AccessToken accessToken, @PathVariable Long remoteFileId) {
         return fileService.createExternalDownloadRequest(remoteFileId, accessToken.getUserId());
     }

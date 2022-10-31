@@ -4,6 +4,8 @@ EXPOSE 5000
 EXPOSE 22010
 EXPOSE 24010
 
+ENV ENABLE_BOOTSTRAPPING=true
+
 ENTRYPOINT [ \
     "java", \
     "--enable-preview", \

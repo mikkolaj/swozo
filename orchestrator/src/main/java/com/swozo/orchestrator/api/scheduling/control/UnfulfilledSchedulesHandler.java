@@ -59,8 +59,10 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
         try {
             var resourceId = requestEntity.getVmResourceId()
                     .orElseThrow(getNoRegisteredVmException(requestEntity, "reprovision"));
-            vmProvider.getVMResourceDetails(resourceId)
-                    .thenAccept(extractDetailsAndReprovision(requestEntity));
+            CheckedExceptionConverter.from(() -> vmProvider.getVMResourceDetails(resourceId)
+                    .thenAccept(extractDetailsAndReprovision(requestEntity))
+                    .get()
+            ).get();
         } catch (IllegalArgumentException | IllegalStateException ex) {
             logger.warn(ex.getMessage());
         } catch (RuntimeException ex) {

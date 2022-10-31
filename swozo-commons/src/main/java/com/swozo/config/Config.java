@@ -11,4 +11,7 @@ public class Config {
     public static final String LINKS = "/links";
     public static final String ACTIVITIES = "/activities";
     public static final String INTERNAL = "/internal";
+    public static final String EXTERNAL = "/external";
+    public static final String FILES = "/files";
+    public static final String DOWNLOAD = "/download";
 }

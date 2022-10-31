@@ -51,14 +51,19 @@ public class ScheduleRequestTracker {
         var schedulesFailedDuringVmCreation = getValidSchedulesWithStatus(RequestStatus.VM_CREATING);
         var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(RequestStatus.VM_CREATION_FAILED);
 
-        return combineLists(submittedSchedules, schedulesFailedDuringVmCreation, schedulesFailedOnVmCreation);
+        return initializeParameters(combineLists(submittedSchedules, schedulesFailedDuringVmCreation, schedulesFailedOnVmCreation));
     }
 
     public List<ScheduleRequestEntity> getValidSchedulesToReprovision() {
         var submittedSchedules = getValidSchedulesWithStatus(RequestStatus.PROVISIONING);
         var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(RequestStatus.PROVISIONING_FAILED);
 
-        return combineLists(submittedSchedules, schedulesFailedOnVmCreation);
+        return initializeParameters(combineLists(submittedSchedules, schedulesFailedOnVmCreation));
+    }
+
+    private List<ScheduleRequestEntity> initializeParameters(List<ScheduleRequestEntity> entities) {
+        entities.stream().map(ScheduleRequestEntity::getDynamicProperties).forEach(Hibernate::initialize);
+        return entities;
     }
 
     public List<ScheduleRequestEntity> getValidReadySchedules() {
@@ -87,12 +92,12 @@ public class ScheduleRequestTracker {
 
     private boolean endsBeforeAvailability(ScheduleRequestEntity requestEntity) {
         return requestEntity.getEndTime()
-                .isAfter(getTargetAvailability(requestEntity));
+                .isBefore(getTargetAvailability(requestEntity));
     }
 
     private boolean endsAfterAvailability(ScheduleRequestEntity scheduleRequestEntity) {
         return scheduleRequestEntity.getEndTime()
-                .isBefore(getTargetAvailability(scheduleRequestEntity));
+                .isAfter(getTargetAvailability(scheduleRequestEntity));
     }
 
 

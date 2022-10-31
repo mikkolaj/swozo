@@ -2,7 +2,6 @@ package com.swozo.orchestrator.api.scheduling.boundary;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.swozo.communication.http.RequestSender;
-import com.swozo.config.Config;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ScheduleRequest;
@@ -25,16 +24,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static com.swozo.config.Config.*;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(Config.SCHEDULES)
+@RequestMapping(SCHEDULES)
 public class ScheduleController {
-    @Qualifier("web-server")
-    private final RequestSender requestSender;
-    private final BackendRequestSender back;
     private final ScheduleService service;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final TranslationsProvider translationsProvider;
+    private final BackendRequestSender backendRequestSender;
+    @Qualifier("web-server")
+    private final RequestSender requestSender;
     @Value("${backend.server.url}")
     private final String backendUrl;
 
@@ -44,7 +45,7 @@ public class ScheduleController {
         return service.schedule(request);
     }
 
-    @GetMapping(Config.CONFIGURATION)
+    @GetMapping(CONFIGURATION)
     public List<ServiceConfig> getSupportedServices() {
         logger.info("Serving config request.");
         //        return service.getSupportedServices();
@@ -62,13 +63,13 @@ public class ScheduleController {
         return s;
     }
 
-    @GetMapping(Config.CONFIGURATION + "/{scheduleType}")
+    @GetMapping(CONFIGURATION + "/{scheduleType}")
     public ServiceConfig getServiceConfig(@PathVariable String scheduleType) {
-        logger.info("Serving config request for " + scheduleType);
+        logger.info("Serving config request for {}", scheduleType);
         return service.getServiceConfig(ScheduleType.valueOf(scheduleType));
     }
 
-    @PostMapping(Config.AGGREGATED)
+    @PostMapping(AGGREGATED)
     public List<ScheduleResponse> schedule(@RequestBody Collection<ScheduleRequest> requests) {
         logger.info("Serving aggregated request: {}", requests);
         return requests.stream().map(service::schedule).toList();
@@ -79,6 +80,7 @@ public class ScheduleController {
         // TODO remove this one day
         requestSender.sendGet(new URI(backendUrl + "/orchestrator-test"), new TypeReference<Void>() {
         }).get();
+        System.out.println(backendRequestSender.getSignedDownloadUrl("1").get());
         System.out.println("DONE");
     }
 }

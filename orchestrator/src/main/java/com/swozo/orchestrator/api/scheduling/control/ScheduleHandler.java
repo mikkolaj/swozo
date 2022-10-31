@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
-import com.swozo.exceptions.PropagatingException;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.api.BackendRequestSender;
@@ -117,6 +116,7 @@ public class ScheduleHandler {
         scheduleRequestTracker.markAsFailure(request.getId());
     }
 
+    @Transactional
     public Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
             ScheduleRequestEntity request
     ) {
@@ -146,26 +146,24 @@ public class ScheduleHandler {
         scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
     }
 
-    protected void switchToReadyState(ScheduleRequestEntity request, List<ActivityLinkInfo> links) {
-        scheduleRequestTracker.updateStatus(request.getId(), READY);
-        try {
-            /// WHY DOES IT NOT CATCH IT?
-            CheckedExceptionConverter.from(() -> requestSender.putActivityLinks(request.getId(), links).get()).get();
-        } catch (PropagatingException ex) {
-            logger.error("fdsfdsafsd", ex);
-            throw ex;
-        } catch (RuntimeException ex) {
-            logger.error("Unable to send links to backend.", ex);
-        } catch (Exception e) {
-            logger.error("ex", e);
-        }
-    }
-
     private List<ActivityLinkInfo> delegateProvisioning(ScheduleRequestEntity request, TimedSoftwareProvisioner provisioner, VMResourceDetails resourceDetails) {
         return CheckedExceptionConverter.from(
                 () -> provisioner.provision(resourceDetails, request.getDynamicProperties()),
                 ProvisioningFailed::new
         ).get();
+    }
+
+    @Transactional
+    protected void switchToReadyState(ScheduleRequestEntity request, List<ActivityLinkInfo> links) {
+        scheduleRequestTracker.updateStatus(request.getId(), READY);
+        try {
+            CheckedExceptionConverter.from(
+                    () -> requestSender.putActivityLinks(request.getId(), links).get(),
+                    FailedToSaveLinksException::new
+            ).get();
+        } catch (FailedToSaveLinksException ex) {
+            logger.error("Unable to send links to backend.", ex);
+        }
     }
 
     public void scheduleInstanceDeletion(ScheduleRequestEntity requestEntity, long internalResourceId) {
@@ -203,5 +201,11 @@ public class ScheduleHandler {
     }
 
     public record ScheduleEntityWithProvisioner(ScheduleRequestEntity entity, TimedSoftwareProvisioner provisioner) {
+    }
+
+    private static class FailedToSaveLinksException extends RuntimeException {
+        public FailedToSaveLinksException(Throwable exception) {
+            super(exception);
+        }
     }
 }
