@@ -39,7 +39,9 @@ export const Navbar = () => {
                         <WithPreference role={TECHNICAL_TEACHER}>
                             <NavbarItem textI18n="navbar.myModules" route={PageRoutes.MY_MODULES} />
                         </WithPreference>
-                        <NavbarItem textI18n="navbar.publicCourses" route={PageRoutes.PUBLIC_COURSES} />
+                        <WithRole roles={[STUDENT]}>
+                            <NavbarItem textI18n="navbar.publicCourses" route={PageRoutes.PUBLIC_COURSES} />
+                        </WithRole>
                         <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
                         <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
                             <Avatar sx={{ width: AVATAR_WIDTH, height: AVATAR_HEIGHT }}>
