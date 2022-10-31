@@ -6,7 +6,6 @@ import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
-import com.swozo.config.Config;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.security.AccessToken;
@@ -19,12 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.swozo.config.Config.INTERNAL;
-import static com.swozo.config.Config.LINKS;
+import static com.swozo.config.Config.*;
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
 @RestController
-@RequestMapping(Config.ACTIVITIES)
+@RequestMapping(ACTIVITIES)
 @SecurityRequirement(name = ACCESS_TOKEN)
 @RequiredArgsConstructor
 public class ActivityController {

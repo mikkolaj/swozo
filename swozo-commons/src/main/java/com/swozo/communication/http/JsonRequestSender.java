@@ -61,7 +61,7 @@ public class JsonRequestSender implements RequestSender {
             Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
     ) {
         var request = builderDecorator.apply(
-                requestToUriWithJsonHeaders(uri)
+                createRequestWithJsonHeaders(uri)
                         .POST(HttpRequest.BodyPublishers.ofString(mapper.toJson(body)))
         ).build();
 
@@ -84,7 +84,7 @@ public class JsonRequestSender implements RequestSender {
             Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
     ) {
         var request = builderDecorator.apply(
-                requestToUriWithJsonHeaders(uri)
+                createRequestWithJsonHeaders(uri)
                         .PUT(HttpRequest.BodyPublishers.ofString(mapper.toJson(body)))
         ).build();
 
@@ -101,7 +101,7 @@ public class JsonRequestSender implements RequestSender {
         );
     }
 
-    private HttpRequest.Builder requestToUriWithJsonHeaders(URI uri) {
+    private HttpRequest.Builder createRequestWithJsonHeaders(URI uri) {
         return HttpRequest.newBuilder()
                 .uri(uri)
                 .headers(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
