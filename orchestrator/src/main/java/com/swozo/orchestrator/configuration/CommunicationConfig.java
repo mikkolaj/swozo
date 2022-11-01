@@ -10,6 +10,7 @@ import com.swozo.utils.ServiceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 
 @Configuration
@@ -19,6 +20,7 @@ public class CommunicationConfig {
     private final ApplicationProperties applicationProperties;
 
     @Bean(name = "web-server")
+    @Profile("!test")
     public RequestSender provideWebServerRequestSender() {
         var requestSender = new JsonRequestSender(new JsonMapperFacade(mapper));
         final var BACKOFF_RETRIES = 3;

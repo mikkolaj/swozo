@@ -4,14 +4,17 @@ import com.swozo.config.Config;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class UriFactory {
+
     @Value("${orchestrator.server.url}")
     private final String orchestratorServerUrl;
     private static final String SEPARATOR = "/";

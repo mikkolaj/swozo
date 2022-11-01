@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "ab347480-6e5a-4f91-8a53-04b9394fc03e",
+		"name": "Sozisel",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15284637"
+	},
+	"item": [
+		{
+			"name": "sozisel",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Register($input: RegisterInput!) {\r\n    register(input: $input) {\r\n        id\r\n        __typename\r\n        }\r\n}\r\n",
+								"variables": "{\r\n    \"input\": {\r\n      \"email\": \"test@mail.com\",\r\n      \"firstName\": \"Imie\",\r\n      \"lastName\": \"Nazwisko\",\r\n      \"password\": \"Haslo\"\r\n    }\r\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation Login($input: LoginInput!) {\r\n    login(input: $input) {\r\n        token\r\n        __typename\r\n    }\r\n}\r\n",
+								"variables": "{\r\n\"input\": {\r\n      \"email\": \"test@mail.com\",\r\n      \"password\": \"Haslo\"\r\n    }\r\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create template",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateSessionTemplate($input: CreateSessionTemplateInput!) {\r\n    createSessionTemplate(input: $input) {\r\n        id\r\n        __typename\r\n    }\r\n}\r\n",
+								"variables": "{\r\n    \"input\": {\r\n      \"isPublic\": false,\r\n      \"estimatedTime\": 90,\r\n      \"agendaEntries\": [],\r\n      \"name\": \"Session's template name\"\r\n    }\r\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Plan session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation CreateSession($input: CreateSessionInput!) {\r\n    createSession(input: $input) {\r\n        id\r\n        __typename\r\n    }\r\n}\r\n",
+								"variables": "{\r\n    \"input\": {\r\n      \"entryPassword\": \"kill_me\",\r\n      \"name\": \"Session anme\",\r\n      \"scheduledStartTime\": \"2022-10-26T21:40:19.540Z\",\r\n      \"sessionTemplateId\": \"1f19a2d3-6ace-436f-837f-b5f90f733c40\",\r\n      \"useJitsi\": true\r\n    }\r\n\r\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation StartSession($id: ID!) {\r\n    startSession(id: $id) {\r\n        id\r\n        __typename\r\n    }\r\n}\r\n",
+								"variables": "{\r\n\"id\": \"81adc1cc-e0c4-4466-b306-480bc2f8245b\"\r\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Jitsi Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GenerateJitsiToken($displayName: String!, $email: String!, $roomId: ID!) {\r\n    generateJitsiToken(displayName: $displayName, email: $email, roomId: $roomId) {\r\n        token\r\n        email\r\n        displayName\r\n        __typename\r\n    }\r\n}\r\n",
+								"variables": "{\r\n    \"displayName\": \"Imie Nazwisko\",\r\n    \"email\": \"test@mail.com\",\r\n    \"roomId\": \"ed51be42-2292-471c-9130-ebd222ec9026\"\r\n}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/api/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"api",
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJzb3ppc2VsIiwiZXhwIjoxNjY3NjQ4MjgwLCJpYXQiOjE2NjcwNDM0ODAsImlzcyI6InNvemlzZWwiLCJqdGkiOiJjMDI2NmQ4ZC03ZTdiLTQ1YWYtOGViYy1hNThkNTljYjA4MzMiLCJuYmYiOjE2NjcwNDM0NzksInN1YiI6IjQ0MjgwNzJkLWJkMWEtNDNiMC1iZDg2LTE3MWQwMzQzYTYxYSIsInR5cCI6ImFjY2VzcyJ9.75yJGT9R3u_gUqXZa6F6IuzVZQVD4JZD0dmD08G0KeYkd5m0rUEuUmxIQ4yoVDh6WNbonkaTd7Gnrg8EASnX0A",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}

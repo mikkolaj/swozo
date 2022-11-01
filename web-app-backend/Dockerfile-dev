@@ -1,0 +1,22 @@
+FROM eclipse-temurin:18.0.2.1_1-jre
+
+EXPOSE 5000
+EXPOSE 22010
+EXPOSE 24010
+
+ENV ENABLE_BOOTSTRAPPING=true
+
+ENTRYPOINT [ \
+    "java", \
+    "--enable-preview", \
+    "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:22010", \
+    "-Djava.rmi.server.hostname=127.0.0.1", \
+    "-Dcom.sun.management.jmxremote", \
+    "-Dcom.sun.management.jmxremote.port=24010", \
+    "-Dcom.sun.management.jmxremote.rmi.port=24010", \
+    "-Dcom.sun.management.jmxremote.local.only=false", \
+    "-Dcom.sun.management.jmxremote.authenticate=false", \
+    "-Dcom.sun.management.jmxremote.ssl=false", \
+    "-Duser.timezone=UTC", \
+    "-jar","/app/web-app-backend.jar" \
+]

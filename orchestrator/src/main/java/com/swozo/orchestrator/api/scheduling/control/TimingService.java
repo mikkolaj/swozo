@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
-import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -8,12 +8,12 @@ import java.time.ZoneOffset;
 
 @Service
 public class TimingService {
-    public long getSchedulingOffset(ScheduleRequest request, int schedulingSeconds) {
-        return offsetTime(request.serviceLifespan().startTime()) - schedulingSeconds;
+    public long getSchedulingOffset(ScheduleRequestEntity request, int schedulingSeconds) {
+        return offsetTime(request.getStartTime()) - schedulingSeconds;
     }
 
-    public long getDeletionOffset(ScheduleRequest request, int cleanupSeconds) {
-        return offsetTime(request.serviceLifespan().endTime()) + cleanupSeconds;
+    public long getDeletionOffset(ScheduleRequestEntity request, int cleanupSeconds) {
+        return offsetTime(request.getEndTime()) + cleanupSeconds;
     }
 
     private long offsetTime(LocalDateTime targetTime) {

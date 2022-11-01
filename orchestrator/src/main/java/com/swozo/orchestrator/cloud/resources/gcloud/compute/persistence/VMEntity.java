@@ -5,6 +5,8 @@ import com.swozo.persistence.BaseEntity;
 import lombok.*;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 @Entity
@@ -19,5 +21,6 @@ public class VMEntity extends BaseEntity {
     private String zone;
     private String networkName;
     private String vmName;
-    private VMStatus status = VMStatus.CREATING;
+    @Enumerated(EnumType.ORDINAL)
+    private VMStatus status = VMStatus.CREATED;
 }

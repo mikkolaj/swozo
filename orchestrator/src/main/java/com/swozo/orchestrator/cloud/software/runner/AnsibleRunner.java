@@ -4,6 +4,7 @@ import com.swozo.exceptions.ConnectionFailed;
 import com.swozo.exceptions.PropagatingException;
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessFailed;
 import com.swozo.orchestrator.cloud.software.runner.process.ProcessRunner;
+import com.swozo.orchestrator.cloud.software.ssh.SshAuth;
 import com.swozo.orchestrator.cloud.software.ssh.SshService;
 import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
 import com.swozo.orchestrator.configuration.ApplicationProperties;
@@ -14,7 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
 import java.util.function.Supplier;
 
 @Service
@@ -52,8 +56,9 @@ public class AnsibleRunner {
             int timeoutMinutes
     ) throws PropagatingException, NotebookFailed {
         try {
-            handleSshStartup(connectionDetails.targets());
+            handleSshStartup(connectionDetails);
             tryExecutingPlaybook(() -> createAnsibleProcess(connectionDetails, playbookPath, userVars), timeoutMinutes);
+            logger.info("Playbook successful.");
         } catch (ProcessFailed | ConnectionFailed e) {
             throw new NotebookFailed(e);
         }
@@ -67,9 +72,9 @@ public class AnsibleRunner {
         ).run();
     }
 
-    private void handleSshStartup(Collection<SshTarget> sshTargets) throws ConnectionFailed {
-        sshService.clearAllSshHostEntries(sshTargets);
-        sshTargets.forEach(this::waitForConnection);
+    private void handleSshStartup(AnsibleConnectionDetails details) throws ConnectionFailed {
+        sshService.clearAllSshHostEntries(details.targets());
+        details.targets().forEach(sshTarget -> waitForConnection(sshTarget, details.auth()));
     }
 
     private Process createAnsibleProcess(AnsibleConnectionDetails connectionDetails, String playbookPath, List<String> userVars)
@@ -78,8 +83,8 @@ public class AnsibleRunner {
         return processRunner.createProcess(command);
     }
 
-    private void waitForConnection(SshTarget target) throws ConnectionFailed {
-        sshService.waitForConnection(target, DEFAULT_CONNECTION_ATTEMPTS);
+    private void waitForConnection(SshTarget target, SshAuth auth) throws ConnectionFailed {
+        sshService.waitForConnection(target, auth, DEFAULT_CONNECTION_ATTEMPTS);
         logger.info("Connection successful: {}", target);
     }
 
@@ -102,14 +107,14 @@ public class AnsibleRunner {
     private String[] createAnsibleCommand(AnsibleConnectionDetails connectionDetails, String playbookPath, List<String> userVars) {
         var hostParams = connectionDetails.targets().stream().map(SshTarget::toString).toList();
         var inventory = String.join(INVENTORY_DELIMITER, hostParams) + INVENTORY_DELIMITER;
-        var extraVarsArgument = buildExtraVarsArgument(connectionDetails.sshUser(), userVars);
+        var extraVarsArgument = buildExtraVarsArgument(connectionDetails.auth().sshUser(), userVars);
 
         return new String[]{
                 properties.ansiblePlaybookExecutablePath(),
                 INVENTORY_ARG_NAME,
                 inventory,
                 PRIVATE_KEY_ARG_NAME,
-                connectionDetails.sshKeyPath(),
+                connectionDetails.auth().sshKeyPath(),
                 EXTRA_VARS_ARG_NAME,
                 extraVarsArgument,
                 playbookPath

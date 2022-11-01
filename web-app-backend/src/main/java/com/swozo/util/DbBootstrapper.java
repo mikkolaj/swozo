@@ -23,9 +23,9 @@ import com.swozo.utils.SupportedLanguage;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -48,7 +48,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final ServiceModuleRepository serviceModuleRepository;
     private final ActivityModuleRepository activityModuleRepository;
     private final FileRepository fileRepository;
-    private final Environment environment;
+    @Value("${database.enable-bootstrapping}")
+    private final boolean enableBootstrapping;
     private boolean alreadySetup = false;
 
     @Override
@@ -61,7 +62,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         prepareRoles();
 
-        if (Arrays.asList(environment.getActiveProfiles()).contains("dev")) {
+        if (enableBootstrapping) {
             setupTestData();
         }
 
@@ -95,7 +96,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         User student3 = new User("Rafał", "Zabrzydowski", "student3@gmail.com", "student3", List.of(studentRole));
         userRepository.save(student3);
 
-//        COURSES:
+        //        COURSES:
         Course course = new Course();
         course.setName("Programowanie w języku Python");
         course.setSubject("INFORMATYKA");
@@ -108,14 +109,15 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.setPublic(false);
         courseRepository.save(course);
 
-//        FILES
+        //        FILES
         var mockFile = new RemoteFile();
-        mockFile.setPath("/test");
+        mockFile.setId(0L);
+        mockFile.setPath("lab_file.ipynb");
         mockFile.setSizeBytes(2000L);
 
         fileRepository.save(mockFile);
 
-//        ServiceModule
+        //        ServiceModule
         ServiceModule serviceModule = new ServiceModule();
         serviceModule.setName("Klasy w Pythonie");
         serviceModule.setTeacherInstructionHtml("teach");
@@ -151,7 +153,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
         activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
 
-//        ACTIVITIES:
+        //        ACTIVITIES:
         Activity activity = new Activity();
         activity.setName("Pętle, konstrukcje warunkowe");
         activity.setDescription("podstawy");

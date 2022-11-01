@@ -42,6 +42,11 @@ public class RequestSenderEnhancerDecorator extends RequestSenderDecorator {
     }
 
     @Override
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(URI uri, ReqBody body, TypeReference<RespBody> type) {
+        return enhance(() -> super.sendPut(uri, body, type));
+    }
+
+    @Override
     public <T> CompletableFuture<HttpResponse<T>> sendGet(URI uri, TypeReference<T> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
         return enhance(() -> super.sendGet(uri, type, builderDecorator));
     }
@@ -49,6 +54,11 @@ public class RequestSenderEnhancerDecorator extends RequestSenderDecorator {
     @Override
     public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPost(URI uri, ReqBody body, TypeReference<RespBody> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
         return enhance(() -> super.sendPost(uri, body, type, builderDecorator));
+    }
+
+    @Override
+    public <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(URI uri, ReqBody body, TypeReference<RespBody> type, Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator) {
+        return enhance(() -> super.sendPut(uri, body, type, builderDecorator));
     }
 
     private <T> CompletableFuture<HttpResponse<T>> enhance(Supplier<CompletableFuture<HttpResponse<T>>> responseSupplier) {
@@ -89,6 +99,6 @@ public class RequestSenderEnhancerDecorator extends RequestSenderDecorator {
             }
         }
 
-        throw new PropagatingException(previousErr);
+        throw new RuntimeException(previousErr);
     }
 }
