@@ -57,7 +57,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
     const dynamicFormRef = useRef<FormikProps<DynamicFormFields>>(null);
     const dynamicFormValueRegistryRef = useRef<DynamicFormValueRegistry>({});
 
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
     const { data: editModeInitialValues } = useErrorHandledQuery(
@@ -65,6 +65,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
         () => getApis().serviceModuleApi.getFormDataForEdit({ serviceModuleId: +(moduleId ?? -1) }),
         pushApiError,
         removeApiError,
+        isApiErrorSet,
         editMode && moduleId !== undefined
     );
 
@@ -72,7 +73,8 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
         'services',
         () => getApis().serviceModuleApi.getSupportedServices(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     const createServiceModuleMutation = useMutation(

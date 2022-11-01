@@ -1,6 +1,10 @@
 import { ApiError, ErrorType } from 'api/errors';
 import { PageContainerWithError } from 'common/PageContainer/PageContainerWithError';
+import { TFunction } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { triggerError } from 'services/features/error/errorSlice';
+import { AppDispatch, useAppDispatch } from 'services/store';
 
 const NO_ERROR = undefined;
 
@@ -20,13 +24,22 @@ export const buildErrorHandler = (
 
 const defaultErrorHandler: ErrorHandler = buildErrorHandler(() => <PageContainerWithError />);
 
+const defaultConnectionErrorHandler = (dispatch: AppDispatch, t: TFunction): ErrorHandler =>
+    buildErrorHandler(() => {
+        dispatch(triggerError({ message: t('error.connectionError'), autoClose: true }));
+    }, false);
+
 export const useApiErrorHandling = (
     handlerConfig: HandlerConfig,
     useFallbackHandler: boolean = true,
-    fallbackErrorHandler: ErrorHandler = defaultErrorHandler
+    fallbackErrorHandler: ErrorHandler = defaultErrorHandler,
+    useFallbackConnectionErrorHandling: boolean = true
 ) => {
     const [apiErrors, setApiErrors] = useState<ApiError[]>([]);
     const [errorHandler, setErrorHandler] = useState<ErrorHandler | undefined>(NO_ERROR);
+    const { t } = useTranslation();
+    const dispatch = useAppDispatch();
+    const [connectionErrorHandler] = useState(() => defaultConnectionErrorHandler(dispatch, t));
 
     const consumeErrorAction = useCallback(() => {
         if (!errorHandler) return;
@@ -63,10 +76,19 @@ export const useApiErrorHandling = (
             setErrorHandler(NO_ERROR);
         } else if (handlerConfig[apiErrors[0].errorType]) {
             setErrorHandler(() => handlerConfig[apiErrors[0].errorType]);
+        } else if (apiErrors[0].errorType === ErrorType.CONNECTION_ERROR) {
+            setErrorHandler(() => connectionErrorHandler);
         } else if (useFallbackHandler) {
             setErrorHandler(() => fallbackErrorHandler);
         }
-    }, [handlerConfig, apiErrors, useFallbackHandler, fallbackErrorHandler]);
+    }, [
+        handlerConfig,
+        apiErrors,
+        useFallbackHandler,
+        fallbackErrorHandler,
+        useFallbackConnectionErrorHandling,
+        connectionErrorHandler,
+    ]);
 
     useEffect(() => {
         if (apiErrors.length > 0 && !errorHandler?.shouldTerminateRendering) {

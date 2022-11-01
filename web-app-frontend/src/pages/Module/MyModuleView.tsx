@@ -32,21 +32,23 @@ export const MyModuleView = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
     const { data: serviceModule } = useErrorHandledQuery(
         ['modules', moduleId, 'details'],
         () => getApis().serviceModuleApi.getServiceModule({ serviceModuleId: +moduleId }),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     const { data: usage } = useErrorHandledQuery(
         ['modules', moduleId, 'usage'],
         () => getApis().serviceModuleApi.getUsage({ serviceModuleId: +moduleId, limit: 100, offset: 0 }),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     const { serviceModuleDeleteMutation } = useDeleteServiceModule(pushApiError);

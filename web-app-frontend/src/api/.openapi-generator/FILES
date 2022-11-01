@@ -15,6 +15,7 @@ models/CourseSummaryDto.ts
 models/CreateActivityRequest.ts
 models/CreateCourseRequest.ts
 models/CreateSandboxEnvironmentRequest.ts
+models/CreateUserRequest.ts
 models/DynamicFieldDto.ts
 models/EditCourseRequest.ts
 models/FileDto.ts
@@ -37,6 +38,7 @@ models/ServiceModuleSummaryDto.ts
 models/ServiceModuleUsageDto.ts
 models/StorageAccessRequest.ts
 models/UploadAccessDto.ts
+models/UserAdminDetailsDto.ts
 models/UserAdminSummaryDto.ts
 models/UserDetailsDto.ts
 models/index.ts

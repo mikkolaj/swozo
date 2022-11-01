@@ -396,14 +396,38 @@
                 "empty": "Nie znaleziono użytkowników spełniających podane kryteria"
             },
             "create": {
-                "button": "Kreator użytkowników"
+                "button": "Kreator użytkowników",
+                "form": {
+                    "info": "Utwórz pojedyncze konto użytkownika",
+                    "name": "imię",
+                    "surname": "nazwisko",
+                    "email": "Adres Email",
+                    "roles": "Role",
+                    "createButton": "Utwórz konto",
+                    "error": {
+                        "validationErrors": {
+                            "MISSING": "Pole jest wymagane",
+                            "NOT_UNIQUE": "Pole o takiej wartości już istenieje"
+                        }
+                    }
+                },
+                "import": {
+                    "info": "Możesz również utworzyć konta użytkowników poprzez wczytanie pliku .csv",
+                    "format": "Format: imię, nazwisko,email,rola1;rola2",
+                    "availableRoles": "Możliwe role to: STUDENT, ADMIN, TEACHER, TECHNICAL_TEACHER",
+                    "exampleInfo": "Na przykład:",
+                    "example1": "Jan,Kowalski,jkowalski@mail.com,TEACHER;TECHNICAL_TEACHER",
+                    "example2": "Dominik,Nowak,dnowak@mail.com,STUDENT",
+                    "button": "Wczytaj użytkowników z pliku csv"
+                }
             }
         }
     },
     "error": {
         "defaultMessage": "Coś poszło nie tak...",
         "defaultNavigationBtn": "Wróć do strony głównej",
-        "refresh": "Odśwież"
+        "refresh": "Odśwież",
+        "connectionError": "Wystąpił problem z połączeniem, spróbuj ponownie później"
     },
     "toast": {
         "courseCreated": "Kurs został utworzony!",
@@ -412,7 +436,8 @@
         "serviceModuleCreated": "Moduł został utworzony!",
         "serviceModuleUpdated": "Moduł został zaaktualizowany!",
         "serviceModuleDeleted": "Moduł został usunięty!",
-        "fileUploaded": "Plik został przesłany!"
+        "fileUploaded": "Plik został przesłany!",
+        "userCreated": "Użytkownik został utworzony!"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",

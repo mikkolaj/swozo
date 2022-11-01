@@ -29,7 +29,7 @@ type Options = 'course' | 'addActivity';
 
 export const Editor = ({ course, initialTab = 'course' }: Props) => {
     const { t } = useTranslation();
-    const { pushApiError, removeApiError } = useApiErrorHandling({});
+    const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({});
     const [option, setOption] = useState<Options>(initialTab);
     const courseFormRef = useRef<FormikProps<CourseValues>>(null);
     const activityFormRef = useRef<FormikProps<{ activities: ActivityValues[] }>>(null);
@@ -38,7 +38,8 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
         ['modules', 'summary', 'public'],
         () => getApis().serviceModuleApi.getAllPublicServiceModules(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
     const { editCourseMutation } = useEditCourse(course, courseFormRef, pushApiError);
     const { addActivityMutation } = useAddSingleActivity(course, activityFormRef, pushApiError);

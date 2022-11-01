@@ -11,6 +11,7 @@ type Props<T> = {
     optionToString: (option: T) => string;
     setFieldValue: (fieldName: string, value: T[]) => void;
     required?: boolean;
+    fullWidthChips?: boolean;
 };
 
 export function AutocompleteWithChips<T>({
@@ -21,6 +22,7 @@ export function AutocompleteWithChips<T>({
     optionToString,
     setFieldValue,
     required = true,
+    fullWidthChips = false,
 }: Props<T>) {
     const optionsMap = useMemo<Record<string, T>>(
         () => Object.fromEntries(options.map((option) => [optionToString(option), option])),
@@ -63,7 +65,7 @@ export function AutocompleteWithChips<T>({
                     ...stylesRow,
                     mt: 1,
                     ml: 2,
-                    width: '50%',
+                    width: fullWidthChips ? '100%' : '50%',
                     flexWrap: 'wrap',
                 }}
             >

@@ -61,14 +61,15 @@ export const CourseView = () => {
             PageRoutes.MY_COURSES
         ),
     });
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling(errorHandlers);
 
     const { data: course } = useErrorHandledQuery(
         ['courses', courseId],
         () => getApis().courseApi.getCourse({ id: +courseId }),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {

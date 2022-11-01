@@ -2,6 +2,7 @@ package com.swozo.config;
 
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.security.AuthConstraint;
+import com.swozo.security.PasswordHandler;
 import com.swozo.security.keys.KeyProvider;
 import com.swozo.security.rules.jwt.JwtAuthRule;
 import com.swozo.security.rules.jwt.JwtTokenService;
@@ -12,6 +13,10 @@ import com.swozo.security.util.EndpointMatcher;
 import com.swozo.security.util.EndpointsConfig;
 import com.swozo.utils.ServiceType;
 import lombok.RequiredArgsConstructor;
+import org.passay.CharacterRule;
+import org.passay.EnglishCharacterData;
+import org.passay.PasswordGenerator;
+import org.passay.PolishCharacterData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -62,5 +67,25 @@ public class AuthConstrainsConfig {
 
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
+    }
+
+    @Bean
+    public PasswordHandler providePasswordHandler() {
+        var lowercaseRule = new CharacterRule(PolishCharacterData.LowerCase);
+        lowercaseRule.setNumberOfCharacters(2);
+
+        var uppercaseRule = new CharacterRule(PolishCharacterData.UpperCase);
+        uppercaseRule.setNumberOfCharacters(2);
+
+        var digitRule = new CharacterRule(EnglishCharacterData.Digit);
+        digitRule.setNumberOfCharacters(2);
+
+        var specialCharRule = new CharacterRule(EnglishCharacterData.Special);
+        specialCharRule.setNumberOfCharacters(2);
+
+        return new PasswordHandler(
+                List.of(lowercaseRule, uppercaseRule, digitRule, specialCharRule),
+                new PasswordGenerator()
+        );
     }
 }

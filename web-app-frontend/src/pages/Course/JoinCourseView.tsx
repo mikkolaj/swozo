@@ -43,14 +43,16 @@ export const JoinCourseView = () => {
         ['courses'],
         () => getApis().courseApi.getUserCourses(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     const { data: course } = useErrorHandledQuery(
         ['courses', 'summary', joinUUID],
         () => getApis().courseApi.getPublicCourseData({ uuid: joinUUID }),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     const joinCourseMutation = useMutation(

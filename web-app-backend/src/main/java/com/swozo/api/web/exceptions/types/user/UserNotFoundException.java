@@ -14,6 +14,10 @@ public class UserNotFoundException extends ApiException {
         super(message, ErrorType.USER_NOT_FOUND, additionalData);
     }
 
+    public static UserNotFoundException of(Long userId) {
+        return new UserNotFoundException("User with id: " + userId + " doesn't exist");
+    }
+
     public static UserNotFoundException ofAuthenticationOwner() {
         return new UserNotFoundException("User with provided credentials no longer exists", Map.of("requireLogout", true));
     }

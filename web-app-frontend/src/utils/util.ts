@@ -1,5 +1,6 @@
-import { ApiError, ValidationError, ValidationErrorType } from 'api/errors';
+import { ApiError, ErrorType, ValidationError, ValidationErrorType } from 'api/errors';
 import dayjs, { Dayjs } from 'dayjs';
+import { FormikProps } from 'formik';
 import { i18n, TFunction } from 'i18next';
 import _ from 'lodash';
 
@@ -78,6 +79,26 @@ export const prepareFormikValidationErrors = (
         .reduce((acc, [fieldPath, error]) => _.set(acc, fieldPath, error), {});
 };
 
+export const handleFlatFormError = <T>(
+    t: TFunction,
+    form: FormikProps<T> | null,
+    err: ApiError,
+    i18nErrorPrefix: string,
+    pushApiError: (err: ApiError) => void
+) => {
+    if (err.errorType === ErrorType.VALIDATION_FAILED) {
+        form?.setErrors(
+            prepareFormikValidationErrors(
+                err,
+                (key) => key,
+                (error) => prepareErrorForDisplay(t, i18nErrorPrefix, error)
+            )
+        );
+    } else {
+        pushApiError(err);
+    }
+};
+
 export const sleep = (sleepTimeMillis: number) => new Promise((res) => setTimeout(res, sleepTimeMillis));
 
 export async function withExponentialBackoff<T>(
@@ -88,7 +109,9 @@ export async function withExponentialBackoff<T>(
 ): Promise<T> {
     const start = new Date();
     const initialSleepMilis = 100;
-    let lastErr = undefined;
+    const connectionErr: ApiError = {
+        errorType: ErrorType.CONNECTION_ERROR,
+    };
 
     for (let i = 0; i <= maxRetries; i++) {
         try {
@@ -96,14 +119,13 @@ export async function withExponentialBackoff<T>(
         } catch (err) {
             if (new Date().getTime() - start.getTime() <= maxTimeMillis) {
                 await sleep(Math.min(maxSleepTimeMillis, initialSleepMilis * Math.pow(2, i)));
-                lastErr = err;
             } else {
-                throw err;
+                throw connectionErr;
             }
         }
     }
 
-    throw lastErr;
+    throw connectionErr;
 }
 
 export const naiveTextCompare = (testedValue: string, matcher: string): boolean => {

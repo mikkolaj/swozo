@@ -1,4 +1,4 @@
-import { DependencyList, useCallback, useEffect, useState } from 'react';
+import { DependencyList, useCallback, useState } from 'react';
 import { upload, UploadRequest } from 'services/features/files/fileSlice';
 import { selectFileUploadState, useAppDispatch, useAppSelector } from 'services/store';
 
@@ -25,10 +25,6 @@ export function useUpload<T>({ deps, ...props }: Props<T>) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [...deps, dispatch]
     );
-
-    useEffect(() => {
-        console.log('recomputing');
-    }, [typedUpload]);
 
     return { upload: typedUpload, isUploading: uploadState && uploadState.isUploading };
 }

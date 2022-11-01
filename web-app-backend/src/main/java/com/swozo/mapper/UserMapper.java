@@ -4,6 +4,7 @@ import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.ParticipantDetailsDto;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
+import com.swozo.api.web.user.dto.UserAdminDetailsDto;
 import com.swozo.api.web.user.dto.UserAdminSummaryDto;
 import com.swozo.api.web.user.dto.UserDetailsDto;
 import com.swozo.api.web.user.request.CreateUserRequest;
@@ -35,7 +36,10 @@ public abstract class UserMapper {
     @Mapping(target = "roles", expression = "java(rolesToDto(user.getRoles()))")
     public abstract UserAdminSummaryDto toAdminSummaryDto(User user);
 
-    protected List<Role> rolesToPersistence(List<RoleDto> roles) {
+    @Mapping(target = "roles", expression = "java(rolesToDto(user.getRoles()))")
+    public abstract UserAdminDetailsDto userAdminDetailsDto(User user);
+
+    public List<Role> rolesToPersistence(List<RoleDto> roles) {
         return roles.stream()
                 .map(roleDto -> roleRepository.findByName(roleDto.toString()))
                 .toList();

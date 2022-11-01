@@ -7,7 +7,7 @@ export const useFilters = <Filters, Resource>(
 ) => {
     const [filters, setFilters] = useState<Filters>(initialValues);
     const [searchPhrase, setSearchPhrase] = useState('');
-    const [filteredResources, setFilteredResources] = useState<Resource[]>([]);
+    const [filteredResources, setFilteredResources] = useState<Resource[]>(resources ?? []);
 
     useEffect(() => {
         if (resources) {

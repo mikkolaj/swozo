@@ -15,6 +15,12 @@
 
 import * as runtime from '../runtime';
 import {
+    CreateUserRequest,
+    CreateUserRequestFromJSON,
+    CreateUserRequestToJSON,
+    UserAdminDetailsDto,
+    UserAdminDetailsDtoFromJSON,
+    UserAdminDetailsDtoToJSON,
     UserAdminSummaryDto,
     UserAdminSummaryDtoFromJSON,
     UserAdminSummaryDtoToJSON,
@@ -23,10 +29,93 @@ import {
     UserDetailsDtoToJSON,
 } from '../models';
 
+export interface CreateUserOperationRequest {
+    createUserRequest: CreateUserRequest;
+}
+
+export interface GetUserDetailsForAdminRequest {
+    userId: number;
+}
+
 /**
  * 
  */
 export class UserControllerApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async createUserRaw(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserAdminDetailsDto>> {
+        if (requestParameters.createUserRequest === null || requestParameters.createUserRequest === undefined) {
+            throw new runtime.RequiredError('createUserRequest','Required parameter requestParameters.createUserRequest was null or undefined when calling createUser.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreateUserRequestToJSON(requestParameters.createUserRequest),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserAdminDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit): Promise<UserAdminDetailsDto> {
+        const response = await this.createUserRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUserDetailsForAdminRaw(requestParameters: GetUserDetailsForAdminRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserAdminDetailsDto>> {
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling getUserDetailsForAdmin.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users/details/{userId}`.replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserAdminDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getUserDetailsForAdmin(requestParameters: GetUserDetailsForAdminRequest, initOverrides?: RequestInit): Promise<UserAdminDetailsDto> {
+        const response = await this.getUserDetailsForAdminRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      */

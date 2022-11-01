@@ -14,14 +14,15 @@ import { CourseSummaryView } from './components/CourseSummaryView';
 export const MyCoursesListView = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
     const { data: courses, isLoading } = useErrorHandledQuery(
         'courses',
         () => getApis().courseApi.getUserCourses(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {

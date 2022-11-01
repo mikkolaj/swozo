@@ -16,7 +16,8 @@ export const useCourseWithActivity = (
         ['courses', courseId],
         () => getApis().courseApi.getCourse({ id: +courseId }),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     useEffect(() => {

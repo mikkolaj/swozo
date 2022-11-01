@@ -6,6 +6,7 @@ import com.swozo.api.web.auth.request.LoginRequest;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.persistence.user.User;
 import com.swozo.security.AccessToken;
+import com.swozo.security.PasswordHandler;
 import com.swozo.security.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,7 +23,9 @@ import static com.swozo.security.util.AuthUtils.getUsersAuthorities;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private static final int INITIAL_PASSWORD_LENGTH = 14;
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private final PasswordHandler passwordHandler;
     private final TokenService tokenService;
     private final UserRepository userRepository;
     private final Optional<RoleHierarchy> roleHierarchy;
@@ -35,6 +38,18 @@ public class AuthService {
 
         // duplicate some data stored in token for easier access on frontend
         return new AuthDetailsDto(token.getCredentials(), token.getExpirationTime(), appRoles);
+    }
+
+    public String hashPassword(String password) {
+        return password;
+    }
+
+    public boolean checkPassword(User user, String plaintextPassword) {
+        return user.getPassword().equals(hashPassword(plaintextPassword));
+    }
+
+    public String provideInitialPassword() {
+        return passwordHandler.generatePassword(INITIAL_PASSWORD_LENGTH);
     }
 
     public boolean hasRole(AccessToken accessToken, RoleDto role) {
