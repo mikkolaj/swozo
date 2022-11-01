@@ -94,6 +94,12 @@ export interface CourseDetailsDto {
     joinUUID: string;
     /**
      * 
+     * @type {boolean}
+     * @memberof CourseDetailsDto
+     */
+    isPublic: boolean;
+    /**
+     * 
      * @type {string}
      * @memberof CourseDetailsDto
      */
@@ -119,6 +125,7 @@ export function CourseDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: bo
         'students': ((json['students'] as Array<any>).map(ParticipantDetailsDtoFromJSON)),
         'activities': ((json['activities'] as Array<any>).map(ActivityDetailsDtoFromJSON)),
         'joinUUID': json['joinUUID'],
+        'isPublic': json['isPublic'],
         'coursePassword': !exists(json, 'coursePassword') ? undefined : json['coursePassword'],
     };
 }
@@ -141,6 +148,7 @@ export function CourseDetailsDtoToJSON(value?: CourseDetailsDto | null): any {
         'students': ((value.students as Array<any>).map(ParticipantDetailsDtoToJSON)),
         'activities': ((value.activities as Array<any>).map(ActivityDetailsDtoToJSON)),
         'joinUUID': value.joinUUID,
+        'isPublic': value.isPublic,
         'coursePassword': value.coursePassword,
     };
 }

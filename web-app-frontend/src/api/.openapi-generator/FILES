@@ -16,6 +16,7 @@ models/CreateActivityRequest.ts
 models/CreateCourseRequest.ts
 models/CreateSandboxEnvironmentRequest.ts
 models/DynamicFieldDto.ts
+models/EditCourseRequest.ts
 models/FileDto.ts
 models/FinishServiceModuleCreationRequest.ts
 models/InitFileUploadRequest.ts

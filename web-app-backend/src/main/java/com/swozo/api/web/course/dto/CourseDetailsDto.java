@@ -18,6 +18,7 @@ public record CourseDetailsDto(
         @Schema(required = true) List<ParticipantDetailsDto> students,
         @Schema(required = true) List<ActivityDetailsDto> activities,
         @Schema(required = true) String joinUUID,
+        @Schema(required = true) Boolean isPublic,
         Optional<String> coursePassword
 ) {
 }

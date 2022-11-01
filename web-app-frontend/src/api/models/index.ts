@@ -9,6 +9,7 @@ export * from './CreateActivityRequest';
 export * from './CreateCourseRequest';
 export * from './CreateSandboxEnvironmentRequest';
 export * from './DynamicFieldDto';
+export * from './EditCourseRequest';
 export * from './FileDto';
 export * from './FinishServiceModuleCreationRequest';
 export * from './InitFileUploadRequest';

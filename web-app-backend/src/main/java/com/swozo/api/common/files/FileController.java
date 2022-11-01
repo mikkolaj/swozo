@@ -19,9 +19,9 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 public class FileController {
     private final FileService fileService;
 
-    @GetMapping(INTERNAL + DOWNLOAD + "/{remoteFileId}")
-    public StorageAccessRequest getDownloadSignedAccessRequestInternal(@PathVariable Long remoteFileId) {
-        return fileService.createInternalDownloadRequest(remoteFileId);
+    @GetMapping(INTERNAL + DOWNLOAD + "/{encodedFileIdentifier}")
+    public StorageAccessRequest getDownloadSignedAccessRequestInternal(@PathVariable String encodedFileIdentifier) {
+        return fileService.createInternalDownloadRequest(encodedFileIdentifier);
     }
 
     @GetMapping(EXTERNAL + DOWNLOAD + "/{remoteFileId}")

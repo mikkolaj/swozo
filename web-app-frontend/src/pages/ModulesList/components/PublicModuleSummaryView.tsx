@@ -24,6 +24,7 @@ export const PublicModuleSummaryView = ({ moduleSummary }: Props) => {
                         <LinkedTypography
                             variant="h4"
                             to={PageRoutes.PublicModule(moduleSummary.id)}
+                            sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}
                             text={moduleSummary.name}
                         />
                         <Typography

@@ -1,10 +1,12 @@
 package com.swozo.api.web.course;
 
+import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
 import com.swozo.api.web.course.request.CreateCourseRequest;
+import com.swozo.api.web.course.request.EditCourseRequest;
 import com.swozo.api.web.course.request.JoinCourseRequest;
 import com.swozo.api.web.course.request.ModifyParticipantRequest;
 import com.swozo.persistence.Course;
@@ -17,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -50,13 +53,22 @@ public class CourseController {
         return courseService.getCourseDetails(id, token.getUserId());
     }
 
+    @GetMapping("/summary")
+    public List<CourseSummaryDto> getPublicCourses(
+            AccessToken token,
+            @RequestParam(defaultValue = "0") Long offset,
+            @RequestParam(defaultValue = "100") Long limit
+    ) {
+        return courseService.getPublicCoursesNotParticipatedBy(token.getUserId(), offset, limit);
+    }
+
     @GetMapping("/summary/{uuid}")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public CourseSummaryDto getPublicCourseData(AccessToken token, @PathVariable String uuid) {
         return courseService.getCourseSummary(uuid);
     }
 
-    @PatchMapping("/join")
+    @PutMapping("/join")
     @PreAuthorize("hasAnyRole('STUDENT')")
     public CourseDetailsDto joinCourse(AccessToken token, @RequestBody JoinCourseRequest joinCourseRequest) {
         return courseService.joinCourse(joinCourseRequest, token.getUserId());
@@ -76,7 +88,21 @@ public class CourseController {
         courseService.deleteCourse(id);
     }
 
-    @PostMapping("/{courseId}/students")
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public CourseDetailsDto editCourse(AccessToken token, @PathVariable Long id, @RequestBody EditCourseRequest editCourseRequest) {
+        logger.info("editing course with id: {}", id);
+        return courseService.editCourse(token.getUserId(), id, editCourseRequest);
+    }
+
+    @PutMapping("/{id}/activities")
+    @PreAuthorize("hasRole('TEACHER')")
+    public CourseDetailsDto addSingleActivity(AccessToken token, @PathVariable Long id, @RequestBody CreateActivityRequest createActivityRequest) {
+        logger.info("editing course with id: {}", id);
+        return courseService.addSingleActivity(token.getUserId(), id, createActivityRequest);
+    }
+
+    @PutMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
     public CourseDetailsDto addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody ModifyParticipantRequest student) {
         logger.info("adding student with email: {} to course with id: {}", student.email(), courseId);

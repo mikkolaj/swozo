@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> getCoursesByTeacherId(Long teacherId);
 
-    @Query("from Course course join course.students cs where cs.id.userId = :studentId")
+    @Query("FROM Course course JOIN course.students cs WHERE cs.id.userId = :studentId")
     List<Course> getCoursesByStudentsId(Long studentId);
 
     Optional<Course> getByJoinUUID(String joinUUID);
@@ -18,4 +18,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findByName(String name);
 
     Optional<Course> findBySandboxModeIsTrueAndTeacherId(Long teacherId);
+
+    List<Course> getCoursesByIsPublicTrue();
 }

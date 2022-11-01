@@ -15,7 +15,9 @@ export const Summary = ({ moduleInfo, editMode }: Props) => {
     return (
         <Box>
             <Box sx={{ ...stylesRowCenteredHorizontal, justifyContent: 'center', mb: 4 }}>
-                <Typography variant="h3">{moduleInfo.name}</Typography>
+                <Typography sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }} variant="h3">
+                    {moduleInfo.name}
+                </Typography>
             </Box>
             <Box sx={{ ...stylesColumnCenteredVertical }}>
                 <Box>

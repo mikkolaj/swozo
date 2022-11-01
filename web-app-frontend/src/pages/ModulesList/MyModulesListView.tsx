@@ -1,13 +1,13 @@
-import { Button, Container, Grid, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, Stack, Typography } from '@mui/material';
 import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
-import { stylesRowWithItemsAtTheEnd } from 'common/styles';
+import { PageHeaderText } from 'common/Styled/PageHeaderText';
+import { stylesColumnCenteredHorizontal, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { useDeleteServiceModule } from 'hooks/query/useDeleteServiceModule';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { TECHNICAL_TEACHER, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { ModuleSummaryView } from './components/MyModuleSummaryView';
 
@@ -17,7 +17,7 @@ export const MyModulesListView = () => {
     const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
-    const { data: modules } = useErrorHandledQuery(
+    const { data: modules, isLoading } = useErrorHandledQuery(
         ['modules', 'summary', 'me'],
         () => getApis().serviceModuleApi.getUserModulesSummary(),
         pushApiError,
@@ -35,30 +35,41 @@ export const MyModulesListView = () => {
             header={
                 <>
                     <Grid item xs={6}>
-                        <Typography variant="h4" component="div">
-                            {t('myModules.header')}
-                        </Typography>
+                        <PageHeaderText text={t('myModules.header')} />
                     </Grid>
                     <Grid item xs={6} sx={stylesRowWithItemsAtTheEnd}>
-                        <WithRole roles={[TECHNICAL_TEACHER]}>
-                            <Button onClick={() => navigate(PageRoutes.CREATE_MODULE)}>
-                                {t('myModules.createModuleButton')}
-                            </Button>
-                        </WithRole>
+                        <Button onClick={() => navigate(PageRoutes.CREATE_MODULE)}>
+                            {t('myModules.createModuleButton')}
+                        </Button>
                     </Grid>
                 </>
             }
         >
             <Container>
-                <Stack spacing={2} px={2}>
-                    {modules?.map((module) => (
-                        <ModuleSummaryView
-                            key={module.id}
-                            moduleSummary={module}
-                            onDelete={() => serviceModuleDeleteMutation.mutate(`${module.id}`)}
-                        />
-                    ))}
-                </Stack>
+                {isLoading || (modules && modules.length > 0) ? (
+                    <Stack spacing={2} px={2}>
+                        {modules?.map((module) => (
+                            <ModuleSummaryView
+                                key={module.id}
+                                moduleSummary={module}
+                                onDelete={() => serviceModuleDeleteMutation.mutate(`${module.id}`)}
+                            />
+                        ))}
+                    </Stack>
+                ) : (
+                    <Box sx={{ ...stylesColumnCenteredHorizontal, justifyContent: 'center', mt: 8 }}>
+                        <Typography sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }} variant="h4">
+                            {t('myModules.empty')}
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            sx={{ mt: 4, px: 4, py: 2 }}
+                            onClick={() => navigate(PageRoutes.CREATE_MODULE)}
+                        >
+                            <Typography variant="h5">{t('myModules.createModuleButton')}</Typography>
+                        </Button>
+                    </Box>
+                )}
             </Container>
         </PageContainer>
     );

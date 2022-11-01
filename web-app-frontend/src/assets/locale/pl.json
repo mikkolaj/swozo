@@ -7,9 +7,10 @@
     },
     "navbar": {
         "logo": "SWOZO",
-        "myCourses": "kursy",
+        "myCourses": "moje kursy",
         "myModules": "moje moduły",
-        "publicModules": "moduły",
+        "publicCourses": "wszystkie kursy",
+        "publicModules": "wszystkie moduły",
         "myFiles": "pliki",
         "menu": {
             "logout": "wyloguj",
@@ -20,16 +21,27 @@
     "myCourses": {
         "header": "Moje kursy",
         "createCourseButton": "Utwórz kurs",
+        "empty": "Nie utworzyłeś jeszcze żadnego kursu",
         "course": {
             "lastActivity": "Ostatnia aktywność:",
             "teacher": "Prowadzący: {{firstName}} {{lastName}}",
             "button": "szczegóły"
         }
     },
+    "publicCourses": {
+        "header": "Publiczne kursy",
+        "searchBoxPlaceholder": "Nazwa kursu, nauczyciel...",
+        "createdAt": "Data utworzenia:",
+        "teacher": "Prowadzący: {{firstName}} {{lastName}}",
+        "join": "Dołącz do kursu",
+        "empty": "Wygląda na to że nic tu nie ma :("
+    },
     "course": {
         "options": {
             "activities": {
-                "button": "Aktywności"
+                "button": "Aktywności",
+                "empty": "Nie utworzyłeś jeszcze żadnej aktywności w tym kursie",
+                "emptyButton": "Dodaj aktywności"
             },
             "participants": {
                 "button": "Uczestnicy",
@@ -53,6 +65,20 @@
                         "name": "Imię i nazwisko",
                         "email": "Adres email",
                         "joinDate": "Data dołączenia"
+                    }
+                }
+            },
+            "editor": {
+                "button": "Edytor kursu",
+                "tabs": {
+                    "course": {
+                        "label": "Edycja kursu",
+                        "button": "Zapisz zmiany"
+                    },
+                    "addActivity": {
+                        "label": "Dodaj aktywność",
+                        "button": "Utwórz aktywność",
+                        "secondaryButton": "Wyczyść formularz"
                     }
                 }
             }
@@ -152,6 +178,7 @@
     "myModules": {
         "header": "Moje moduły",
         "createModuleButton": "Utwórz moduł",
+        "empty": "Nie utworzyłeś jeszcze żadnego modułu",
         "module": {
             "creationDate": "Data utworzenia:",
             "usedBy": "Liczba korzystających aktywności: {{activitiesCount}}",
@@ -186,8 +213,9 @@
     },
     "publicModules": {
         "header": "Publiczne moduły",
+        "empty": "Wygląda na to że nic tu nie ma :(",
         "searchBoxPlaceholder": "Nazwa modułu, autor...",
-        "filters": "Zaawansowane filtry",
+        "filters": "Więcej filtrów",
         "author": "Autor: {{email}}",
         "description": "Opis: {{description}}",
         "any": "Wszystkie"
@@ -352,6 +380,8 @@
     },
     "toast": {
         "courseCreated": "Kurs został utworzony!",
+        "courseUpdated": "Dane kursu zostały zaaktualizowane!",
+        "activityAdded": "Aktywność została utworzona!",
         "serviceModuleCreated": "Moduł został utworzony!",
         "serviceModuleUpdated": "Moduł został zaaktualizowany!",
         "serviceModuleDeleted": "Moduł został usunięty!",

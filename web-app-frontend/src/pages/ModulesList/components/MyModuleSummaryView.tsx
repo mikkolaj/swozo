@@ -27,6 +27,7 @@ export const ModuleSummaryView = ({ moduleSummary, onDelete }: Props) => {
                         <LinkedTypography
                             variant="h4"
                             to={PageRoutes.MyModule(moduleSummary.id)}
+                            sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}
                             text={moduleSummary.name}
                         />
                         <Typography

@@ -3,6 +3,7 @@ import { InputField } from 'common/Input/InputField';
 import { stylesColumnCenteredHorizontal } from 'common/styles';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from 'react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { login } from 'services/features/auth/authSlice';
 import { useAppDispatch, useAppSelector } from 'services/store';
@@ -13,6 +14,7 @@ export const Login = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const queryClient = useQueryClient();
     const authState = useAppSelector((state) => state.auth);
 
     return (
@@ -20,6 +22,7 @@ export const Login = () => {
             <Formik
                 initialValues={{ email: '', password: '' }}
                 onSubmit={async (values) => {
+                    queryClient.removeQueries();
                     await dispatch(login(values));
                     const { redirectTo } = (location.state as RedirectState) ?? { redirectTo: undefined };
                     if (redirectTo) {

@@ -1,9 +1,6 @@
 import { ServiceModuleSummaryDto } from 'api';
+import { naiveTextCompare } from 'utils/util';
 import { Filters } from './ServiceModuleFilter';
-
-const naiveTextCompare = (testedValue: string, matcher: string): boolean => {
-    return testedValue.toLowerCase().includes(matcher.toLowerCase());
-};
 
 export const matchesTextSearch = (module: ServiceModuleSummaryDto, searchContent: string): boolean => {
     if (searchContent === '') return true;

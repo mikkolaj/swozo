@@ -16,15 +16,17 @@ type Props = SlideProps & {
     values: CourseValues;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleChange: (e: ChangeEvent<any>) => void;
+    createMode?: boolean;
 };
 
-export const CourseInfoForm = ({ nameBuilder, handleChange, values }: Props) => {
+export const CourseInfoForm = ({ nameBuilder, handleChange, values, createMode = true }: Props) => {
     const { t } = useTranslation();
+    const width = createMode ? '50%' : '55%';
 
     return (
         <>
             <FormInputField
-                wrapperSx={{ width: '50%' }}
+                wrapperSx={{ width }}
                 name={nameBuilder('name')}
                 type="text"
                 textFieldProps={{ fullWidth: true }}
@@ -36,27 +38,30 @@ export const CourseInfoForm = ({ nameBuilder, handleChange, values }: Props) => 
                 i18nLabel="createCourse.slides.0.form.subject"
             />
             <FormInputField
-                wrapperSx={{ width: '50%' }}
+                wrapperSx={{ width }}
                 name={nameBuilder('description')}
                 type="text"
                 textFieldProps={{ multiline: true, fullWidth: true, required: false }}
                 i18nLabel="createCourse.slides.0.form.description"
             />
-            <FormInputField
-                name={nameBuilder('numberOfActivities')}
-                type="number"
-                i18nLabel="createCourse.slides.0.form.numberOfActivities"
-            />
-            <FormInputField
-                name={nameBuilder('expectedStudentCount')}
-                type="number"
-                i18nLabel="createCourse.slides.0.form.expectedStudentCount"
-                onChangeDecorator={() => {
-                    // TODO how this value affects array below
-                    // if (!isNaN(+e.target.value)) setNumberOfStudents(+e.target.value);
-                }}
-            />
-
+            {createMode && (
+                <FormInputField
+                    name={nameBuilder('numberOfActivities')}
+                    type="number"
+                    i18nLabel="createCourse.slides.0.form.numberOfActivities"
+                />
+            )}
+            {createMode && (
+                <FormInputField
+                    name={nameBuilder('expectedStudentCount')}
+                    type="number"
+                    i18nLabel="createCourse.slides.0.form.expectedStudentCount"
+                    onChangeDecorator={() => {
+                        // TODO how this value affects array below
+                        // if (!isNaN(+e.target.value)) setNumberOfStudents(+e.target.value);
+                    }}
+                />
+            )}
             <FormPasswordField
                 name={nameBuilder('password')}
                 i18nLabel="createCourse.slides.0.form.password"

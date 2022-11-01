@@ -1,33 +1,27 @@
 import { Box, Button, Card, CardContent, Grid, Typography } from '@mui/material';
-import { CourseDetailsDto } from 'api';
-import { LinkedTypography } from 'common/Styled/LinkedTypography';
+import { CourseSummaryDto } from 'api';
 import { stylesColumnCenteredVertical, stylesRowWithItemsAtTheEnd } from 'common/styles';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { STUDENT, WithRole } from 'utils/roles';
+import { Link } from 'react-router-dom';
 import { PageRoutes } from 'utils/routes';
 import { formatDate } from 'utils/util';
 
 type Props = {
-    courseSummary: CourseDetailsDto;
+    courseSummary: CourseSummaryDto;
 };
 
-export const CourseSummaryView = ({ courseSummary }: Props) => {
+export const CoursePublicView = ({ courseSummary }: Props) => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
 
     return (
         <Card sx={{ boxShadow: 3 }}>
             <CardContent>
                 <Grid container>
                     <Grid item xs={8}>
-                        <LinkedTypography
-                            variant="h4"
-                            to={PageRoutes.Course(courseSummary.id)}
-                            sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}
-                            text={courseSummary.name}
-                        />
+                        <Typography variant="h4" sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}>
+                            {courseSummary.name}
+                        </Typography>
                         <Typography
                             variant="body1"
                             sx={{
@@ -42,31 +36,33 @@ export const CourseSummaryView = ({ courseSummary }: Props) => {
                     </Grid>
                     <Grid item xs={4} sx={{ textAlign: 'right' }}>
                         <Typography variant="h6" component="div">
-                            {t('myCourses.course.lastActivity')}
+                            {t('publicCourses.createdAt')}
                         </Typography>
                         <Typography sx={{ mt: -1 }} variant="h6" component="div">
-                            {formatDate(courseSummary.lastActivityTime)}
+                            {formatDate(courseSummary.creationTime)}
                         </Typography>
                     </Grid>
                     <Grid item xs={8} sx={{ ...stylesColumnCenteredVertical, mt: 2 }}>
-                        <WithRole roles={[STUDENT]}>
-                            <Box sx={stylesColumnCenteredVertical}>
-                                <Typography variant="body2">
-                                    {t('myCourses.course.teacher', {
-                                        firstName: courseSummary.teacher.name,
-                                        lastName: courseSummary.teacher.surname,
-                                    })}
-                                </Typography>
-                            </Box>
-                        </WithRole>
+                        <Box sx={stylesColumnCenteredVertical}>
+                            <Typography variant="body2">
+                                {t('publicCourses.teacher', {
+                                    firstName: courseSummary.teacher.name,
+                                    lastName: courseSummary.teacher.surname,
+                                })}
+                            </Typography>
+                        </Box>
                     </Grid>
                     <Grid item xs={4} sx={{ mt: 2 }}>
                         <Box sx={stylesRowWithItemsAtTheEnd}>
-                            <Button
-                                variant="contained"
-                                onClick={() => navigate(PageRoutes.Course(courseSummary.id))}
-                            >
-                                {t('myCourses.course.button')}
+                            <Button variant="contained">
+                                <Link
+                                    target="_blank"
+                                    rel="noopener"
+                                    to={PageRoutes.JoinCourse(courseSummary.joinUUID)}
+                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                >
+                                    {t('publicCourses.join')}
+                                </Link>
                             </Button>
                         </Box>
                     </Grid>

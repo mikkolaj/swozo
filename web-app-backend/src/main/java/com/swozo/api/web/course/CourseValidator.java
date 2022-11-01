@@ -2,11 +2,13 @@ package com.swozo.api.web.course;
 
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.course.request.CreateCourseRequest;
+import com.swozo.api.web.course.request.EditCourseRequest;
 import com.swozo.api.web.exceptions.types.common.ValidationError;
 import com.swozo.api.web.exceptions.types.common.ValidationErrors;
 import com.swozo.api.web.exceptions.types.common.ValidationNames;
 import com.swozo.api.web.exceptions.types.course.AlreadyAMemberException;
 import com.swozo.api.web.exceptions.types.course.NotACreatorException;
+import com.swozo.mapper.ActivityMapper;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import static com.swozo.util.CommonValidators.*;
 @RequiredArgsConstructor
 public class CourseValidator {
     private final CourseRepository courseRepository;
+    private final ActivityMapper activityMapper;
 
     // TODO: policy based?
     private static final Duration minActivityDuration = Duration.ofMinutes(1);
@@ -101,7 +104,7 @@ public class CourseValidator {
     }
 
     public void validateAddStudentRequest(User student, Long teacherId, Course course) {
-        if (!course.getTeacher().getId().equals(teacherId)) {
+        if (!course.isCreator(teacherId)) {
             throw new NotACreatorException("Only course creator can add a student");
         }
         validateJoinCourseRequest(student, course);
@@ -113,6 +116,33 @@ public class CourseValidator {
                     "%s already belongs to the course: %s", student.getEmail(), course.getName()
             ));
         }
+    }
+
+    public void validateEditCourseRequest(Course course, EditCourseRequest request, Long editorId) {
+        if (!course.isCreator(editorId)) {
+            throw new NotACreatorException("Only course creator can edit a course");
+        }
+
+        ValidationErrors.builder()
+            .putIfFails(request.name().flatMap(name ->
+                    unique(ValidationNames.Fields.NAME, courseRepository.findByName(name)))
+            )
+            .build()
+            .throwIfAnyPresent("Invalid course data");
+    }
+
+    public void validateAddActivityRequest(Course course, CreateActivityRequest request, Long editorId) {
+        if (!course.isCreator(editorId)) {
+            throw new NotACreatorException("Only course creator can add an activity");
+        }
+
+        var alreadyPresentActivities = course.getActivities().stream()
+                .map(activityMapper::toRequest)
+                .toList();
+
+        validateActivityData(request, alreadyPresentActivities)
+                .build()
+                .throwIfAnyPresent("Invalid activity data");
     }
 
     private Optional<ValidationError> isAUniqueActivity(

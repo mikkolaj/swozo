@@ -104,8 +104,8 @@ public class FileService {
         return createExternalDownloadRequest(file);
     }
 
-    public StorageAccessRequest createInternalDownloadRequest(Long remoteFileId) {
-        var file = fileRepository.findById(remoteFileId).orElseThrow();
+    public StorageAccessRequest createInternalDownloadRequest(String encodedFileIdentifier) {
+        var file = decodeUniqueIdentifier(encodedFileIdentifier);
         return storageProvider.createAuthorizedDownloadRequest(
                 storageProperties.webBucket().name(),
                 file.getPath(),

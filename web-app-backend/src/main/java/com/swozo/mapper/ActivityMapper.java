@@ -30,10 +30,19 @@ public abstract class ActivityMapper {
 
     @Mapping(target = "modules", expression = "java(modulesToPersistence(createActivityRequest))")
     @Mapping(target = "instructionFromTeacherHtml", expression = "java(commonMappers.instructionToPersistence(createActivityRequest.instructionFromTeacher()))")
-    public abstract Activity toPersistence(CreateActivityRequest createActivityRequest);
+    protected abstract Activity basicToPersistence(CreateActivityRequest createActivityRequest);
+
+    public Activity toPersistence(CreateActivityRequest createActivityRequest) {
+        var activity = basicToPersistence(createActivityRequest);
+        activity.getModules().forEach(module -> module.setActivity(activity));
+        return activity;
+    }
 
     @Mapping(target = "instructionFromTeacher", expression = "java(commonMappers.instructionToDto(activity.getInstructionFromTeacherHtml()))")
     @Mapping(target = "activityModules", expression = "java(activity.getModules().stream().map(activityModuleMapper::toDto).toList())")
     @Mapping(target = "publicFiles", expression = "java(activity.getPublicFiles().stream().map(fileMapper::toDto).toList())")
     public abstract ActivityDetailsDto toDto(Activity activity);
+
+    @Mapping(target = "selectedModulesIds", expression = "java(activity.getModules().stream().map(module -> module.getId()).toList())")
+    public abstract CreateActivityRequest toRequest(Activity activity);
 }
