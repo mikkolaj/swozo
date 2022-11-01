@@ -5,9 +5,6 @@ import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestE
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import javax.transaction.Transactional;
-
-@Transactional
 @Mapper(componentModel = "spring")
 public interface ScheduleRequestMapper {
 
