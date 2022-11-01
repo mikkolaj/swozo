@@ -1,6 +1,10 @@
 package com.swozo.orchestrator.cloud.resources.gcloud.compute;
 
-import com.google.cloud.compute.v1.*;
+import com.google.api.gax.rpc.NotFoundException;
+import com.google.cloud.compute.v1.DeleteInstanceRequest;
+import com.google.cloud.compute.v1.InsertInstanceRequest;
+import com.google.cloud.compute.v1.Instance;
+import com.google.cloud.compute.v1.InstancesClient;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.instance.InstanceProvider;
@@ -33,30 +37,40 @@ public class GCloudVMLifecycleManager {
     private final GCloudProperties properties;
     private final Logger logger = LoggerFactory.getLogger(GCloudVMLifecycleManager.class);
 
-    public Operation createInstance(VMAddress vmAddress, VMSpecs vmSpecs)
+    public void createInstance(VMAddress vmAddress, VMSpecs vmSpecs)
             throws IOException, ExecutionException, TimeoutException, InterruptedException {
         try (InstancesClient instancesClient = InstancesClient.create()) {
             var insertInstanceRequest = createInsertInstanceRequest(vmAddress, vmSpecs);
 
             logger.info("Creating instance: {} with specs {}", vmAddress, vmSpecs);
 
-            return instancesClient
+            instancesClient
                     .insertAsync(insertInstanceRequest)
                     .get(properties.computeRequestTimeoutMinutes(), TimeUnit.MINUTES);
         }
     }
 
-    public Operation deleteInstance(VMAddress vmAddress)
+    public void deleteInstance(VMAddress vmAddress)
             throws IOException, ExecutionException, InterruptedException, TimeoutException {
         try (var instancesClient = InstancesClient.create()) {
             var deleteInstanceRequest = createDeleteInstanceRequest(vmAddress);
 
-            logger.info("Deleting instance: {} ", vmAddress.vmName());
+            logger.info("Deleting instance: {}", vmAddress.vmName());
 
-            return instancesClient
+            instancesClient
                     .deleteAsync(deleteInstanceRequest)
                     .get(properties.computeRequestTimeoutMinutes(), TimeUnit.MINUTES);
+        } catch (ExecutionException ex) {
+            if (resourceDoesntExist(ex)) {
+                logger.warn("Instance: {} has already been deleted.", vmAddress);
+            } else {
+                throw ex;
+            }
         }
+    }
+
+    private boolean resourceDoesntExist(ExecutionException ex) {
+        return ex.getCause() instanceof NotFoundException;
     }
 
     public String getInstanceExternalIP(VMAddress vmAddress) throws IOException {

@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface TimedSoftwareProvisioner {
+    int MAX_PROVISIONING_SECONDS = 60 * 60 * 3;
     List<ActivityLinkInfo> provision(VMResourceDetails resourceDetails, Map<String, String> dynamicParameters) throws InterruptedException, ProvisioningFailed;
+    List<ActivityLinkInfo> createLinks(VMResourceDetails resourceDetails);
 
     void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException;
 

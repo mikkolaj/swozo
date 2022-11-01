@@ -1,0 +1,31 @@
+services:
+  swozo-web-app-backend:
+    container_name: swozo-backend
+    image: swozo/web-app-backend:dev
+    build:
+      context: .
+      dockerfile: Dockerfile-dev
+    ports:
+      - "5000:5000"
+      - "22010:22010"
+      - "24010:24010"
+    environment:
+      ORCHESTRATOR_URL: http://swozo-orchestrator:8080
+      DATABASE_HOST: swozo-db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: swozo-web-db
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: mysecretpassword
+      JWT_SIGNATURE_SECRET_KEY: secret-with-at-least-64-characters-for-HMAC-SHA-512-see-github.com/jwtk/jjwt
+      ORCHESTRATOR_SECRET_KEY: super-secret-orchestrator-key-with-at-least-32-chars
+      GCP_WEB_BUCKET_NAME: swozo-dev-bucket-with-at-most-64-chars-kntp1
+      GCP_PROJECT: swozo-362919
+      GCP_ZONE: europe-central2-a
+      GOOGLE_APPLICATION_CREDENTIALS: /auth/orchestrator-key.json
+    volumes:
+      - type: bind
+        source: ./build/libs/web-app-backend.jar
+        target: /app/web-app-backend.jar
+      - type: bind
+        source: ./auth/orchestrator-key.json
+        target: /auth/orchestrator-key.json

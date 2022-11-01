@@ -8,6 +8,7 @@ import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import static com.swozo.communication.http.RequestSender.unwrap;
 
 @Component
+@Profile("!test")
 @RequiredArgsConstructor
 public class OrchestratorRequestSender {
     @Qualifier("orchestrator")

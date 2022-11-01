@@ -55,3 +55,11 @@ tasks.named('test') {
 tasks.withType(JavaExec) {
     jvmArgs += ['-Duser.timezone=UTC']
 }
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    archiveFileName = 'web-app-backend.jar'
+}

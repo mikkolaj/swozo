@@ -30,6 +30,19 @@ public interface RequestSender {
             Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
     );
 
+    <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(
+            URI uri,
+            ReqBody body,
+            TypeReference<RespBody> type
+    );
+
+    <ReqBody, RespBody> CompletableFuture<HttpResponse<RespBody>> sendPut(
+            URI uri,
+            ReqBody body,
+            TypeReference<RespBody> type,
+            Function<HttpRequest.Builder, HttpRequest.Builder> builderDecorator
+    );
+
     static <T> CompletableFuture<T> unwrap(CompletableFuture<HttpResponse<T>> response) {
         return response.thenApply(HttpResponse::body);
     }

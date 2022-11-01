@@ -6,6 +6,7 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
+import com.swozo.orchestrator.cloud.software.ssh.SshAuth;
 import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
 import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
 import lombok.RequiredArgsConstructor;
@@ -55,8 +56,7 @@ public class Playground implements Runnable {
         ansibleRunner.runPlaybook(
                 new AnsibleConnectionDetails(
                         List.of(new SshTarget("localhost", 2222)),
-                        "vagrant",
-                        "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/local/.vagrant/machines/default/virtualbox/private_key"),
+                        new SshAuth("vagrant", "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/local/.vagrant/machines/default/virtualbox/private_key")),
                 "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml",
                 10
         );
@@ -66,8 +66,7 @@ public class Playground implements Runnable {
         ansibleRunner.runPlaybook(
                 new AnsibleConnectionDetails(
                         List.of(new SshTarget("34.118.97.16", 22)),
-                        "swozo",
-                        "/home/mikolaj/.ssh/orchestrator_id_rsa"),
+                        new SshAuth("swozo", "/home/mikolaj/.ssh/orchestrator_id_rsa")),
                 "/home/mikolaj/IdeaProjects/swozo/orchestrator/src/main/resources/provisioning/software/jupyter/prepare-and-run-jupyter.yml",
                 10
         );

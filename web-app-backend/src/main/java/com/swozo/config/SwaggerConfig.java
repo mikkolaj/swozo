@@ -7,6 +7,8 @@ import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.swozo.config.Config.INTERNAL;
+
 @Configuration
 public class SwaggerConfig {
     public static final String ACCESS_TOKEN = "JWT_AUTH";
@@ -37,7 +39,7 @@ public class SwaggerConfig {
         String[] pathsToExclude = {
                 "/courses/all-system-courses",
                 "/service-modules/all-system-modules",
-                "/*/internal/**"
+                "/*" + INTERNAL + "/**"
         };
 
         return GroupedOpenApi.builder()

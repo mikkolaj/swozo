@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.swozo.config.Config.INTERNAL;
+
 @Configuration
 @RequiredArgsConstructor
 public class AuthConstrainsConfig {
@@ -32,7 +34,7 @@ public class AuthConstrainsConfig {
     public List<AuthConstraint> authConstraints() {
         var orchestratorMatcher = EndpointMatcher.of(
                 EndpointsConfig.of("/orchestrator-test", HttpMethod.GET),
-                EndpointsConfig.of("/*/internal/**")
+                EndpointsConfig.of("/*" + INTERNAL + "/**")
         );
 
         var jwtMatcher = AllExceptEndpointMatcher.of(
