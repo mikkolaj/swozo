@@ -20,7 +20,6 @@ public class DefaultInstanceProvider implements InstanceProvider {
         return Instance.newBuilder()
                 .setName(vmAddress.vmName())
                 .setMachineType(machineType)
-                .setSourceMachineImage("https://www.googleapis.com/compute/v1/projects/swozo-362919/global/machineImages/e2-medium-docker")
                 .addDisks(disk)
                 .addNetworkInterfaces(networkInterface)
                 .build();
