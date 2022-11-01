@@ -34,8 +34,8 @@ public class BackendRequestSender {
         }));
     }
 
-    public CompletableFuture<StorageAccessRequest> getSignedDownloadUrl(String notebookLocation) {
-        return unwrap(requestSender.sendGet(createDownloadUri(notebookLocation), new TypeReference<>() {
+    public CompletableFuture<StorageAccessRequest> getSignedDownloadUrl(String encodedFileIdentifier) {
+        return unwrap(requestSender.sendGet(createDownloadUri(encodedFileIdentifier), new TypeReference<>() {
         }));
     }
 
@@ -51,13 +51,13 @@ public class BackendRequestSender {
     }
 
     @SneakyThrows
-    private URI createDownloadUri(String notebookLocation) {
+    private URI createDownloadUri(String encodedFileIdentifier) {
         var endpoint = backendUrl +
                 FILES +
                 INTERNAL +
                 DOWNLOAD +
                 SEPARATOR +
-                notebookLocation;
+                encodedFileIdentifier;
         return new URI(endpoint);
     }
 }

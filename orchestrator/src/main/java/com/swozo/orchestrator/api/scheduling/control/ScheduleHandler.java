@@ -116,7 +116,6 @@ public class ScheduleHandler {
         scheduleRequestTracker.markAsFailure(request.getId());
     }
 
-    @Transactional
     public Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
             ScheduleRequestEntity request
     ) {
@@ -140,8 +139,7 @@ public class ScheduleHandler {
         };
     }
 
-    @Transactional
-    protected void switchToProvisioningState(ScheduleRequestEntity request, VMResourceDetails resourceDetails) {
+    private void switchToProvisioningState(ScheduleRequestEntity request, VMResourceDetails resourceDetails) {
         scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING);
         scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
     }
@@ -153,8 +151,7 @@ public class ScheduleHandler {
         ).get();
     }
 
-    @Transactional
-    protected void switchToReadyState(ScheduleRequestEntity request, List<ActivityLinkInfo> links) {
+    private void switchToReadyState(ScheduleRequestEntity request, List<ActivityLinkInfo> links) {
         scheduleRequestTracker.updateStatus(request.getId(), READY);
         try {
             CheckedExceptionConverter.from(

@@ -93,6 +93,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
 
     @Async
     @Override
+    @Transactional
     public CompletableFuture<Optional<VMResourceDetails>> getVMResourceDetails(Long internalId) throws VMOperationFailed {
         return CompletableFuture.completedFuture(vmRepository.findById(internalId)
                 .map(vmMapper::toDto)
