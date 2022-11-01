@@ -1,12 +1,13 @@
 package com.swozo.persistence.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swozo.persistence.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(
@@ -27,12 +28,18 @@ public class User extends BaseEntity {
     private String name;
     private String surname;
     private String email;
-
-    @JsonIgnore
     private String password;
-
+    private LocalDateTime createdAt = LocalDateTime.now();
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"))
     private Collection<Role> roles = new LinkedList<>();
+
+    public User(String name, String surname, String email, String password, List<Role> roles) {
+        this.name = name;
+        this.surname= surname;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
 }

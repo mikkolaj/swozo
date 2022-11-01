@@ -37,6 +37,7 @@ models/ServiceModuleSummaryDto.ts
 models/ServiceModuleUsageDto.ts
 models/StorageAccessRequest.ts
 models/UploadAccessDto.ts
+models/UserAdminSummaryDto.ts
 models/UserDetailsDto.ts
 models/index.ts
 runtime.ts

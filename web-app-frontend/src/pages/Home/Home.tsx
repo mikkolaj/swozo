@@ -1,10 +1,17 @@
 import { Box, Button, Card, CardContent, Divider, Grid, Paper, Typography } from '@mui/material';
+import { AuthDetailsDtoRolesEnum } from 'api';
 import { Calendar } from 'common/Calendar/Calendar';
+import { AdminPanel } from 'pages/Admin/AdminPanel';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from 'services/store';
+import { hasRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 
 export const Home = () => {
     const navigate = useNavigate();
+    const auth = useAppSelector((state) => state.auth.authData);
+
+    if (hasRole(auth, AuthDetailsDtoRolesEnum.Admin)) return <AdminPanel />;
 
     // TODO this is just a demo version
     return (

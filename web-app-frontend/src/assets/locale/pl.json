@@ -7,6 +7,7 @@
     },
     "navbar": {
         "logo": "SWOZO",
+        "adminLogo": "SWOZO ADMIN",
         "myCourses": "moje kursy",
         "myModules": "moje moduły",
         "publicCourses": "wszystkie kursy",
@@ -373,6 +374,32 @@
             }
         }
     },
+    "admin": {
+        "users": {
+            "header": "Zarządzanie użytkownikami",
+            "searchBoxPlaceholder": "nazwisko, email...",
+            "filters": {
+                "button": "Więcej filtrów",
+                "any": "Wszystkie",
+                "roles": "Role",
+                "minCreationYear": "Minimalny rok utworzenia konta",
+                "maxCreationYear": "Maksymalny rok utworzenia konta"
+            },
+            "list": {
+                "button": "Lista użytkowników",
+                "headers": {
+                    "name": "Imię i nazwisko",
+                    "email": "Adres Email",
+                    "roles": "Role"
+                },
+                "details": "szczegóły",
+                "empty": "Nie znaleziono użytkowników spełniających podane kryteria"
+            },
+            "create": {
+                "button": "Kreator użytkowników"
+            }
+        }
+    },
     "error": {
         "defaultMessage": "Coś poszło nie tak...",
         "defaultNavigationBtn": "Wróć do strony głównej",
@@ -401,5 +428,11 @@
         "file": {
             "button": "Pobierz plik"
         }
+    },
+    "role": {
+        "ADMIN": "Administrator",
+        "STUDENT": "Student",
+        "TEACHER": "Nauczyciel",
+        "TECHNICAL_TEACHER": "Techniczny"
     }
 }

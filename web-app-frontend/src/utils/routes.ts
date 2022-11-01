@@ -17,6 +17,7 @@ export class PageRoutes {
     static readonly ACTIVITY_INSTRUCTIONS = `${this.ACTIVITY}/instructions`;
     static readonly ACTIVITY_FILES = `${this.ACTIVITY}/files`;
     static readonly FILES = '/files';
+    static readonly ADMIN = '/admin';
 
     static Course(courseId: string | number): string {
         return RouteBuilder.of(this.COURSE).withReplaced('courseId', courseId).build();

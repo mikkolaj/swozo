@@ -15,6 +15,9 @@
 
 import * as runtime from '../runtime';
 import {
+    UserAdminSummaryDto,
+    UserAdminSummaryDtoFromJSON,
+    UserAdminSummaryDtoToJSON,
     UserDetailsDto,
     UserDetailsDtoFromJSON,
     UserDetailsDtoToJSON,
@@ -54,6 +57,38 @@ export class UserControllerApi extends runtime.BaseAPI {
      */
     async getUserInfo(initOverrides?: RequestInit): Promise<UserDetailsDto> {
         const response = await this.getUserInfoRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUsersRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserAdminSummaryDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserAdminSummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getUsers(initOverrides?: RequestInit): Promise<Array<UserAdminSummaryDto>> {
+        const response = await this.getUsersRaw(initOverrides);
         return await response.value();
     }
 

@@ -30,4 +30,5 @@ export * from './ServiceModuleSummaryDto';
 export * from './ServiceModuleUsageDto';
 export * from './StorageAccessRequest';
 export * from './UploadAccessDto';
+export * from './UserAdminSummaryDto';
 export * from './UserDetailsDto';

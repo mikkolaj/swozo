@@ -10,7 +10,14 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
-import { STUDENT, TEACHER, TECHNICAL_TEACHER, WithPreference, WithRole } from 'utils/roles';
+import {
+    ANY_BUT_NOT_ADMIN,
+    STUDENT,
+    TEACHER,
+    TECHNICAL_TEACHER,
+    WithPreference,
+    WithRole,
+} from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatName } from 'utils/util';
 import { Logo } from './components/Logo';
@@ -43,9 +50,10 @@ export const Navbar = () => {
                         <WithRole roles={[STUDENT]}>
                             <NavbarItem textI18n="navbar.publicCourses" route={PageRoutes.PUBLIC_COURSES} />
                         </WithRole>
-                        <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
-
-                        <NotificationBell notifications={[]} />
+                        <WithRole roles={ANY_BUT_NOT_ADMIN}>
+                            <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
+                            <NotificationBell notifications={[]} />
+                        </WithRole>
 
                         <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
                             <Avatar sx={{ width: AVATAR_WIDTH, height: AVATAR_HEIGHT }}>

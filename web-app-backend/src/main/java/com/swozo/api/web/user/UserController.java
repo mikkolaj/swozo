@@ -1,12 +1,18 @@
 package com.swozo.api.web.user;
 
+import com.swozo.api.web.user.dto.UserAdminSummaryDto;
 import com.swozo.api.web.user.dto.UserDetailsDto;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -23,5 +29,11 @@ public class UserController {
         var userId = token.getUserId();
         logger.info("user info for user with id: {}", userId);
         return userService.getUserInfo(userId);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserAdminSummaryDto> getUsers() {
+        return userService.getUsersForAdmin();
     }
 }

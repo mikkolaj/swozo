@@ -425,6 +425,22 @@ paths:
                 $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
+  /users:
+    get:
+      tags:
+      - user-controller
+      operationId: getUsers
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAdminSummaryDto'
+      security:
+      - JWT_AUTH: []
   /users/me:
     get:
       tags:
@@ -1245,6 +1261,37 @@ components:
           type: string
         isPublic:
           type: boolean
+    UserAdminSummaryDto:
+      required:
+      - createdAt
+      - email
+      - id
+      - name
+      - roles
+      - surname
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - STUDENT
+            - TEACHER
+            - TECHNICAL_TEACHER
+            - ADMIN
+        createdAt:
+          type: string
+          format: date-time
     ServiceModuleUsageDto:
       required:
       - activityName

@@ -1,5 +1,6 @@
 package com.swozo.api.web.user;
 
+import com.swozo.api.web.user.dto.UserAdminSummaryDto;
 import com.swozo.api.web.user.dto.UserDetailsDto;
 import com.swozo.api.web.user.request.CreateUserRequest;
 import com.swozo.mapper.UserMapper;
@@ -27,6 +28,12 @@ public class UserService {
 
     public User getUserById(long userId) {
         return userRepository.findById(userId).orElseThrow();
+    }
+
+    public List<UserAdminSummaryDto> getUsersForAdmin() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toAdminSummaryDto)
+                .toList();
     }
 
     @Transactional
