@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"serviceLifespan\" : {\n    \"startTime\" : \"2022-10-31T16:50:34.4281697\",\n    \"endTime\" : \"2022-10-31T22:55:47.4281697\"\n  },\n  \"psm\" : {\n    \"machineType\" : \"e2-medium\",\n    \"diskSizeGb\" : 10\n  },\n  \"dynamicProperties\": {\n    \"notebookLocation\" : \"1\"\n  },\n  \"scheduleType\" : \"JUPYTER\"\n}",
+					"raw": "{\n    \"serviceLifespan\" : {\n        \"startTime\" : \"2022-10-29T08:41:47.4281697\",\n        \"endTime\" : \"2022-11-02T22:50:47.4281697\"\n    },\n    \"psm\" : {\n        \"machineType\" : \"e2-medium\",\n        \"diskSizeGb\" : 10\n    },\n    \"serviceDescriptions\": [\n        {\n            \"serviceType\": \"JUPYTER\",\n            \"dynamicProperties\": {\n                \"notebookLocation\" : \"1\"\n            }\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -35,7 +35,7 @@
 		{
 			"name": "Get links",
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
 				"url": {
 					"raw": "localhost:8080/links/2",
