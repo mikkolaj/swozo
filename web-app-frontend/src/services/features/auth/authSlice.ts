@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthDetailsDto, AuthDetailsDtoRolesEnum, LoginRequest } from 'api';
+import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { AppDispatch, RootState } from 'services/store';
 import { hasRole } from 'utils/roles';
@@ -13,7 +14,7 @@ export type AuthState = {
     rolePreference?: AuthDetailsDtoRolesEnum;
     isLoggedIn: boolean;
     isFetching: boolean;
-    errors?: string[];
+    error?: ApiError;
 };
 
 export function isTokenExpired(authData: AuthDetailsDto) {
@@ -72,8 +73,7 @@ const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthDetailsDto>, { 
                 dispatch(receiveRolePref(rolePreference));
             }
         } catch (err) {
-            console.debug('[LOGIN ERROR] ' + err);
-            dispatch(receiveAuthErrors([JSON.stringify(err)])); // TODO error handling
+            dispatch(receiveAuthError(err as ApiError));
         } finally {
             dispatch(setFetching(false));
         }
@@ -114,21 +114,21 @@ export const authSlice = createSlice({
         receiveAuthData: (state: AuthState, action: PayloadAction<AuthDetailsDto>) => {
             state.authData = action.payload;
             state.isLoggedIn = true;
-            state.errors = undefined;
+            state.error = undefined;
         },
         resetAuthData: (state: AuthState) => {
             state.authData = undefined;
             state.isLoggedIn = false;
-            state.errors = undefined; // maybe leave it
+            state.error = undefined; // maybe leave it
         },
         receiveRolePref: (state: AuthState, action: PayloadAction<AuthDetailsDtoRolesEnum>) => {
             state.rolePreference = action.payload;
         },
-        clearAuthErrors: (state: AuthState) => {
-            state.errors = undefined;
+        clearAuthError: (state: AuthState) => {
+            state.error = undefined;
         },
-        receiveAuthErrors: (state: AuthState, action: PayloadAction<string[]>) => {
-            state.errors = action.payload;
+        receiveAuthError: (state: AuthState, action: PayloadAction<ApiError>) => {
+            state.error = action.payload;
         },
         setFetching: (state: AuthState, action: PayloadAction<boolean>) => {
             state.isFetching = action.payload;
@@ -136,6 +136,8 @@ export const authSlice = createSlice({
     },
 });
 
-const { receiveAuthData, resetAuthData, receiveAuthErrors, setFetching, receiveRolePref } = authSlice.actions;
+const { receiveAuthData, resetAuthData, receiveAuthError, setFetching, receiveRolePref } = authSlice.actions;
+
+export const { clearAuthError } = authSlice.actions;
 
 export default authSlice.reducer;

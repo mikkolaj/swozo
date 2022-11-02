@@ -3,7 +3,32 @@
         "header": "Logowanie",
         "email": "Adres Email",
         "password": "Hasło",
-        "button": "Zaloguj się"
+        "loginButton": "Zaloguj się",
+        "forgotPassword": "Nie pamiętasz hasła?",
+        "invalidCredentials": "Niepoprawny email lub hasło",
+        "forgot": {
+            "header": "Resetowanie hasła",
+            "backToLogin": "Wróć do logowania",
+            "sendButton": "Zresetuj hasło",
+            "modal": "Trwa resetowanie hasła, poczekaj...",
+            "emailSent": "Email umożliwiający zresetowanie hasła został wysłany na podany adres. Skopiuj załączony w wiadomości token do formularza na tej stronie.",
+            "userNotFound": "Użytkownik o tym adresie email nie istenieje",
+            "failedToSendEmail": "Nie udało się wysłać maila, spróbuj ponownie później"
+        },
+        "reset": {
+            "header": "Resetowanie hasła",
+            "sendButton": "Zresetuj hasło",
+            "token": "Token wysłany na adres email",
+            "password": "Nowe hasło",
+            "repeatPassword": "Powtórz hasło",
+            "error": {
+                "passwordsDontMatch": "Hasła muszą być takie same",
+                "validationErrors": {
+                    "INVALID_PASSWORD_TOKEN": "Niepoprawny token zmiany hasła",
+                    "INVALID_PASSWORD": "Hasło nie spełnia wymagań bezpieczeństwa, upewnij się że zawiera ono minimum {{passwordMinDigits}} cyfry, minimum {{passwordMinLowercase}} małych liter, minimum {{passwordMinUppercase}} wielkich liter oraz minimum {{passwordMinSpecial}} znaków specjalnych({{passwordAllowedSpecials}})"
+                }
+            }
+        }
     },
     "navbar": {
         "logo": "SWOZO",
@@ -437,7 +462,8 @@
         "serviceModuleUpdated": "Moduł został zaaktualizowany!",
         "serviceModuleDeleted": "Moduł został usunięty!",
         "fileUploaded": "Plik został przesłany!",
-        "userCreated": "Użytkownik został utworzony!"
+        "userCreated": "Użytkownik został utworzony!",
+        "passwordChanged": "Hasło zostało zmienione!"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",

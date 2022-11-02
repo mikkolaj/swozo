@@ -1,6 +1,7 @@
 package com.swozo.api.web.user;
 
 import com.swozo.api.web.exceptions.types.common.ValidationErrors;
+import com.swozo.api.web.exceptions.types.common.ValidationNames;
 import com.swozo.api.web.user.request.CreateUserRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class UserValidator {
     public void validateCreateUserRequest(CreateUserRequest createUserRequest) {
         ValidationErrors.builder()
                 .putEachFailed(allSchemaRequiredFieldsPresent(createUserRequest))
-                .putIfFails(unique("email", userRepository.findByEmail(createUserRequest.email())))
+                .putIfFails(unique(ValidationNames.Fields.EMAIL, userRepository.findByEmail(createUserRequest.email())))
                 .build()
                 .throwIfAnyPresent("Invalid user data");
     }

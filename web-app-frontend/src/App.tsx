@@ -12,7 +12,7 @@ import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
 import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
 import { FilesListView } from 'pages/FilesList/FilesListView';
 import { Home } from 'pages/Home/Home';
-import { Login } from 'pages/Login/Login';
+import { LoginView } from 'pages/Login/LoginView';
 import { MyModuleView } from 'pages/Module/MyModuleView';
 import { PublicModuleView } from 'pages/Module/PublicModuleView';
 import { MyModulesListView } from 'pages/ModulesList/MyModulesListView';
@@ -40,7 +40,7 @@ function App() {
             <CssBaseline />
             {isLoggedIn && <Navbar />}
             <Routes>
-                <Route path={PageRoutes.LOGIN} element={guarded(<Login />, NOT_LOGGED_IN)} />
+                <Route path={PageRoutes.LOGIN} element={guarded(<LoginView />, NOT_LOGGED_IN)} />
                 <Route path={PageRoutes.HOME} element={guarded(<Home />, ANY_LOGGED_IN)} />
                 <Route
                     path={PageRoutes.PUBLIC_COURSES}

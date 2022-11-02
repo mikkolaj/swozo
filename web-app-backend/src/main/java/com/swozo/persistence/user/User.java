@@ -29,7 +29,7 @@ public class User extends BaseEntity {
     private String surname;
     private String email;
     private String password;
-    private String forgotPasswordUUID;
+    private String changePasswordToken;
     private LocalDateTime createdAt = LocalDateTime.now();
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",

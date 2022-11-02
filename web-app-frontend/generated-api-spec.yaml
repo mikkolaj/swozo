@@ -228,6 +228,33 @@ paths:
                 $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
+  /auth/reset-password:
+    put:
+      tags:
+      - auth-controller
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - auth-controller
+      operationId: sendResetPasswordEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendResetPasswordEmailRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
   /activities/{activityId}/files:
     put:
       tags:
@@ -382,7 +409,6 @@ paths:
     post:
       tags:
       - auth-controller
-      summary: Login user
       operationId: login
       requestBody:
         content:
@@ -1127,6 +1153,19 @@ components:
           type: string
         password:
           type: string
+    ResetPasswordRequest:
+      required:
+      - email
+      - password
+      - token
+      type: object
+      properties:
+        email:
+          type: string
+        token:
+          type: string
+        password:
+          type: string
     InitFileUploadRequest:
       required:
       - filename
@@ -1310,6 +1349,13 @@ components:
           items:
             $ref: '#/components/schemas/CreateActivityRequest'
         password:
+          type: string
+    SendResetPasswordEmailRequest:
+      required:
+      - email
+      type: object
+      properties:
+        email:
           type: string
     LoginRequest:
       required:

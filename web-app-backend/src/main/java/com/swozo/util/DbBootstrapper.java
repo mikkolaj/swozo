@@ -3,6 +3,7 @@ package com.swozo.util;
 import com.swozo.api.common.files.FileRepository;
 import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activitymodule.ActivityModuleRepository;
+import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
@@ -45,6 +46,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
     private final ActivityRepository activityRepository;
+    private final AuthService authService;
     private final ServiceModuleRepository serviceModuleRepository;
     private final ActivityModuleRepository activityModuleRepository;
     private final FileRepository fileRepository;
@@ -79,21 +81,22 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
     private void setupTestData() {
         var adminRole = roleRepository.findByName(RoleDto.ADMIN.toString());
-        userRepository.save(new User("Bolek", "Kowalski", "admin@gmail.com", "admin", List.of(adminRole)));
+        userRepository.save(new User("Bolek", "Kowalski", "admin@gmail.com", authService.hashPassword("admin"), List.of(adminRole)));
 
         var teacherRole = roleRepository.findByName(RoleDto.TEACHER.toString());
         var technicalTeacherRole = roleRepository.findByName(RoleDto.TECHNICAL_TEACHER.toString());
-        User teacher = new User("Lolek", "Kowalski", "teacher@gmail.com", "teacher", List.of(teacherRole, technicalTeacherRole));
-        User teacher2 = new User("Bolek", "Kowalski", "teacher2@gmail.com", "teacher", List.of(teacherRole, technicalTeacherRole));
+        User teacher = new User("Lolek", "Kowalski", "teacher@gmail.com", authService.hashPassword("t"), List.of(teacherRole, technicalTeacherRole));
+        User teacher2 = new User("Bolek", "Kowalski", "teacher2@gmail.com", authService.hashPassword("t"), List.of(teacherRole, technicalTeacherRole));
         userRepository.save(teacher);
         userRepository.save(teacher2);
 
         var studentRole = roleRepository.findByName(RoleDto.STUDENT.toString());
-        User student1 = new User("Antoni", "Zabrzydowski", "student1@gmail.com", "student1", List.of(studentRole));
+        User student1 = new User("Antoni", "Zabrzydowski", "student1@gmail.com", authService.hashPassword("s"), List.of(studentRole));
+        student1.setChangePasswordToken("test");
         userRepository.save(student1);
-        User student2 = new User("Mela", "Zabrzydowska", "student2@gmail.com", "student2", List.of(studentRole));
+        User student2 = new User("Mela", "Zabrzydowska", "student2@gmail.com", authService.hashPassword("s"), List.of(studentRole));
         userRepository.save(student2);
-        User student3 = new User("Rafał", "Zabrzydowski", "student3@gmail.com", "student3", List.of(studentRole));
+        User student3 = new User("Rafał", "Zabrzydowski", "student3@gmail.com", authService.hashPassword("s"), List.of(studentRole));
         userRepository.save(student3);
 
         //        COURSES:

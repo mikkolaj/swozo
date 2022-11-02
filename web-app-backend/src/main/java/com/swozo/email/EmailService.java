@@ -1,6 +1,5 @@
-package com.swozo.api.common.email;
+package com.swozo.email;
 
-import com.swozo.mails.EmailSender;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,11 @@ public class EmailService {
     private final EmailSender emailSender;
 
     public void sendChangePasswordEmail(User user) {
-
+        // TODO i18n
+        emailSender.send(new EmailData(
+                user.getEmail(),
+                "Swozo - Change password",
+                "Copy this token: " + user.getChangePasswordToken()
+        ));
     }
 }

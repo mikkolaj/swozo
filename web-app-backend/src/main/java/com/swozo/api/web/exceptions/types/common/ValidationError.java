@@ -25,4 +25,9 @@ public class ValidationError {
         args.put(argName, value);
         return this;
     }
+
+    public ValidationError withArgs(Map<String, Object> args) {
+        this.args.putAll(args);
+        return this;
+    }
 }

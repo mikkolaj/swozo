@@ -1,6 +1,5 @@
 package com.swozo.api.web.user;
 
-import com.swozo.api.common.email.EmailService;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.exceptions.types.user.UserNotFoundException;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,24 +25,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserValidator userValidator;
     private final UserMapper userMapper;
-    private final EmailService emailService;
 
     public UserDetailsDto getUserInfo(Long userId) {
-        var user = userRepository.findById(userId).orElseThrow();
-        return userMapper.toDto(user);
-    }
-
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow();
+        return userMapper.toDto(getUserById(userId));
     }
 
     public User getUserById(long userId) {
-        return userRepository.findById(userId).orElseThrow();
+        return userRepository.findById(userId).orElseThrow(() -> UserNotFoundException.of(userId));
     }
 
     public UserAdminDetailsDto getUserDetailsForAdmin(Long userId) {
-        var user =  userRepository.findById(userId).orElseThrow(() -> UserNotFoundException.of(userId));
-        return userMapper.userAdminDetailsDto(user);
+        return userMapper.userAdminDetailsDto(getUserById(userId));
     }
 
     public List<UserAdminSummaryDto> getUsersForAdmin() {
@@ -53,24 +44,20 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
     public UserAdminDetailsDto createUser(CreateUserRequest request) {
         userValidator.validateCreateUserRequest(request);
         var initialPassword = authService.provideInitialPassword();
 
         var user = userMapper.toPersistence(request);
         user.setPassword(authService.hashPassword(initialPassword));
-        user.setForgotPasswordUUID(UUID.randomUUID().toString());
+        user.setChangePasswordToken(authService.provideChangePasswordToken());
 
         logger.info("Created User {}. Change password uuid is: {}, initial password is: {}",
-                user.getEmail(), user.getForgotPasswordUUID(), initialPassword);
+                user.getEmail(), user.getChangePasswordToken(), initialPassword);
 
         userRepository.save(user);
         return userMapper.userAdminDetailsDto(user);
-    }
-
-    public void handleForgotPassword(String email) {
-        var user = getUserByEmail(email);
-        emailService.sendChangePasswordEmail(user);
     }
 
     public User createUserInternally(String name, String surname, String email, String password, List<RoleDto> roles) {

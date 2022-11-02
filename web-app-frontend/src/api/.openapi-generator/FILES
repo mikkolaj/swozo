@@ -28,7 +28,9 @@ models/ModifyParticipantRequest.ts
 models/ParameterDescription.ts
 models/ParticipantDetailsDto.ts
 models/ReserveServiceModuleRequest.ts
+models/ResetPasswordRequest.ts
 models/SandboxUserDetailsDto.ts
+models/SendResetPasswordEmailRequest.ts
 models/ServiceConfig.ts
 models/ServiceConnectionDetailsDto.ts
 models/ServiceModuleDetailsDto.ts
