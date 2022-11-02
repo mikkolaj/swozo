@@ -67,8 +67,10 @@ public class ScheduleRequestTracker {
     private List<ScheduleRequestEntity> initializeParameters(List<ScheduleRequestEntity> entities) {
         var serviceDescriptions =
                 entities.stream().map(ScheduleRequestEntity::getServiceDescriptions).flatMap(Collection::stream);
-        serviceDescriptions.forEach(Hibernate::initialize);
-        serviceDescriptions.map(ServiceDescriptionEntity::getDynamicProperties).forEach(Hibernate::initialize);
+        serviceDescriptions.forEach(description -> {
+            Hibernate.initialize(description);
+            Hibernate.initialize(description.getDynamicProperties());
+        });
         return entities;
     }
 
