@@ -21,7 +21,7 @@ public class ServiceDescriptionEntity extends BaseEntity {
     @ElementCollection
     @MapKeyColumn(name = "property_name")
     @Column(name = "property_value")
-    @CollectionTable(name = "dynamic_properties", joinColumns = @JoinColumn(name = "schedule_request_id"))
+    @CollectionTable(name = "dynamic_properties", joinColumns = @JoinColumn(name = "service_description_id"))
     private Map<String, String> dynamicProperties = new HashMap<>();
 
     private RequestStatus status = SUBMITTED;
