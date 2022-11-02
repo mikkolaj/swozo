@@ -25,8 +25,11 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.swozo.orchestrator.api.scheduling.persistence.entity.RequestStatus.*;
 
@@ -95,6 +98,7 @@ public class ScheduleHandler {
             scheduleRequestTracker.updateStatus(description, VM_CREATING);
             timedVmProvider
                     .createInstance(requestMapper.toPsm(requestEntity), buildVmNamePrefix(requestEntity, description))
+                    .thenCompose(updateVmResourceId(requestEntity))
                     .thenAccept(provisionSoftwareAndScheduleDeletion(requestEntity, description, provisioner))
                     .get();
         } catch (ExecutionException e) {
@@ -118,6 +122,13 @@ public class ScheduleHandler {
         if (log)
             logger.error("Unexpected exception. Request: {}", description, ex);
         scheduleRequestTracker.markAsFailure(description);
+    }
+
+    private Function<VMResourceDetails, CompletionStage<VMResourceDetails>> updateVmResourceId(ScheduleRequestEntity request) {
+        return resourceDetails -> {
+            scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
+            return CompletableFuture.completedFuture(resourceDetails);
+        };
     }
 
     public Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
