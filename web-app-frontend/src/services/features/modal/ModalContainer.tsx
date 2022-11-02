@@ -24,7 +24,7 @@ export const ModalContainer = () => {
                 case ModalId.REMIND_PASSWORD_EMAIL_SENT:
                     return <SuccessModal textLines={modal.textLines ?? []} onClose={onClose} />;
                 case ModalId.SESSION_EXPIRED:
-                    return <SessionExpiredModal />;
+                    return <SessionExpiredModal onClose={onClose} />;
             }
         };
 

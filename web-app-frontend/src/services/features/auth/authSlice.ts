@@ -16,6 +16,7 @@ export type AuthState = {
     rolePreference?: AuthDetailsDtoRolesEnum;
     isLoggedIn: boolean;
     isFetching: boolean;
+    isRefreshTokenValid: boolean;
     error?: ApiError;
 };
 
@@ -43,9 +44,11 @@ function buildInitialState(): AuthState {
     const authData = loadFromLocalStorage<AuthDetailsDto>(LOCAL_STORAGE_AUTH_KEY);
     const rolePreference = loadFromLocalStorage<AuthDetailsDtoRolesEnum>(LOCAL_STORAGE_ROLE_PREF_KEY);
     let isLoggedIn = false;
+    let isRefreshTokenValid = false;
 
     if (authData) {
         if (!isTokenExpired(authData)) {
+            isRefreshTokenValid = !isExpired(authData.refreshTokenDto.expiresIn);
             isLoggedIn = true;
         } else {
             clearLocalStorage(LOCAL_STORAGE_AUTH_KEY);
@@ -56,6 +59,7 @@ function buildInitialState(): AuthState {
     return {
         authData,
         isLoggedIn,
+        isRefreshTokenValid,
         isFetching: false,
         rolePreference: canHaveRolePreference(authData, rolePreference) ? rolePreference : undefined,
     };
@@ -81,7 +85,11 @@ const handleAuthResponse = createAsyncThunk<
             dispatch(receiveRolePref(rolePreference));
         }
     } catch (err) {
-        if (!refreshMode) dispatch(receiveAuthError(err as ApiError));
+        if (refreshMode) {
+            dispatch(invalidateRefreshToken());
+        } else {
+            dispatch(receiveAuthError(err as ApiError));
+        }
     } finally {
         dispatch(setFetching(false));
     }
@@ -118,7 +126,7 @@ export const refreshToken = createAsyncThunk<unknown, undefined, { dispatch: App
     'auth/refresh',
     async (_, { dispatch, getState }) => {
         const auth = getState().auth;
-        if (!auth.authData || auth.isFetching) return;
+        if (!auth.authData || auth.isFetching || !auth.isRefreshTokenValid) return;
 
         if (!isExpired(auth.authData.refreshTokenDto.expiresIn)) {
             dispatch(
@@ -153,6 +161,7 @@ export const authSlice = createSlice({
         receiveAuthData: (state: AuthState, action: PayloadAction<AuthDetailsDto>) => {
             state.authData = action.payload;
             state.isLoggedIn = true;
+            state.isRefreshTokenValid = true;
             state.error = undefined;
         },
         resetAuthData: (state: AuthState) => {
@@ -172,10 +181,20 @@ export const authSlice = createSlice({
         setFetching: (state: AuthState, action: PayloadAction<boolean>) => {
             state.isFetching = action.payload;
         },
+        invalidateRefreshToken: (state: AuthState) => {
+            state.isRefreshTokenValid = false;
+        },
     },
 });
 
-const { receiveAuthData, resetAuthData, receiveAuthError, setFetching, receiveRolePref } = authSlice.actions;
+const {
+    receiveAuthData,
+    resetAuthData,
+    receiveAuthError,
+    setFetching,
+    receiveRolePref,
+    invalidateRefreshToken,
+} = authSlice.actions;
 
 export const { clearAuthError } = authSlice.actions;
 

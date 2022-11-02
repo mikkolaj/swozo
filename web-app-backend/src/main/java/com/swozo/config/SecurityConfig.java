@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final int MIN_PASSWD_LOWER   = 2;
     private static final int MIN_PASSWD_UPPER   = 2;
     private static final int MIN_PASSWD_SPECIAL = 2;
-    public final static String ALLOWED_PASSWD_SPECIAL_CHARACTERS = "!@#$%^&*()_+";
+    private static final String ALLOWED_PASSWD_SPECIAL_CHARACTERS = "!@#$%^&*()_+";
 
     private final AuthFilter authFilter;
     private final FilterExceptionHandler filterExceptionHandler;

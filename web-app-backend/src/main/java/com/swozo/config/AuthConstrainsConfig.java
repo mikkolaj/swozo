@@ -53,12 +53,16 @@ public class AuthConstrainsConfig {
     public RoleHierarchy roleHierarchy() {
         var roleHierarchy = new RoleHierarchyImpl();
         var admin = AuthUtils.toSpringRole(RoleDto.ADMIN);
+        var teacher = AuthUtils.toSpringRole(RoleDto.TEACHER);
+        var technicalTeacher = AuthUtils.toSpringRole(RoleDto.TECHNICAL_TEACHER);
 
         var hierarchy = Arrays.stream(RoleDto.values())
                 .filter(role -> role != RoleDto.ADMIN)
                 .map(AuthUtils::toSpringRole)
                 .map(role -> admin + " > " + role)
                 .collect(Collectors.joining("\n"));
+
+        hierarchy += String.format("\n%s > %s", technicalTeacher, teacher);
 
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;

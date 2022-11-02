@@ -4,13 +4,16 @@ import { Box, Typography } from '@mui/material';
 import { stylesColumnCenteredVertical, stylesColumnFullyCentered, stylesRow } from 'common/styles';
 import { useTranslation } from 'react-i18next';
 import { CenteredModal } from './CenteredModal';
+type Props = {
+    onClose: () => void;
+};
 
-export const SessionExpiredModal = () => {
+export const SessionExpiredModal = ({ onClose }: Props) => {
     const { t } = useTranslation();
 
     return (
         <CenteredModal
-            onClose={() => undefined}
+            onClose={onClose}
             cardSx={{
                 ...stylesColumnFullyCentered,
                 p: 2,

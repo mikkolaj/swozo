@@ -50,7 +50,10 @@
     "myCourses": {
         "header": "Moje kursy",
         "createCourseButton": "Utwórz kurs",
-        "empty": "Nie utworzyłeś jeszcze żadnego kursu",
+        "empty": {
+            "teacher": "Nie utworzyłeś jeszcze żadnego kursu",
+            "student": "Nie dołączyłeś jeszcze do żadnego kursu"
+        },
         "course": {
             "lastActivity": "Ostatnia aktywność:",
             "teacher": "Prowadzący: {{firstName}} {{lastName}}",

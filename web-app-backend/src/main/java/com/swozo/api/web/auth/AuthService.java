@@ -38,10 +38,11 @@ import static com.swozo.security.util.AuthUtils.getUsersAuthorities;
 public class AuthService {
     private static final int INITIAL_PASSWORD_LENGTH = 14;
     private static final int CHANGE_PASSWORD_TOKEN_LENGTH = 32;
-    // used to limit number of refresh tokens created by user, we don't want sb to fill entire database by logging in all the time
-    private static final Duration RECENTLY_PERSISTED_TOKEN_DURATION = Duration.ofMinutes(15);
+    // used to limit number of refresh tokens created by user,
+    // we don't want sb to fill entire database by flooding us with login requests
+    private static final Duration RECENTLY_PERSISTED_TOKEN_DURATION = Duration.ofMinutes(1);
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final PasswordHandler passwordHandler;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;

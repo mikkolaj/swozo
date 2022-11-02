@@ -39,7 +39,6 @@ public class UserController {
         authService.logout(refreshTokenDto, accessToken.getUserId());
     }
 
-
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public UserAdminDetailsDto createUser(AccessToken accessToken, @RequestBody CreateUserRequest request) {
