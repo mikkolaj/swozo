@@ -25,6 +25,10 @@ public class PasswordHandler {
         return passwordGenerator.generatePassword(length, rules);
     }
 
+    public String generateStrongRandomToken(int length) {
+        return passwordGenerator.generatePassword(length, rules);
+    }
+
     public ValidationErrors.Builder validatePassword(String password) {
         var passwordData = new PasswordData(password);
 

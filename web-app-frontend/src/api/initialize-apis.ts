@@ -36,7 +36,7 @@ class ErrorPreprocessorMiddleware implements Middleware {
                 errorType: ErrorType.INTERNAL_SERVER_ERROR,
             };
 
-            if (is4xxFailure(response)) {
+            if (is4xxFailure(response) || response.status === 503) {
                 let errorBody;
                 try {
                     // TODO check Content-Type if correct body might not be json

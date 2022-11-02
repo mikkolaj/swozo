@@ -32,6 +32,8 @@ import static com.swozo.security.util.AuthUtils.getUsersAuthorities;
 @RequiredArgsConstructor
 public class AuthService {
     private static final int INITIAL_PASSWORD_LENGTH = 14;
+    private static final int CHANGE_PASSWORD_TOKEN_LENGTH = 32;
+
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final PasswordHandler passwordHandler;
     private final PasswordEncoder passwordEncoder;
@@ -90,7 +92,7 @@ public class AuthService {
     }
 
     public String provideChangePasswordToken() {
-        return UUID.randomUUID().toString();
+        return passwordHandler.generateStrongRandomToken(CHANGE_PASSWORD_TOKEN_LENGTH);
     }
 
     public boolean hasRole(AccessToken accessToken, RoleDto role) {

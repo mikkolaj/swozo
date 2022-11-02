@@ -10,12 +10,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 @RequiredArgsConstructor
 public class EmailSender {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final String senderEmail;
     private final JavaMailSender sender;
 
     public void send(EmailData emailData) {
         var email = new SimpleMailMessage();
 
-        email.setFrom("noreply@swozo.com");
+        email.setFrom(senderEmail);
         email.setTo(emailData.to());
         email.setSubject(emailData.subject());
         email.setText(emailData.body());
