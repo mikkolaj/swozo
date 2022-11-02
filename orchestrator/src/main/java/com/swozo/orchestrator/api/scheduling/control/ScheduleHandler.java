@@ -4,8 +4,10 @@ import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.api.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
-import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleTypeMapper;
+import com.swozo.orchestrator.api.scheduling.persistence.mapper.ServiceTypeMapper;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
@@ -20,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -40,21 +41,25 @@ public class ScheduleHandler {
     private final TimedSoftwareProvisionerFactory provisionerFactory;
     private final ScheduleRequestTracker scheduleRequestTracker;
     private final ScheduleRequestMapper requestMapper;
-    private final ScheduleTypeMapper scheduleTypeMapper;
+    private final ServiceTypeMapper serviceTypeMapper;
     private final TimingService timingService;
     private final BackendRequestSender requestSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public ScheduleEntityWithProvisioner startTracking(ScheduleRequest request) throws InvalidParametersException {
-        var provisioner = getProvisioner(request);
+    public ScheduleRequestEntity startTracking(ScheduleRequest request) throws InvalidParametersException {
+        request.serviceDescriptions().forEach(description -> {
+            var provisioner = getProvisioner(serviceTypeMapper.toPersistence(description.serviceType()));
+            checkTimeBounds(request, provisioner);
+            provisioner.validateParameters(description.dynamicProperties());
+        });
+        return scheduleRequestTracker.startTracking(request);
+    }
+
+    private void checkTimeBounds(ScheduleRequest request, TimedSoftwareProvisioner provisioner) {
         if (isTooLate(request, provisioner)) {
             throw new IllegalArgumentException("End time is before earliest possible ready time.");
         } else if (lastsNotLongEnough(request, provisioner)) {
             throw new IllegalArgumentException("End time is before estimated ready time.");
-        } else {
-            provisioner.validateParameters(request.dynamicProperties());
-            var requestEntity = scheduleRequestTracker.startTracking(request);
-            return new ScheduleEntityWithProvisioner(requestEntity, provisioner);
         }
     }
 
@@ -72,87 +77,88 @@ public class ScheduleHandler {
     }
 
     public void delegateScheduling(ScheduleRequestEntity requestEntity) {
-        delegateScheduling(requestEntity, getProvisioner(requestEntity));
-    }
-
-    public void delegateScheduling(ScheduleRequestEntity requestEntity, TimedSoftwareProvisioner provisioner) {
-        var offset =
-                timingService.getSchedulingOffset(requestEntity, provisioner.getProvisioningSeconds());
-        logger.info("Scheduling request [id: {}] in {} seconds.", requestEntity.getId(), offset);
-        scheduler.schedule(() -> scheduleCreationAndDeletion(requestEntity, provisioner), offset);
+        requestEntity.getServiceDescriptions().forEach(serviceDescription -> {
+            var provisioner =
+                    provisionerFactory.getProvisioner(serviceDescription.getServiceType());
+            var offset = timingService.getSchedulingOffset(requestEntity, provisioner.getProvisioningSeconds());
+            logger.info("Scheduling service {} for request [id: {}] in {} seconds.", serviceDescription, requestEntity.getId(), offset);
+            scheduler.schedule(() -> scheduleCreationAndDeletion(requestEntity, serviceDescription, provisioner), offset);
+        });
     }
 
     private Void scheduleCreationAndDeletion(
-            ScheduleRequestEntity request,
+            ScheduleRequestEntity requestEntity,
+            ServiceDescriptionEntity description,
             TimedSoftwareProvisioner provisioner
     ) throws InterruptedException {
         try {
-            scheduleRequestTracker.updateStatus(request.getId(), VM_CREATING);
-            var requestDto = requestMapper.toDto(request);
+            scheduleRequestTracker.updateStatus(description, VM_CREATING);
             timedVmProvider
-                    .createInstance(requestDto.psm(), buildVmNamePrefix(request))
-                    .thenAccept(provisionSoftwareAndScheduleDeletion(request, provisioner))
+                    .createInstance(requestMapper.toPsm(requestEntity), buildVmNamePrefix(requestEntity, description))
+                    .thenAccept(provisionSoftwareAndScheduleDeletion(requestEntity, description, provisioner))
                     .get();
         } catch (ExecutionException e) {
             switch (e.getCause()) {
-                case VMOperationFailed ex -> handleFailedVmCreation(request, ex);
-                default -> handleUnexpectedException(request, e.getCause(), true);
+                case VMOperationFailed ex -> handleFailedVmCreation(description, ex);
+                default -> handleUnexpectedException(description, e.getCause(), true);
             }
         } catch (Exception e) {
-            handleUnexpectedException(request, e, false);
+            handleUnexpectedException(description, e, false);
             throw e;
         }
         return null;
     }
 
-    private void handleFailedVmCreation(ScheduleRequestEntity request, VMOperationFailed ex) {
-        logger.error("Error while creating instance for request [id: {}]", request.getId(), ex);
-        scheduleRequestTracker.markAsFailure(request.getId());
+    private void handleFailedVmCreation(ServiceDescriptionEntity description, VMOperationFailed ex) {
+        logger.error("Error while creating instance for request [id: {}]", description.getId(), ex);
+        scheduleRequestTracker.markAsFailure(description);
     }
 
-    private void handleUnexpectedException(ScheduleRequestEntity request, Throwable ex, boolean log) {
+    private void handleUnexpectedException(ServiceDescriptionEntity description, Throwable ex, boolean log) {
         if (log)
-            logger.error("Unexpected exception. Request: {}", request, ex);
-        scheduleRequestTracker.markAsFailure(request.getId());
-    }
-
-    public Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
-            ScheduleRequestEntity request
-    ) {
-        return provisionSoftwareAndScheduleDeletion(request, getProvisioner(request));
+            logger.error("Unexpected exception. Request: {}", description, ex);
+        scheduleRequestTracker.markAsFailure(description);
     }
 
     public Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
             ScheduleRequestEntity request,
+            ServiceDescriptionEntity description
+    ) {
+        return provisionSoftwareAndScheduleDeletion(request, description, getProvisioner(description.getServiceType()));
+    }
+
+    public Consumer<VMResourceDetails> provisionSoftwareAndScheduleDeletion(
+            ScheduleRequestEntity request,
+            ServiceDescriptionEntity description,
             TimedSoftwareProvisioner provisioner
     ) {
         return resourceDetails -> {
             try {
-                switchToProvisioningState(request, resourceDetails);
-                var links = delegateProvisioning(request, provisioner, resourceDetails);
-                switchToReadyState(request, links);
+                switchToProvisioningState(request, description, resourceDetails);
+                var links = delegateProvisioning(description, provisioner, resourceDetails);
+                switchToReadyState(request, description, links);
                 scheduleInstanceDeletion(request, resourceDetails.internalResourceId());
             } catch (ProvisioningFailed e) {
                 logger.error("Provisioning request [id: {}] on: {} failed.", request.getId(), resourceDetails, e);
-                scheduleRequestTracker.markAsFailure(request.getId());
+                scheduleRequestTracker.markAsFailure(description);
             }
         };
     }
 
-    private void switchToProvisioningState(ScheduleRequestEntity request, VMResourceDetails resourceDetails) {
-        scheduleRequestTracker.updateStatus(request.getId(), PROVISIONING);
+    private void switchToProvisioningState(ScheduleRequestEntity request, ServiceDescriptionEntity description, VMResourceDetails resourceDetails) {
+        scheduleRequestTracker.updateStatus(description, PROVISIONING);
         scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
     }
 
-    private List<ActivityLinkInfo> delegateProvisioning(ScheduleRequestEntity request, TimedSoftwareProvisioner provisioner, VMResourceDetails resourceDetails) {
+    private List<ActivityLinkInfo> delegateProvisioning(ServiceDescriptionEntity serviceDescription, TimedSoftwareProvisioner provisioner, VMResourceDetails resourceDetails) {
         return CheckedExceptionConverter.from(
-                () -> provisioner.provision(resourceDetails, request.getDynamicProperties()),
+                () -> provisioner.provision(resourceDetails, serviceDescription.getDynamicProperties()),
                 ProvisioningFailed::new
         ).get();
     }
 
-    private void switchToReadyState(ScheduleRequestEntity request, List<ActivityLinkInfo> links) {
-        scheduleRequestTracker.updateStatus(request.getId(), READY);
+    private void switchToReadyState(ScheduleRequestEntity request, ServiceDescriptionEntity description, List<ActivityLinkInfo> links) {
+        scheduleRequestTracker.updateStatus(description, READY);
         try {
             CheckedExceptionConverter.from(
                     () -> requestSender.putActivityLinks(request.getId(), links).get(),
@@ -172,32 +178,27 @@ public class ScheduleHandler {
     public Void deleteInstance(ScheduleRequestEntity request, long internalResourceId) throws InterruptedException {
         try {
             timedVmProvider.deleteInstance(internalResourceId)
-                    .thenRun(() -> scheduleRequestTracker.updateStatus(request.getId(), DELETED));
+                    .thenRun(() -> request.getServiceDescriptions().forEach(description ->
+                            scheduleRequestTracker.updateStatus(description, DELETED))
+                    );
         } catch (VMOperationFailed e) {
             logger.error("Deleting instance for request [id: {}] failed!", request, e);
         }
         return null;
     }
 
-    public TimedSoftwareProvisioner getProvisioner(ScheduleRequestEntity requestEntity) {
-        return provisionerFactory.getProvisioner(scheduleTypeMapper.toDto(requestEntity.getScheduleType()));
-    }
-
-    public TimedSoftwareProvisioner getProvisioner(ScheduleRequest request) {
-        return provisionerFactory.getProvisioner(request.scheduleType());
+    public TimedSoftwareProvisioner getProvisioner(ServiceTypeEntity serviceType) {
+        return provisionerFactory.getProvisioner(serviceType);
     }
 
 
-    public String buildVmNamePrefix(ScheduleRequestEntity request) {
+    public String buildVmNamePrefix(ScheduleRequestEntity request, ServiceDescriptionEntity description) {
         return String.format("%s-%s--%s--%s",
-                request.getScheduleType().toString().toLowerCase(),
+                description.getServiceType().toString().toLowerCase(),
                 request.getStartTime().format(formatter),
                 request.getEndTime().format(formatter),
                 request.getId()
         );
-    }
-
-    public record ScheduleEntityWithProvisioner(ScheduleRequestEntity entity, TimedSoftwareProvisioner provisioner) {
     }
 
     private static class FailedToSaveLinksException extends RuntimeException {

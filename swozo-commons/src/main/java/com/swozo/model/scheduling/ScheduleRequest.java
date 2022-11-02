@@ -2,16 +2,15 @@ package com.swozo.model.scheduling;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.swozo.model.scheduling.properties.Psm;
-import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.model.scheduling.properties.ServiceDescription;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
 
-import java.util.Map;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ScheduleRequest(
         ServiceLifespan serviceLifespan,
         Psm psm,
-        ScheduleType scheduleType,
-        Map<String, String> dynamicProperties
+        List<ServiceDescription> serviceDescriptions
 ) {
 }

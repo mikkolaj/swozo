@@ -7,7 +7,7 @@ import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.orchestrator.api.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.control.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class ScheduleController {
         //        return service.getSupportedServices();
         // TODO: mock for testing multiple services, remove this
         var s = new LinkedList<>(service.getSupportedServices());
-        s.addLast(new ServiceConfig(ScheduleType.DOCKER.toString(),
+        s.addLast(new ServiceConfig(ServiceType.DOCKER.toString(),
                 List.of(
                         ParameterDescription.builder("dockerImageUrl")
                                 .withTranslatedLabel(translationsProvider.t("services.docker.dynamicParams.dockerImageUrl.label"))
@@ -66,7 +66,7 @@ public class ScheduleController {
     @GetMapping(CONFIGURATION + "/{scheduleType}")
     public ServiceConfig getServiceConfig(@PathVariable String scheduleType) {
         logger.info("Serving config request for {}", scheduleType);
-        return service.getServiceConfig(ScheduleType.valueOf(scheduleType));
+        return service.getServiceConfig(ServiceType.valueOf(scheduleType));
     }
 
     @PostMapping(AGGREGATED)

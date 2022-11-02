@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.api.scheduling.persistence.entity;
 
-public enum ScheduleTypeEntity {
+public enum ServiceTypeEntity {
     JUPYTER,
     DOCKER
 }
