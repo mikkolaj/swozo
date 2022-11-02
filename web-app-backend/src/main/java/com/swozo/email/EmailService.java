@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class EmailService {
     private final EmailSender emailSender;
 
-    public void sendChangePasswordEmail(User user) {
+    public void sendResetPasswordEmail(User user) {
         // TODO i18n
         emailSender.send(new EmailData(
                 user.getEmail(),

@@ -5,6 +5,7 @@ public class EnvNames {
 
     public static final String JWT_SECRET_KEY = "jwt-secret-key";
     public static final String JWT_DEFAULT_EXPIRATION_SECONDS = "jwt-default-expiration-seconds";
+    public static final String REFRESH_TOKEN_EXPIRATION_SECONDS = "refresh-token-default-expiration-seconds";
 
     public static final String SENDER_EMAIL = "email.sender";
 

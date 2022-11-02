@@ -21,6 +21,9 @@ import {
     LoginRequest,
     LoginRequestFromJSON,
     LoginRequestToJSON,
+    RefreshTokenDto,
+    RefreshTokenDtoFromJSON,
+    RefreshTokenDtoToJSON,
     ResetPasswordRequest,
     ResetPasswordRequestFromJSON,
     ResetPasswordRequestToJSON,
@@ -31,6 +34,10 @@ import {
 
 export interface LoginOperationRequest {
     loginRequest: LoginRequest;
+}
+
+export interface RefreshAccessTokenRequest {
+    refreshTokenDto: RefreshTokenDto;
 }
 
 export interface ResetPasswordOperationRequest {
@@ -74,6 +81,37 @@ export class AuthControllerApi extends runtime.BaseAPI {
      */
     async login(requestParameters: LoginOperationRequest, initOverrides?: RequestInit): Promise<AuthDetailsDto> {
         const response = await this.loginRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async refreshAccessTokenRaw(requestParameters: RefreshAccessTokenRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<AuthDetailsDto>> {
+        if (requestParameters.refreshTokenDto === null || requestParameters.refreshTokenDto === undefined) {
+            throw new runtime.RequiredError('refreshTokenDto','Required parameter requestParameters.refreshTokenDto was null or undefined when calling refreshAccessToken.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/auth/refresh`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: RefreshTokenDtoToJSON(requestParameters.refreshTokenDto),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async refreshAccessToken(requestParameters: RefreshAccessTokenRequest, initOverrides?: RequestInit): Promise<AuthDetailsDto> {
+        const response = await this.refreshAccessTokenRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

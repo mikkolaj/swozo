@@ -1,17 +1,27 @@
 import { store } from 'services/store';
-import { isTokenExpired, logout } from './authSlice';
+import { ModalId, openModal } from '../modal/modalSlice';
+import { isCloseToExpire, isTokenExpired, logout, refreshToken } from './authSlice';
 
-export async function getAccessToken(): Promise<string> {
+export const getAccessToken = async (): Promise<string> => {
     const auth = store.getState().auth;
 
     if (auth.isLoggedIn && auth.authData) {
         if (isTokenExpired(auth.authData)) {
             store.dispatch(logout());
+            store.dispatch(
+                openModal({
+                    modalProps: { id: ModalId.SESSION_EXPIRED, allowClose: true },
+                    forcePrecedence: true,
+                })
+            );
         } else {
+            if (isCloseToExpire(auth.authData.expiresIn)) {
+                store.dispatch(refreshToken());
+            }
+
             return auth.authData.accessToken;
         }
     }
 
-    // TODO refresh token ?
     return new Promise((_, rej) => rej('access token not found or expired'));
-}
+};

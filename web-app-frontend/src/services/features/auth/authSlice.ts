@@ -2,12 +2,14 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AuthDetailsDto, AuthDetailsDtoRolesEnum, LoginRequest } from 'api';
 import { ApiError } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
+import dayjs from 'dayjs';
 import { AppDispatch, RootState } from 'services/store';
 import { hasRole } from 'utils/roles';
 import { clearLocalStorage, loadFromLocalStorage, persistWithLocalStorage } from 'utils/util';
 
 const LOCAL_STORAGE_AUTH_KEY = 'JWT';
 const LOCAL_STORAGE_ROLE_PREF_KEY = 'ROLE_PREF';
+export const CLOSE_TO_EXPIRE_MINUTES = 1;
 
 export type AuthState = {
     authData?: AuthDetailsDto;
@@ -17,9 +19,14 @@ export type AuthState = {
     error?: ApiError;
 };
 
+const isExpired = (unixNanos: number) => unixNanos * 1000 <= new Date().getTime();
+
 export function isTokenExpired(authData: AuthDetailsDto) {
-    return authData.expiresIn * 1000 <= new Date().getTime();
+    return isExpired(authData.expiresIn);
 }
+
+export const isCloseToExpire = (expireTimeUnixNanos: number) =>
+    expireTimeUnixNanos * 1000 <= dayjs().add(CLOSE_TO_EXPIRE_MINUTES, 'minutes').toDate().getTime();
 
 function canHaveRolePreference(authData?: AuthDetailsDto, pref?: AuthDetailsDtoRolesEnum): boolean {
     if (!pref) return true;
@@ -41,7 +48,6 @@ function buildInitialState(): AuthState {
         if (!isTokenExpired(authData)) {
             isLoggedIn = true;
         } else {
-            console.log('session expired');
             clearLocalStorage(LOCAL_STORAGE_AUTH_KEY);
             isLoggedIn = false;
         }
@@ -55,44 +61,77 @@ function buildInitialState(): AuthState {
     };
 }
 
-const handleAuthResponse = createAsyncThunk<unknown, Promise<AuthDetailsDto>, { dispatch: AppDispatch }>(
-    'auth/handleAuthResponse',
-    async (resp, { dispatch }) => {
-        dispatch(setFetching(true));
-        try {
-            const authDetails = await resp;
-            persistWithLocalStorage(LOCAL_STORAGE_AUTH_KEY, authDetails);
-            dispatch(receiveAuthData(authDetails));
+const handleAuthResponse = createAsyncThunk<
+    unknown,
+    { resp: Promise<AuthDetailsDto>; refreshMode: boolean },
+    { dispatch: AppDispatch }
+>('auth/handleAuthResponse', async ({ resp, refreshMode }, { dispatch }) => {
+    dispatch(setFetching(true));
+    try {
+        const authDetails = await resp;
+        persistWithLocalStorage(LOCAL_STORAGE_AUTH_KEY, authDetails);
+        dispatch(receiveAuthData(authDetails));
 
-            let rolePreference = loadFromLocalStorage<AuthDetailsDtoRolesEnum>(LOCAL_STORAGE_ROLE_PREF_KEY);
-            if (!rolePreference || !canHaveRolePreference(authDetails, rolePreference)) {
-                rolePreference = getDefaultRolePreference(authDetails);
-            }
-
-            if (rolePreference) {
-                dispatch(receiveRolePref(rolePreference));
-            }
-        } catch (err) {
-            dispatch(receiveAuthError(err as ApiError));
-        } finally {
-            dispatch(setFetching(false));
+        let rolePreference = loadFromLocalStorage<AuthDetailsDtoRolesEnum>(LOCAL_STORAGE_ROLE_PREF_KEY);
+        if (!rolePreference || !canHaveRolePreference(authDetails, rolePreference)) {
+            rolePreference = getDefaultRolePreference(authDetails);
         }
+
+        if (rolePreference) {
+            dispatch(receiveRolePref(rolePreference));
+        }
+    } catch (err) {
+        if (!refreshMode) dispatch(receiveAuthError(err as ApiError));
+    } finally {
+        dispatch(setFetching(false));
     }
-);
+});
 
 export const login = createAsyncThunk<unknown, LoginRequest, { dispatch: AppDispatch; state: RootState }>(
     'auth/login',
     async (loginRequest, { getState, dispatch }) => {
         if (getState().auth.isFetching) return;
 
-        await dispatch(handleAuthResponse(getApis().authApi.login({ loginRequest })));
+        await dispatch(
+            handleAuthResponse({ resp: getApis().authApi.login({ loginRequest }), refreshMode: false })
+        );
     }
 );
 
-export const logout = createAsyncThunk('auth/logout', (_, { dispatch }) => {
-    clearLocalStorage(LOCAL_STORAGE_AUTH_KEY);
-    dispatch(resetAuthData());
-});
+export const logout = createAsyncThunk<unknown, undefined, { dispatch: AppDispatch; state: RootState }>(
+    'auth/logout',
+    (_, { dispatch, getState }) => {
+        const auth = getState().auth;
+        if (auth.authData && !isTokenExpired(auth.authData)) {
+            // try it async, if it fails ignore
+            getApis()
+                .userApi.logout({ refreshTokenDto: auth.authData.refreshTokenDto })
+                .catch((_) => undefined);
+        }
+
+        clearLocalStorage(LOCAL_STORAGE_AUTH_KEY);
+        dispatch(resetAuthData());
+    }
+);
+
+export const refreshToken = createAsyncThunk<unknown, undefined, { dispatch: AppDispatch; state: RootState }>(
+    'auth/refresh',
+    async (_, { dispatch, getState }) => {
+        const auth = getState().auth;
+        if (!auth.authData || auth.isFetching) return;
+
+        if (!isExpired(auth.authData.refreshTokenDto.expiresIn)) {
+            dispatch(
+                handleAuthResponse({
+                    resp: getApis().authApi.refreshAccessToken({
+                        refreshTokenDto: auth.authData.refreshTokenDto,
+                    }),
+                    refreshMode: true,
+                })
+            );
+        }
+    }
+);
 
 // TODO redirect if on page not-for-that-preference?
 export const setRolePreference = createAsyncThunk<

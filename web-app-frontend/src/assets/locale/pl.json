@@ -28,6 +28,9 @@
                     "INVALID_PASSWORD": "Hasło nie spełnia wymagań bezpieczeństwa, upewnij się że zawiera ono minimum {{passwordMinDigits}} cyfry, minimum {{passwordMinLowercase}} małych liter, minimum {{passwordMinUppercase}} wielkich liter oraz minimum {{passwordMinSpecial}} znaków specjalnych({{passwordAllowedSpecials}})"
                 }
             }
+        },
+        "sessionExpired": {
+            "info": "Sesja wygasła, zaloguj się ponownie."
         }
     },
     "navbar": {

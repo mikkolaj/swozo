@@ -343,6 +343,22 @@ paths:
                 $ref: '#/components/schemas/UserAdminDetailsDto'
       security:
       - JWT_AUTH: []
+  /users/me/logout:
+    post:
+      tags:
+      - user-controller
+      operationId: logout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
   /sandbox/{serviceModuleId}:
     post:
       tags:
@@ -405,6 +421,24 @@ paths:
                 $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
+  /auth/refresh:
+    post:
+      tags:
+      - auth-controller
+      operationId: refreshAccessToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AuthDetailsDto'
   /auth/login:
     post:
       tags:
@@ -1268,6 +1302,21 @@ components:
         createdAt:
           type: string
           format: date-time
+    RefreshTokenDto:
+      required:
+      - expiresIn
+      - refreshToken
+      - tokenId
+      type: object
+      properties:
+        tokenId:
+          type: integer
+          format: int64
+        expiresIn:
+          type: integer
+          format: int64
+        refreshToken:
+          type: string
     ServiceModuleReservationDto:
       required:
       - dynamicFieldAdditionalActions
@@ -1357,6 +1406,30 @@ components:
       properties:
         email:
           type: string
+    AuthDetailsDto:
+      required:
+      - accessToken
+      - expiresIn
+      - refreshTokenDto
+      - roles
+      type: object
+      properties:
+        accessToken:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+        refreshTokenDto:
+          $ref: '#/components/schemas/RefreshTokenDto'
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - STUDENT
+            - TEACHER
+            - TECHNICAL_TEACHER
+            - ADMIN
     LoginRequest:
       required:
       - email
@@ -1367,27 +1440,6 @@ components:
           type: string
         password:
           type: string
-    AuthDetailsDto:
-      required:
-      - accessToken
-      - expiresIn
-      - roles
-      type: object
-      properties:
-        accessToken:
-          type: string
-        expiresIn:
-          type: integer
-          format: int64
-        roles:
-          type: array
-          items:
-            type: string
-            enum:
-            - STUDENT
-            - TEACHER
-            - TECHNICAL_TEACHER
-            - ADMIN
     EditCourseRequest:
       type: object
       properties:

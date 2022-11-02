@@ -20,6 +20,7 @@ export * from './LoginRequest';
 export * from './ModifyParticipantRequest';
 export * from './ParameterDescription';
 export * from './ParticipantDetailsDto';
+export * from './RefreshTokenDto';
 export * from './ReserveServiceModuleRequest';
 export * from './ResetPasswordRequest';
 export * from './SandboxUserDetailsDto';

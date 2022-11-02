@@ -18,6 +18,9 @@ import {
     CreateUserRequest,
     CreateUserRequestFromJSON,
     CreateUserRequestToJSON,
+    RefreshTokenDto,
+    RefreshTokenDtoFromJSON,
+    RefreshTokenDtoToJSON,
     UserAdminDetailsDto,
     UserAdminDetailsDtoFromJSON,
     UserAdminDetailsDtoToJSON,
@@ -35,6 +38,10 @@ export interface CreateUserOperationRequest {
 
 export interface GetUserDetailsForAdminRequest {
     userId: number;
+}
+
+export interface LogoutRequest {
+    refreshTokenDto: RefreshTokenDto;
 }
 
 /**
@@ -179,6 +186,44 @@ export class UserControllerApi extends runtime.BaseAPI {
     async getUsers(initOverrides?: RequestInit): Promise<Array<UserAdminSummaryDto>> {
         const response = await this.getUsersRaw(initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async logoutRaw(requestParameters: LogoutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.refreshTokenDto === null || requestParameters.refreshTokenDto === undefined) {
+            throw new runtime.RequiredError('refreshTokenDto','Required parameter requestParameters.refreshTokenDto was null or undefined when calling logout.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users/me/logout`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: RefreshTokenDtoToJSON(requestParameters.refreshTokenDto),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async logout(requestParameters: LogoutRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.logoutRaw(requestParameters, initOverrides);
     }
 
 }

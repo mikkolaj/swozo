@@ -1,5 +1,7 @@
 package com.swozo.api.web.user;
 
+import com.swozo.api.web.auth.AuthService;
+import com.swozo.api.web.auth.dto.RefreshTokenDto;
 import com.swozo.api.web.user.dto.UserAdminDetailsDto;
 import com.swozo.api.web.user.dto.UserAdminSummaryDto;
 import com.swozo.api.web.user.dto.UserDetailsDto;
@@ -23,6 +25,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 public class UserController {
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final AuthService authService;
 
     @GetMapping("/me")
     public UserDetailsDto getUserInfo(AccessToken token) {
@@ -30,6 +33,12 @@ public class UserController {
         logger.info("user info for user with id: {}", userId);
         return userService.getUserInfo(userId);
     }
+
+    @PostMapping("/me/logout")
+    public void logout(AccessToken accessToken, @RequestBody RefreshTokenDto refreshTokenDto) {
+        authService.logout(refreshTokenDto, accessToken.getUserId());
+    }
+
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")

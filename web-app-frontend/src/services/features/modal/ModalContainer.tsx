@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'services/store';
 import { LoadingModal } from './modals/LoadingModal';
+import { SessionExpiredModal } from './modals/SessionExpiredModal';
 import { SuccessModal } from './modals/SuccessModal';
 import { closeModal, ModalId } from './modalSlice';
 
@@ -22,6 +23,8 @@ export const ModalContainer = () => {
                     return <LoadingModal textLines={modal.textLines ?? []} onClose={onClose} />;
                 case ModalId.REMIND_PASSWORD_EMAIL_SENT:
                     return <SuccessModal textLines={modal.textLines ?? []} onClose={onClose} />;
+                case ModalId.SESSION_EXPIRED:
+                    return <SessionExpiredModal />;
             }
         };
 

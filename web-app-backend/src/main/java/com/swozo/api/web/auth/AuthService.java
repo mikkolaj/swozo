@@ -1,6 +1,7 @@
 package com.swozo.api.web.auth;
 
 import com.swozo.api.web.auth.dto.AuthDetailsDto;
+import com.swozo.api.web.auth.dto.RefreshTokenDto;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.auth.request.LoginRequest;
 import com.swozo.api.web.auth.request.ResetPasswordRequest;
@@ -10,10 +11,12 @@ import com.swozo.api.web.exceptions.types.user.InvalidCredentialsException;
 import com.swozo.api.web.exceptions.types.user.UserNotFoundException;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.email.EmailService;
+import com.swozo.persistence.user.RefreshTokenEntity;
 import com.swozo.persistence.user.User;
 import com.swozo.security.AccessToken;
 import com.swozo.security.PasswordHandler;
 import com.swozo.security.TokenService;
+import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.swozo.security.util.AuthUtils.GRANTED_AUTHORITY_PREFIX;
@@ -33,11 +38,14 @@ import static com.swozo.security.util.AuthUtils.getUsersAuthorities;
 public class AuthService {
     private static final int INITIAL_PASSWORD_LENGTH = 14;
     private static final int CHANGE_PASSWORD_TOKEN_LENGTH = 32;
+    // used to limit number of refresh tokens created by user, we don't want sb to fill entire database by logging in all the time
+    private static final Duration RECENTLY_PERSISTED_TOKEN_DURATION = Duration.ofMinutes(15);
 
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final PasswordHandler passwordHandler;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final Optional<RoleHierarchy> roleHierarchy;
@@ -54,19 +62,66 @@ public class AuthService {
             }
         } catch (RuntimeException ex) {
             logger.info("Login failed for {}", loginRequest.email());
-            throw new InvalidCredentialsException("Forbidden");
+            throw new InvalidCredentialsException();
         }
 
-        var token = tokenService.createAccessToken(user);
-        var appRoles = user.getRoles().stream().map(RoleDto::from).toList();
+        var accessToken = tokenService.createAccessToken(user);
+        var refreshToken = createRefreshToken(user);
 
-        return new AuthDetailsDto(token.getCredentials(), token.getExpirationTime(), appRoles);
+        return authDetailsFrom(accessToken, refreshToken, user);
+    }
+
+    @Transactional
+    public AuthDetailsDto refreshAccessToken(RefreshTokenDto refreshToken) {
+        try {
+            var token = tokenService.parseAccessToken(refreshToken.refreshToken());
+            var persistedToken = refreshTokenRepository.findById(refreshToken.tokenId()).orElseThrow();
+
+            if (token.isExpired()) {
+                // sanity check, token service should throw it by itself in this case
+                throw new UnauthorizedException("Token expired");
+            }
+            if (!persistedToken.getToken().equals(token.getCredentials())) {
+                throw new UnauthorizedException("Token doesn't match persisted one");
+            }
+
+            var user = userRepository.findById(token.getUserId()).orElseThrow();
+            var refreshedAccessToken = tokenService.createAccessToken(user);
+            return authDetailsFrom(refreshedAccessToken, refreshToken, user);
+        } catch (Exception exception) {
+            logger.error("Failed to refresh token: " + refreshToken, exception);
+            throw new InvalidCredentialsException();
+        }
+    }
+
+    @Transactional
+    public void logout(RefreshTokenDto refreshTokenDto, Long userId) {
+        refreshTokenRepository.findById(refreshTokenDto.tokenId()).ifPresent(refreshTokenEntity -> {
+            if (!refreshTokenEntity.getUserId().equals(userId) ||
+                !refreshTokenEntity.getToken().equals(refreshTokenDto.refreshToken())
+            ) {
+                throw new InvalidCredentialsException();
+            }
+
+            refreshTokenRepository.delete(refreshTokenEntity);
+        });
+    }
+
+    public void cleanupExpiredRefreshTokens() {
+        // TODO cron it
+        refreshTokenRepository.deleteAllByIssuedAtBefore(
+                LocalDateTime.now().minus(tokenService.getRefreshTokenExpirationTime())
+        );
+    }
+
+    public void removeAllRefreshTokensForUser(Long userId) {
+        refreshTokenRepository.deleteAllByUserId(userId);
     }
 
     public void sendResetPasswordEmail(String email) {
         // TODO: use IP rate limiting
         var user = findByEmail(email);
-        emailService.sendChangePasswordEmail(user);
+        emailService.sendResetPasswordEmail(user);
     }
 
     @Transactional
@@ -77,6 +132,8 @@ public class AuthService {
         user.setPassword(hashPassword(request.password()));
         user.setChangePasswordToken(provideChangePasswordToken());
         userRepository.save(user);
+
+        removeAllRefreshTokensForUser(user.getId());
     }
 
     public String hashPassword(String password) {
@@ -117,6 +174,43 @@ public class AuthService {
         }
 
         return matchingRoles.get(0);
+    }
+
+    private AuthDetailsDto authDetailsFrom(AccessToken accessToken, RefreshTokenDto refreshToken, User user) {
+        return new AuthDetailsDto(
+                accessToken.getCredentials(),
+                accessToken.getExpirationTime(),
+                refreshToken,
+                user.getRoles().stream().map(RoleDto::from).toList()
+        );
+    }
+
+    private RefreshTokenDto createRefreshToken(User user) {
+        var recentlyPersistedToken = refreshTokenRepository.findByUserIdAndIssuedAtAfter(
+                user.getId(), LocalDateTime.now().minus(RECENTLY_PERSISTED_TOKEN_DURATION)
+        );
+
+        if (recentlyPersistedToken.isPresent()) {
+            try {
+                var refreshToken = tokenService.parseAccessToken(recentlyPersistedToken.get().getToken());
+                return new RefreshTokenDto(
+                        recentlyPersistedToken.get().getId(),
+                        refreshToken.getExpirationTime(),
+                        refreshToken.getCredentials()
+                );
+            } catch (Exception ex) {
+                refreshTokenRepository.delete(recentlyPersistedToken.get());
+            }
+        }
+
+        var refreshToken = tokenService.createRefreshToken(user);
+
+        var tokenEntity = new RefreshTokenEntity();
+        tokenEntity.setToken(refreshToken.getCredentials());
+        tokenEntity.setUserId(user.getId());
+
+        refreshTokenRepository.save(tokenEntity);
+        return new RefreshTokenDto(tokenEntity.getId(), refreshToken.getExpirationTime(), refreshToken.getCredentials());
     }
 
     private List<RoleDto> getUserRoles(Collection<? extends GrantedAuthority> authorities) {
