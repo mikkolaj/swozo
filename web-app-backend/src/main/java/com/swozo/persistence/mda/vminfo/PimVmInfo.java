@@ -1,4 +1,4 @@
-package com.swozo.persistence.vminfo;
+package com.swozo.persistence.mda.vminfo;
 
 import lombok.*;
 
@@ -12,19 +12,19 @@ import java.util.ArrayList;
 public class PimVmInfo {
     private Integer amount = 0;
     private ArrayList<Long> moduleIds = new ArrayList<>();
-    private Integer vCPUs = 0;
+    private Integer vcpu = 0;
     private Integer ram = 0;
     private Integer disk = 0;
-    private Integer bandiwth = 0;
+    private Integer bandwidth = 0;
 
     public void concatenateRequirements (PimVmInfo other){
         for (Long moduleId : other.getModuleIds()){
             addModule(moduleId);
         }
-        vCPUs += other.getVCPUs();
+        vcpu += other.getVcpu();
         ram += other.getRam();
         disk += other.getDisk();
-        bandiwth += other.getBandiwth();
+        bandwidth += other.getBandwidth();
     }
 
     public void addModule(Long moduleId){

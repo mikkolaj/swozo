@@ -2,20 +2,18 @@ package com.swozo.mda;
 
 import com.swozo.mda.translators.CimToPimTranslator;
 import com.swozo.mda.translators.PimToPsmTranslator;
-import com.swozo.persistence.models.Cim;
-import com.swozo.persistence.models.Pim;
-import com.swozo.persistence.models.Psm;
+import com.swozo.persistence.mda.models.Cim;
+import com.swozo.persistence.mda.models.Pim;
+import com.swozo.persistence.mda.models.Psm;
 import com.swozo.util.mock.CIMMock;
 import lombok.*;
+import org.springframework.stereotype.Service;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Service
+@RequiredArgsConstructor
 public class Engine {
-    private CimToPimTranslator cimToPimTranslator = new CimToPimTranslator();
-    private PimToPsmTranslator pimToPsmTranslator = new PimToPsmTranslator();
+    private final CimToPimTranslator cimToPimTranslator;
+    private final PimToPsmTranslator pimToPsmTranslator;
 
     public Psm processCim() {
 //    to remove and add cim as argument?
