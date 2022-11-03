@@ -8,7 +8,7 @@ import com.swozo.api.web.course.CourseRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
-import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
 import com.swozo.persistence.ServiceModule;
@@ -125,7 +125,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setCreator(teacher);
         serviceModule.setDescription("opis1");
         serviceModule.setSubject("INFORMATYKA");
-        serviceModule.setScheduleTypeName(ScheduleType.JUPYTER.toString());
+        serviceModule.setScheduleTypeName(ServiceType.JUPYTER.toString());
         serviceModule.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
         serviceModule.setPublic(true);
         serviceModule.setReady(true);
@@ -140,7 +140,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule2.setCreator(teacher);
         serviceModule2.setDescription("opis2");
         serviceModule2.setSubject("INFORMATYKA");
-        serviceModule2.setScheduleTypeName(ScheduleType.JUPYTER.toString());
+        serviceModule2.setScheduleTypeName(ServiceType.JUPYTER.toString());
         serviceModule2.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
         serviceModule2.setPublic(true);
         serviceModule2.setReady(true);

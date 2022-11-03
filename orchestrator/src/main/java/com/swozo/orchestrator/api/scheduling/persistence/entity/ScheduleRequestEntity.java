@@ -3,10 +3,12 @@ package com.swozo.orchestrator.api.scheduling.persistence.entity;
 import com.swozo.persistence.BaseEntity;
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -20,15 +22,10 @@ public class ScheduleRequestEntity extends BaseEntity {
     private LocalDateTime endTime;
     private String machineType;
     private int diskSizeGb;
-    private ScheduleTypeEntity scheduleType;
 
-    @ElementCollection
-    @MapKeyColumn(name = "property_name")
-    @Column(name = "property_value")
-    @CollectionTable(name = "dynamic_properties", joinColumns = @JoinColumn(name = "schedule_request_id"))
-    private Map<String, String> dynamicProperties = new HashMap<>();
-
-    private RequestStatus status = RequestStatus.SUBMITTED;
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "schedule_request_id")
+    private List<ServiceDescriptionEntity> serviceDescriptions;
     private Long vmResourceId;
 
     public Optional<Long> getVmResourceId() {

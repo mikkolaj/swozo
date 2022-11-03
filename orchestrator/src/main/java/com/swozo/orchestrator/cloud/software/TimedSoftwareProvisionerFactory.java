@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.cloud.software;
 
-import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class TimedSoftwareProvisionerFactory {
-    private final Map<ScheduleType, TimedSoftwareProvisioner> provisioners;
+    private final Map<ServiceTypeEntity, TimedSoftwareProvisioner> provisioners;
 
     @Autowired
     public TimedSoftwareProvisionerFactory(List<TimedSoftwareProvisioner> provisioners) {
@@ -19,7 +19,7 @@ public class TimedSoftwareProvisionerFactory {
                 .collect(Collectors.toMap(TimedSoftwareProvisioner::getScheduleType, p -> p));
     }
 
-    public TimedSoftwareProvisioner getProvisioner(ScheduleType type) {
+    public TimedSoftwareProvisioner getProvisioner(ServiceTypeEntity type) {
         return Optional.ofNullable(provisioners.get(type))
                 .orElseThrow(() -> new IllegalStateException(String.format("Provisioner for type: %s is not yet implemented!", type)));
     }

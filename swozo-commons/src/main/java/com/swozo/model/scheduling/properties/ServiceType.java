@@ -1,6 +1,6 @@
 package com.swozo.model.scheduling.properties;
 
-public enum ScheduleType {
+public enum ServiceType {
     JUPYTER,
     DOCKER
 }

@@ -4,7 +4,7 @@ import com.swozo.api.web.activitymodule.ActivityModuleRepository;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.properties.Psm;
-import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityModule;
@@ -61,7 +61,7 @@ public class ScheduleService {
         return new ScheduleRequest(
                 provideServiceLifespan(activityWithModule.activity()),
                 providePsm(activityWithModule.activity()),
-                ScheduleType.JUPYTER,
+                ServiceType.JUPYTER,
                 activityWithModule.module.getServiceModule().getDynamicProperties()
         );
     }

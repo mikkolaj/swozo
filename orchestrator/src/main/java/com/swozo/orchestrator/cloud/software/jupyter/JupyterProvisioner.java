@@ -3,8 +3,8 @@ package com.swozo.orchestrator.cloud.software.jupyter;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.orchestrator.api.BackendRequestSender;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
@@ -29,7 +29,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class JupyterProvisioner implements TimedSoftwareProvisioner {
-    private static final ScheduleType SUPPORTED_SCHEDULE = ScheduleType.JUPYTER;
+    private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.JUPYTER;
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
@@ -78,7 +78,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
-    public ScheduleType getScheduleType() {
+    public ServiceTypeEntity getScheduleType() {
         return SUPPORTED_SCHEDULE;
     }
 
