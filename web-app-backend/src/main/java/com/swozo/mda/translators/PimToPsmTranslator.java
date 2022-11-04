@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Optional;
 
 @Service
@@ -24,22 +25,15 @@ public class PimToPsmTranslator{
         Collection<VirtualMachine> possibleVms = vms.stream().filter(vm ->
                 vm.getVcpu() >= vcpu && vm.getRam() >= ram && vm.getBandwidth() >= bandwidth).toList();
 
-        Integer minVcpu = Collections.min(possibleVms.stream().map(VirtualMachine::getVcpu).toList());
-        Collection<VirtualMachine> minVcpuVms = possibleVms.stream().filter(vm -> vm.getVcpu() == minVcpu).toList();
-
-        Integer minRam = Collections.min(possibleVms.stream().map(VirtualMachine::getRam).toList());
-        Collection<VirtualMachine> minRamVms = minVcpuVms.stream().filter(vm -> vm.getRam() == minRam).toList();
-
-        Integer minBandwidth = Collections.min(possibleVms.stream().map(VirtualMachine::getBandwidth).toList());
-        Collection<VirtualMachine> minBandwidthVms = minRamVms.stream().filter(vm -> vm.getBandwidth() == minBandwidth).toList();
-
-        Optional<VirtualMachine> selectedVm = minBandwidthVms.stream().findFirst();
-
-        if(selectedVm.isPresent()){
-            return selectedVm.get().getName();
-        }
-        else
+        if (possibleVms.isEmpty()) {
             throw NeededVmNotFound.withConditions(vcpu, ram, bandwidth);
+        }
+        var selectedVm = Collections.min(possibleVms,
+                Comparator.comparingInt(VirtualMachine::getVcpu)
+                        .thenComparing(VirtualMachine::getRam)
+                        .thenComparing(VirtualMachine::getBandwidth)
+        );
+        return selectedVm.getName();
     }
 
     private PsmVmInfo getPsmVmInfo(PimVmInfo pimVmInfo){

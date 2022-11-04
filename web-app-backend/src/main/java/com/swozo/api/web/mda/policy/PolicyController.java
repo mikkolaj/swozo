@@ -27,7 +27,7 @@ public class PolicyController {
     @PreAuthorize("hasRole('ADMIN')")
     public Collection<PolicyDto> allSystemPolicies(AccessToken token) {
         logger.info("getting all policies");
-        return policyService.getAllSystemPolicies();
+        return policyService.getAllSystemPoliciesDto();
     }
 
     @GetMapping("/all_teacher-policies/{teacherId}")

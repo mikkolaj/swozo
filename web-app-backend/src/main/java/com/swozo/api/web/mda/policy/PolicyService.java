@@ -6,7 +6,6 @@ import com.swozo.api.web.mda.policy.request.EditPolicyRequest;
 import com.swozo.api.web.user.UserService;
 import com.swozo.mapper.PolicyMapper;
 import com.swozo.persistence.mda.policies.Policy;
-import com.swozo.persistence.mda.policies.PolicyType;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,28 +20,24 @@ public class PolicyService {
     private final UserService userService;
     private final PolicyMapper policyMapper;
 
-    public Collection<PolicyDto> getAllSystemPolicies(){
-        return policyRepository.findAll().stream().map(policy ->
-                policyMapper.toDto(policy, policy.getPolicyType().name())).toList();
+    public Collection<PolicyDto> getAllSystemPoliciesDto(){
+        return policyRepository.findAll().stream().map(policyMapper::toDto).toList();
     }
 
     public Collection<PolicyDto> getAllTeacherPoliciesDto(Long teacherId){
-        return policyRepository.findAll().stream().filter(policy -> Objects.equals(policy.getTeacher().getId(), teacherId)).map(policy ->
-                policyMapper.toDto(policy, policy.getPolicyType().name())).toList();
+        return getAllTeacherPolicies(teacherId).stream().map(policyMapper::toDto).toList();
     }
 
     public Collection<Policy> getAllTeacherPolicies(Long teacherId){
-        return policyRepository.findAll().stream().
-                filter(policy -> Objects.equals(policy.getTeacher().getId(), teacherId)).toList();
+        return policyRepository.findAllByTeacherId(teacherId);
     }
 
     public PolicyDto createPolicy(CreatePolicyRequest createPolicyRequest){
         User teacher = userService.getUserById(createPolicyRequest.teacherId());
-        PolicyType policyType = PolicyType.valueOf(createPolicyRequest.policyType());
-        Policy policy = policyMapper.toPersistence(createPolicyRequest, teacher, policyType);
+        Policy policy = policyMapper.toPersistence(createPolicyRequest, teacher);
         policyRepository.save(policy);
 
-        return policyMapper.toDto(policy, policyType.name());
+        return policyMapper.toDto(policy);
     }
 
     public void deletePolicy(Long id){
@@ -52,12 +47,12 @@ public class PolicyService {
     public PolicyDto editPolicy(Long id, EditPolicyRequest request){
         Policy policy = policyRepository.getById(id);
 
-        request.policyType().ifPresent(policyType -> policy.setPolicyType(PolicyType.valueOf(policyType)));
+        request.policyType().ifPresent(policy::setPolicyType);
         request.teacherId().ifPresent(teacherId -> policy.setTeacher(userService.getUserById(teacherId)));
         request.value().ifPresent(policy::setValue);
 
         policyRepository.save(policy);
 
-        return policyMapper.toDto(policy, policy.getPolicyType().name());
+        return policyMapper.toDto(policy);
     }
 }

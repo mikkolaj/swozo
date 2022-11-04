@@ -24,7 +24,8 @@ public class CimToPimTranslator{
     }
 
     public Pim getPim(Cim cim) {
-        Integer studentsVms = cim.getSelectedModules().stream().findFirst().map(x-> cim.getStudentsNumber()).orElse(0);
+        Integer studentsVms = cim.getSelectedModules().stream().filter(serviceModule -> !serviceModule.isIsolated())
+                .findFirst().map(x-> cim.getStudentsNumber()).orElse(0);
         Integer teacherVms = 1;
         PimVmInfo studentPimVmInfo = new PimVmInfo();
         studentPimVmInfo.setAmount(studentsVms);

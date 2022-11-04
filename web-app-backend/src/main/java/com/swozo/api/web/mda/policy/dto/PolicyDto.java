@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public record PolicyDto(
     @Schema(required = true) Long id,
-    @Schema(required = true) String policyType,
+    @Schema(required = true) PolicyType policyType,
     @Schema(required = true) UserDetailsDto userDetailsDto,
     @Schema(required = true) Integer value
 ){}

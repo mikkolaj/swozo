@@ -17,8 +17,7 @@ public class VmService {
     private final VmMapper vmMapper;
 
     public Collection<VmDto> getAllSystemVmsDto(){
-        return vmRepository.findAll().stream().map(vm ->
-                vmMapper.toDto(vm)).toList();
+        return getAllSystemVms().stream().map(vmMapper::toDto).toList();
     }
 
     public Collection<VirtualMachine> getAllSystemVms(){
@@ -27,7 +26,6 @@ public class VmService {
 
     public VmDto createVm(CreateVmRequest createVmRequest){
         VirtualMachine vm = vmMapper.toPersistence(createVmRequest);
-        System.out.println(vm);
         vmRepository.save(vm);
         return vmMapper.toDto(vm);
     }

@@ -23,14 +23,14 @@ public abstract class PolicyMapper {
 //    protected PolicyType policyType;
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "policyType", expression = "java(policyType)")
+    @Mapping(target = "policyType", source = "createPolicyRequest.policyType")
     @Mapping(target = "teacher", expression = "java(teacher)")
     @Mapping(target = "value", source = "createPolicyRequest.value")
-    public abstract Policy toPersistence(CreatePolicyRequest createPolicyRequest, User teacher, PolicyType policyType);
+    public abstract Policy toPersistence(CreatePolicyRequest createPolicyRequest, User teacher);
 
 
     @Mapping(target = "id", source = "policy.id")
-    @Mapping(target = "policyType", expression = "java(policyType)")
+    @Mapping(target = "policyType", source = "policy.policyType")
     @Mapping(target = "userDetailsDto", expression = "java(userMapper.toDto(policy.getTeacher()))")
-    public  abstract PolicyDto toDto(Policy policy, String policyType);
+    public  abstract PolicyDto toDto(Policy policy);
 }
