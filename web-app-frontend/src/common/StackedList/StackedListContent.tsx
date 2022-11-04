@@ -32,6 +32,11 @@ export function StackedListContent<T>({
                                       item
                                       xs={proportion}
                                       sx={itemWraperSxProvider?.(idx) ?? stylesRowCenteredVertical}
+                                      //   sx={{
+                                      //       overflowX: 'hidden',
+                                      //       textOverflow: 'ellipsis',
+                                      //       ...stylesRowCenteredVertical,
+                                      //   }}
                                   >
                                       {contentItems[itemIdx][idx]}
                                   </Grid>

@@ -10,7 +10,8 @@ public enum ValidationErrorType {
     TOO_SHORT_PERIOD_BETWEEN,
     NOT_IN_BOUNDS,
     INVALID_PASSWORD,
-    INVALID_PASSWORD_TOKEN
+    INVALID_PASSWORD_TOKEN,
+    DOESNT_EXIST
     ;
 
     public ValidationError forField(String fieldName) {

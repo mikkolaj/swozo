@@ -3,6 +3,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { FormikProps } from 'formik';
 import { i18n, TFunction } from 'i18next';
 import _ from 'lodash';
+import { humanFileSize } from './externalUtils';
 
 export const DATE_FORMAT = 'DD.MM.YYYY';
 
@@ -27,6 +28,8 @@ export const withDate = (time: Dayjs, date: Dayjs): Dayjs =>
 
 export const formatName = (firstName?: string, lastName?: string) =>
     _.capitalize(`${firstName ?? ''} ${lastName ?? ''}`).trim();
+
+export const formatBytes = (size: number): string => humanFileSize(size, true);
 
 export const loadFromLocalStorage = <T>(key: string): T | undefined => {
     const data = window.localStorage.getItem(key);

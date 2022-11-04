@@ -2,6 +2,7 @@ package com.swozo.api.web.user;
 
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RefreshTokenDto;
+import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.user.dto.UserAdminDetailsDto;
 import com.swozo.api.web.user.dto.UserAdminSummaryDto;
 import com.swozo.api.web.user.dto.UserDetailsDto;
@@ -25,6 +26,7 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 public class UserController {
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final UserAdminService userAdminService;
     private final AuthService authService;
 
     @GetMapping("/me")
@@ -43,19 +45,26 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public UserAdminDetailsDto createUser(AccessToken accessToken, @RequestBody CreateUserRequest request) {
         logger.info("user creation request issued by: {} for user: {}", accessToken.getUserId(), request);
-        return userService.createUser(request);
+        return userAdminService.createUser(request);
     }
 
     @GetMapping("/details/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public UserAdminDetailsDto getUserDetailsForAdmin(@PathVariable Long userId) {
         logger.info("user details for user with id: {}", userId);
-        return userService.getUserDetailsForAdmin(userId);
+        return userAdminService.getUserDetailsForAdmin(userId);
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserAdminSummaryDto> getUsers() {
-        return userService.getUsersForAdmin();
+        return userAdminService.getUsersForAdmin();
+    }
+
+    @PutMapping("/roles/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserAdminDetailsDto setUserRoles(AccessToken accessToken, @PathVariable Long userId, @RequestBody List<RoleDto> roles) {
+        logger.info("user {} is assigning roles: {} for user with id: {}", accessToken.getUserId(), roles, userId);
+        return userAdminService.setUserRoles(userId, roles);
     }
 }

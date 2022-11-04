@@ -452,6 +452,45 @@
                     "button": "Wczytaj użytkowników z pliku csv"
                 }
             }
+        },
+        "userDetails": {
+            "header": "Szczegółowe dane użytkownika",
+            "name": "Imię i nazwisko",
+            "email": "Adres Email",
+            "createdAt": "Data utworzenia konta",
+            "creator": "Email założyciela konta",
+            "roles": "Role użytkownika",
+            "storage": "Wykorzystywane miejsce na dysku",
+            "edit": {
+                "turnOn": "Włącz tryb edycji",
+                "turnOff": "Wyłącz tryb edycji"
+            },
+            "saveRoles": "Zapisz zmiany",
+            "policies": {
+                "label": "Polityki"
+            },
+            "createdCourses": {
+                "label": "Utworzone kursy",
+                "name": "Nazwa kursu",
+                "subject": "Tematyka",
+                "createdAt": "Data utworzenia",
+                "empty": "Użytkownik nie utworzył jeszcze żadnego kursu"
+            },
+            "attendedCourses": {
+                "label": "Uczęszczane kursy",
+                "name": "Nazwa kursu",
+                "teacher": "Autor kursu",
+                "createdAt": "Data utworzenia",
+                "empty": "Użytkownik nie dołączył jeszcze do żadnego kursu"
+            },
+            "createdModules": {
+                "label": "Utworzone moduły",
+                "name": "Nazwa modułu",
+                "service": "Wykorzystywany serwis",
+                "usedBy": "Liczba korzystających aktywności",
+                "createdAt": "Data utworzenia",
+                "empty": "Użytkownik nie utworzył jeszcze żadnego modułu"
+            }
         }
     },
     "error": {
@@ -469,7 +508,8 @@
         "serviceModuleDeleted": "Moduł został usunięty!",
         "fileUploaded": "Plik został przesłany!",
         "userCreated": "Użytkownik został utworzony!",
-        "passwordChanged": "Hasło zostało zmienione!"
+        "passwordChanged": "Hasło zostało zmienione!",
+        "rolesUpdated": "Role zostały zaaktualizowane!"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",

@@ -18,6 +18,7 @@ export class PageRoutes {
     static readonly ACTIVITY_FILES = `${this.ACTIVITY}/files`;
     static readonly FILES = '/files';
     static readonly ADMIN = '/admin';
+    static readonly ADMIN_USER_DETAILS = `${this.ADMIN}/users/:userId`;
 
     static Course(courseId: string | number): string {
         return RouteBuilder.of(this.COURSE).withReplaced('courseId', courseId).build();
@@ -54,6 +55,10 @@ export class PageRoutes {
 
     static JoinCourse(joinUUID: string): string {
         return RouteBuilder.of(this.JOIN_COURSE).withReplaced('joinUUID', joinUUID).build();
+    }
+
+    static AdminUserDetails(userId: string | number): string {
+        return RouteBuilder.of(this.ADMIN_USER_DETAILS).withReplaced('userId', userId).build();
     }
 
     static withOrigin(route: string): string {

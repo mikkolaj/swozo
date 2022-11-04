@@ -4,6 +4,7 @@ import { PageGuard } from 'common/PageGuard/PageGuard';
 import { Toaster } from 'common/Styled/Toaster';
 import { ActivityFilesView } from 'pages/ActivityFiles/ActivityFilesView';
 import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
+import { UserDetailsView } from 'pages/Admin/Users/UserDetailsView';
 import { CourseView } from 'pages/Course/CourseView';
 import { JoinCourseView } from 'pages/Course/JoinCourseView';
 import { MyCoursesListView } from 'pages/CoursesList/MyCoursesListView';
@@ -22,6 +23,7 @@ import { PopupError } from 'services/features/error/PopupError';
 import { ModalContainer } from 'services/features/modal/ModalContainer';
 import { useAppSelector } from 'services/store';
 import {
+    ADMIN,
     ANY_LOGGED_IN,
     guarded,
     NOT_LOGGED_IN,
@@ -100,6 +102,10 @@ function App() {
                     element={guarded(<ActivityFilesView />, ANY_LOGGED_IN)}
                 />
                 <Route path={PageRoutes.FILES} element={guarded(<FilesListView />, withRole(STUDENT))} />
+                <Route
+                    path={PageRoutes.ADMIN_USER_DETAILS}
+                    element={guarded(<UserDetailsView />, withRole(ADMIN))}
+                />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
             </Routes>
 

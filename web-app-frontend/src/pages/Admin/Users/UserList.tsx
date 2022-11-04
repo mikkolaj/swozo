@@ -12,6 +12,8 @@ import { useFilters } from 'hooks/useFilters';
 import _ from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { PageRoutes } from 'utils/routes';
 import { formatName } from 'utils/util';
 import { UserFilters } from './UserFilters';
 import { filterUsers } from './utils';
@@ -82,7 +84,7 @@ export const UserList = ({ users }: Props) => {
                         }
                         items={filteredUsers}
                         itemKeyExtractor={({ id }) => id}
-                        itemRenderer={({ name, surname, email, roles }) => [
+                        itemRenderer={({ id, name, surname, email, roles }) => [
                             <Typography variant="body1">{formatName(name, surname)}</Typography>,
                             <Typography variant="body1">{email}</Typography>,
                             <Typography variant="body1">
@@ -92,7 +94,16 @@ export const UserList = ({ users }: Props) => {
                                 )}
                             </Typography>,
                             <Box sx={{ ml: 'auto' }}>
-                                <Button variant="contained">{t('admin.users.list.details')}</Button>
+                                <Button variant="text">
+                                    <Link
+                                        target="_blank"
+                                        rel="noopener"
+                                        to={PageRoutes.AdminUserDetails(id)}
+                                        style={{ textDecoration: 'none', color: 'inherit' }}
+                                    >
+                                        {t('admin.users.list.details')}
+                                    </Link>
+                                </Button>
                             </Box>,
                         ]}
                     />

@@ -41,13 +41,15 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public List<CourseDetailsDto> getUserCourses(Long userId, RoleDto userRole) {
-        var courses = userRole.equals(RoleDto.STUDENT) ?
-                courseRepository.getCoursesByStudentsId(userId) :
-                courseRepository.getCoursesByTeacherId(userId);
-
-        return courses.stream()
+    public List<CourseDetailsDto> getUserCoursesDetails(Long userId, RoleDto userRole) {
+        return getUserCourses(userId, userRole).stream()
                 .map(course -> courseMapper.toDto(course, course.isCreator(userId)))
+                .toList();
+    }
+
+    public List<CourseSummaryDto> getUserCourseSummaries(Long userId, RoleDto userRole) {
+        return getUserCourses(userId, userRole).stream()
+                .map(courseMapper::toDto)
                 .toList();
     }
 
@@ -158,6 +160,12 @@ public class CourseService {
     @Transactional
     public CourseDetailsDto deleteStudent(Long teacherId, Long courseId, String studentEmail) {
         return modifyCourseParticipant(courseId, studentEmail, (student, course) -> course.deleteStudent(student));
+    }
+
+    private List<Course> getUserCourses(Long userId, RoleDto userRole) {
+        return userRole.equals(RoleDto.STUDENT) ?
+                courseRepository.getCoursesByStudentsId(userId) :
+                courseRepository.getCoursesByTeacherId(userId);
     }
 
     private CourseDetailsDto modifyCourseParticipant(Long courseId, String studentEmail, BiConsumer<User, Course> modifier) {

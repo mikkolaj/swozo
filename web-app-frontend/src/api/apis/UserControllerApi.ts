@@ -44,6 +44,11 @@ export interface LogoutRequest {
     refreshTokenDto: RefreshTokenDto;
 }
 
+export interface SetUserRolesRequest {
+    userId: number;
+    requestBody: Array<string>;
+}
+
 /**
  * 
  */
@@ -224,6 +229,49 @@ export class UserControllerApi extends runtime.BaseAPI {
      */
     async logout(requestParameters: LogoutRequest, initOverrides?: RequestInit): Promise<void> {
         await this.logoutRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async setUserRolesRaw(requestParameters: SetUserRolesRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserAdminDetailsDto>> {
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling setUserRoles.');
+        }
+
+        if (requestParameters.requestBody === null || requestParameters.requestBody === undefined) {
+            throw new runtime.RequiredError('requestBody','Required parameter requestParameters.requestBody was null or undefined when calling setUserRoles.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users/roles/{userId}`.replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters.requestBody,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserAdminDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async setUserRoles(requestParameters: SetUserRolesRequest, initOverrides?: RequestInit): Promise<UserAdminDetailsDto> {
+        const response = await this.setUserRolesRaw(requestParameters, initOverrides);
+        return await response.value();
     }
 
 }

@@ -13,6 +13,19 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    CourseSummaryDto,
+    CourseSummaryDtoFromJSON,
+    CourseSummaryDtoFromJSONTyped,
+    CourseSummaryDtoToJSON,
+} from './CourseSummaryDto';
+import {
+    ServiceModuleSummaryDto,
+    ServiceModuleSummaryDtoFromJSON,
+    ServiceModuleSummaryDtoFromJSONTyped,
+    ServiceModuleSummaryDtoToJSON,
+} from './ServiceModuleSummaryDto';
+
 /**
  * 
  * @export
@@ -55,6 +68,30 @@ export interface UserAdminDetailsDto {
      * @memberof UserAdminDetailsDto
      */
     createdAt: Date;
+    /**
+     * 
+     * @type {number}
+     * @memberof UserAdminDetailsDto
+     */
+    storageUsageBytes: number;
+    /**
+     * 
+     * @type {Array<CourseSummaryDto>}
+     * @memberof UserAdminDetailsDto
+     */
+    attendedCourses: Array<CourseSummaryDto>;
+    /**
+     * 
+     * @type {Array<CourseSummaryDto>}
+     * @memberof UserAdminDetailsDto
+     */
+    createdCourses: Array<CourseSummaryDto>;
+    /**
+     * 
+     * @type {Array<ServiceModuleSummaryDto>}
+     * @memberof UserAdminDetailsDto
+     */
+    createdModules: Array<ServiceModuleSummaryDto>;
 }
 
 /**
@@ -84,6 +121,10 @@ export function UserAdminDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator:
         'email': json['email'],
         'roles': json['roles'],
         'createdAt': (new Date(json['createdAt'])),
+        'storageUsageBytes': json['storageUsageBytes'],
+        'attendedCourses': ((json['attendedCourses'] as Array<any>).map(CourseSummaryDtoFromJSON)),
+        'createdCourses': ((json['createdCourses'] as Array<any>).map(CourseSummaryDtoFromJSON)),
+        'createdModules': ((json['createdModules'] as Array<any>).map(ServiceModuleSummaryDtoFromJSON)),
     };
 }
 
@@ -102,6 +143,10 @@ export function UserAdminDetailsDtoToJSON(value?: UserAdminDetailsDto | null): a
         'email': value.email,
         'roles': value.roles,
         'createdAt': (value.createdAt.toISOString()),
+        'storageUsageBytes': value.storageUsageBytes,
+        'attendedCourses': ((value.attendedCourses as Array<any>).map(CourseSummaryDtoToJSON)),
+        'createdCourses': ((value.createdCourses as Array<any>).map(CourseSummaryDtoToJSON)),
+        'createdModules': ((value.createdModules as Array<any>).map(ServiceModuleSummaryDtoToJSON)),
     };
 }
 

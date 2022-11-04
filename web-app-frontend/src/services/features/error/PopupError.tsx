@@ -7,7 +7,7 @@ type Props = {
     autoCloseAfterMs?: number;
 };
 
-export const PopupError = ({ autoCloseAfterMs = 2000 }: Props) => {
+export const PopupError = ({ autoCloseAfterMs = 3000 }: Props) => {
     const err = useAppSelector((state) => state.error);
     const [isDisplayed, setIsDisplayed] = useState(err.shouldShow);
 

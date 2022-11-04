@@ -43,7 +43,7 @@ public class CourseController {
     public Collection<CourseDetailsDto> getUserCourses(AccessToken token) {
         var userId = token.getUserId();
         logger.info("course list for user with id: {}", userId);
-        return courseService.getUserCourses(userId, authService.oneOf(token, RoleDto.TEACHER, RoleDto.STUDENT));
+        return courseService.getUserCoursesDetails(userId, authService.oneOf(token, RoleDto.TEACHER, RoleDto.STUDENT));
     }
 
     @GetMapping("/{id}")

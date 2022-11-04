@@ -6,6 +6,40 @@ servers:
 - url: http://localhost:5000
   description: Generated server url
 paths:
+  /users/roles/{userId}:
+    put:
+      tags:
+      - user-controller
+      operationId: setUserRoles
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                enum:
+                - STUDENT
+                - TEACHER
+                - TECHNICAL_TEACHER
+                - ADMIN
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserAdminDetailsDto'
+      security:
+      - JWT_AUTH: []
   /service-modules:
     put:
       tags:
@@ -824,6 +858,139 @@ paths:
       - JWT_AUTH: []
 components:
   schemas:
+    CourseSummaryDto:
+      required:
+      - creationTime
+      - description
+      - isPasswordProtected
+      - joinUUID
+      - name
+      - subject
+      - teacher
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        subject:
+          type: string
+        creationTime:
+          type: string
+          format: date-time
+        teacher:
+          $ref: '#/components/schemas/UserDetailsDto'
+        isPasswordProtected:
+          type: boolean
+        joinUUID:
+          type: string
+    InstructionDto:
+      required:
+      - untrustedPossiblyDangerousHtml
+      type: object
+      properties:
+        untrustedPossiblyDangerousHtml:
+          type: string
+    ServiceModuleSummaryDto:
+      required:
+      - createdAt
+      - creator
+      - description
+      - id
+      - name
+      - serviceName
+      - studentInstruction
+      - subject
+      - teacherInstruction
+      - usedInActivitiesCount
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        subject:
+          type: string
+        description:
+          type: string
+        serviceName:
+          type: string
+        teacherInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        studentInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        creator:
+          $ref: '#/components/schemas/UserDetailsDto'
+        createdAt:
+          type: string
+          format: date-time
+        usedInActivitiesCount:
+          type: integer
+          format: int32
+    UserAdminDetailsDto:
+      required:
+      - attendedCourses
+      - createdAt
+      - createdCourses
+      - createdModules
+      - email
+      - id
+      - name
+      - roles
+      - storageUsageBytes
+      - surname
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - STUDENT
+            - TEACHER
+            - TECHNICAL_TEACHER
+            - ADMIN
+        createdAt:
+          type: string
+          format: date-time
+        storageUsageBytes:
+          type: integer
+          format: int64
+        attendedCourses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseSummaryDto'
+        createdCourses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseSummaryDto'
+        createdModules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceModuleSummaryDto'
+    UserDetailsDto:
+      required:
+      - email
+      - name
+      - surname
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
     FinishServiceModuleCreationRequest:
       required:
       - echoFieldActions
@@ -857,13 +1024,6 @@ components:
           type: string
         parameterDescription:
           $ref: '#/components/schemas/ParameterDescription'
-    InstructionDto:
-      required:
-      - untrustedPossiblyDangerousHtml
-      type: object
-      properties:
-        untrustedPossiblyDangerousHtml:
-          type: string
     ParameterDescription:
       required:
       - name
@@ -933,19 +1093,6 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/DynamicFieldDto'
-    UserDetailsDto:
-      required:
-      - email
-      - name
-      - surname
-      type: object
-      properties:
-        name:
-          type: string
-        surname:
-          type: string
-        email:
-          type: string
     ReserveServiceModuleRequest:
       required:
       - description
@@ -1134,43 +1281,6 @@ components:
             $ref: '#/components/schemas/InstructionDto'
         url:
           type: string
-    ServiceModuleSummaryDto:
-      required:
-      - createdAt
-      - creator
-      - description
-      - id
-      - name
-      - serviceName
-      - studentInstruction
-      - subject
-      - teacherInstruction
-      - usedInActivitiesCount
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        subject:
-          type: string
-        description:
-          type: string
-        serviceName:
-          type: string
-        teacherInstruction:
-          $ref: '#/components/schemas/InstructionDto'
-        studentInstruction:
-          $ref: '#/components/schemas/InstructionDto'
-        creator:
-          $ref: '#/components/schemas/UserDetailsDto'
-        createdAt:
-          type: string
-          format: date-time
-        usedInActivitiesCount:
-          type: integer
-          format: int32
     ModifyParticipantRequest:
       required:
       - email
@@ -1271,37 +1381,6 @@ components:
             - TEACHER
             - TECHNICAL_TEACHER
             - ADMIN
-    UserAdminDetailsDto:
-      required:
-      - createdAt
-      - email
-      - id
-      - name
-      - roles
-      - surname
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        surname:
-          type: string
-        email:
-          type: string
-        roles:
-          type: array
-          items:
-            type: string
-            enum:
-            - STUDENT
-            - TEACHER
-            - TECHNICAL_TEACHER
-            - ADMIN
-        createdAt:
-          type: string
-          format: date-time
     RefreshTokenDto:
       required:
       - expiresIn
@@ -1517,32 +1596,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ParameterDescription'
-    CourseSummaryDto:
-      required:
-      - creationTime
-      - description
-      - isPasswordProtected
-      - joinUUID
-      - name
-      - subject
-      - teacher
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
-        subject:
-          type: string
-        creationTime:
-          type: string
-          format: date-time
-        teacher:
-          $ref: '#/components/schemas/UserDetailsDto'
-        isPasswordProtected:
-          type: boolean
-        joinUUID:
-          type: string
   securitySchemes:
     JWT_AUTH:
       type: http

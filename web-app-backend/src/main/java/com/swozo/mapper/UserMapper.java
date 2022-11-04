@@ -1,7 +1,9 @@
 package com.swozo.mapper;
 
 import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.api.web.course.dto.CourseSummaryDto;
 import com.swozo.api.web.course.dto.ParticipantDetailsDto;
+import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.api.web.user.dto.UserAdminDetailsDto;
@@ -37,12 +39,20 @@ public abstract class UserMapper {
     public abstract UserAdminSummaryDto toAdminSummaryDto(User user);
 
     @Mapping(target = "roles", expression = "java(rolesToDto(user.getRoles()))")
-    public abstract UserAdminDetailsDto userAdminDetailsDto(User user);
+    public abstract UserAdminDetailsDto userAdminDetailsDto(
+            User user,
+            long storageUsageBytes,
+            List<CourseSummaryDto> attendedCourses,
+            List<CourseSummaryDto> createdCourses,
+            List<ServiceModuleSummaryDto> createdModules
+    );
+
+    public Role roleToPersistence(RoleDto roleDto) {
+        return roleRepository.findByName(roleDto.toString());
+    }
 
     public List<Role> rolesToPersistence(List<RoleDto> roles) {
-        return roles.stream()
-                .map(roleDto -> roleRepository.findByName(roleDto.toString()))
-                .toList();
+        return roles.stream().map(this::roleToPersistence).toList();
     }
 
     protected List<RoleDto> rolesToDto(Collection<Role> roles) {

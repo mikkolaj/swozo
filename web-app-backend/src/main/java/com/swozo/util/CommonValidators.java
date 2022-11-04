@@ -5,11 +5,11 @@ import com.swozo.api.web.exceptions.types.common.ValidationErrorType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class CommonValidators {
     private CommonValidators() {}
@@ -49,6 +49,10 @@ public class CommonValidators {
 
     public static Optional<ValidationError> unique(String fieldName, Optional<?> repeatedValue) {
         return repeatedValue.map(val -> ValidationErrorType.NOT_UNIQUE.forField(fieldName));
+    }
+
+    public static Optional<ValidationError> exists(String fieldName, Optional<?> repeatedValue) {
+        return repeatedValue.map(val -> ValidationErrorType.DOESNT_EXIST.forField(fieldName));
     }
 
     public static Optional<ValidationError> timeDeltaInBounds(

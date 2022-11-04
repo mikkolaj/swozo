@@ -12,6 +12,7 @@ type Props<T> = {
     setFieldValue: (fieldName: string, value: T[]) => void;
     required?: boolean;
     fullWidthChips?: boolean;
+    componentToRenderRightToFieldInput?: JSX.Element; // TODO refactor this xD
 };
 
 export function AutocompleteWithChips<T>({
@@ -21,6 +22,7 @@ export function AutocompleteWithChips<T>({
     chosenOptions,
     optionToString,
     setFieldValue,
+    componentToRenderRightToFieldInput,
     required = true,
     fullWidthChips = false,
 }: Props<T>) {
@@ -45,19 +47,22 @@ export function AutocompleteWithChips<T>({
                     }
                 }}
                 renderInput={({ InputProps, ...params }) => (
-                    <FormInputField
-                        name={'_' + name}
-                        i18nLabel={labelPath}
-                        textFieldProps={{
-                            required,
-                            sx: { width: FORM_INPUT_WIDTH },
-                            InputProps: {
-                                ...InputProps,
-                                type: 'search',
-                            },
-                            ...params,
-                        }}
-                    />
+                    <Box sx={{ ...stylesRow }}>
+                        <FormInputField
+                            name={'_' + name}
+                            i18nLabel={labelPath}
+                            textFieldProps={{
+                                required,
+                                sx: { width: FORM_INPUT_WIDTH },
+                                InputProps: {
+                                    ...InputProps,
+                                    type: 'search',
+                                },
+                                ...params,
+                            }}
+                        />
+                        {componentToRenderRightToFieldInput}
+                    </Box>
                 )}
             />
             <Box

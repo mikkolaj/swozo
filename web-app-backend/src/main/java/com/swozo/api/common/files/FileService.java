@@ -51,6 +51,10 @@ public class FileService {
         );
     }
 
+    public Long getTotalStorageUsedByUser(Long userId) {
+        return fileRepository.sumStorageBytesUsedByUser(userId);
+    }
+
     /**
      * Idempotent, new file is created and consumed by fileConsumer within a transaction scope if it doesn't already exist.
      *
