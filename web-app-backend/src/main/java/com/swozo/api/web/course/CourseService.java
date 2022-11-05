@@ -20,6 +20,8 @@ import com.swozo.mapper.CourseMapper;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,6 +32,8 @@ import java.util.function.BiConsumer;
 @Service
 @RequiredArgsConstructor
 public class CourseService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final UserService userService;
@@ -122,6 +126,8 @@ public class CourseService {
         }
 
         course.addStudent(student);
+        scheduleService.addStudentToAlreadyScheduledActivities(course, student);
+
         courseRepository.save(course);
         return courseMapper.toDto(course, student, false);
     }
@@ -160,6 +166,7 @@ public class CourseService {
         return modifyCourseParticipant(courseId, modifyParticipantRequest.email(), (student, course) -> {
             courseValidator.validateAddStudentRequest(student, teacherId, course);
             course.addStudent(student);
+            scheduleService.addStudentToAlreadyScheduledActivities(course, student);
         });
     }
 

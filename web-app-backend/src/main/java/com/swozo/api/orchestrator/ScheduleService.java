@@ -1,6 +1,7 @@
 package com.swozo.api.orchestrator;
 
 import com.swozo.api.web.activity.ActivityRepository;
+import com.swozo.api.web.activitymodule.ActivityScheduleInfoRepository;
 import com.swozo.mda.MdaEngine;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
@@ -8,6 +9,7 @@ import com.swozo.model.scheduling.properties.MdaVmSpecs;
 import com.swozo.model.scheduling.properties.ServiceDescription;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
 import com.swozo.model.scheduling.properties.ServiceType;
+import com.swozo.persistence.Course;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityModule;
 import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
@@ -18,6 +20,8 @@ import com.swozo.persistence.servicemodule.ServiceModule;
 import com.swozo.persistence.user.User;
 import com.swozo.persistence.user.UserCourseData;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,9 +37,12 @@ import static com.swozo.util.CollectionUtils.iterateSimultaneously;
 @Service
 @RequiredArgsConstructor
 public class ScheduleService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final OrchestratorService orchestratorService;
     private final MdaEngine engine;
     private final ActivityRepository activityRepository;
+    private final ActivityScheduleInfoRepository activityScheduleInfoRepository;
 
     public void scheduleActivities(Collection<Activity> activities) {
         var scheduleRequestsWithInfos= activities.stream()
@@ -50,6 +57,31 @@ public class ScheduleService {
 
         iterateSimultaneously(scheduleRequestsWithInfos, responses, this::assignScheduleResponse);
         activityRepository.saveAll(activities);
+    }
+
+    public void addStudentToAlreadyScheduledActivities(Course course, User student) {
+        if (course.getStudents().size() > course.getExpectedStudentCount()) {
+            tryAddingStudentWhoExceededCourseCapacity(course, student);
+            return;
+        }
+
+        var scheduleInfos = course.getActivities().stream()
+                .filter(activity -> activity.getStartTime().isAfter(LocalDateTime.now()))
+                .flatMap(futureActivity -> futureActivity.getModules().stream())
+                .map(activityModule -> activityModule.getSchedules().stream()
+                        .filter(this::canAcceptNewStudent)
+                        .findAny()
+                        .orElseThrow()
+                )
+                .toList();
+
+        scheduleInfos.forEach(scheduleInfo -> assignEmptyLinkToUser(scheduleInfo, student));
+        activityScheduleInfoRepository.saveAll(scheduleInfos);
+    }
+
+    public LocalDateTime getAsapScheduleAvailability() {
+        // TODO don't hardcode this
+        return LocalDateTime.now().plusMinutes(10);
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> buildScheduleRequestsForActivity(Activity activity) {
@@ -71,7 +103,7 @@ public class ScheduleService {
 
             teacherServiceDescriptions.push(buildServiceDescription(activityModule, serviceModule));
 
-            assignLinkToUser(scheduleInfo, activity.getCourse().getTeacher());
+            assignEmptyLinkToUser(scheduleInfo, activity.getCourse().getTeacher());
 
             if (!serviceModule.isIsolated()) {
                 assignLinksToStudents(activity, scheduleInfo);
@@ -87,21 +119,17 @@ public class ScheduleService {
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> handleStudentScheduling(Psm psm, Activity activity) {
-        var studentPsmInfoOpt = psm.getStudentsVms();
-        if (studentPsmInfoOpt.isEmpty()) {
-            return Stream.of();
-        }
-        var studentPsmInfo = studentPsmInfoOpt.get();
+        return psm.getStudentsVms().stream().flatMap(studentPsmInfo -> {
+            var alreadyJoinedStudentsIterator = activity.getCourse().getStudents().stream()
+                    .map(UserCourseData::getUser)
+                    .iterator();
 
-        var alreadyJoinedStudentsIterator = activity.getCourse().getStudents().stream()
-                .map(UserCourseData::getUser)
-                .iterator();
-
-        return IntStream.rangeClosed(1, studentPsmInfo.getAmount())
-                .mapToObj(studentIdx ->
-                    Optional.ofNullable(alreadyJoinedStudentsIterator.hasNext() ? alreadyJoinedStudentsIterator.next() : null)
-                )
-                .flatMap(studentOpt -> createScheduleRequestsForStudent(studentOpt, studentPsmInfo, activity));
+            return IntStream.rangeClosed(1, studentPsmInfo.getAmount())
+                    .mapToObj(studentIdx -> Optional.ofNullable(alreadyJoinedStudentsIterator.hasNext() ?
+                                    alreadyJoinedStudentsIterator.next() : null)
+                    )
+                    .flatMap(studentOpt -> createScheduleRequestsForStudent(studentOpt, studentPsmInfo, activity));
+        });
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> createScheduleRequestsForStudent(
@@ -118,7 +146,7 @@ public class ScheduleService {
             scheduleInfos.add(scheduleInfo);
 
             serviceDescriptions.push(buildServiceDescription(activityModule, serviceModule));
-            student.ifPresent(presentStudent -> assignLinkToUser(scheduleInfo, presentStudent));
+            student.ifPresent(presentStudent -> assignEmptyLinkToUser(scheduleInfo, presentStudent));
         }
 
         return Stream.of(buildScheduleRequest(
@@ -129,16 +157,21 @@ public class ScheduleService {
         ));
     }
 
-
     private void assignScheduleResponse(ScheduleRequestWithScheduleInfos scheduleRequestData, ScheduleResponse scheduleResponse) {
         var scheduleRequestId = scheduleResponse.requestId();
         scheduleRequestData.scheduleInfos()
                 .forEach(scheduleInfo -> scheduleInfo.setScheduleRequestId(scheduleRequestId));
     }
 
-    public LocalDateTime getAsapScheduleAvailability() {
-        // TODO don't hardcode this
-        return LocalDateTime.now().plusMinutes(10);
+
+    private boolean canAcceptNewStudent(ActivityModuleScheduleInfo scheduleInfo) {
+        return scheduleInfo.getUserActivityModuleData().isEmpty() ||
+                !scheduleInfo.getActivityModule().getServiceModule().isIsolated();
+    }
+
+    private void tryAddingStudentWhoExceededCourseCapacity(Course course, User student) {
+        // xD maybe one day
+        logger.warn("User {} exceeded expected course student count for course: {}", student, course.getId());
     }
 
     private ServiceLifespan provideServiceLifespan(Activity activity) {
@@ -169,7 +202,7 @@ public class ScheduleService {
         );
     }
 
-    private void assignLinkToUser(ActivityModuleScheduleInfo scheduleInfo, User user) {
+    private void assignEmptyLinkToUser(ActivityModuleScheduleInfo scheduleInfo, User user) {
         var link = new UserActivityModuleInfo();
         link.setUser(user);
         scheduleInfo.addUserActivityLink(link);
@@ -178,7 +211,7 @@ public class ScheduleService {
     private void assignLinksToStudents(Activity activity, ActivityModuleScheduleInfo scheduleInfo) {
         activity.getCourse().getStudents().stream()
                 .map(UserCourseData::getUser)
-                .forEach(student -> assignLinkToUser(scheduleInfo, student));
+                .forEach(student -> assignEmptyLinkToUser(scheduleInfo, student));
     }
 
     private ActivityModule findCorrespondingActivityModule(Activity activity, ServiceModule serviceModule) {
