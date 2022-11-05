@@ -74,7 +74,6 @@ public class ActivityService {
         return fileService.createExternalDownloadRequest(file);
     }
 
-
     // TODO: below are old, currently unused and left 'just in case' things
 
 //    public Activity createActivity(Activity newActivity) {

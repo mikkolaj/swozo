@@ -80,4 +80,23 @@ public class ActivityController {
     ) {
         return activityModuleService.getUserDataForProvisioner(activityModuleId, scheduleRequestId);
     }
+
+    @GetMapping(INTERNAL + INIT_UPLOAD + "/{activityModuleId}/{userId}")
+    public StorageAccessRequest initUserActivityFileUpload(
+            @PathVariable Long activityModuleId,
+            @PathVariable Long userId,
+            @RequestBody InitFileUploadRequest initFileUploadRequest
+    ) {
+        return activityModuleService.prepareUserActivityFileUpload(initFileUploadRequest, activityModuleId, userId);
+    }
+
+    @PutMapping(INTERNAL + ACK_UPLOAD + "/{activityModuleId}/{scheduleRequestId}/{userId}")
+    public void ackUserActivityFileUpload(
+            @PathVariable Long activityModuleId,
+            @PathVariable Long scheduleRequestId,
+            @PathVariable Long userId,
+            @RequestBody UploadAccessDto uploadAccessDto
+    ) {
+        activityModuleService.ackUserActivityFileUpload(uploadAccessDto, activityModuleId, scheduleRequestId, userId);
+    }
 }

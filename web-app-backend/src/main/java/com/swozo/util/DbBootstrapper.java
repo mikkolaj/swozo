@@ -16,7 +16,7 @@ import com.swozo.persistence.RemoteFile;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityModule;
 import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
-import com.swozo.persistence.activity.UserActivityLink;
+import com.swozo.persistence.activity.UserActivityModuleInfo;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
 import com.swozo.persistence.mda.VirtualMachine;
 import com.swozo.persistence.mda.policies.Policy;
@@ -168,11 +168,11 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         //        ACTIVITIES:
 
-        var activityLink1 = new UserActivityLink();
+        var activityLink1 = new UserActivityModuleInfo();
         // this hasn't received links yet
         activityLink1.setUser(student1);
 
-        var activityLink2 = new UserActivityLink();
+        var activityLink2 = new UserActivityModuleInfo();
         activityLink2.setUrl("http://34.118.97.16/lab");
         activityLink2.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
         activityLink2.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
@@ -183,7 +183,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activityModuleScheduleInfo1.addUserActivityLink(activityLink1);
         activityModuleScheduleInfo1.addUserActivityLink(activityLink2);
 
-        var activityLink3 = new UserActivityLink();
+        var activityLink3 = new UserActivityModuleInfo();
         activityLink3.setUrl("http://34.118.97.16/lab");
         activityLink3.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
         activityLink3.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));

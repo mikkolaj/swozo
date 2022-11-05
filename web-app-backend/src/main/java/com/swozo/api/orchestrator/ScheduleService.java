@@ -11,7 +11,7 @@ import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityModule;
 import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
-import com.swozo.persistence.activity.UserActivityLink;
+import com.swozo.persistence.activity.UserActivityModuleInfo;
 import com.swozo.persistence.mda.models.Psm;
 import com.swozo.persistence.mda.vminfo.PsmVmInfo;
 import com.swozo.persistence.servicemodule.ServiceModule;
@@ -170,7 +170,7 @@ public class ScheduleService {
     }
 
     private void assignLinkToUser(ActivityModuleScheduleInfo scheduleInfo, User user) {
-        var link = new UserActivityLink();
+        var link = new UserActivityModuleInfo();
         link.setUser(user);
         scheduleInfo.addUserActivityLink(link);
     }

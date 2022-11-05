@@ -24,10 +24,10 @@ public class ActivityModuleScheduleInfo extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "activityModuleScheduleInfo")
     @ToString.Exclude
-    Collection<UserActivityLink> userActivityLinks = new LinkedList<>();
+    Collection<UserActivityModuleInfo> userActivityModuleData = new LinkedList<>();
 
-    public void addUserActivityLink(UserActivityLink userActivityLink) {
-        userActivityLink.setActivityModuleScheduleInfo(this);
-        userActivityLinks.add(userActivityLink);
+    public void addUserActivityLink(UserActivityModuleInfo userActivityModuleInfo) {
+        userActivityModuleInfo.setActivityModuleScheduleInfo(this);
+        this.userActivityModuleData.add(userActivityModuleInfo);
     }
 }

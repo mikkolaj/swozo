@@ -4,7 +4,7 @@ import com.swozo.api.web.activity.dto.ServiceConnectionDetailsDto;
 import com.swozo.api.web.activitymodule.dto.ActivityModuleDetailsDto;
 import com.swozo.model.utils.InstructionDto;
 import com.swozo.persistence.activity.ActivityModule;
-import com.swozo.persistence.activity.UserActivityLink;
+import com.swozo.persistence.activity.UserActivityModuleInfo;
 import com.swozo.persistence.servicemodule.ServiceModule;
 import com.swozo.persistence.user.User;
 import com.swozo.utils.SupportedLanguage;
@@ -27,7 +27,7 @@ public abstract class ActivityModuleMapper {
         return new ActivityModule(serviceModule);
     }
 
-    protected Map<SupportedLanguage, InstructionDto> instructionsToDto(UserActivityLink activityLink) {
+    protected Map<SupportedLanguage, InstructionDto> instructionsToDto(UserActivityModuleInfo activityLink) {
         return activityLink.getTranslations().entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -37,7 +37,7 @@ public abstract class ActivityModuleMapper {
 
     protected List<ServiceConnectionDetailsDto> connectionDetailsToDto(ActivityModule activityModule, User user) {
         return activityModule.getSchedules().stream()
-                .flatMap(scheduleInfo -> scheduleInfo.getUserActivityLinks().stream())
+                .flatMap(scheduleInfo -> scheduleInfo.getUserActivityModuleData().stream())
                 .filter(userActivityLink -> userActivityLink.getUser().equals(user) && userActivityLink.getUrl().isPresent())
                 .map(userActivityLink -> new ServiceConnectionDetailsDto(
                         instructionsToDto(userActivityLink),
