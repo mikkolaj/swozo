@@ -52,6 +52,7 @@ export const buildReserveServiceModuleRequest = (
         scheduleTypeName: moduleInfo.service,
         subject: moduleInfo.subject,
         description: moduleInfo.description,
+        isIsolated: true, //TODO
     };
 };
 

@@ -834,6 +834,7 @@ components:
       required:
       - description
       - dynamicProperties
+      - isIsolated
       - isPublic
       - name
       - scheduleTypeName
@@ -859,6 +860,8 @@ components:
           additionalProperties:
             type: string
         isPublic:
+          type: boolean
+        isIsolated:
           type: boolean
     CreateActivityRequest:
       required:

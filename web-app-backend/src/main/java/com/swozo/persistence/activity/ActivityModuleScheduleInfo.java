@@ -23,7 +23,7 @@ public class ActivityModuleScheduleInfo extends BaseEntity {
     private ActivityModule activityModule;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_activity_link_id")
+    @JoinColumn(name = "activity_module_schedule_info_id")
     @ToString.Exclude
     Collection<UserActivityLink> userActivityLinks = new LinkedList<>();
 

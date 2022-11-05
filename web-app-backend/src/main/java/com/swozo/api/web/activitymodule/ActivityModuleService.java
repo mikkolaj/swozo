@@ -1,6 +1,10 @@
 package com.swozo.api.web.activitymodule;
 
+import com.swozo.api.web.user.UserRepository;
+import com.swozo.mapper.UserMapper;
 import com.swozo.model.links.ActivityLinkInfo;
+import com.swozo.model.users.ActivityRole;
+import com.swozo.model.users.OrchestratorUserDto;
 import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +23,26 @@ public class ActivityModuleService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ActivityModuleRepository activityModuleRepository;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public void addActivityLinks(Long scheduleRequestId, Long serviceModuleId, List<ActivityLinkInfo> links) {
-        var activityModule = activityModuleRepository.findByServiceModuleId(serviceModuleId).orElseThrow();
+    public void addActivityLinks(Long activityModuleId, Long scheduleRequestId, List<ActivityLinkInfo> links) {
+        var activityModule = activityModuleRepository.findById(activityModuleId).orElseThrow();
         var scheduleInfos = activityModule.getSchedules().stream()
                 .filter(scheduleInfo -> scheduleInfo.getScheduleRequestId().equals(scheduleRequestId))
                 .toList();
 
         addLinksToActivityModule(scheduleInfos, links);
         activityModuleRepository.save(activityModule);
+    }
+
+    public List<OrchestratorUserDto> getUserDataForProvisioner(Long activityModuleId, Long scheduleRequestId) {
+        var activity = activityModuleRepository.findById(activityModuleId).orElseThrow();
+        var teacher = activity.getActivity().getCourse().getTeacher();
+
+        return userRepository.getUsersThatUseVmCreatedIn(activityModuleId, scheduleRequestId).stream()
+                .map(user -> userMapper.toOrchestratorDto(user, user.equals(teacher) ? ActivityRole.TEACHER : ActivityRole.STUDENT))
+                .toList();
     }
 
     private void addLinksToActivityModule(List<ActivityModuleScheduleInfo> scheduleInfos, List<ActivityLinkInfo> links) {

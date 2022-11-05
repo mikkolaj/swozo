@@ -1,7 +1,6 @@
 package com.swozo.api.orchestrator;
 
-import com.swozo.api.web.activity.ActivityRepository;
-import com.swozo.mda.Engine;
+import com.swozo.mda.MdaEngine;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.properties.MdaVmSpecs;
@@ -34,8 +33,7 @@ import static com.swozo.util.CollectionUtils.iterateSimultaneously;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final OrchestratorService orchestratorService;
-    private final ActivityRepository activityRepository;
-    private final Engine mdaEngine;
+    private final MdaEngine engine;
 
     public void scheduleActivities(Collection<Activity> activities) {
         var scheduleRequestsWithInfos= activities.stream()
@@ -52,7 +50,7 @@ public class ScheduleService {
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> buildScheduleRequestsForActivity(Activity activity) {
-        var psm = mdaEngine.processCim(activity.getCourse(), activity);
+        var psm = engine.processCim(activity.getCourse(), activity);
         return Stream.concat(
                 handleTeacherScheduling(psm, activity),
                 handleStudentScheduling(psm, activity)
@@ -68,7 +66,7 @@ public class ScheduleService {
             var scheduleInfo = buildScheduleInfoWithoutScheduleRequest(activityModule);
             teacherScheduleInfos.add(scheduleInfo);
 
-            teacherServiceDescriptions.push(buildServiceDescription(serviceModule));
+            teacherServiceDescriptions.push(buildServiceDescription(activityModule, serviceModule));
 
             assignLinkToUser(scheduleInfo, activity.getCourse().getTeacher());
 
@@ -96,7 +94,7 @@ public class ScheduleService {
                 .map(UserCourseData::getUser)
                 .iterator();
 
-        return IntStream.rangeClosed(0, studentPsmInfo.getAmount())
+        return IntStream.rangeClosed(1, studentPsmInfo.getAmount())
                 .mapToObj(studentIdx ->
                     Optional.ofNullable(alreadyJoinedStudentsIterator.hasNext() ? alreadyJoinedStudentsIterator.next() : null)
                 )
@@ -116,7 +114,7 @@ public class ScheduleService {
             var scheduleInfo = buildScheduleInfoWithoutScheduleRequest(activityModule);
             scheduleInfos.add(scheduleInfo);
 
-            serviceDescriptions.push(buildServiceDescription(serviceModule));
+            serviceDescriptions.push(buildServiceDescription(activityModule, serviceModule));
             student.ifPresent(presentStudent -> assignLinkToUser(scheduleInfo, presentStudent));
         }
 
@@ -153,16 +151,16 @@ public class ScheduleService {
        return new ScheduleRequestWithScheduleInfos(
                new ScheduleRequest(
                        serviceLifespan,
-                       new MdaVmSpecs(psmVmInfo.getMachine_type(), psmVmInfo.getDisk()),
+                       new MdaVmSpecs(psmVmInfo.getMachineType(), psmVmInfo.getDisk()),
                        serviceDescriptions
                ),
                scheduleInfos
        );
     }
 
-    private ServiceDescription buildServiceDescription(ServiceModule serviceModule) {
+    private ServiceDescription buildServiceDescription(ActivityModule activityModule, ServiceModule serviceModule) {
         return new ServiceDescription(
-                serviceModule.getId(),
+                activityModule.getId(),
                 ServiceType.valueOf(serviceModule.getServiceName()),
                 serviceModule.getDynamicProperties()
         );
