@@ -4,7 +4,7 @@ package com.swozo.api.common.files.storage;
 import com.swozo.api.common.files.exceptions.IllegalFilenameException;
 import com.swozo.api.common.files.util.FilePathGenerator;
 import com.swozo.persistence.activity.Activity;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;

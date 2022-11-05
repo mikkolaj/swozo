@@ -64,6 +64,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     public List<ActivityLinkInfo> createLinks(VMResourceDetails vmResourceDetails) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
         return List.of(new ActivityLinkInfo(
+                1L, // TODO
                 formattedLink,
                 translationsProvider.t(
                         "services.jupyter.connectionInstruction",

@@ -44,16 +44,18 @@ public class ActivityService {
             Long uploaderId,
             UploadAccessDto uploadAccessDto
     ) {
+        var user = userService.getUserById(uploaderId);
         return activityMapper.toDto(
                 fileService.acknowledgeExternalUpload(
-                    userService.getUserById(uploaderId),
+                    user,
                     uploadAccessDto,
                     () -> activityRepository.findById(activityId).orElseThrow(),
                     (file, activity) -> {
                         activity.addPublicFile(file);
                         return activityRepository.save(activity);
                     }
-                )
+                ),
+                user
         );
     }
 

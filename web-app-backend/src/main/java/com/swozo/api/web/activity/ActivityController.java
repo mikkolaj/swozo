@@ -63,12 +63,13 @@ public class ActivityController {
         return activityService.getPublicActivityFileDownloadRequest(accessToken.getUserId(), activityId, fileId, role);
     }
 
-    @PutMapping(INTERNAL + LINKS + "/{requestId}")
+    @PutMapping(INTERNAL + LINKS + "/{scheduleRequestId}/{serviceModuleId}")
     public void setActivityLinks(
-            @PathVariable Long requestId,
+            @PathVariable Long scheduleRequestId,
+            @PathVariable Long serviceModuleId,
             @RequestBody List<ActivityLinkInfo> links
     ) {
-        activityModuleService.setActivityLinks(requestId, links);
+        activityModuleService.addActivityLinks(scheduleRequestId, serviceModuleId, links);
     }
 
 

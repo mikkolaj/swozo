@@ -4,7 +4,7 @@ import com.swozo.api.web.activitymodule.ActivityModuleRepository;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import com.swozo.persistence.user.User;
 import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;

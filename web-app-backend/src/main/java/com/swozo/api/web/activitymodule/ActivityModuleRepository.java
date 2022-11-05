@@ -21,5 +21,5 @@ public interface ActivityModuleRepository extends JpaRepository<ActivityModule, 
     )
     List<ActivityModule> getActivityModulesThatUseServiceModule(Long serviceModuleId, Long offset, Long limit);
 
-    Optional<ActivityModule> findByRequestId(Long requestId);
+    Optional<ActivityModule> findByServiceModuleId(Long serviceModuleId);
 }

@@ -1,5 +1,6 @@
 package com.swozo.persistence.mda.vminfo;
 
+import com.swozo.persistence.servicemodule.ServiceModule;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -11,15 +12,15 @@ import java.util.ArrayList;
 @ToString
 public class PimVmInfo {
     private Integer amount = 0;
-    private ArrayList<Long> moduleIds = new ArrayList<>();
+    private ArrayList<ServiceModule> serviceModules = new ArrayList<>();
     private Integer vcpu = 0;
     private Integer ram = 0;
     private Integer disk = 0;
     private Integer bandwidth = 0;
 
     public void concatenateRequirements (PimVmInfo other){
-        for (Long moduleId : other.getModuleIds()){
-            addModule(moduleId);
+        for (var module: other.getServiceModules()){
+            addModule(module);
         }
         vcpu += other.getVcpu();
         ram += other.getRam();
@@ -27,12 +28,10 @@ public class PimVmInfo {
         bandwidth += other.getBandwidth();
     }
 
-    public void addModule(Long moduleId){
-        if(moduleIds.contains(moduleId)){
+    public void addModule(ServiceModule serviceModule){
+        if(serviceModules.contains(serviceModule)){
             throw new IllegalArgumentException("module already added");
         }
-        moduleIds.add(moduleId);
+        serviceModules.add(serviceModule);
     }
-
-
 }

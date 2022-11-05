@@ -31,7 +31,11 @@ public class Activity extends BaseEntity {
     private Collection<ActivityModule> modules = new LinkedList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "file.id")
+    @JoinTable(
+            name = "AcitvityPublicFiles",
+            joinColumns = @JoinColumn(name = "activity_id"),
+            inverseJoinColumns = @JoinColumn(name = "file_id")
+    )
     @ToString.Exclude
     private Collection<RemoteFile> publicFiles = new LinkedList<>();
 
@@ -40,8 +44,9 @@ public class Activity extends BaseEntity {
     @ToString.Exclude
     private Course course;
 
-    public void addActivityModule(ActivityModule newModuleMetadata) {
-        modules.add(newModuleMetadata);
+    public void addActivityModule(ActivityModule activityModule) {
+        activityModule.setActivity(this);
+        modules.add(activityModule);
     }
 
     public void removeActivityModule(ActivityModule activityModule) {

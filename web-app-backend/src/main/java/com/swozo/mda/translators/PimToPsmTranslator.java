@@ -7,7 +7,7 @@ import com.swozo.persistence.mda.models.Pim;
 import com.swozo.persistence.mda.models.Psm;
 import com.swozo.persistence.mda.vminfo.PimVmInfo;
 import com.swozo.persistence.mda.vminfo.PsmVmInfo;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -39,7 +39,7 @@ public class PimToPsmTranslator{
     private PsmVmInfo getPsmVmInfo(PimVmInfo pimVmInfo){
         PsmVmInfo psmVmInfo = new PsmVmInfo();
         psmVmInfo.setAmount(pimVmInfo.getAmount());
-        psmVmInfo.setModuleIds(pimVmInfo.getModuleIds());
+        psmVmInfo.setServiceModules(pimVmInfo.getServiceModules());
         psmVmInfo.setMachine_type(getMachineType(pimVmInfo.getVcpu(), pimVmInfo.getRam(),
                 pimVmInfo.getBandwidth()));
         psmVmInfo.setDisk(pimVmInfo.getDisk());

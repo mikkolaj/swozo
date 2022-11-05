@@ -1,23 +1,26 @@
-package com.swozo.util.mock;
+package com.swozo.persistence.servicemodule;
 
 import com.swozo.persistence.mda.vminfo.PimVmInfo;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "IsolatedServiceModules")
 @Getter
 @Setter
 @ToString
-public class IsolatedServiceModule extends ServiceModule{
-
-    public IsolatedServiceModule(Long id, Integer baseVcpu, Integer baseRam, Integer baseDisk, Integer baseBanwidth){
-        super(id,baseVcpu, baseRam, baseDisk, baseBanwidth);
-    }
+public class IsolatedServiceModule extends ServiceModule {
     public PimVmInfo getPimVmInfo(Integer studens){
         PimVmInfo translation = new PimVmInfo();
-        translation.addModule(id);
+        translation.addModule(this);
         translation.setVcpu(baseVcpu);
         translation.setRam(baseRam);
         translation.setDisk(baseDisk);
-        translation.setBandwidth(baseBanwidth);
+        translation.setBandwidth(baseBandwidth);
 
         return translation;
     }

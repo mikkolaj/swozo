@@ -3,7 +3,7 @@ package com.swozo.orchestrator.cloud.resources.gcloud.compute;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.gax.rpc.AbortedException;
-import com.swozo.model.scheduling.properties.Psm;
+import com.swozo.model.scheduling.properties.MdaVmSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMStatus;
@@ -47,9 +47,9 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     @Async
     @Override
     @Transactional
-    public CompletableFuture<VMResourceDetails> createInstance(Psm psm, String namePrefix) throws InterruptedException, VMOperationFailed {
+    public CompletableFuture<VMResourceDetails> createInstance(MdaVmSpecs mdaVmSpecs, String namePrefix) throws InterruptedException, VMOperationFailed {
         try {
-            var vmAddress = handleVmNameCollisions(psm, namePrefix);
+            var vmAddress = handleVmNameCollisions(mdaVmSpecs, namePrefix);
             var vmEntity = vmRepository.save(vmMapper.toPersistence(vmAddress));
             var publicIPAddress = manager.getInstanceExternalIP(vmAddress);
             return CompletableFuture
@@ -60,19 +60,19 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
         }
     }
 
-    private VMAddress handleVmNameCollisions(Psm psm, String namePrefix) throws IOException, ExecutionException, TimeoutException, InterruptedException {
+    private VMAddress handleVmNameCollisions(MdaVmSpecs mdaVmSpecs, String namePrefix) throws IOException, ExecutionException, TimeoutException, InterruptedException {
         for (var suffix = 0; ; suffix += 1) {
             var nameToTry = String.format("%s-%d", namePrefix, suffix);
-            var vmAddress = tryCreatingVmWithName(psm, String.format(nameToTry));
+            var vmAddress = tryCreatingVmWithName(mdaVmSpecs, String.format(nameToTry));
             if (vmAddress.isPresent())
                 return vmAddress.get();
         }
     }
 
-    private Optional<VMAddress> tryCreatingVmWithName(Psm psm, String name) throws IOException, ExecutionException, TimeoutException, InterruptedException {
+    private Optional<VMAddress> tryCreatingVmWithName(MdaVmSpecs mdaVmSpecs, String name) throws IOException, ExecutionException, TimeoutException, InterruptedException {
         try {
             var vmAddress = getVMAddress(name);
-            var vmSpecs = getVMSpecs(psm);
+            var vmSpecs = getVMSpecs(mdaVmSpecs);
             manager.createInstance(vmAddress, vmSpecs);
             return Optional.of(vmAddress);
         } catch (ExecutionException ex) {
@@ -122,7 +122,7 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
     }
 
     @Override
-    public int getVMCreationTime(Psm psm) {
+    public int getVMCreationTime(MdaVmSpecs mdaVmSpecs) {
         // TODO: creation time based on machine type
         return VM_CREATION_SECONDS;
     }
@@ -136,8 +136,8 @@ public class GCloudTimedVMProvider implements TimedVMProvider {
         return new VMAddress(gCloudProperties.project(), gCloudProperties.zone(), DEFAULT_NETWORK, name);
     }
 
-    private VMSpecs getVMSpecs(Psm psm) {
-        return new VMSpecs(psm.machineType(), gCloudProperties.computeImageFamily(), psm.diskSizeGb());
+    private VMSpecs getVMSpecs(MdaVmSpecs mdaVmSpecs) {
+        return new VMSpecs(mdaVmSpecs.machineType(), gCloudProperties.computeImageFamily(), mdaVmSpecs.diskSizeGb());
     }
 
     private void updateStatus(VMEntity entity, VMStatus status) {

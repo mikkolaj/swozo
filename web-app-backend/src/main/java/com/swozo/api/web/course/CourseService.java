@@ -45,15 +45,17 @@ public class CourseService {
         var courses = userRole.equals(RoleDto.STUDENT) ?
                 courseRepository.getCoursesByStudentsId(userId) :
                 courseRepository.getCoursesByTeacherId(userId);
+        var user = userService.getUserById(userId);
 
         return courses.stream()
-                .map(course -> courseMapper.toDto(course, course.isCreator(userId)))
+                .map(course -> courseMapper.toDto(course, user, course.isCreator(userId)))
                 .toList();
     }
 
     public CourseDetailsDto getCourseDetails(Long courseId, Long userId) {
         var course = courseRepository.getById(courseId);
-        return courseMapper.toDto(course, course.isCreator(userId));
+        var user = userService.getUserById(userId);
+        return courseMapper.toDto(course, user, course.isCreator(userId));
     }
 
     public CourseSummaryDto getCourseSummary(String joinUUID) {
@@ -81,17 +83,19 @@ public class CourseService {
             courseValidator.validateNewCourse(createCourseRequest);
         }
 
-        var course = courseMapper.toPersistence(createCourseRequest, userService.getUserById(teacherId));
+        var teacher = userService.getUserById(teacherId);
+        var course = courseMapper.toPersistence(createCourseRequest, teacher);
         var activities = createCourseRequest.activities().stream().map(activityMapper::toPersistence);
 
         activities.forEach(course::addActivity);
         course.setJoinUUID(UUID.randomUUID().toString());
         course.setSandboxMode(sandboxMode);
 
+        scheduleService.scheduleActivities(course.getActivities());
+        
         courseRepository.save(course);
 
-        scheduleService.scheduleActivities(course.getActivities());
-        return courseMapper.toDto(course, true);
+        return courseMapper.toDto(course, teacher, true);
     }
 
     @Transactional
@@ -115,7 +119,20 @@ public class CourseService {
 
         course.addStudent(student);
         courseRepository.save(course);
-        return courseMapper.toDto(course, false);
+        return courseMapper.toDto(course, student, false);
+    }
+
+    private void handleNewStudent(Course course, User student) {
+//         assert course.getStudents().size() + 1 <= course.expectedStudentCount
+        course.getActivities().forEach(activity -> {
+              activity.getModules().forEach(activityModule -> {
+                  activityModule.getSchedules().stream()
+                          .flatMap(scheduleInfo -> scheduleInfo.getUserActivityLinks().stream())
+                          .filter(userActivityLink -> userActivityLink.getUser() == null)
+                          .findAny()
+                          .ifPresent(userActivityLink -> userActivityLink.setUser(student));
+              });
+        });
     }
 
     @Transactional
@@ -131,7 +148,7 @@ public class CourseService {
 
         courseRepository.save(course);
 
-        return courseMapper.toDto(course, true);
+        return courseMapper.toDto(course, course.getTeacher(), true);
     }
 
     @Transactional
@@ -144,7 +161,7 @@ public class CourseService {
         scheduleService.scheduleActivities(List.of(activity));
 
         courseRepository.save(course);
-        return courseMapper.toDto(course, true);
+        return courseMapper.toDto(course, course.getTeacher(), true);
     }
 
     @Transactional
@@ -167,7 +184,7 @@ public class CourseService {
 
         modifier.accept(student, course);
         courseRepository.save(course);
-        return courseMapper.toDto(course, true);
+        return courseMapper.toDto(course, course.getTeacher(), true);
     }
 
     private Course getById(Long courseId) {

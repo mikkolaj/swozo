@@ -14,7 +14,7 @@ import com.swozo.api.web.user.UserService;
 import com.swozo.api.web.user.request.CreateUserRequest;
 import com.swozo.mapper.SandboxMapper;
 import com.swozo.model.utils.InstructionDto;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

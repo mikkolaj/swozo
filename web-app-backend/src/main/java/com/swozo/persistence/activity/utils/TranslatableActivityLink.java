@@ -1,6 +1,6 @@
 package com.swozo.persistence.activity.utils;
 
-import com.swozo.persistence.activity.ActivityLink;
+import com.swozo.persistence.activity.UserActivityLink;
 import com.swozo.utils.SupportedLanguage;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +24,7 @@ public class TranslatableActivityLink {
     @MapsId("id")
     @JoinColumn(name = "id")
     @ToString.Exclude
-    private ActivityLink activityLink;
+    private UserActivityLink userActivityLink;
 
     private String instructionHtml;
 

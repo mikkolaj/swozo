@@ -2,29 +2,40 @@ package com.swozo.persistence.activity;
 
 import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
+import com.swozo.persistence.user.User;
 import com.swozo.utils.SupportedLanguage;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Entity
-@Table(name = "ActivityLinks")
+@Table(name = "UserActivityLins")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public class ActivityLink extends BaseEntity {
+public class UserActivityLink extends BaseEntity {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    User user;
+
     private String url;
 
-    @OneToMany(mappedBy = "activityLink", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "userActivityLink", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @MapKey(name = "translationId.language")
     private Map<SupportedLanguage, TranslatableActivityLink> translations = new HashMap<>();
 
     public void setTranslation(TranslatableActivityLink translation) {
-        translation.setActivityLink(this);
+        translation.setUserActivityLink(this);
         this.translations.put(translation.getTranslationId().getLanguage(), translation);
+    }
+
+    public Optional<String> getUrl() {
+        return Optional.ofNullable(url);
     }
 }

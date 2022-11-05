@@ -5,8 +5,8 @@ import com.swozo.persistence.mda.models.Cim;
 import com.swozo.persistence.mda.models.Pim;
 import com.swozo.persistence.mda.policies.Policy;
 import com.swozo.persistence.mda.vminfo.PimVmInfo;
-import com.swozo.util.mock.ServiceModule;
-import lombok.*;
+import com.swozo.persistence.servicemodule.ServiceModule;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -24,7 +24,7 @@ public class CimToPimTranslator{
     }
 
     public Pim getPim(Cim cim) {
-        Integer studentsVms = cim.getSelectedModules().stream().filter(serviceModule -> !serviceModule.isIsolated())
+        Integer studentsVms = cim.getSelectedModules().stream().filter(ServiceModule::isIsolated)
                 .findFirst().map(x-> cim.getStudentsNumber()).orElse(0);
         Integer teacherVms = 1;
         PimVmInfo studentPimVmInfo = new PimVmInfo();
