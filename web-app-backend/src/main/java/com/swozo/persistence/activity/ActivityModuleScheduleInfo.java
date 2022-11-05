@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 @Entity
-@Table(name = "ActivityScheduleRequests")
+@Table(name = "ActivityModuleScheduleInfo")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -22,12 +22,12 @@ public class ActivityModuleScheduleInfo extends BaseEntity {
     @ToString.Exclude
     private ActivityModule activityModule;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "activity_module_schedule_info_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "activityModuleScheduleInfo")
     @ToString.Exclude
     Collection<UserActivityLink> userActivityLinks = new LinkedList<>();
 
     public void addUserActivityLink(UserActivityLink userActivityLink) {
+        userActivityLink.setActivityModuleScheduleInfo(this);
         userActivityLinks.add(userActivityLink);
     }
 }

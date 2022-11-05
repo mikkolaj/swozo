@@ -1,5 +1,6 @@
 package com.swozo.api.orchestrator;
 
+import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.mda.MdaEngine;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
@@ -34,6 +35,7 @@ import static com.swozo.util.CollectionUtils.iterateSimultaneously;
 public class ScheduleService {
     private final OrchestratorService orchestratorService;
     private final MdaEngine engine;
+    private final ActivityRepository activityRepository;
 
     public void scheduleActivities(Collection<Activity> activities) {
         var scheduleRequestsWithInfos= activities.stream()
@@ -47,6 +49,7 @@ public class ScheduleService {
         var responses = orchestratorService.sendScheduleRequests(scheduleRequests);
 
         iterateSimultaneously(scheduleRequestsWithInfos, responses, this::assignScheduleResponse);
+        activityRepository.saveAll(activities);
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> buildScheduleRequestsForActivity(Activity activity) {

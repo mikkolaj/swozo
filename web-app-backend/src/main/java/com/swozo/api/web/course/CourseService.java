@@ -1,6 +1,7 @@
 package com.swozo.api.web.course;
 
 import com.swozo.api.orchestrator.ScheduleService;
+import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
@@ -34,6 +35,7 @@ public class CourseService {
     private final UserService userService;
     private final CourseMapper courseMapper;
     private final ActivityMapper activityMapper;
+    private final ActivityRepository activityRepository;
     private final ScheduleService scheduleService;
     private final CourseValidator courseValidator;
 
@@ -91,9 +93,11 @@ public class CourseService {
         course.setJoinUUID(UUID.randomUUID().toString());
         course.setSandboxMode(sandboxMode);
 
-        scheduleService.scheduleActivities(course.getActivities());
-        
         courseRepository.save(course);
+
+        if (!course.getActivities().isEmpty()) {
+            scheduleService.scheduleActivities(course.getActivities());
+        }
 
         return courseMapper.toDto(course, teacher, true);
     }
@@ -158,9 +162,9 @@ public class CourseService {
         var activity = activityMapper.toPersistence(request);
 
         course.addActivity(activity);
-        scheduleService.scheduleActivities(List.of(activity));
 
-        courseRepository.save(course);
+        scheduleService.scheduleActivities(List.of(activityRepository.save(activity)));
+
         return courseMapper.toDto(course, course.getTeacher(), true);
     }
 

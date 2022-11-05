@@ -25,8 +25,7 @@ public class Activity extends BaseEntity {
     private String instructionFromTeacherHtml;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "activity_module_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "activity")
     @ToString.Exclude
     private Collection<ActivityModule> modules = new LinkedList<>();
 

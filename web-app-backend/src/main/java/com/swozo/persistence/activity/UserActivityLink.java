@@ -24,6 +24,11 @@ public class UserActivityLink extends BaseEntity {
     @ToString.Exclude
     User user;
 
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinColumn(name = "activity_module_schedule_info_id")
+    @ToString.Exclude
+    private ActivityModuleScheduleInfo activityModuleScheduleInfo;
+
     private String url;
 
     @OneToMany(mappedBy = "userActivityLink", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
