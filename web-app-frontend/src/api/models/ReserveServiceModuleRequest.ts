@@ -74,6 +74,12 @@ export interface ReserveServiceModuleRequest {
      * @memberof ReserveServiceModuleRequest
      */
     isPublic: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ReserveServiceModuleRequest
+     */
+    isIsolated: boolean;
 }
 
 export function ReserveServiceModuleRequestFromJSON(json: any): ReserveServiceModuleRequest {
@@ -94,6 +100,7 @@ export function ReserveServiceModuleRequestFromJSONTyped(json: any, ignoreDiscri
         'scheduleTypeName': json['scheduleTypeName'],
         'dynamicProperties': json['dynamicProperties'],
         'isPublic': json['isPublic'],
+        'isIsolated': json['isIsolated'],
     };
 }
 
@@ -114,6 +121,7 @@ export function ReserveServiceModuleRequestToJSON(value?: ReserveServiceModuleRe
         'scheduleTypeName': value.scheduleTypeName,
         'dynamicProperties': value.dynamicProperties,
         'isPublic': value.isPublic,
+        'isIsolated': value.isIsolated,
     };
 }
 

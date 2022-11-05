@@ -18,4 +18,5 @@ public class VirtualMachine extends BaseEntity {
     Integer vcpu;
     Integer ram;
     Integer bandwidth;
+    Integer imageDiskSize;
 }

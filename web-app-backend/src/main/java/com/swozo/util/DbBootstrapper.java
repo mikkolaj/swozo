@@ -2,7 +2,7 @@ package com.swozo.util;
 
 import com.swozo.api.common.files.FileRepository;
 import com.swozo.api.web.activity.ActivityRepository;
-import com.swozo.api.web.activitymodule.ActivityModuleRepository;
+import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseRepository;
 import com.swozo.api.web.mda.policy.PolicyRepository;
@@ -10,7 +10,6 @@ import com.swozo.api.web.mda.vm.VmRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
-import com.swozo.mda.Engine;
 import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
@@ -54,11 +53,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final CourseRepository courseRepository;
     private final ActivityRepository activityRepository;
     private final ServiceModuleRepository serviceModuleRepository;
-    private final ActivityModuleRepository activityModuleRepository;
     private final FileRepository fileRepository;
     private final PolicyRepository policyRepository;
     private final VmRepository vmRepository;
-    private final Engine engine;
+    private final ActivityModuleService activityModuleService;
     @Value("${database.enable-bootstrapping}")
     private final boolean enableBootstrapping;
     private boolean alreadySetup = false;
@@ -123,7 +121,6 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         //        FILES
         var mockFile = new RemoteFile();
-        mockFile.setId(0L);
         mockFile.setPath("lab_file.ipynb");
         mockFile.setSizeBytes(2000L);
         mockFile.setOwner(teacher);
@@ -172,9 +169,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         //        ACTIVITIES:
 
         var activityLink1 = new UserActivityLink();
-        activityLink1.setUrl("http://34.118.97.16/lab");
-        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
-        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
+        // this hasn't received links yet
         activityLink1.setUser(student1);
 
         var activityLink2 = new UserActivityLink();
@@ -237,11 +232,11 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         policyRepository.save(policy);
 
-        VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2);
+        VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2, 10);
         vmRepository.save(vm1);
-        VirtualMachine vm2 = new VirtualMachine("e2-standard-4", 4, 16, 8);
+        VirtualMachine vm2 = new VirtualMachine("e2-standard-4", 4, 16, 8, 10);
         vmRepository.save(vm2);
-        VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16);
+        VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16, 10);
         vmRepository.save(vm3);
     }
 }

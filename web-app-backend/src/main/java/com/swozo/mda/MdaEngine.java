@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class Engine {
+public class MdaEngine {
     private final CimToPimTranslator cimToPimTranslator;
     private final PimToPsmTranslator pimToPsmTranslator;
 

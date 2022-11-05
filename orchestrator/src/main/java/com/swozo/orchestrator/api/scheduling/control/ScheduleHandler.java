@@ -1,7 +1,7 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
-import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.model.users.links.ActivityLinkInfo;
 import com.swozo.orchestrator.api.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;

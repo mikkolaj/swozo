@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Entity
-@Table(name = "UserActivityLins")
+@Table(name = "UserActivityLinks")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

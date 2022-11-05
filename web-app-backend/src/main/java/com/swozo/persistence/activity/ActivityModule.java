@@ -25,7 +25,7 @@ public class ActivityModule extends BaseEntity {
     private Activity activity;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "activity_module_schedule_schedule_info_id")
+    @JoinColumn(name = "id")
     @ToString.Exclude
     private Collection<ActivityModuleScheduleInfo> schedules = new ArrayList<>();
 

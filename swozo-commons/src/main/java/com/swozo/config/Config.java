@@ -14,4 +14,5 @@ public class Config {
     public static final String EXTERNAL = "/external";
     public static final String FILES = "/files";
     public static final String DOWNLOAD = "/download";
+    public static final String USERS = "/users";
 }

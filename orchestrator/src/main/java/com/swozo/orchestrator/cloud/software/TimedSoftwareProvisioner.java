@@ -1,7 +1,7 @@
 package com.swozo.orchestrator.cloud.software;
 
-import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.model.users.links.ActivityLinkInfo;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 
