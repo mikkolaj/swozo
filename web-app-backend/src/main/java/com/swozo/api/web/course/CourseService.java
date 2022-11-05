@@ -126,19 +126,6 @@ public class CourseService {
         return courseMapper.toDto(course, student, false);
     }
 
-    private void handleNewStudent(Course course, User student) {
-//         assert course.getStudents().size() + 1 <= course.expectedStudentCount
-        course.getActivities().forEach(activity -> {
-              activity.getModules().forEach(activityModule -> {
-                  activityModule.getSchedules().stream()
-                          .flatMap(scheduleInfo -> scheduleInfo.getUserActivityLinks().stream())
-                          .filter(userActivityLink -> userActivityLink.getUser() == null)
-                          .findAny()
-                          .ifPresent(userActivityLink -> userActivityLink.setUser(student));
-              });
-        });
-    }
-
     @Transactional
     public CourseDetailsDto editCourse(Long userId, Long courseId, EditCourseRequest request) {
         var course = getById(courseId);

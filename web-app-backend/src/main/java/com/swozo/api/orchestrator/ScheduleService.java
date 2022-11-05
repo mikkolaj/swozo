@@ -183,7 +183,7 @@ public class ScheduleService {
 
     private ActivityModule findCorrespondingActivityModule(Activity activity, ServiceModule serviceModule) {
         return activity.getModules().stream()
-                .filter(activityModule1 -> activityModule1.getServiceModule().equals(serviceModule))
+                .filter(activityModule -> activityModule.getServiceModule().equals(serviceModule))
                 .findAny().orElseThrow();
     }
 

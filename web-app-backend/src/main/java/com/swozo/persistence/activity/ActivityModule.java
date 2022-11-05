@@ -36,13 +36,4 @@ public class ActivityModule extends BaseEntity {
         this.schedules.add(scheduleInfo);
         scheduleInfo.setActivityModule(this);
     }
-
-
-//    public void addLink(ActivityLink link) {
-//        links.add(link);
-//    }
-//
-//    public Optional<Long> getRequestId() {
-//        return Optional.ofNullable(requestId);
-//    }
 }
