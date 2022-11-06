@@ -20,7 +20,9 @@ public class RemoteFile extends BaseEntity {
     private String path;
     private Long sizeBytes;
     private LocalDateTime registeredAt = LocalDateTime.now();
-    @ManyToOne(fetch = FetchType.EAGER)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     private User owner;
 
     // TODO: keep other metadata?

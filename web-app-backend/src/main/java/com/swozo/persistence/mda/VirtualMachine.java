@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "VirtualMachine")
+@Table(name = "VirtualMachines")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

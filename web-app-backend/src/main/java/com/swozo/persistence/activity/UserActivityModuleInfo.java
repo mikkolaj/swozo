@@ -29,7 +29,7 @@ public class UserActivityModuleInfo extends BaseEntity {
     @ToString.Exclude
     private ActivityModuleScheduleInfo activityModuleScheduleInfo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "remote_file_id")
     private RemoteFile userFile;
 
