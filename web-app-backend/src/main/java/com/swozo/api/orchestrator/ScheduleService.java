@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.swozo.util.CollectionUtils.iterateSimultaneously;
@@ -61,8 +62,10 @@ public class ScheduleService {
         return new ScheduleRequest(
                 provideServiceLifespan(activityWithModule.activity()),
                 providePsm(activityWithModule.activity()),
-                ServiceType.JUPYTER,
-                activityWithModule.module.getServiceModule().getDynamicProperties()
+//                ServiceType.JUPYTER,
+//                activityWithModule.module.getServiceModule().getDynamicProperties()
+//                TODO: undo
+                new ArrayList<>()
         );
     }
 

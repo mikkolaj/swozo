@@ -5,9 +5,13 @@ import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activitymodule.ActivityModuleRepository;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseRepository;
+import com.swozo.api.web.mda.policy.PolicyRepository;
+import com.swozo.api.web.mda.vm.VmRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
+import com.swozo.mda.Engine;
+//import com.swozo.model.scheduling.properties.ScheduleType;
 import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
@@ -16,6 +20,10 @@ import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityLink;
 import com.swozo.persistence.activity.ActivityModule;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
+import com.swozo.persistence.mda.VirtualMachine;
+import com.swozo.persistence.mda.models.Psm;
+import com.swozo.persistence.mda.policies.Policy;
+import com.swozo.persistence.mda.policies.PolicyType;
 import com.swozo.persistence.user.Role;
 import com.swozo.persistence.user.User;
 import com.swozo.persistence.user.UserCourseData;
@@ -48,6 +56,9 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final ServiceModuleRepository serviceModuleRepository;
     private final ActivityModuleRepository activityModuleRepository;
     private final FileRepository fileRepository;
+    private final PolicyRepository policyRepository;
+    private final VmRepository vmRepository;
+    private final Engine engine;
     @Value("${database.enable-bootstrapping}")
     private final boolean enableBootstrapping;
     private boolean alreadySetup = false;
@@ -189,5 +200,26 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         ));
         course.addActivity(activity2);
         activityRepository.save(activity2);
+
+//        POLICIES:
+        var teacher1 = userRepository.getByEmail("teacher@gmail.com");
+        Policy policy = new Policy();
+        policy.setPolicyType(PolicyType.MAX_RAM);
+        policy.setTeacher(teacher1);
+        policy.setValue(20);
+
+        policyRepository.save(policy);
+
+        VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2);
+        vmRepository.save(vm1);
+        VirtualMachine vm2 = new VirtualMachine("e2-standard-4", 4, 16, 8);
+        vmRepository.save(vm2);
+        VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16);
+        vmRepository.save(vm3);
+
+//          TO CHECK:
+//        Psm psm = engine.processCim();
+//        System.out.println(psm);
+
     }
 }

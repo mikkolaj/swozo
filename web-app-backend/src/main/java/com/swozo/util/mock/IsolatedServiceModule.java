@@ -1,6 +1,6 @@
 package com.swozo.util.mock;
 
-import com.swozo.persistence.vminfo.PimVmInfo;
+import com.swozo.persistence.mda.vminfo.PimVmInfo;
 import lombok.*;
 
 @Getter
@@ -14,10 +14,10 @@ public class IsolatedServiceModule extends ServiceModule{
     public PimVmInfo getPimVmInfo(Integer studens){
         PimVmInfo translation = new PimVmInfo();
         translation.addModule(id);
-        translation.setVCPUs(baseVcpu);
+        translation.setVcpu(baseVcpu);
         translation.setRam(baseRam);
         translation.setDisk(baseDisk);
-        translation.setBandiwth(baseBanwidth);
+        translation.setBandwidth(baseBanwidth);
 
         return translation;
     }

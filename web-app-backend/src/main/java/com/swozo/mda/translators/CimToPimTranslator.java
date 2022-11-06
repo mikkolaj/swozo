@@ -1,20 +1,31 @@
 package com.swozo.mda.translators;
 
-import com.swozo.persistence.models.Cim;
-import com.swozo.persistence.models.Pim;
-import com.swozo.persistence.vminfo.PimVmInfo;
+import com.swozo.api.web.mda.policy.PolicyService;
+import com.swozo.persistence.mda.models.Cim;
+import com.swozo.persistence.mda.models.Pim;
+import com.swozo.persistence.mda.policies.Policy;
+import com.swozo.persistence.mda.vminfo.PimVmInfo;
 import com.swozo.util.mock.ServiceModule;
 import lombok.*;
+import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Optional;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Service
+@RequiredArgsConstructor
 public class CimToPimTranslator{
+    private final PolicyService policyService;
+
+    private void checkPolicies(Collection<Policy> policies, PimVmInfo pimVmInfo){
+        for (Policy policy: policies){
+            policy.checkPolicy(pimVmInfo);
+        }
+    }
+
     public Pim getPim(Cim cim) {
-        Integer studentsVms = cim.getSelectedModules().stream().findFirst().map(x-> cim.getStudentsNumber()).orElse(0);
+        Integer studentsVms = cim.getSelectedModules().stream().filter(serviceModule -> !serviceModule.isIsolated())
+                .findFirst().map(x-> cim.getStudentsNumber()).orElse(0);
         Integer teacherVms = 1;
         PimVmInfo studentPimVmInfo = new PimVmInfo();
         studentPimVmInfo.setAmount(studentsVms);
@@ -36,6 +47,16 @@ public class CimToPimTranslator{
             studentPimVmInfo.setAmount(studentsVms);
             pim.setStudentsVms(Optional.of(studentPimVmInfo));
         }
+
+        Collection<Policy> policiesToCheck = policyService.getAllTeacherPolicies(cim.getTeacherId());
+
+
+//        THROWABLE:
+        checkPolicies(policiesToCheck, teacherPimVmInfo);
+        checkPolicies(policiesToCheck, studentPimVmInfo);
+
+
+
 //        TODO check policies
         return pim;
     }
