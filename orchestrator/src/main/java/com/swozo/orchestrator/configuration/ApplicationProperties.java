@@ -16,8 +16,10 @@ public record ApplicationProperties(
     private record Scheduler(int threadPoolSize) {
     }
 
-    private record Ansible(String playbookExecutablePath, Jupyter jupyter) {
+    private record Ansible(String playbookExecutablePath, Jupyter jupyter, Sozisel sozisel) {
         private record Jupyter(String playbookPath) {
+        }
+        private record Sozisel(String playbookPath) {
         }
     }
 
@@ -31,6 +33,8 @@ public record ApplicationProperties(
     public String jupyterPlaybookPath() {
         return ansible.jupyter.playbookPath;
     }
+
+    public String soziselPlaybookPath() { return ansible.sozisel.playbookPath; }
 
     public int schedulerThreadPoolSize() {
         return scheduler.threadPoolSize;
