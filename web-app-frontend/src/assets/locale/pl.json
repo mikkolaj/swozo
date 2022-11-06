@@ -321,7 +321,7 @@
                         },
                         "- Moduł może zostać usunięty tylko gdy nikt z niego jeszcze nie skorzystał",
                         "- Żeby zablokować przyszłe korzystanie z modułu możesz wyłączyć opcję 'Moduł publiczny', jednak osoby które już go wybrały wciąż będą w stanie go użyć",
-                        "- Zmiana typu serwisu nie będzie możliwa, będziesz mógł jednak zmienić jego konfigurację, w szczególności zawartość plików i wymagania techniczne"
+                        "- Zmiana typu izolacji i typu serwisu nie będzie możliwa, będziesz mógł jednak zmienić jego konfigurację, w szczególności zawartość plików i wymagania techniczne"
                     ]
                 }
             }

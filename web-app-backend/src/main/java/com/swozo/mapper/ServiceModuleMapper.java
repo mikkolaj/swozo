@@ -84,6 +84,7 @@ public abstract class ServiceModuleMapper {
     @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
     public abstract ServiceModuleSummaryDto toSummaryDto(ServiceModule serviceModule);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "dynamicProperties", ignore = true)
     @Mapping(target = "ready", expression = "java(false)")
     @Mapping(target = "name", source = "request.name")
@@ -96,6 +97,7 @@ public abstract class ServiceModuleMapper {
     @Mapping(target = "baseBandwidth", source = "request.mdaData.baseBandwidth")
     protected abstract IsolatedServiceModule toIsolatedPersistenceReservation(ReserveServiceModuleRequest request, User creator);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "dynamicProperties", ignore = true)
     @Mapping(target = "ready", expression = "java(false)")
     @Mapping(target = "name", source = "request.name")
@@ -119,19 +121,19 @@ public abstract class ServiceModuleMapper {
                 toSharedPersistenceReservation(request, request.mdaData().sharedServiceModuleMdaDto().orElseThrow(), creator);
     }
 
-
     @Mapping(target = "teacherInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getTeacherInstructionHtml()))")
     @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
     @Mapping(target = "mdaData", expression = "java(mdaToDto(serviceModule))")
     public abstract ReserveServiceModuleRequest toFormDataDto(ServiceModule serviceModule);
 
     public void updateCommonFields(ServiceModule serviceModule, ReserveServiceModuleRequest request) {
-        // change of service type is not supported
+        // change of service type and isolation type is not supported
         serviceModule.setName(request.name());
         serviceModule.setSubject(request.subject());
         serviceModule.setDescription(request.description());
         serviceModule.setTeacherInstructionHtml(commonMappers.instructionToPersistence(request.teacherInstruction()));
         serviceModule.setStudentInstructionHtml(commonMappers.instructionToPersistence(request.studentInstruction()));
+        serviceModule.setMdaData(request.mdaData());
     }
 
     public ServiceModuleReservationDto toReservationDto(ServiceModule serviceModule, Map<String, Object> dynamicFieldAdditionalData) {

@@ -173,6 +173,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                             (service) => service.serviceName === values[MODULE_INFO_SLIDE].service
                         )}
                         values={values[MODULE_SPECS_SLIDE]}
+                        editMode={editMode}
                         {...slideProps}
                     />
                 ),

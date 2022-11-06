@@ -9,9 +9,10 @@ import { MdaValues } from '../util/types';
 type Props = SlideProps & {
     values: MdaValues;
     serviceConfig?: ServiceConfig;
+    editMode?: boolean;
 };
 
-export const ModuleSpecsForm = ({ nameBuilder, values, serviceConfig }: Props) => {
+export const ModuleSpecsForm = ({ nameBuilder, values, serviceConfig, editMode }: Props) => {
     const { t } = useTranslation();
 
     return (
@@ -20,11 +21,13 @@ export const ModuleSpecsForm = ({ nameBuilder, values, serviceConfig }: Props) =
                 name={nameBuilder('isolationMode')}
                 i18nLabel="createModule.slides.1.form.isolation.label"
             >
-                {serviceConfig?.possibleIsolationModes.map((isolationMode) => (
-                    <MenuItem key={isolationMode} value={isolationMode}>
-                        {t(`createModule.slides.1.form.isolation.${isolationMode}`)}
-                    </MenuItem>
-                ))}
+                {serviceConfig?.possibleIsolationModes
+                    .filter((isolation) => !editMode || isolation === values.isolationMode)
+                    .map((isolationMode) => (
+                        <MenuItem key={isolationMode} value={isolationMode}>
+                            {t(`createModule.slides.1.form.isolation.${isolationMode}`)}
+                        </MenuItem>
+                    ))}
             </FormSelectField>
             <Box sx={{ width: '60%', mt: 2 }}>
                 <Typography gutterBottom variant="h6">

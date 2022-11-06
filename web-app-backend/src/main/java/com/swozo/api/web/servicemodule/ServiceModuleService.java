@@ -89,7 +89,7 @@ public class ServiceModuleService {
     public ServiceModuleReservationDto initServiceModuleCreation(Long creatorId, ReserveServiceModuleRequest request) {
         var serviceConfig = orchestratorService.getServiceConfig(request.serviceName());
         var creator = userRepository.findById(creatorId).orElseThrow();
-        serviceModuleValidator.validateReservation(creator, serviceConfig, request);
+        serviceModuleValidator.validateReservation(creator, serviceConfig, request, false);
 
         var serviceModuleReservation = serviceModuleRepository.save(
                 serviceModuleMapper.toPersistenceReservation(request, creator)
@@ -127,6 +127,8 @@ public class ServiceModuleService {
     public ServiceModuleDetailsDto updateCommonData(Long userId, Long serviceModuleId, ReserveServiceModuleRequest request) {
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
         var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
+        var editor = userRepository.findById(userId).orElseThrow();
+        serviceModuleValidator.validateEditCommonFields(editor, serviceModule, serviceConfig, request);
 
         serviceModuleMapper.updateCommonFields(serviceModule, request);
         serviceModuleRepository.save(serviceModule);

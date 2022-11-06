@@ -26,16 +26,20 @@ public class ServiceModuleValidator {
     private final ServiceModuleRepository serviceModuleRepository;
     private final ServiceModuleMapper serviceModuleMapper;
 
-    public void validateReservation(User creator, ServiceConfig serviceConfig, ReserveServiceModuleRequest request) {
+    public void validateReservation(User creator, ServiceConfig serviceConfig, ReserveServiceModuleRequest request, boolean editMode) {
         var serviceParamsValidator = ValidationErrors.builder()
-                .putEachFailed(allSchemaRequiredFieldsPresent(request))
+                .putEachFailed(allSchemaRequiredFieldsPresent(request));
+
+        if (!editMode) {
+            serviceParamsValidator
                 .putIfFails(
                         unique(ValidationNames.Fields.NAME, serviceModuleRepository.findByName(request.name()))
                 )
                 .combineWith(
-                        validateAllRequiredParamsPresent(serviceConfig, request.dynamicProperties()),
-                        ValidationNames.Fields.DYNAMIC_FIELDS
+                    validateAllRequiredParamsPresent(serviceConfig, request.dynamicProperties()),
+                    ValidationNames.Fields.DYNAMIC_FIELDS
                 );
+        }
 
         var mdaValidator = ValidationErrors.builder()
                 .putEachFailed(allSchemaRequiredFieldsPresent(request.mdaData()))
@@ -46,6 +50,30 @@ public class ServiceModuleValidator {
                 .combineWith(mdaValidator, ValidationNames.Fields.MDA_VALUES)
                 .build()
                 .throwIfAnyPresent("Invalid service module data");
+    }
+
+    public void validateEditCommonFields(
+            User editor,
+            ServiceModule serviceModule,
+            ServiceConfig serviceConfig,
+            ReserveServiceModuleRequest request
+    ) {
+        if (!editor.equals(serviceModule.getCreator())) {
+            throw new UnauthorizedException("you are not allowed to edit this service module");
+        }
+        validateReservation(editor, serviceConfig, request, true);
+
+        ValidationErrors.builder().combineWith(
+            ValidationErrors.builder().putIfFails(
+                    unique(ValidationNames.Fields.NAME,
+                            serviceModuleRepository.findByName(request.name())
+                                    .filter(serviceModuleWithSameName -> !serviceModule.equals(serviceModuleWithSameName))
+
+                    )
+            ), ValidationNames.Fields.MODULE_VALUES
+        )
+        .build()
+        .throwIfAnyPresent("Invalid service module data");
     }
 
     public void validateIsCreator(Long userId, ServiceModule serviceModule) {
