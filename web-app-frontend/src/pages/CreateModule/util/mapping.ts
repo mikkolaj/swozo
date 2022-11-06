@@ -58,6 +58,11 @@ export const initialSharedModuleMdaValues = (): SharedServiceModuleMdaDto => ({
     usersPerAdditionalRamGb: 10,
 });
 
+export const toIsolationMode = (isIsolated: boolean): ServiceConfigPossibleIsolationModesEnum =>
+    isIsolated
+        ? ServiceConfigPossibleIsolationModesEnum.Isolated
+        : ServiceConfigPossibleIsolationModesEnum.Shared;
+
 export const buildReserveServiceModuleRequest = (
     values: FormValues,
     dynamicFormValueRegistry: DynamicFormValueRegistry
@@ -132,9 +137,7 @@ export const mapToInitialValues = (data: ReserveServiceModuleRequest): FormValue
     },
     [MODULE_SPECS_SLIDE]: {
         ...data.mdaData,
-        isolationMode: data.mdaData.isIsolated
-            ? ServiceConfigPossibleIsolationModesEnum.Isolated
-            : ServiceConfigPossibleIsolationModesEnum.Shared,
+        isolationMode: toIsolationMode(data.mdaData.isIsolated),
         sharedServiceModuleMdaDto: data.mdaData.isIsolated
             ? initialSharedModuleMdaValues()
             : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
