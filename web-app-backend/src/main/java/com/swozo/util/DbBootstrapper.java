@@ -193,10 +193,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activityModuleScheduleInfo2.setScheduleRequestId(99998L);
         activityModuleScheduleInfo2.addUserActivityLink(activityLink3);
 
-        var activityModule1 = new ActivityModule(serviceModule);
+        var activityModule1 = new ActivityModule(serviceModule, false);
         activityModule1.addScheduleInfo(activityModuleScheduleInfo1);
 
-        var activityModule2 = new ActivityModule(serviceModule);
+        var activityModule2 = new ActivityModule(serviceModule, true);
         activityModule2.addScheduleInfo(activityModuleScheduleInfo2);
 
         Activity activity = new Activity();

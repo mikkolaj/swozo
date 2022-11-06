@@ -19,6 +19,12 @@ import {
     InstructionDtoFromJSONTyped,
     InstructionDtoToJSON,
 } from './InstructionDto';
+import {
+    SelectedServiceModuleDto,
+    SelectedServiceModuleDtoFromJSON,
+    SelectedServiceModuleDtoFromJSONTyped,
+    SelectedServiceModuleDtoToJSON,
+} from './SelectedServiceModuleDto';
 
 /**
  * 
@@ -58,10 +64,10 @@ export interface CreateActivityRequest {
     instructionFromTeacher: InstructionDto;
     /**
      * 
-     * @type {Array<number>}
+     * @type {Array<SelectedServiceModuleDto>}
      * @memberof CreateActivityRequest
      */
-    selectedModulesIds: Array<number>;
+    selectedModules: Array<SelectedServiceModuleDto>;
 }
 
 export function CreateActivityRequestFromJSON(json: any): CreateActivityRequest {
@@ -79,7 +85,7 @@ export function CreateActivityRequestFromJSONTyped(json: any, ignoreDiscriminato
         'startTime': (new Date(json['startTime'])),
         'endTime': (new Date(json['endTime'])),
         'instructionFromTeacher': InstructionDtoFromJSON(json['instructionFromTeacher']),
-        'selectedModulesIds': json['selectedModulesIds'],
+        'selectedModules': ((json['selectedModules'] as Array<any>).map(SelectedServiceModuleDtoFromJSON)),
     };
 }
 
@@ -97,7 +103,7 @@ export function CreateActivityRequestToJSON(value?: CreateActivityRequest | null
         'startTime': (value.startTime.toISOString()),
         'endTime': (value.endTime.toISOString()),
         'instructionFromTeacher': InstructionDtoToJSON(value.instructionFromTeacher),
-        'selectedModulesIds': value.selectedModulesIds,
+        'selectedModules': ((value.selectedModules as Array<any>).map(SelectedServiceModuleDtoToJSON)),
     };
 }
 

@@ -9,6 +9,8 @@ import java.util.List;
 public record ActivityModuleDetailsDto(
         @Schema(required = true) Long id,
         @Schema(required = true) ServiceModuleSummaryDto serviceModule,
-        @Schema(required = true) List<ServiceConnectionDetailsDto> connectionDetails
+        @Schema(required = true) List<ServiceConnectionDetailsDto> connectionDetails,
+        @Schema(required = true) boolean linkConfirmationRequired,
+        @Schema(required = true) boolean linkConfirmed
 ) {
 }

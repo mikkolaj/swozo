@@ -281,6 +281,23 @@ paths:
                 $ref: '#/components/schemas/StorageAccessRequest'
       security:
       - JWT_AUTH: []
+  /activities/confirm-link-delivery/{activityModuleId}:
+    put:
+      tags:
+      - activity-controller
+      operationId: confirmLinkCanBeDeliveredToStudents
+      parameters:
+      - name: activityModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
   /sandbox/{serviceModuleId}:
     post:
       tags:
@@ -917,7 +934,7 @@ components:
       - endTime
       - instructionFromTeacher
       - name
-      - selectedModulesIds
+      - selectedModules
       - startTime
       type: object
       properties:
@@ -933,11 +950,21 @@ components:
           format: date-time
         instructionFromTeacher:
           $ref: '#/components/schemas/InstructionDto'
-        selectedModulesIds:
+        selectedModules:
           type: array
           items:
-            type: integer
-            format: int64
+            $ref: '#/components/schemas/SelectedServiceModuleDto'
+    SelectedServiceModuleDto:
+      required:
+      - linkConfirmationRequired
+      - serviceModuleId
+      type: object
+      properties:
+        serviceModuleId:
+          type: integer
+          format: int64
+        linkConfirmationRequired:
+          type: boolean
     ActivityDetailsDto:
       required:
       - activityModules
@@ -977,6 +1004,8 @@ components:
       required:
       - connectionDetails
       - id
+      - linkConfirmationRequired
+      - linkConfirmed
       - serviceModule
       type: object
       properties:
@@ -989,6 +1018,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceConnectionDetailsDto'
+        linkConfirmationRequired:
+          type: boolean
+        linkConfirmed:
+          type: boolean
     CourseDetailsDto:
       required:
       - activities

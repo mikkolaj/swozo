@@ -28,12 +28,28 @@ public class ActivityModule extends BaseEntity {
     @ToString.Exclude
     private Collection<ActivityModuleScheduleInfo> schedules = new ArrayList<>();
 
-    public ActivityModule(ServiceModule serviceModule) {
+    private Boolean linkConfirmationRequired = false;
+    private Boolean linkConfirmed = false;
+
+    public ActivityModule(ServiceModule serviceModule, boolean linkConfirmationRequired) {
         this.serviceModule = serviceModule;
+        this.linkConfirmationRequired = linkConfirmationRequired;
     }
 
     public void addScheduleInfo(ActivityModuleScheduleInfo scheduleInfo) {
         this.schedules.add(scheduleInfo);
         scheduleInfo.setActivityModule(this);
+    }
+
+    public boolean isLinkConfirmationRequired() {
+        return linkConfirmationRequired;
+    }
+
+    public boolean isLinkConfirmed() {
+        return linkConfirmed;
+    }
+
+    public boolean canStudentReceiveLink() {
+        return linkConfirmed || !linkConfirmationRequired;
     }
 }

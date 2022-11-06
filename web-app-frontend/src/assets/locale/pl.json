@@ -93,7 +93,10 @@
                 "title": "{{serviceModuleName}} ({{serviceName}})",
                 "linksUnavailable": "Linki nie są jeszcze dostępne, odśwież stronę przed rozpoczęciem zajęć",
                 "connectionInstruction": "Instrukcja podłączenia",
-                "closeButton": "Zamknij"
+                "closeButton": "Zamknij",
+                "linkConfirmationRequired": "Uczniowie nie mogą jeszcze otrzymać linków do tej aktywności",
+                "confirmLinkDelivery": "Potwierdź możliwość dostarczenia linków",
+                "linkDeliveryConfirmed": "Uczniowie dostaną linki gdy tylko będą one dostępne"
             }
         },
         "join": {
@@ -144,7 +147,8 @@
                     "endTime": "Czas zakończenia",
                     "lessonModules": "moduły lekcyjne",
                     "generalModules": "moduły ogólne",
-                    "instructions": "Instrukcje"
+                    "instructions": "Instrukcje",
+                    "linkConfirmationRequiredLabel": "Wymagaj potwierdzenia przed wysłaniem uczniom linków"
                 }
             },
             "2": {
@@ -408,7 +412,8 @@
     "error": {
         "defaultMessage": "Coś poszło nie tak...",
         "defaultNavigationBtn": "Wróć do strony głównej",
-        "refresh": "Odśwież"
+        "refresh": "Odśwież",
+        "tryAgain": "Coś poszło nie tak, spróbuj ponownie..."
     },
     "toast": {
         "courseCreated": "Kurs został utworzony!",
@@ -417,7 +422,8 @@
         "serviceModuleCreated": "Moduł został utworzony!",
         "serviceModuleUpdated": "Moduł został zaaktualizowany!",
         "serviceModuleDeleted": "Moduł został usunięty!",
-        "fileUploaded": "Plik został przesłany!"
+        "fileUploaded": "Plik został przesłany!",
+        "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",

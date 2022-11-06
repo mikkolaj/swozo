@@ -21,6 +21,7 @@ export * from './ParameterDescription';
 export * from './ParticipantDetailsDto';
 export * from './ReserveServiceModuleRequest';
 export * from './SandboxUserDetailsDto';
+export * from './SelectedServiceModuleDto';
 export * from './ServiceConfig';
 export * from './ServiceConnectionDetailsDto';
 export * from './ServiceModuleDetailsDto';

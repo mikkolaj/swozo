@@ -28,6 +28,7 @@ models/ParameterDescription.ts
 models/ParticipantDetailsDto.ts
 models/ReserveServiceModuleRequest.ts
 models/SandboxUserDetailsDto.ts
+models/SelectedServiceModuleDto.ts
 models/ServiceConfig.ts
 models/ServiceConnectionDetailsDto.ts
 models/ServiceModuleDetailsDto.ts

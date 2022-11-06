@@ -64,6 +64,15 @@ public class ActivityController {
         return activityService.getPublicActivityFileDownloadRequest(accessToken.getUserId(), activityId, fileId, role);
     }
 
+    @PutMapping("/confirm-link-delivery/{activityModuleId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public void confirmLinkCanBeDeliveredToStudents(
+            AccessToken accessToken,
+            @PathVariable Long activityModuleId
+    ) {
+       activityModuleService.confirmLinkCanBeDeliveredToStudents(accessToken.getUserId(), activityModuleId);
+    }
+
     @PutMapping(INTERNAL + LINKS + "/{activityModuleId}/{scheduleRequestId}")
     public void setActivityLinks(
             @PathVariable Long activityModuleId,

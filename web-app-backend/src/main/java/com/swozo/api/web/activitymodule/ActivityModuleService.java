@@ -13,6 +13,7 @@ import com.swozo.model.users.OrchestratorUserDto;
 import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
+import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +89,16 @@ public class ActivityModuleService {
                 initFileUploadRequest,
                 filePathProvider.userActivityModuleFilePath(activityModule, user)
         );
+    }
+
+    public void confirmLinkCanBeDeliveredToStudents(Long teacherId, Long activityModuleId) {
+        var activityModule = activityModuleRepository.findById(activityModuleId).orElseThrow();
+        if (!activityModule.getActivity().getCourse().getTeacher().getId().equals(teacherId)) {
+            throw new UnauthorizedException("You are not authorized to confirm link delivery");
+        }
+
+        activityModule.setLinkConfirmed(true);
+        activityModuleRepository.save(activityModule);
     }
 
     @Transactional

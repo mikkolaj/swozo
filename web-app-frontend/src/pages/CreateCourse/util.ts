@@ -18,11 +18,16 @@ export const FIELD_SEPARATOR = '.';
 export const COURSE_SLIDE = '0';
 export const ACTIVITIES_SLIDE = '1';
 
+export type SelectedModuleValue = {
+    linkConfirmationRequired: boolean;
+    module: ServiceModuleSummaryDto;
+};
+
 export type ActivityValues = {
     name: string;
     description: string;
-    lessonModules: ServiceModuleSummaryDto[];
-    generalModules: ServiceModuleSummaryDto[];
+    lessonModules: SelectedModuleValue[];
+    generalModules: SelectedModuleValue[];
     instructions: string;
     date: Dayjs;
     startTime: Dayjs;
@@ -96,7 +101,12 @@ export const buildCreateActivityRequest = (activity: ActivityValues): CreateActi
         instructionFromTeacher: {
             untrustedPossiblyDangerousHtml: activity.instructions,
         },
-        selectedModulesIds: [...activity.lessonModules /*, ...activity.generalModules*/].map(({ id }) => id), // TODO
+        selectedModules: [...activity.lessonModules /*, ...activity.generalModules*/].map(
+            ({ module, linkConfirmationRequired }) => ({
+                serviceModuleId: module.id,
+                linkConfirmationRequired,
+            })
+        ), // TODO
     };
 };
 
