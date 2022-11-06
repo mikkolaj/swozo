@@ -1,13 +1,14 @@
 import { Grid } from '@mui/material';
 import { ReserveServiceModuleRequest } from 'api';
-import { ApiError } from 'api/errors';
+import { ApiError, ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
 import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
+import { getSortedSlidesWithErrors } from 'common/SlideForm/util';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
-import { FormikProps } from 'formik';
+import { FormikErrors, FormikProps } from 'formik';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useEffect, useRef, useState } from 'react';
@@ -24,7 +25,9 @@ import { Summary } from './components/Summary';
 import { createServiceModule, updateCacheAfterServiceModuleChange, updateServiceModule } from './util/api';
 import {
     buildReserveServiceModuleRequest,
-    initialModuleSpecsValues,
+    flattenDynamicErrors,
+    formatErrors,
+    initialMdaValues,
     initialModuleValues,
     mapToInitialValues,
     preprocessSupportedServices,
@@ -43,7 +46,7 @@ type Props = {
 
 const initialValues: FormValues = {
     [MODULE_INFO_SLIDE]: initialModuleValues(),
-    [MODULE_SPECS_SLIDE]: initialModuleSpecsValues(),
+    [MODULE_SPECS_SLIDE]: initialMdaValues(true),
 };
 
 export const CreateModuleView = ({ editMode = false }: Props) => {
@@ -53,6 +56,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
     const dispatch = useAppDispatch();
     const queryClient = useQueryClient();
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [formattedApiErrors, setFormattedApiErrors] = useState<FormikErrors<FormValues>>();
     const formRef = useRef<FormikProps<FormValues>>(null);
     const dynamicFormRef = useRef<FormikProps<DynamicFormFields>>(null);
     const dynamicFormValueRegistryRef = useRef<DynamicFormValueRegistry>({});
@@ -102,7 +106,14 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                     queryClient.invalidateQueries(['modules', moduleId]);
                 }
                 dispatch(closeModal(ModalId.MODULE_CREATION_IN_PROGRESS));
-                pushApiError(err);
+
+                if (err.errorType === ErrorType.VALIDATION_FAILED) {
+                    const formattedErrors = formatErrors(t, err);
+                    setFormattedApiErrors(formattedErrors);
+                    setCurrentSlide(getSortedSlidesWithErrors(formattedErrors)[0]);
+                } else {
+                    pushApiError(err);
+                }
             },
         }
     );
@@ -112,6 +123,12 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
             initialValues[MODULE_INFO_SLIDE].service = supportedServices[0].serviceName;
         }
     }, [supportedServices]);
+
+    useEffect(() => {
+        if (formattedApiErrors) {
+            formRef.current?.setErrors(formattedApiErrors);
+        }
+    }, [formattedApiErrors]);
 
     if (editMode && moduleId === undefined) {
         navigate(PageRoutes.HOME);
@@ -136,7 +153,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
             }
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             innerRef={formRef as any}
-            slidesWithErrors={[]}
+            slidesWithErrors={getSortedSlidesWithErrors(formattedApiErrors ?? {})}
             slideConstructors={[
                 (slideProps, { values, handleChange, setFieldValue }) => (
                     <ModuleInfoForm
@@ -147,10 +164,19 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                         setFieldValue={setFieldValue}
                         dynamicFormRef={dynamicFormRef}
                         dynamicFormValueRegistryRef={dynamicFormValueRegistryRef}
+                        dynamicFormErrors={formattedApiErrors && flattenDynamicErrors(formattedApiErrors)}
                     />
                 ),
-                (slideProps, _) => <ModuleSpecsForm {...slideProps} />,
-                (_, { values }) => <Summary editMode={editMode} moduleInfo={values[MODULE_INFO_SLIDE]} />,
+                (slideProps, { values }) => (
+                    <ModuleSpecsForm
+                        serviceConfig={preprocessSupportedServices(supportedServices, editMode, values).find(
+                            (service) => service.serviceName === values[MODULE_INFO_SLIDE].service
+                        )}
+                        values={values[MODULE_SPECS_SLIDE]}
+                        {...slideProps}
+                    />
+                ),
+                (_, { values }) => <Summary editMode={editMode} formValues={values} />,
             ]}
             onSubmit={() => {
                 if (!formRef.current?.values) return;

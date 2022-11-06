@@ -31,10 +31,12 @@ models/SandboxUserDetailsDto.ts
 models/ServiceConfig.ts
 models/ServiceConnectionDetailsDto.ts
 models/ServiceModuleDetailsDto.ts
+models/ServiceModuleMdaDto.ts
 models/ServiceModuleReservationDto.ts
 models/ServiceModuleSandboxDto.ts
 models/ServiceModuleSummaryDto.ts
 models/ServiceModuleUsageDto.ts
+models/SharedServiceModuleMdaDto.ts
 models/StorageAccessRequest.ts
 models/UploadAccessDto.ts
 models/UserDetailsDto.ts

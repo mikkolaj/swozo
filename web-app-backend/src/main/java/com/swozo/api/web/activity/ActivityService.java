@@ -6,6 +6,7 @@ import com.swozo.api.common.files.request.InitFileUploadRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.api.web.course.CourseValidator;
 import com.swozo.api.web.exceptions.types.course.ActivityNotFoundException;
 import com.swozo.api.web.exceptions.types.files.FileNotFoundException;
 import com.swozo.api.web.user.UserService;
@@ -19,11 +20,11 @@ import org.springframework.stereotype.Service;
 public class ActivityService {
     private final ActivityRepository activityRepository;
     private final ActivityValidator activityValidator;
+    private final CourseValidator courseValidator;
     private final FileService fileService;
     private final FilePathProvider filePathProvider;
     private final ActivityMapper activityMapper;
     private final UserService userService;
-
 
     public StorageAccessRequest preparePublicActivityFileUpload(
             Long activityId,
@@ -35,7 +36,10 @@ public class ActivityService {
         return fileService.prepareExternalUpload(
                 initFileUploadRequest,
                 filePathProvider.publicActivityFilePath(activity),
-                () -> activityValidator.validateAddActivityFileRequest(activity, teacherId, initFileUploadRequest)
+                () -> {
+                    courseValidator.validateCreatorAndNotSandbox(activity.getCourse(), teacherId);
+                    activityValidator.validateAddActivityFileRequest(activity, teacherId, initFileUploadRequest);
+                }
         );
     }
 

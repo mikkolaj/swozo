@@ -2,15 +2,17 @@ import { Box, Divider, Paper, Typography } from '@mui/material';
 import { stylesColumnCenteredVertical, stylesRowCenteredHorizontal } from 'common/styles';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { ModuleValues } from '../util/types';
+import { FormValues, MODULE_INFO_SLIDE, MODULE_SPECS_SLIDE } from '../util/types';
 
 type Props = {
-    moduleInfo: ModuleValues;
+    formValues: FormValues;
     editMode: boolean;
 };
 
-export const Summary = ({ moduleInfo, editMode }: Props) => {
+export const Summary = ({ formValues, editMode }: Props) => {
     const { t } = useTranslation();
+    const moduleInfo = formValues[MODULE_INFO_SLIDE];
+    const mdaInfo = formValues[MODULE_SPECS_SLIDE];
 
     return (
         <Box>
@@ -21,7 +23,7 @@ export const Summary = ({ moduleInfo, editMode }: Props) => {
             </Box>
             <Box sx={{ ...stylesColumnCenteredVertical }}>
                 <Box>
-                    <Paper sx={{ p: 2 }}>
+                    <Paper sx={{ p: 2, boxShadow: 3 }}>
                         <Typography variant="h5">
                             {t('createModule.slides.2.service', {
                                 serviceName: _.capitalize(moduleInfo.service),
@@ -31,7 +33,7 @@ export const Summary = ({ moduleInfo, editMode }: Props) => {
                 </Box>
 
                 <Box sx={{ mt: 2 }}>
-                    <Paper sx={{ p: 2 }}>
+                    <Paper sx={{ p: 2, boxShadow: 3 }}>
                         <Box>
                             <Typography variant="h5">
                                 {t(
@@ -46,6 +48,19 @@ export const Summary = ({ moduleInfo, editMode }: Props) => {
                                         moduleInfo.isPublic ? 'public' : 'private'
                                     }.info`
                                 )}
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                <Box sx={{ mt: 2 }}>
+                    <Paper sx={{ p: 2, boxShadow: 3 }}>
+                        <Box>
+                            <Typography variant="h5">
+                                {t(`createModule.slides.2.isolation.${mdaInfo.isolationMode}.label`)}
+                            </Typography>
+                            <Typography variant="subtitle1">
+                                {t(`createModule.slides.2.isolation.${mdaInfo.isolationMode}.info`)}
                             </Typography>
                         </Box>
                     </Paper>

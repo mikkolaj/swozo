@@ -781,6 +781,7 @@ components:
       - id
       - isPublic
       - name
+      - serviceModuleMdaDto
       - serviceName
       - studentInstruction
       - subject
@@ -817,6 +818,53 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/DynamicFieldDto'
+        serviceModuleMdaDto:
+          $ref: '#/components/schemas/ServiceModuleMdaDto'
+    ServiceModuleMdaDto:
+      required:
+      - baseBandwidth
+      - baseDisk
+      - baseRam
+      - baseVcpu
+      - isIsolated
+      type: object
+      properties:
+        isIsolated:
+          type: boolean
+        baseVcpu:
+          type: integer
+          format: int32
+        baseRam:
+          type: integer
+          format: int32
+        baseDisk:
+          type: integer
+          format: int32
+        baseBandwidth:
+          type: integer
+          format: int32
+        sharedServiceModuleMdaDto:
+          $ref: '#/components/schemas/SharedServiceModuleMdaDto'
+    SharedServiceModuleMdaDto:
+      required:
+      - usersPerAdditionalBandwidthGbps
+      - usersPerAdditionalCore
+      - usersPerAdditionalDiskGb
+      - usersPerAdditionalRamGb
+      type: object
+      properties:
+        usersPerAdditionalCore:
+          type: integer
+          format: int32
+        usersPerAdditionalRamGb:
+          type: integer
+          format: int32
+        usersPerAdditionalDiskGb:
+          type: integer
+          format: int32
+        usersPerAdditionalBandwidthGbps:
+          type: integer
+          format: int32
     UserDetailsDto:
       required:
       - email
@@ -834,10 +882,10 @@ components:
       required:
       - description
       - dynamicProperties
-      - isIsolated
       - isPublic
+      - mdaData
       - name
-      - scheduleTypeName
+      - serviceName
       - studentInstruction
       - subject
       - teacherInstruction
@@ -853,7 +901,7 @@ components:
           $ref: '#/components/schemas/InstructionDto'
         studentInstruction:
           $ref: '#/components/schemas/InstructionDto'
-        scheduleTypeName:
+        serviceName:
           type: string
         dynamicProperties:
           type: object
@@ -861,8 +909,8 @@ components:
             type: string
         isPublic:
           type: boolean
-        isIsolated:
-          type: boolean
+        mdaData:
+          $ref: '#/components/schemas/ServiceModuleMdaDto'
     CreateActivityRequest:
       required:
       - description
@@ -1272,6 +1320,7 @@ components:
     ServiceConfig:
       required:
       - parameterDescriptions
+      - possibleIsolationModes
       - serviceName
       type: object
       properties:
@@ -1281,6 +1330,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ParameterDescription'
+        possibleIsolationModes:
+          type: array
+          items:
+            type: string
+            enum:
+            - ISOLATED
+            - SHARED
     CourseSummaryDto:
       required:
       - creationTime

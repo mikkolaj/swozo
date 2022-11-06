@@ -19,6 +19,12 @@ import {
     InstructionDtoFromJSONTyped,
     InstructionDtoToJSON,
 } from './InstructionDto';
+import {
+    ServiceModuleMdaDto,
+    ServiceModuleMdaDtoFromJSON,
+    ServiceModuleMdaDtoFromJSONTyped,
+    ServiceModuleMdaDtoToJSON,
+} from './ServiceModuleMdaDto';
 
 /**
  * 
@@ -61,7 +67,7 @@ export interface ReserveServiceModuleRequest {
      * @type {string}
      * @memberof ReserveServiceModuleRequest
      */
-    scheduleTypeName: string;
+    serviceName: string;
     /**
      * 
      * @type {{ [key: string]: string; }}
@@ -76,10 +82,10 @@ export interface ReserveServiceModuleRequest {
     isPublic: boolean;
     /**
      * 
-     * @type {boolean}
+     * @type {ServiceModuleMdaDto}
      * @memberof ReserveServiceModuleRequest
      */
-    isIsolated: boolean;
+    mdaData: ServiceModuleMdaDto;
 }
 
 export function ReserveServiceModuleRequestFromJSON(json: any): ReserveServiceModuleRequest {
@@ -97,10 +103,10 @@ export function ReserveServiceModuleRequestFromJSONTyped(json: any, ignoreDiscri
         'description': json['description'],
         'teacherInstruction': InstructionDtoFromJSON(json['teacherInstruction']),
         'studentInstruction': InstructionDtoFromJSON(json['studentInstruction']),
-        'scheduleTypeName': json['scheduleTypeName'],
+        'serviceName': json['serviceName'],
         'dynamicProperties': json['dynamicProperties'],
         'isPublic': json['isPublic'],
-        'isIsolated': json['isIsolated'],
+        'mdaData': ServiceModuleMdaDtoFromJSON(json['mdaData']),
     };
 }
 
@@ -118,10 +124,10 @@ export function ReserveServiceModuleRequestToJSON(value?: ReserveServiceModuleRe
         'description': value.description,
         'teacherInstruction': InstructionDtoToJSON(value.teacherInstruction),
         'studentInstruction': InstructionDtoToJSON(value.studentInstruction),
-        'scheduleTypeName': value.scheduleTypeName,
+        'serviceName': value.serviceName,
         'dynamicProperties': value.dynamicProperties,
         'isPublic': value.isPublic,
-        'isIsolated': value.isIsolated,
+        'mdaData': ServiceModuleMdaDtoToJSON(value.mdaData),
     };
 }
 

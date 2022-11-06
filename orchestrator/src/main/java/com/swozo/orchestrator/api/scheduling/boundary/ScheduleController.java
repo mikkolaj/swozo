@@ -7,6 +7,7 @@ import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.model.scheduling.properties.PossibleIsolationMode;
 import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.orchestrator.api.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.control.ScheduleService;
@@ -59,7 +60,10 @@ public class ScheduleController {
                         ParameterDescription.builder("resultFilePath", false)
                                 .withTranslatedLabel(translationsProvider.t("services.docker.dynamicParams.resultFilePath.label"))
                                 .ofText().build()
-                )));
+                ),
+                List.of(PossibleIsolationMode.ISOLATED, PossibleIsolationMode.SHARED)
+            )
+        );
         return s;
     }
 

@@ -7,6 +7,7 @@ import com.swozo.api.web.servicemodule.dynamic.DynamicPropertiesHelper;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.model.scheduling.properties.PossibleIsolationMode;
 import com.swozo.persistence.activity.ActivityModule;
 import com.swozo.persistence.servicemodule.IsolatedServiceModule;
 import com.swozo.persistence.servicemodule.ServiceModule;
@@ -17,6 +18,7 @@ import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -53,12 +55,27 @@ public abstract class ServiceModuleMapper {
                 ));
     }
 
+    protected abstract SharedServiceModuleMdaDto sharedMdaToDto(SharedServiceModule serviceModule);
+
+    @Mapping(target = "isIsolated", expression = "java(sharedServiceModuleMdaDto.isEmpty())")
+    protected abstract ServiceModuleMdaDto mdaToDto(ServiceModule serviceModule, Optional<SharedServiceModuleMdaDto> sharedServiceModuleMdaDto);
+
+    protected ServiceModuleMdaDto mdaToDto(ServiceModule serviceModule) {
+        return mdaToDto(serviceModule, serviceModule.isIsolated() ?
+                Optional.empty() : Optional.of(sharedMdaToDto((SharedServiceModule) serviceModule)));
+    }
+
+    public PossibleIsolationMode from(boolean isIsolated) {
+        return isIsolated ? PossibleIsolationMode.ISOLATED : PossibleIsolationMode.SHARED;
+    }
+
     @Mapping(target = "creator", expression = "java(userMapper.toDto(serviceModule.getCreator()))")
     @Mapping(target = "serviceName", source = "serviceModule.serviceName")
     @Mapping(target = "usedInActivitiesCount", expression = "java(activityModuleRepository.countActivityModulesByServiceModuleId(serviceModule.getId()))")
     @Mapping(target = "teacherInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getTeacherInstructionHtml()))")
     @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
     @Mapping(target = "dynamicFields", expression = "java(dynamicFieldsToDto(serviceModule, serviceConfig))")
+    @Mapping(target = "serviceModuleMdaDto", expression = "java(mdaToDto(serviceModule))")
     public abstract ServiceModuleDetailsDto toDto(ServiceModule serviceModule, ServiceConfig serviceConfig);
 
     @Mapping(target = "creator", expression = "java(userMapper.toDto(serviceModule.getCreator()))")
@@ -73,6 +90,10 @@ public abstract class ServiceModuleMapper {
     @Mapping(target = "creator", expression = "java(creator)")
     @Mapping(target = "teacherInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.teacherInstruction()))")
     @Mapping(target = "studentInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.studentInstruction()))")
+    @Mapping(target = "baseVcpu", source = "request.mdaData.baseVcpu")
+    @Mapping(target = "baseRam", source = "request.mdaData.baseRam")
+    @Mapping(target = "baseDisk", source = "request.mdaData.baseDisk")
+    @Mapping(target = "baseBandwidth", source = "request.mdaData.baseBandwidth")
     protected abstract IsolatedServiceModule toIsolatedPersistenceReservation(ReserveServiceModuleRequest request, User creator);
 
     @Mapping(target = "dynamicProperties", ignore = true)
@@ -81,16 +102,27 @@ public abstract class ServiceModuleMapper {
     @Mapping(target = "creator", expression = "java(creator)")
     @Mapping(target = "teacherInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.teacherInstruction()))")
     @Mapping(target = "studentInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.studentInstruction()))")
-    protected abstract SharedServiceModule toSharedPersistenceReservation(ReserveServiceModuleRequest request, User creator);
+    @Mapping(target = "baseVcpu", source = "request.mdaData.baseVcpu")
+    @Mapping(target = "baseRam", source = "request.mdaData.baseRam")
+    @Mapping(target = "baseDisk", source = "request.mdaData.baseDisk")
+    @Mapping(target = "baseBandwidth", source = "request.mdaData.baseBandwidth")
+    @Mapping(target = "usersPerAdditionalCore", source = "sharedMdaData.usersPerAdditionalCore")
+    @Mapping(target = "usersPerAdditionalRamGb", source = "sharedMdaData.usersPerAdditionalRamGb")
+    @Mapping(target = "usersPerAdditionalDiskGb", source = "sharedMdaData.usersPerAdditionalDiskGb")
+    @Mapping(target = "usersPerAdditionalBandwidthGbps", source = "sharedMdaData.usersPerAdditionalBandwidthGbps")
+    protected abstract SharedServiceModule toSharedPersistenceReservation(
+            ReserveServiceModuleRequest request, SharedServiceModuleMdaDto sharedMdaData, User creator);
 
     public ServiceModule toPersistenceReservation(ReserveServiceModuleRequest request, User creator) {
-        return request.isIsolated() ?
+        return request.mdaData().isIsolated() ?
                 toIsolatedPersistenceReservation(request,  creator) :
-                toSharedPersistenceReservation(request, creator);
+                toSharedPersistenceReservation(request, request.mdaData().sharedServiceModuleMdaDto().orElseThrow(), creator);
     }
+
 
     @Mapping(target = "teacherInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getTeacherInstructionHtml()))")
     @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
+    @Mapping(target = "mdaData", expression = "java(mdaToDto(serviceModule))")
     public abstract ReserveServiceModuleRequest toFormDataDto(ServiceModule serviceModule);
 
     public void updateCommonFields(ServiceModule serviceModule, ReserveServiceModuleRequest request) {

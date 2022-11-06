@@ -27,7 +27,7 @@ public class OrchestratorService {
         return requestSender.getServiceConfigs().join();
     }
 
-    public ServiceConfig getServiceConfig(String scheduleType) {
-        return requestSender.getServiceConfig(scheduleType).join();
+    public ServiceConfig getServiceConfig(String serviceName) {
+        return requestSender.getServiceConfig(serviceName).join();
     }
 }
