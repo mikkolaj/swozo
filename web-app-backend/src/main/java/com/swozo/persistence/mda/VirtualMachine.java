@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "VirtualMachine")
+@Table(name = "VirtualMachines")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -18,4 +18,5 @@ public class VirtualMachine extends BaseEntity {
     Integer vcpu;
     Integer ram;
     Integer bandwidth;
+    Integer imageDiskSize;
 }

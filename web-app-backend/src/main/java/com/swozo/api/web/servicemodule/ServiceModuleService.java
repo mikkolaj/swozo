@@ -14,7 +14,7 @@ import com.swozo.api.web.user.UserRepository;
 import com.swozo.mapper.ServiceModuleMapper;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ public class ServiceModuleService {
 
     public ServiceModuleDetailsDto getServiceModuleInfo(Long serviceModuleId) {
         var serviceModule = getById(serviceModuleId);
-        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getScheduleTypeName());
+        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
         return serviceModuleMapper.toDto(serviceModule, serviceConfig);
     }
 
@@ -104,7 +104,7 @@ public class ServiceModuleService {
     public ServiceModuleDetailsDto finishServiceModuleCreation(Long creatorId, FinishServiceModuleCreationRequest request) {
         var reservation = serviceModuleRepository.findById(request.reservationId())
                 .orElseThrow(() -> ServiceModuleNotFoundException.ofReservation(request.reservationId()));
-        var serviceConfig = orchestratorService.getServiceConfig(reservation.getScheduleTypeName());
+        var serviceConfig = orchestratorService.getServiceConfig(reservation.getServiceName());
         if (!reservation.getCreator().getId().equals(creatorId)) {
             throw new RuntimeException("you are not a creator");
         }
@@ -124,7 +124,7 @@ public class ServiceModuleService {
     @Transactional
     public ServiceModuleDetailsDto updateCommonData(Long userId, Long serviceModuleId, ReserveServiceModuleRequest request) {
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
-        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getScheduleTypeName());
+        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
 
         serviceModuleMapper.updateCommonFields(serviceModule, request);
         serviceModuleRepository.save(serviceModule);
@@ -133,7 +133,7 @@ public class ServiceModuleService {
 
     public Map<String, Object> initServiceConfigUpdate(Long userId, Long serviceModuleId, ReserveServiceModuleRequest request) {
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
-        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getScheduleTypeName());
+        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
 
         return handleDynamicFieldTypesForReservation(serviceModule, request, serviceConfig);
     }
@@ -141,7 +141,7 @@ public class ServiceModuleService {
     @Transactional
     public ServiceModuleUpdateTxnPingPong finishServiceConfigUpdate(Long userId, Long serviceModuleId, FinishServiceModuleCreationRequest request) {
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
-        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getScheduleTypeName());
+        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
         var changed = handleDynamicFieldTypesForCreation(serviceModule, request, serviceConfig);
         var oldValues = changed.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
@@ -162,7 +162,7 @@ public class ServiceModuleService {
     @Transactional
     public ServiceModuleUpdateTxnPingPong deleteServiceModule(Long userId, Long serviceModuleId) {
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
-        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getScheduleTypeName());
+        var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
 
         serviceModuleValidator.validateDeleteRequest(serviceModule);
 

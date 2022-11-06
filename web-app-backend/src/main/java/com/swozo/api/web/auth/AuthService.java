@@ -4,6 +4,7 @@ import com.swozo.api.web.auth.dto.AuthDetailsDto;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.auth.request.LoginRequest;
 import com.swozo.api.web.user.UserRepository;
+import com.swozo.mapper.UserMapper;
 import com.swozo.persistence.user.User;
 import com.swozo.security.AccessToken;
 import com.swozo.security.TokenService;
@@ -26,12 +27,13 @@ public class AuthService {
     private final TokenService tokenService;
     private final UserRepository userRepository;
     private final Optional<RoleHierarchy> roleHierarchy;
+    private final UserMapper userMapper;
 
     public AuthDetailsDto authenticateUser(LoginRequest loginRequest) {
         // TODO check passwd etc
         var user = userRepository.findByEmail(loginRequest.email()).orElseThrow();
         var token = tokenService.createAccessToken(user);
-        var appRoles = user.getRoles().stream().map(RoleDto::from).toList();
+        var appRoles = user.getRoles().stream().map(userMapper::roleToDto).toList();
 
         // duplicate some data stored in token for easier access on frontend
         return new AuthDetailsDto(token.getCredentials(), token.getExpirationTime(), appRoles);

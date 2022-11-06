@@ -1,5 +1,6 @@
 package com.swozo.persistence.mda.vminfo;
 
+import com.swozo.persistence.servicemodule.ServiceModule;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 @ToString
 public class PsmVmInfo {
     private Integer amount;
-    private ArrayList<Long> moduleIds = new ArrayList<>();
-    private String machine_type;
+    private ArrayList<ServiceModule> serviceModules = new ArrayList<>();
+    private String machineType;
     private Integer disk;
 }

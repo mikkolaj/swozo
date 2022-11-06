@@ -7,7 +7,7 @@ import com.swozo.persistence.mda.models.Pim;
 import com.swozo.persistence.mda.models.Psm;
 import com.swozo.persistence.mda.vminfo.PimVmInfo;
 import com.swozo.persistence.mda.vminfo.PsmVmInfo;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class PimToPsmTranslator{
     private final VmService vmService;
 
-    private String getMachineType(Integer vcpu, Integer ram, Integer bandwidth){
+    private VirtualMachine selectVirtualMachine(Integer vcpu, Integer ram, Integer bandwidth){
         Collection<VirtualMachine> vms = vmService.getAllSystemVms();
         Collection<VirtualMachine> possibleVms = vms.stream().filter(vm ->
                 vm.getVcpu() >= vcpu && vm.getRam() >= ram && vm.getBandwidth() >= bandwidth).toList();
@@ -28,21 +28,23 @@ public class PimToPsmTranslator{
         if (possibleVms.isEmpty()) {
             throw NeededVmNotFound.withConditions(vcpu, ram, bandwidth);
         }
-        var selectedVm = Collections.min(possibleVms,
+
+        return Collections.min(possibleVms,
                 Comparator.comparingInt(VirtualMachine::getVcpu)
                         .thenComparing(VirtualMachine::getRam)
                         .thenComparing(VirtualMachine::getBandwidth)
         );
-        return selectedVm.getName();
     }
 
     private PsmVmInfo getPsmVmInfo(PimVmInfo pimVmInfo){
         PsmVmInfo psmVmInfo = new PsmVmInfo();
+        VirtualMachine virtualMachine = selectVirtualMachine(pimVmInfo.getVcpu(), pimVmInfo.getRam(),
+                pimVmInfo.getBandwidth());
+
         psmVmInfo.setAmount(pimVmInfo.getAmount());
-        psmVmInfo.setModuleIds(pimVmInfo.getModuleIds());
-        psmVmInfo.setMachine_type(getMachineType(pimVmInfo.getVcpu(), pimVmInfo.getRam(),
-                pimVmInfo.getBandwidth()));
-        psmVmInfo.setDisk(pimVmInfo.getDisk());
+        psmVmInfo.setServiceModules(pimVmInfo.getServiceModules());
+        psmVmInfo.setMachineType(virtualMachine.getName());
+        psmVmInfo.setDisk(virtualMachine.getImageDiskSize() + pimVmInfo.getDisk());
 
         return psmVmInfo;
     }

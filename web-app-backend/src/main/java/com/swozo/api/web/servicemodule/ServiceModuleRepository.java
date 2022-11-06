@@ -1,6 +1,6 @@
 package com.swozo.api.web.servicemodule;
 
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

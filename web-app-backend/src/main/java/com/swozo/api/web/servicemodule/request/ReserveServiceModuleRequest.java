@@ -14,6 +14,7 @@ public record ReserveServiceModuleRequest(
         @Schema(required = true) InstructionDto studentInstruction,
         @Schema(required = true) String scheduleTypeName,
         @Schema(required = true) Map<String, String> dynamicProperties,
-        @Schema(required = true) Boolean isPublic
+        @Schema(required = true) Boolean isPublic,
+        @Schema(required = true) Boolean isIsolated
 ) {
 }

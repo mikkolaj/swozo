@@ -7,8 +7,10 @@ import com.swozo.api.web.servicemodule.dynamic.DynamicPropertiesHelper;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.persistence.ServiceModule;
 import com.swozo.persistence.activity.ActivityModule;
+import com.swozo.persistence.servicemodule.IsolatedServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
+import com.swozo.persistence.servicemodule.SharedServiceModule;
 import com.swozo.persistence.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -52,7 +54,7 @@ public abstract class ServiceModuleMapper {
     }
 
     @Mapping(target = "creator", expression = "java(userMapper.toDto(serviceModule.getCreator()))")
-    @Mapping(target = "serviceName", source = "serviceModule.scheduleTypeName")
+    @Mapping(target = "serviceName", source = "serviceModule.serviceName")
     @Mapping(target = "usedInActivitiesCount", expression = "java(activityModuleRepository.countActivityModulesByServiceModuleId(serviceModule.getId()))")
     @Mapping(target = "teacherInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getTeacherInstructionHtml()))")
     @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
@@ -60,7 +62,6 @@ public abstract class ServiceModuleMapper {
     public abstract ServiceModuleDetailsDto toDto(ServiceModule serviceModule, ServiceConfig serviceConfig);
 
     @Mapping(target = "creator", expression = "java(userMapper.toDto(serviceModule.getCreator()))")
-    @Mapping(target = "serviceName", source = "scheduleTypeName")
     @Mapping(target = "usedInActivitiesCount", expression = "java(activityModuleRepository.countActivityModulesByServiceModuleId(serviceModule.getId()))")
     @Mapping(target = "teacherInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getTeacherInstructionHtml()))")
     @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
@@ -72,7 +73,21 @@ public abstract class ServiceModuleMapper {
     @Mapping(target = "creator", expression = "java(creator)")
     @Mapping(target = "teacherInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.teacherInstruction()))")
     @Mapping(target = "studentInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.studentInstruction()))")
-    public abstract ServiceModule toPersistenceReservation(ReserveServiceModuleRequest request, User creator);
+    protected abstract IsolatedServiceModule toIsolatedPersistenceReservation(ReserveServiceModuleRequest request, User creator);
+
+    @Mapping(target = "dynamicProperties", ignore = true)
+    @Mapping(target = "ready", expression = "java(false)")
+    @Mapping(target = "name", source = "request.name")
+    @Mapping(target = "creator", expression = "java(creator)")
+    @Mapping(target = "teacherInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.teacherInstruction()))")
+    @Mapping(target = "studentInstructionHtml", expression = "java(commonMappers.instructionToPersistence(request.studentInstruction()))")
+    protected abstract SharedServiceModule toSharedPersistenceReservation(ReserveServiceModuleRequest request, User creator);
+
+    public ServiceModule toPersistenceReservation(ReserveServiceModuleRequest request, User creator) {
+        return request.isIsolated() ?
+                toIsolatedPersistenceReservation(request,  creator) :
+                toSharedPersistenceReservation(request, creator);
+    }
 
     @Mapping(target = "teacherInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getTeacherInstructionHtml()))")
     @Mapping(target = "studentInstruction", expression = "java(commonMappers.instructionToDto(serviceModule.getStudentInstructionHtml()))")
