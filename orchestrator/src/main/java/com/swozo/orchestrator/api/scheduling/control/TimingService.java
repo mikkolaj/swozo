@@ -12,8 +12,16 @@ public class TimingService {
         return offsetTime(request.getStartTime()) - schedulingSeconds;
     }
 
+    public long getCleanupOffset(ScheduleRequestEntity request, int cleanupSeconds) {
+        return offsetTime(request.getEndTime()) - cleanupSeconds;
+    }
+
     public long getDeletionOffset(ScheduleRequestEntity request, int cleanupSeconds) {
         return offsetTime(request.getEndTime()) + cleanupSeconds;
+    }
+
+    public long getExtendedDeletionOffset(ScheduleRequestEntity request) {
+        return offsetTime(request.getEndTime()) + 2 * 60 * 60;
     }
 
     private long offsetTime(LocalDateTime targetTime) {

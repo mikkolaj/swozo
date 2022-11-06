@@ -2,7 +2,9 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
-import com.swozo.orchestrator.api.BackendRequestSender;
+import com.swozo.model.users.ActivityRole;
+import com.swozo.model.users.OrchestratorUserDto;
+import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
@@ -11,10 +13,8 @@ import com.swozo.orchestrator.api.scheduling.persistence.mapper.ServiceTypeMappe
 import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VMOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
-import com.swozo.orchestrator.cloud.software.InvalidParametersException;
-import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
-import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
-import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
+import com.swozo.orchestrator.cloud.software.*;
+import com.swozo.orchestrator.cloud.storage.BucketHandler;
 import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
 import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
@@ -31,13 +31,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.swozo.orchestrator.api.scheduling.persistence.entity.RequestStatus.*;
+import static com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus.*;
 
 @Component
 @RequiredArgsConstructor
 public class ScheduleHandler {
     // TODO: probably will change if we decide to execute tasks (e.g. saving user's files) before deleting the instance
-    private static final int CLEANUP_SECONDS = 0;
+    public static final int MANUAL_CLEANUP_SECONDS = 2 * 60 * 60;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-HH-mm-ss");
     private final InternalTaskScheduler scheduler;
     private final TimedVMProvider timedVmProvider;
@@ -47,6 +47,7 @@ public class ScheduleHandler {
     private final ServiceTypeMapper serviceTypeMapper;
     private final TimingService timingService;
     private final BackendRequestSender requestSender;
+    private final BucketHandler bucketHandler;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public ScheduleRequestEntity startTracking(ScheduleRequest request) throws InvalidParametersException {
@@ -148,7 +149,7 @@ public class ScheduleHandler {
                 switchToProvisioningState(request, description, resourceDetails);
                 var links = delegateProvisioning(description, provisioner, resourceDetails);
                 switchToReadyState(request, description, links);
-                scheduleInstanceDeletion(request, resourceDetails.internalResourceId());
+                scheduleTermination(request, resourceDetails);
             } catch (ProvisioningFailed e) {
                 logger.error("Provisioning request [id: {}] on: {} failed.", request.getId(), resourceDetails, e);
                 scheduleRequestTracker.markAsFailure(description);
@@ -180,14 +181,50 @@ public class ScheduleHandler {
         }
     }
 
-    public void scheduleInstanceDeletion(ScheduleRequestEntity requestEntity, long internalResourceId) {
-        var deletionOffset = timingService.getDeletionOffset(requestEntity, CLEANUP_SECONDS);
+    public void scheduleTermination(ScheduleRequestEntity requestEntity, VMResourceDetails resourceDetails) {
+        requestEntity.getServiceDescriptions().forEach(description -> {
+            var provisioner = provisionerFactory.getProvisioner(description.getServiceType());
+            switch (provisioner) {
+                case PersistableSoftwareProvisioner bla ->
+                case TimedSoftwareProvisioner bla -> scheduleDeletion(requestEntity, resourceDetails);
+            }
+            var cleanupOffset = timingService.getCleanupOffset(requestEntity, provisioner.get);
+            logger.info("Scheduling instance cleanup for request [id: {}] in {} seconds", requestEntity.getId(), cleanupOffset);
+            var usersDetails = requestSender.getUserData(requestEntity.getId(), description.getActivityModuleId());
+            usersDetails.thenCompose(details -> {
+                var owner = extractOwner(details);
+                bucketHandler.uploadUsersWorkdirToBucket(resourceDetails, details.);
+            }).exceptionally(exc -> {
+                logger.error();
+            });
+            scheduler.schedule(() -> bucketHandler.uplo), deletionOffset);
+        });
+    }
+
+    private void scheduleDeletion(ScheduleRequestEntity requestEntity, VMResourceDetails resourceDetails) {
+        scheduleDeletion(requestEntity, resourceDetails, 0);
+    }
+
+    private void scheduleDeletion(ScheduleRequestEntity requestEntity, VMResourceDetails resourceDetails, int cleanupSeconds) {
+        var deletionOffset = timingService.getDeletionOffset(requestEntity, cleanupSeconds);
         logger.info("Scheduling instance deletion for request [id: {}] in {} seconds", requestEntity.getId(), deletionOffset);
-        scheduler.schedule(() -> deleteInstance(requestEntity, internalResourceId), deletionOffset);
+        scheduler.schedule(() -> deleteInstance(requestEntity, resourceDetails.internalResourceId()), deletionOffset);
+    }
+
+    private OrchestratorUserDto extractOwner(List<OrchestratorUserDto> details) {
+        if (details.size() == 1) {
+            return details.get(0);
+        } else {
+            return details.stream().filter(user -> user.role() == ActivityRole.TEACHER).findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Invalid user details backend, activity should contain a teacher"));
+        }
     }
 
     public Void deleteInstance(ScheduleRequestEntity request, long internalResourceId) throws InterruptedException {
         try {
+            request.getServiceDescriptions().stream().filter(ServiceDescriptionEntity::isNotReadyToBeDeleted).map(failedService -> {
+                logger.warn("{} couldn't be cleaned up. Save progress manually within {} seconds", timingService);
+            });
             timedVmProvider.deleteInstance(internalResourceId)
                     .thenRun(() -> request.getServiceDescriptions().forEach(description ->
                             scheduleRequestTracker.updateStatus(description, DELETED))

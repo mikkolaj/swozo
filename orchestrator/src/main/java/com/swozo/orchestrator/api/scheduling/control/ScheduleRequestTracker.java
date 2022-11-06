@@ -2,7 +2,7 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
-import com.swozo.orchestrator.api.scheduling.persistence.entity.RequestStatus;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
@@ -41,7 +41,7 @@ public class ScheduleRequestTracker {
     }
 
     public List<ScheduleRequestEntity> getSchedulesToDelete() {
-        return requestRepository.findByEndTimeLessThanAndServiceDescriptions_StatusEquals(getFurthestProvisioningThreshold(), RequestStatus.DELETED)
+        return requestRepository.findByEndTimeLessThanAndServiceDescriptions_StatusEquals(getFurthestProvisioningThreshold(), ServiceStatus.DELETED)
                 .stream()
                 .flatMap(this::toScheduleRequestsWithServiceTypes)
                 .filter(this::endsBeforeAvailability)
@@ -50,16 +50,16 @@ public class ScheduleRequestTracker {
     }
 
     public List<ScheduleRequestEntity> getValidSchedulesToRestartFromBeginning() {
-        var submittedSchedules = getValidSchedulesWithStatus(RequestStatus.SUBMITTED);
-        var schedulesFailedDuringVmCreation = getValidSchedulesWithStatus(RequestStatus.VM_CREATING);
-        var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(RequestStatus.VM_CREATION_FAILED);
+        var submittedSchedules = getValidSchedulesWithStatus(ServiceStatus.SUBMITTED);
+        var schedulesFailedDuringVmCreation = getValidSchedulesWithStatus(ServiceStatus.VM_CREATING);
+        var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(ServiceStatus.VM_CREATION_FAILED);
 
         return initializeParameters(combineLists(submittedSchedules, schedulesFailedDuringVmCreation, schedulesFailedOnVmCreation));
     }
 
     public List<ScheduleRequestEntity> getValidSchedulesToReprovision() {
-        var submittedSchedules = getValidSchedulesWithStatus(RequestStatus.PROVISIONING);
-        var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(RequestStatus.PROVISIONING_FAILED);
+        var submittedSchedules = getValidSchedulesWithStatus(ServiceStatus.PROVISIONING);
+        var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(ServiceStatus.PROVISIONING_FAILED);
 
         return initializeParameters(combineLists(submittedSchedules, schedulesFailedOnVmCreation));
     }
@@ -75,14 +75,14 @@ public class ScheduleRequestTracker {
     }
 
     public List<ScheduleRequestEntity> getValidReadySchedules() {
-        return getValidSchedulesWithStatus(RequestStatus.READY);
+        return getValidSchedulesWithStatus(ServiceStatus.READY);
     }
 
     private LocalDateTime getFurthestProvisioningThreshold() {
         return LocalDateTime.now().plusSeconds(TimedSoftwareProvisioner.MAX_PROVISIONING_SECONDS);
     }
 
-    private List<ScheduleRequestEntity> getValidSchedulesWithStatus(RequestStatus status) {
+    private List<ScheduleRequestEntity> getValidSchedulesWithStatus(ServiceStatus status) {
         return requestRepository.findByEndTimeGreaterThanAndServiceDescriptions_StatusEquals(LocalDateTime.now(), status)
                 .stream()
                 .flatMap(this::toScheduleRequestsWithServiceTypes)
@@ -116,7 +116,7 @@ public class ScheduleRequestTracker {
         return LocalDateTime.now().plusSeconds(provisioningSeconds);
     }
 
-    public void updateStatus(ServiceDescriptionEntity serviceDescriptionEntity, RequestStatus status) {
+    public void updateStatus(ServiceDescriptionEntity serviceDescriptionEntity, ServiceStatus status) {
         serviceDescriptionEntity.setStatus(status);
         descriptionRepository.save(serviceDescriptionEntity);
     }

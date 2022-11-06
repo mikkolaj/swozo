@@ -1,7 +1,7 @@
 package com.swozo.mapper;
 
 import com.swozo.api.common.files.dto.FileDto;
-import com.swozo.api.common.files.dto.UploadAccessDto;
+import com.swozo.model.files.UploadAccessDto;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.persistence.RemoteFile;
 import com.swozo.persistence.user.User;

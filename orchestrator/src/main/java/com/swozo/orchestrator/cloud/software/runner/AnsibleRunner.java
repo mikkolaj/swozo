@@ -38,30 +38,36 @@ public class AnsibleRunner {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ProcessRunner processRunner;
     private final SshService sshService;
+    private final PlaybookPathProvider pathProvider;
     private final ApplicationProperties properties;
 
 
     public void runPlaybook(
             AnsibleConnectionDetails connectionDetails,
-            String playbookPath,
+            Playbook playbook,
             int timeoutMinutes
     ) throws PropagatingException, NotebookFailed {
-        runPlaybook(connectionDetails, playbookPath, Collections.emptyList(), timeoutMinutes);
+        runPlaybook(connectionDetails, playbook, Collections.emptyList(), timeoutMinutes);
     }
 
     public void runPlaybook(
             AnsibleConnectionDetails connectionDetails,
-            String playbookPath,
+            Playbook playbook,
             List<String> userVars,
             int timeoutMinutes
     ) throws PropagatingException, NotebookFailed {
         try {
+            var playbookPath = pathProvider.getPlaybookPath(playbook);
             handleSshStartup(connectionDetails);
             tryExecutingPlaybook(() -> createAnsibleProcess(connectionDetails, playbookPath, userVars), timeoutMinutes);
             logger.info("Playbook successful.");
         } catch (ProcessFailed | ConnectionFailed e) {
             throw new NotebookFailed(e);
         }
+    }
+
+    public String createUserVar(String key, String value) {
+        return String.format("%s='%s'", key, value);
     }
 
     private void tryExecutingPlaybook(Supplier<Process> processCreator, int timeoutMinutes) {

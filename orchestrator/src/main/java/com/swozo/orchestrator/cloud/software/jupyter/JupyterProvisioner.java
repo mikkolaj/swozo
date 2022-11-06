@@ -3,32 +3,30 @@ package com.swozo.orchestrator.cloud.software.jupyter;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.orchestrator.api.BackendRequestSender;
+import com.swozo.model.scheduling.properties.IsolationMode;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
+import com.swozo.orchestrator.cloud.software.PersistableSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
-import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.NotebookFailed;
-import com.swozo.orchestrator.configuration.ApplicationProperties;
-import com.swozo.utils.CheckedExceptionConverter;
+import com.swozo.orchestrator.cloud.software.runner.Playbook;
+import com.swozo.orchestrator.cloud.storage.BucketHandler;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class JupyterProvisioner implements TimedSoftwareProvisioner {
+public class JupyterProvisioner implements PersistableSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.JUPYTER;
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
@@ -37,13 +35,12 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
-    private final ApplicationProperties properties;
-    private final BackendRequestSender requestSender;
+    private final BucketHandler bucketHandler;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public ServiceConfig getServiceConfig() {
-        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), JupyterParameters.getParameterDescriptions(translationsProvider));
+        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), JupyterParameters.getParameterDescriptions(translationsProvider), Set.of(IsolationMode.ISOLATED));
     }
 
     @Override
@@ -88,46 +85,28 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return PROVISIONING_SECONDS;
     }
 
+    @Override
+    public String getWorkdirToSave() {
+        return "/home/swozo/jupyter";
+    }
+
+    @Override
+    public int getCleanupSeconds() {
+        return 240;
+    }
+
     private void runPlaybook(VMResourceDetails resource) {
         ansibleRunner.runPlaybook(
                 AnsibleConnectionDetails.from(resource),
-                properties.jupyterPlaybookPath(),
+                Playbook.PROVISION_JUPYTER,
                 PROVISIONING_SECONDS / MINUTES_FACTOR
         );
     }
 
-    @SneakyThrows
     private void handleParameters(Map<String, String> dynamicParameters, VMResourceDetails resource) {
-        // TODO do this properly
         logger.info("Start handling parameters for {}", resource);
         var jupyterParameters = JupyterParameters.from(dynamicParameters);
-        var resp = CheckedExceptionConverter.from(
-                () -> requestSender.getSignedDownloadUrl(jupyterParameters.notebookLocation()).get(),
-                ProvisioningFailed::new
-        ).get();
-        logger.info("Got resp for {}", resource);
-        var curlCmd = String.format("curl %s --output /home/swozo/jupyter/lab_file.ipynb\n", resp.signedUrl());
-        System.out.println(resp);
-
-        var tempPlaybookFile = File.createTempFile(jupyterParameters.notebookLocation() + "_dl", "_download.yml");
-        try (var writer = new FileWriter(tempPlaybookFile)) {
-            writer.write("- name: Handle dynamic params\n" +
-                    "  hosts: all\n" +
-                    "  tasks:\n" +
-                    "    - name: download notebook\n" +
-                    "      command: " + curlCmd
-            );
-        }
-
-        System.out.println("downloading file");
-        ansibleRunner.runPlaybook(
-                AnsibleConnectionDetails.from(resource),
-                tempPlaybookFile.getPath(),
-                5
-        );
-        System.out.println("done");
-
-        var x = tempPlaybookFile.delete();
-        System.out.println("remove file: " + x);
+        bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), "/home/swozo/jupyter/lab_file.ipynb");
+        logger.info("Done downloading file for {}", resource);
     }
 }

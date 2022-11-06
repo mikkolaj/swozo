@@ -32,7 +32,7 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
         requestTracker.getSchedulesToDelete().forEach(this::deleteCreatedVm);
         requestTracker.getValidSchedulesToRestartFromBeginning().forEach(this::delegateScheduling);
         requestTracker.getValidSchedulesToReprovision().forEach(this::reprovision);
-        requestTracker.getValidReadySchedules().forEach(this::scheduleDeletion);
+        requestTracker.getValidReadySchedules().forEach(this::scheduleTermination);
     }
 
     private void deleteCreatedVm(ScheduleRequestEntity requestEntity) {
@@ -80,16 +80,27 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
         };
     }
 
-    private void scheduleDeletion(ScheduleRequestEntity requestEntity) {
+    private void scheduleTermination(ScheduleRequestEntity requestEntity) {
         try {
             var resourceId =
                     requestEntity.getVmResourceId().orElseThrow(getNoRegisteredVmException(requestEntity, "delete"));
-            scheduleHandler.scheduleInstanceDeletion(requestEntity, resourceId);
+
+            CheckedExceptionConverter.from(() -> vmProvider.getVMResourceDetails(resourceId)
+                    .thenAccept(extractDetailsAndScheduleTermination(requestEntity))
+                    .get()
+            ).get();
         } catch (IllegalArgumentException ex) {
             logger.warn(ex.getMessage());
         } catch (RuntimeException ex) {
             handleRuntimeException(ex);
         }
+    }
+
+    private Consumer<Optional<VMResourceDetails>> extractDetailsAndScheduleTermination(ScheduleRequestEntity requestEntity) {
+        return possibleDetails -> {
+            var resourceDetails = possibleDetails.orElseThrow(getNoMatchingVmException(requestEntity));
+            scheduleHandler.scheduleTermination(requestEntity, resourceDetails);
+        };
     }
 
     private Supplier<IllegalArgumentException> getNoRegisteredVmException(ScheduleRequestEntity requestEntity, String action) {
