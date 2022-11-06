@@ -1,0 +1,28 @@
+---
+
+- name: Setup SWOZO user
+  import_playbook: ../../administration/setup-user.yml
+  vars:
+    new_user: swozo
+
+- name: Install docker
+  import_playbook: ../docker/install-docker.yml
+
+- name: Copy Jitsi config file
+  import_playbook: ../../administration/copy-files.yml
+  vars:
+    path_from: ../software/sozisel/.jitsi_env
+    path_to: /home/swozo/.sozisel
+    user: swozo
+
+- name: Copy Sozisel docker-compose file
+  import_playbook: ../../administration/copy-files.yml
+  vars:
+    path_from: ../software/sozisel/docker-compose.yml
+    path_to: /home/swozo/.sozisel
+    user: swozo
+
+- name: Run Sozisel
+  shell: |
+    cd /home/swozo/.sozisel
+    docker-compose -f docker-compose.yml --env-file .jitsi_env up
