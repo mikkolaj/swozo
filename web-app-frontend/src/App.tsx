@@ -5,6 +5,7 @@ import { Toaster } from 'common/Styled/Toaster';
 import { ActivityFilesView } from 'pages/ActivityFiles/ActivityFilesView';
 import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
 import { UserDetailsView } from 'pages/Admin/Users/UserDetailsView';
+import { VirtualMachinesPanel } from 'pages/Admin/VirtualMachines/VirtualMachinesPanel';
 import { CourseView } from 'pages/Course/CourseView';
 import { JoinCourseView } from 'pages/Course/JoinCourseView';
 import { MyCoursesListView } from 'pages/CoursesList/MyCoursesListView';
@@ -102,6 +103,10 @@ function App() {
                     element={guarded(<ActivityFilesView />, ANY_LOGGED_IN)}
                 />
                 <Route path={PageRoutes.FILES} element={guarded(<FilesListView />, withRole(STUDENT))} />
+                <Route
+                    path={PageRoutes.VIRTUAL_MACHINES}
+                    element={guarded(<VirtualMachinesPanel />, withRole(ADMIN))}
+                />
                 <Route
                     path={PageRoutes.ADMIN_USER_DETAILS}
                     element={guarded(<UserDetailsView />, withRole(ADMIN))}

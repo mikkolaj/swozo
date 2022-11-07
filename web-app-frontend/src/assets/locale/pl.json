@@ -41,6 +41,8 @@
         "publicCourses": "wszystkie kursy",
         "publicModules": "wszystkie moduły",
         "myFiles": "pliki",
+        "virtualMachines": "repozytorium maszyn wirtualnych",
+        "userManagement": "zarządzanie użytkownikami",
         "menu": {
             "logout": "wyloguj",
             "switchToTechnical": "Widok nauczyciela technicznego",
@@ -543,6 +545,42 @@
                 "createdAt": "Data utworzenia",
                 "empty": "Użytkownik nie utworzył jeszcze żadnego modułu"
             }
+        },
+        "vms": {
+            "header": "Zarządzanie maszynami wirtualnymi",
+            "list": {
+                "button": "Repozytorium",
+                "empty": "Nie utworzyłeś jeszcze żadnej maszyny wirtualnej, uruchamianie modułów nie będzie możliwe",
+                "emptyButton": "Utwórz maszynę wirtualną",
+                "headers": {
+                    "name": "Nazwa",
+                    "vcpu": "Liczba vCpu",
+                    "ram": "Pamięć RAM [GB]",
+                    "bandwidth": "Szerokość pasma [Mb/s]"
+                },
+                "delete": {
+                    "modal": {
+                        "question": "Czy na pewno chcesz usunąć tę maszynę?",
+                        "yes": "Tak",
+                        "no": "Nie"
+                    }
+                },
+                "details": {
+                    "label": "Opis maszyny",
+                    "close": "Zamknij"
+                }
+            },
+            "create": {
+                "button": "Kreator",
+                "form": {
+                    "name": "Nazwa maszyny w systemie dostawcy usług chmurowych",
+                    "vcpu": "Liczba wirtualnych procesorów",
+                    "ramGb": "Liczba pamięci RAM [GB]",
+                    "bandwidthMbps": "Szerokość pasma [Mb/s]",
+                    "description": "Opis maszyny",
+                    "submit": "Zapisz metadane maszyny"
+                }
+            }
         }
     },
     "error": {
@@ -564,7 +602,9 @@
         "passwordChanged": "Hasło zostało zmienione!",
         "rolesUpdated": "Role zostały zaaktualizowane!",
         "policiesUpdated": "Polityki użytkownika zostały zaaktualizowane",
-        "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!"
+        "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!",
+        "vmDeleted": "Maszyna wirtualna została usunięta",
+        "vmCreated": "Maszyna wirtualna została utworzona"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",

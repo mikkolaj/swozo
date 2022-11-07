@@ -1688,6 +1688,7 @@ components:
     CreateVmRequest:
       required:
       - bandwidthMbps
+      - descriptionHtml
       - name
       - ramGB
       - vcpu
@@ -1704,9 +1705,12 @@ components:
         bandwidthMbps:
           type: integer
           format: int32
+        descriptionHtml:
+          type: string
     VmDto:
       required:
       - bandwidthMbps
+      - descriptionHtml
       - id
       - name
       - ramGB
@@ -1727,6 +1731,8 @@ components:
         bandwidthMbps:
           type: integer
           format: int32
+        descriptionHtml:
+          type: string
     CreateUserRequest:
       required:
       - email

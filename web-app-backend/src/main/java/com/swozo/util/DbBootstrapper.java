@@ -237,11 +237,11 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         policyRepository.save(policy);
 
-        VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2048, 10);
+        VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2048, 10, "");
         vmRepository.save(vm1);
-        VirtualMachine vm2 = new VirtualMachine("e2-standard-4", 4, 16, 8192, 10);
+        VirtualMachine vm2 = new VirtualMachine("e2-standard-4", 4, 16, 8192, 10, "");
         vmRepository.save(vm2);
-        VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16384, 10);
+        VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16384, 10, "");
         vmRepository.save(vm3);
 
         policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher1));

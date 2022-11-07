@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
 import {
+    ADMIN,
     ANY_BUT_NOT_ADMIN,
     STUDENT,
     TEACHER,
@@ -53,6 +54,13 @@ export const Navbar = () => {
                         <WithRole roles={ANY_BUT_NOT_ADMIN}>
                             <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
                             <NotificationBell notifications={[]} />
+                        </WithRole>
+                        <WithRole roles={[ADMIN]}>
+                            <NavbarItem
+                                textI18n="navbar.virtualMachines"
+                                route={PageRoutes.VIRTUAL_MACHINES}
+                            />
+                            <NavbarItem textI18n="navbar.userManagement" route={PageRoutes.HOME} />
                         </WithRole>
 
                         <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
