@@ -359,6 +359,26 @@ paths:
           description: OK
       security:
       - JWT_AUTH: []
+  /vms:
+    post:
+      tags:
+      - vm-controller
+      operationId: addVm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVmRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VmDto'
+      security:
+      - JWT_AUTH: []
   /users:
     get:
       tags:
@@ -437,6 +457,26 @@ paths:
                 $ref: '#/components/schemas/ServiceModuleSandboxDto'
       security:
       - JWT_AUTH: []
+  /policies:
+    post:
+      tags:
+      - policy-controller
+      operationId: addPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePolicyRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyDto'
+      security:
+      - JWT_AUTH: []
   /courses:
     get:
       tags:
@@ -508,6 +548,92 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AuthDetailsDto'
+  /vms/{id}:
+    delete:
+      tags:
+      - vm-controller
+      operationId: deleteVm
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
+    patch:
+      tags:
+      - vm-controller
+      operationId: editVm
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EdtiVmRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VmDto'
+      security:
+      - JWT_AUTH: []
+  /policies/{id}:
+    delete:
+      tags:
+      - policy-controller
+      operationId: deletePolicy
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
+    patch:
+      tags:
+      - policy-controller
+      operationId: editPolicy
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditPolicyRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyDto'
+      security:
+      - JWT_AUTH: []
   /courses/{id}:
     get:
       tags:
@@ -569,6 +695,22 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
+  /vms/all-system-vms:
+    get:
+      tags:
+      - vm-controller
+      operationId: getAllVms
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VmDto'
       security:
       - JWT_AUTH: []
   /users/me:
@@ -772,6 +914,45 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ServiceConfig'
+      security:
+      - JWT_AUTH: []
+  /policies/all_teacher-policies/{teacherId}:
+    get:
+      tags:
+      - policy-controller
+      operationId: getAllTeacherPolicies
+      parameters:
+      - name: teacherId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDto'
+      security:
+      - JWT_AUTH: []
+  /policies/all-system-policies:
+    get:
+      tags:
+      - policy-controller
+      operationId: getAllPolicies
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDto'
       security:
       - JWT_AUTH: []
   /files/external/download/{remoteFileId}:
@@ -1442,6 +1623,48 @@ components:
           $ref: '#/components/schemas/InitFileUploadRequest'
         storageAccessRequest:
           $ref: '#/components/schemas/StorageAccessRequest'
+    CreateVmRequest:
+      required:
+      - bandwidth
+      - name
+      - ram
+      - vcpu
+      type: object
+      properties:
+        name:
+          type: string
+        vcpu:
+          type: integer
+          format: int32
+        ram:
+          type: integer
+          format: int32
+        bandwidth:
+          type: integer
+          format: int32
+    VmDto:
+      required:
+      - bandwidth
+      - id
+      - name
+      - ram
+      - vcpu
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        vcpu:
+          type: integer
+          format: int32
+        ram:
+          type: integer
+          format: int32
+        bandwidth:
+          type: integer
+          format: int32
     CreateUserRequest:
       required:
       - email
@@ -1535,6 +1758,49 @@ components:
         validTo:
           type: string
           format: date-time
+    CreatePolicyRequest:
+      required:
+      - policyType
+      - teacherId
+      - value
+      type: object
+      properties:
+        policyType:
+          type: string
+          enum:
+          - MAX_VCPU
+          - MAX_RAM
+          - MAX_DISK
+          - MAX_BANDWIDTH
+        teacherId:
+          type: integer
+          format: int64
+        value:
+          type: integer
+          format: int32
+    PolicyDto:
+      required:
+      - id
+      - policyType
+      - user
+      - value
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        policyType:
+          type: string
+          enum:
+          - MAX_VCPU
+          - MAX_RAM
+          - MAX_DISK
+          - MAX_BANDWIDTH
+        user:
+          $ref: '#/components/schemas/UserDetailsDto'
+        value:
+          type: integer
+          format: int32
     CreateCourseRequest:
       required:
       - activities
@@ -1603,6 +1869,36 @@ components:
           type: string
         password:
           type: string
+    EdtiVmRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        vCpu:
+          type: integer
+          format: int32
+        ram:
+          type: integer
+          format: int32
+        bandwidth:
+          type: integer
+          format: int32
+    EditPolicyRequest:
+      type: object
+      properties:
+        policyType:
+          type: string
+          enum:
+          - MAX_VCPU
+          - MAX_RAM
+          - MAX_DISK
+          - MAX_BANDWIDTH
+        teacherId:
+          type: integer
+          format: int64
+        value:
+          type: integer
+          format: int32
     EditCourseRequest:
       type: object
       properties:

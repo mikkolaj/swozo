@@ -2,9 +2,11 @@ apis/ActivityControllerApi.ts
 apis/AuthControllerApi.ts
 apis/CourseControllerApi.ts
 apis/FileControllerApi.ts
+apis/PolicyControllerApi.ts
 apis/SandboxControllerApi.ts
 apis/ServiceModuleControllerApi.ts
 apis/UserControllerApi.ts
+apis/VmControllerApi.ts
 apis/index.ts
 index.ts
 models/ActivityDetailsDto.ts
@@ -14,10 +16,14 @@ models/CourseDetailsDto.ts
 models/CourseSummaryDto.ts
 models/CreateActivityRequest.ts
 models/CreateCourseRequest.ts
+models/CreatePolicyRequest.ts
 models/CreateSandboxEnvironmentRequest.ts
 models/CreateUserRequest.ts
+models/CreateVmRequest.ts
 models/DynamicFieldDto.ts
 models/EditCourseRequest.ts
+models/EditPolicyRequest.ts
+models/EdtiVmRequest.ts
 models/FileDto.ts
 models/FinishServiceModuleCreationRequest.ts
 models/InitFileUploadRequest.ts
@@ -27,6 +33,7 @@ models/LoginRequest.ts
 models/ModifyParticipantRequest.ts
 models/ParameterDescription.ts
 models/ParticipantDetailsDto.ts
+models/PolicyDto.ts
 models/RefreshTokenDto.ts
 models/ReserveServiceModuleRequest.ts
 models/ResetPasswordRequest.ts
@@ -47,5 +54,6 @@ models/UploadAccessDto.ts
 models/UserAdminDetailsDto.ts
 models/UserAdminSummaryDto.ts
 models/UserDetailsDto.ts
+models/VmDto.ts
 models/index.ts
 runtime.ts
