@@ -148,12 +148,15 @@ export const UserDetailsView = () => {
                             )}
                         </Formik>
                     )}
-                    <Box sx={{ mt: 4 }}>
-                        <Typography sx={{ ml: 2, mb: 2 }} variant="h5">
-                            {t('admin.userDetails.policies.label')}
-                        </Typography>
-                        <UserPoliciesView user={user} editMode={editMode} />
-                    </Box>
+                    {(user.roles.includes(UserAdminDetailsDtoRolesEnum.Teacher) ||
+                        user.roles.includes(UserAdminDetailsDtoRolesEnum.TechnicalTeacher)) && (
+                        <Box sx={{ mt: 4 }}>
+                            <Typography sx={{ ml: 2, mb: 2 }} variant="h5">
+                                {t('admin.userDetails.policies.label')}
+                            </Typography>
+                            <UserPoliciesView user={user} editMode={editMode} />
+                        </Box>
+                    )}
                     <Box sx={{ mb: 4 }} />
                     <AttendedCoursesList user={user} />
                     <Box sx={{ my: 3 }} />

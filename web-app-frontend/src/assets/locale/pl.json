@@ -429,7 +429,14 @@
                     "createButton": "Utwórz środowisko testowe",
                     "studentCount": "Liczba studentów",
                     "validForMinutes": "Czas dostępu do modułu (min)",
-                    "resultsValidForMinutes": "Czas dostępu do wyników (min)"
+                    "resultsValidForMinutes": "Czas dostępu do wyników (min)",
+                    "error": {
+                        "SANDBOXES_COUNT_EXCEEDED": "Nie możesz utworzyć więcej środowisk testowych",
+                        "POLICY_NOT_MET": "Nie masz możliwości wykorzystania ilości zasobów potrzebnej do uruchomienia tego środowiska, skontaktuj się z administratorem.",
+                        "validationErrors": {
+                            "NOT_IN_BOUNDS": "Liczba musi być w zakresie {{min}} - {{max}}"
+                        }
+                    }
                 }
             },
             "result": {

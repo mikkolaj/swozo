@@ -7,6 +7,7 @@ import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseRepository;
 import com.swozo.api.web.mda.policy.PolicyRepository;
+import com.swozo.api.web.mda.policy.PolicyService;
 import com.swozo.api.web.mda.vm.VmRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
@@ -58,6 +59,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final FileRepository fileRepository;
     private final PolicyRepository policyRepository;
     private final VmRepository vmRepository;
+    private final PolicyService policyService;
     private final ActivityModuleService activityModuleService;
     @Value("${database.enable-bootstrapping}")
     private final boolean enableBootstrapping;
@@ -241,5 +243,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         vmRepository.save(vm2);
         VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16, 10);
         vmRepository.save(vm3);
+
+        policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher1));
+        policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher2));
     }
 }

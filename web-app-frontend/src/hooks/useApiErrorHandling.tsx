@@ -22,12 +22,15 @@ export const buildErrorHandler = (
     shouldTerminateRendering,
 });
 
+export const buildMessagePopupErrorHandler = (dispatch: AppDispatch, message: string): ErrorHandler =>
+    buildErrorHandler(() => {
+        dispatch(triggerError({ message }));
+    }, false);
+
 const defaultErrorHandler: ErrorHandler = buildErrorHandler(() => <PageContainerWithError />);
 
 const defaultConnectionErrorHandler = (dispatch: AppDispatch, t: TFunction): ErrorHandler =>
-    buildErrorHandler(() => {
-        dispatch(triggerError({ message: t('error.connectionError'), autoClose: true }));
-    }, false);
+    buildMessagePopupErrorHandler(dispatch, t('error.connectionError'));
 
 export const useApiErrorHandling = (
     handlerConfig: HandlerConfig,

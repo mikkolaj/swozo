@@ -1,12 +1,15 @@
 import { Box, Button, Card, CardContent, Divider, Grid, Modal, Typography } from '@mui/material';
 import { CreateSandboxEnvironmentRequest, ServiceModuleSandboxDto, ServiceModuleSummaryDto } from 'api';
+import { ApiError, ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { Form, Formik } from 'formik';
-import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
-import { useState } from 'react';
+import { buildMessagePopupErrorHandler, useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from 'react-query';
+import { useDispatch } from 'react-redux';
+import { handleFlatFormError } from 'utils/util';
 import { SandboxForm } from './SandboxForm';
 import { SandboxResultInfo } from './SandboxResultInfo';
 
@@ -24,8 +27,20 @@ const initialValues: CreateSandboxEnvironmentRequest = {
 
 export const SandboxModal = ({ open, serviceModule, onClose }: Props) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     const [sanboxInfoResult, setSandboxInfoResult] = useState<ServiceModuleSandboxDto>();
-    const { pushApiError } = useApiErrorHandling({});
+    const { pushApiError } = useApiErrorHandling({
+        [ErrorType.SANDBOXES_COUNT_EXCEEDED]: buildMessagePopupErrorHandler(
+            dispatch,
+            t('moduleSandbox.modal.setup.form.error.SANDBOXES_COUNT_EXCEEDED')
+        ),
+        [ErrorType.POLICY_NOT_MET]: buildMessagePopupErrorHandler(
+            dispatch,
+            t('moduleSandbox.modal.setup.form.error.POLICY_NOT_MET')
+        ),
+    });
+
+    const formRef = useRef(null);
 
     const createSanboxMutation = useMutation(
         (values: CreateSandboxEnvironmentRequest) =>
@@ -37,7 +52,14 @@ export const SandboxModal = ({ open, serviceModule, onClose }: Props) => {
             onSuccess: (res) => {
                 setSandboxInfoResult(res);
             },
-            onError: pushApiError,
+            onError: (err: ApiError) =>
+                handleFlatFormError(
+                    t,
+                    formRef.current,
+                    err,
+                    'moduleSandbox.modal.setup.form.error',
+                    pushApiError
+                ),
         }
     );
 
@@ -73,6 +95,7 @@ export const SandboxModal = ({ open, serviceModule, onClose }: Props) => {
                             <Divider />
                             <Formik
                                 initialValues={initialValues}
+                                innerRef={formRef}
                                 onSubmit={(values) => createSanboxMutation.mutate(values)}
                             >
                                 {({ values }) => (
