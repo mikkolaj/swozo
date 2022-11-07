@@ -19,13 +19,14 @@ import {
 } from 'pages/CreateCourse/util';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DeleteActivityTab } from './DeleteActivityTab';
 
 type Props = {
     course: CourseDetailsDto;
     initialTab?: Options;
 };
 
-type Options = 'course' | 'addActivity';
+type Options = 'course' | 'addActivity' | 'editActivity' | 'deleteActivity';
 
 export const Editor = ({ course, initialTab = 'course' }: Props) => {
     const { t } = useTranslation();
@@ -65,6 +66,13 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
                     label={t('course.options.editor.tabs.course.label')}
                 />
                 <Tab value="addActivity" label={t('course.options.editor.tabs.addActivity.label')} />
+                {/* <Tab value="editActivity" label={t('course.options.editor.tabs.editActivity.label')} /> */}
+                {course.activities.length > 0 && (
+                    <Tab
+                        value="deleteActivity"
+                        label={t('course.options.editor.tabs.deleteActivity.label')}
+                    />
+                )}
             </Tabs>
 
             <Box sx={{ width: '100%', ml: 6 }}>
@@ -144,6 +152,7 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
                             )}
                         </Formik>
                     )}
+                    {option === 'deleteActivity' && <DeleteActivityTab course={course} />}
                 </Box>
             </Box>
         </Box>

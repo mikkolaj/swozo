@@ -121,6 +121,19 @@
                         "label": "Dodaj aktywność",
                         "button": "Utwórz aktywność",
                         "secondaryButton": "Wyczyść formularz"
+                    },
+                    "editActivity": {
+                        "label": "Edytuj aktywność"
+                    },
+                    "deleteActivity": {
+                        "label": "Usuń aktywność",
+                        "selectLabel": "Wybierz aktywność",
+                        "deleteWithAllData": "Usuń wraz z wszystkimi danymi",
+                        "justCancel": "Odwołaj uruchamianie modułów",
+                        "confirmDeletion": "Czy na pewno chcesz usunąć tę aktywność? Cofnięcie tej akcji nie będzie możliwe.",
+                        "confirmCancel": "Czy na pewno chcesz odwołać uruchamianie modułów? Cofnięcie tej akcji nie będzie możliwe.",
+                        "no": "Nie usuwaj",
+                        "yes": "Tak"
                     }
                 }
             }

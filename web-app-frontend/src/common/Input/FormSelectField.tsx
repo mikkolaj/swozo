@@ -10,7 +10,7 @@ export const FormSelectField = ({
 
     return (
         <FormInputField
-            wrapperSx={{ ...wrapperSx, width: FORM_INPUT_WIDTH }}
+            wrapperSx={{ width: FORM_INPUT_WIDTH, ...wrapperSx }}
             textFieldProps={{ ...textFieldProps, select: true, fullWidth: true }}
             {...sfifProps}
         >
