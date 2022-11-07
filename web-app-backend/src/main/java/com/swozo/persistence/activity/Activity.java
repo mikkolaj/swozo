@@ -19,9 +19,11 @@ import java.util.LinkedList;
 @ToString
 public class Activity extends BaseEntity {
     private String name;
+    @Column(columnDefinition="TEXT")
     private String description;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    @Column(columnDefinition="TEXT")
     private String instructionFromTeacherHtml;
     private LocalDateTime createdAt = LocalDateTime.now();
 

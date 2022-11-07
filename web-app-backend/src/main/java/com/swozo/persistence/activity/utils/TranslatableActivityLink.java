@@ -26,6 +26,7 @@ public class TranslatableActivityLink {
     @ToString.Exclude
     private UserActivityModuleInfo userActivityModuleInfo;
 
+    @Column(columnDefinition="TEXT")
     private String instructionHtml;
 
     public TranslatableActivityLink(SupportedLanguage language, String instructionHtml) {

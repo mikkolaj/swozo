@@ -26,6 +26,7 @@ import java.util.Optional;
 public class Course extends BaseEntity {
     private String name;
     private String subject;
+    @Column(columnDefinition="TEXT")
     private String description;
     private String joinUUID;
     // kept in plaintext

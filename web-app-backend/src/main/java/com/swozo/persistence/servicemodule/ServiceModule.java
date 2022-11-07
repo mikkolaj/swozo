@@ -22,8 +22,11 @@ import java.util.Map;
 public abstract class ServiceModule extends BaseEntity {
     protected String name;
     protected String subject;
+    @Column(columnDefinition="TEXT")
     protected String description;
+    @Column(columnDefinition="TEXT")
     protected String teacherInstructionHtml;
+    @Column(columnDefinition="TEXT")
     protected String studentInstructionHtml;
     protected String serviceName;
     protected Boolean isPublic;
