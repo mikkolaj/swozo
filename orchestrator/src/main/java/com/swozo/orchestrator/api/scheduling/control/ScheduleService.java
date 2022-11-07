@@ -25,7 +25,7 @@ public class ScheduleService {
     public ScheduleResponse schedule(ScheduleRequest request) {
         try {
             var response = scheduleHandler.startTracking(request);
-//            scheduleHandler.delegateScheduling(response);
+            scheduleHandler.delegateScheduling(response);
             return new ScheduleResponse(response.getId());
         } catch (IllegalArgumentException | InvalidParametersException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);

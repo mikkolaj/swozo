@@ -2,7 +2,7 @@ import {
     FinishServiceModuleCreationRequest,
     ReserveServiceModuleRequest,
     ServiceConfig,
-    ServiceConfigPossibleIsolationModesEnum,
+    ServiceConfigIsolationModesEnum,
     ServiceModuleReservationDto,
     SharedServiceModuleMdaDto,
 } from 'api';
@@ -46,8 +46,8 @@ export const initialMdaValues = (isIsolated: boolean): MdaValues => ({
     baseRam: 1,
     baseVcpu: 1,
     isolationMode: isIsolated
-        ? ServiceConfigPossibleIsolationModesEnum.Isolated
-        : ServiceConfigPossibleIsolationModesEnum.Shared,
+        ? ServiceConfigIsolationModesEnum.Isolated
+        : ServiceConfigIsolationModesEnum.Shared,
     sharedServiceModuleMdaDto: initialSharedModuleMdaValues(),
 });
 
@@ -58,10 +58,8 @@ export const initialSharedModuleMdaValues = (): SharedServiceModuleMdaDto => ({
     usersPerAdditionalRamGb: 10,
 });
 
-export const toIsolationMode = (isIsolated: boolean): ServiceConfigPossibleIsolationModesEnum =>
-    isIsolated
-        ? ServiceConfigPossibleIsolationModesEnum.Isolated
-        : ServiceConfigPossibleIsolationModesEnum.Shared;
+export const toIsolationMode = (isIsolated: boolean): ServiceConfigIsolationModesEnum =>
+    isIsolated ? ServiceConfigIsolationModesEnum.Isolated : ServiceConfigIsolationModesEnum.Shared;
 
 export const buildReserveServiceModuleRequest = (
     values: FormValues,
@@ -82,8 +80,7 @@ export const buildReserveServiceModuleRequest = (
         description: moduleInfo.description,
         mdaData: {
             ..._.omit(values[MODULE_SPECS_SLIDE], 'isolationMode'),
-            isIsolated:
-                values[MODULE_SPECS_SLIDE].isolationMode === ServiceConfigPossibleIsolationModesEnum.Isolated,
+            isIsolated: values[MODULE_SPECS_SLIDE].isolationMode === ServiceConfigIsolationModesEnum.Isolated,
         },
     };
 };
@@ -138,10 +135,10 @@ export const mapToInitialValues = (data: ReserveServiceModuleRequest): FormValue
     [MODULE_SPECS_SLIDE]: {
         ...data.mdaData,
         isolationMode: toIsolationMode(data.mdaData.isIsolated),
-        sharedServiceModuleMdaDto: data.mdaData.isIsolated
-            ? initialSharedModuleMdaValues()
-            : // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              data.mdaData.sharedServiceModuleMdaDto!,
+        sharedServiceModuleMdaDto:
+            data.mdaData.isIsolated || !data.mdaData.sharedServiceModuleMdaDto
+                ? initialSharedModuleMdaValues()
+                : data.mdaData.sharedServiceModuleMdaDto,
     },
 });
 

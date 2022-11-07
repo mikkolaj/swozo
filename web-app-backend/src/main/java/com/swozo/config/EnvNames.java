@@ -8,4 +8,5 @@ public class EnvNames {
 
     private static final String SERVICE_SECRET_KEY_SUFFIX = ".secret";
     public static final String ORCHESTRATOR_SECRET_KEY = "orchestrator" + SERVICE_SECRET_KEY_SUFFIX;
+    public static final String SERVICE_CONFIG_CACHE_REVALIDATE_DURATION = "orchestrator.cache.revalidate.serviceConfig";
 }

@@ -32,20 +32,24 @@ export function AutocompleteWithChips<T>({
     );
     const [key, setKey] = useState(0);
 
-    const chips = chosenOptions.map((option, idx) => (
-        <Chip
-            key={idx}
-            sx={{ mr: 1 }}
-            label={optionToString(option)}
-            variant="outlined"
-            onDelete={() =>
-                setFieldValue(
-                    name,
-                    chosenOptions.filter((chosenOption) => chosenOption !== option)
-                )
-            }
-        />
-    ));
+    const chips = useMemo(
+        () =>
+            chosenOptions.map((option, idx) => (
+                <Chip
+                    key={idx}
+                    sx={{ mr: 1 }}
+                    label={optionToString(option)}
+                    variant="outlined"
+                    onDelete={() =>
+                        setFieldValue(
+                            name,
+                            chosenOptions.filter((chosenOption) => chosenOption !== option)
+                        )
+                    }
+                />
+            )),
+        [name, optionToString, setFieldValue, chosenOptions]
+    );
 
     return (
         <>

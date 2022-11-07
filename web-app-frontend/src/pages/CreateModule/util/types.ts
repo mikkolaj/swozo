@@ -1,6 +1,6 @@
 import {
     ParameterDescriptionTypeEnum,
-    ServiceConfigPossibleIsolationModesEnum,
+    ServiceConfigIsolationModesEnum,
     ServiceModuleMdaDto,
     SharedServiceModuleMdaDto,
 } from 'api';
@@ -31,7 +31,7 @@ export type ModuleValues = {
 };
 
 export type MdaValues = Omit<Omit<ServiceModuleMdaDto, 'isIsolated'>, 'sharedServiceModuleMdaDto'> & {
-    isolationMode: ServiceConfigPossibleIsolationModesEnum;
+    isolationMode: ServiceConfigIsolationModesEnum;
     sharedServiceModuleMdaDto: SharedServiceModuleMdaDto;
 };
 

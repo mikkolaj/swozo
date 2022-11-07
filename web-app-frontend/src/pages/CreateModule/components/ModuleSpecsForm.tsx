@@ -1,5 +1,5 @@
 import { Box, MenuItem, Typography } from '@mui/material';
-import { ServiceConfig, ServiceConfigPossibleIsolationModesEnum } from 'api';
+import { ServiceConfig, ServiceConfigIsolationModesEnum } from 'api';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormSelectField } from 'common/Input/FormSelectField';
 import { SlideProps } from 'common/SlideForm/util';
@@ -21,7 +21,7 @@ export const ModuleSpecsForm = ({ nameBuilder, values, serviceConfig, editMode }
                 name={nameBuilder('isolationMode')}
                 i18nLabel="createModule.slides.1.form.isolation.label"
             >
-                {serviceConfig?.possibleIsolationModes
+                {serviceConfig?.isolationModes
                     .filter((isolation) => !editMode || isolation === values.isolationMode)
                     .map((isolationMode) => (
                         <MenuItem key={isolationMode} value={isolationMode}>
@@ -57,7 +57,7 @@ export const ModuleSpecsForm = ({ nameBuilder, values, serviceConfig, editMode }
                     type="number"
                     labelText={t('createModule.slides.1.form.base.bandwidth')}
                 />
-                {values.isolationMode === ServiceConfigPossibleIsolationModesEnum.Shared && (
+                {values.isolationMode === ServiceConfigIsolationModesEnum.Shared && (
                     <Box sx={{ mt: 2 }}>
                         <Typography gutterBottom variant="h6">
                             {t('createModule.slides.1.form.scaled.label')}

@@ -1,6 +1,6 @@
 package com.swozo.model.scheduling.properties;
 
-public enum PossibleIsolationMode {
+public enum IsolationMode {
     ISOLATED,
     SHARED
 }

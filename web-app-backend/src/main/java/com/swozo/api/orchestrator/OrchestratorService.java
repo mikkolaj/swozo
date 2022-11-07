@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
 public class OrchestratorService {
     private final OrchestratorRequestSender requestSender;
+    private final OrchestratorCache cache;
 
     public ScheduleResponse sendScheduleRequest(ScheduleRequest scheduleRequest) {
         return requestSender.sendScheduleRequest(scheduleRequest).join();
@@ -22,12 +24,15 @@ public class OrchestratorService {
         return requestSender.sendScheduleRequests(scheduleRequests).join();
     }
 
-    // TODO: this should be cached
     public List<ServiceConfig> getSupportedServices() {
-        return requestSender.getServiceConfigs().join();
+        return cache.getServiceConfigs(serviceConfigsSupplier());
     }
 
     public ServiceConfig getServiceConfig(String serviceName) {
-        return requestSender.getServiceConfig(serviceName).join();
+        return cache.getServiceConfig(serviceConfigsSupplier(), serviceName);
+    }
+
+    private Supplier<List<ServiceConfig>> serviceConfigsSupplier() {
+        return () -> requestSender.getServiceConfigs().join();
     }
 }

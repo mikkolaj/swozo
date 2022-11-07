@@ -106,7 +106,7 @@ public class ServiceModuleValidator {
                 .putIfFails(
                         contains(
                                 ValidationNames.Fields.ISOLATION_MODE,
-                                serviceConfig.possibleIsolationModes(),
+                                serviceConfig.isolationModes(),
                                 serviceModuleMapper.from(request.mdaData().isIsolated())
                         )
                 )

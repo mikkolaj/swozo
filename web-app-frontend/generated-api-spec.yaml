@@ -1352,8 +1352,8 @@ components:
           format: date-time
     ServiceConfig:
       required:
+      - isolationModes
       - parameterDescriptions
-      - possibleIsolationModes
       - serviceName
       type: object
       properties:
@@ -1363,7 +1363,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ParameterDescription'
-        possibleIsolationModes:
+        isolationModes:
           type: array
           items:
             type: string

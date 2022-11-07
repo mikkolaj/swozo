@@ -43,14 +43,14 @@ export interface ServiceConfig {
      * @type {Array<string>}
      * @memberof ServiceConfig
      */
-    possibleIsolationModes: Array<ServiceConfigPossibleIsolationModesEnum>;
+    isolationModes: Array<ServiceConfigIsolationModesEnum>;
 }
 
 /**
 * @export
 * @enum {string}
 */
-export enum ServiceConfigPossibleIsolationModesEnum {
+export enum ServiceConfigIsolationModesEnum {
     Isolated = 'ISOLATED',
     Shared = 'SHARED'
 }
@@ -67,7 +67,7 @@ export function ServiceConfigFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'serviceName': json['serviceName'],
         'parameterDescriptions': ((json['parameterDescriptions'] as Array<any>).map(ParameterDescriptionFromJSON)),
-        'possibleIsolationModes': json['possibleIsolationModes'],
+        'isolationModes': json['isolationModes'],
     };
 }
 
@@ -82,7 +82,7 @@ export function ServiceConfigToJSON(value?: ServiceConfig | null): any {
         
         'serviceName': value.serviceName,
         'parameterDescriptions': ((value.parameterDescriptions as Array<any>).map(ParameterDescriptionToJSON)),
-        'possibleIsolationModes': value.possibleIsolationModes,
+        'isolationModes': value.isolationModes,
     };
 }
 

@@ -3,7 +3,7 @@ package com.swozo.orchestrator.cloud.software.jupyter;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.model.scheduling.properties.PossibleIsolationMode;
+import com.swozo.model.scheduling.properties.IsolationMode;
 import com.swozo.orchestrator.api.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
@@ -47,7 +47,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return new ServiceConfig(
                 SUPPORTED_SCHEDULE.toString(),
                 JupyterParameters.getParameterDescriptions(translationsProvider),
-                List.of(PossibleIsolationMode.ISOLATED, PossibleIsolationMode.SHARED)
+                List.of(IsolationMode.ISOLATED, IsolationMode.SHARED)
         );
     }
 

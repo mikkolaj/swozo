@@ -7,7 +7,7 @@ import com.swozo.api.web.servicemodule.dynamic.DynamicPropertiesHelper;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.model.scheduling.properties.PossibleIsolationMode;
+import com.swozo.model.scheduling.properties.IsolationMode;
 import com.swozo.persistence.activity.ActivityModule;
 import com.swozo.persistence.servicemodule.IsolatedServiceModule;
 import com.swozo.persistence.servicemodule.ServiceModule;
@@ -65,8 +65,8 @@ public abstract class ServiceModuleMapper {
                 Optional.empty() : Optional.of(sharedMdaToDto((SharedServiceModule) serviceModule)));
     }
 
-    public PossibleIsolationMode from(boolean isIsolated) {
-        return isIsolated ? PossibleIsolationMode.ISOLATED : PossibleIsolationMode.SHARED;
+    public IsolationMode from(boolean isIsolated) {
+        return isIsolated ? IsolationMode.ISOLATED : IsolationMode.SHARED;
     }
 
     @Mapping(target = "creator", expression = "java(userMapper.toDto(serviceModule.getCreator()))")
