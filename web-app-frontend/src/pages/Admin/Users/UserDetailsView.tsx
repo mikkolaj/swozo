@@ -27,6 +27,7 @@ import { formatBytes, formatDate, formatName } from 'utils/util';
 import { AttendedCoursesList } from './components/AttendedCoursesList';
 import { CreatedCoursesList } from './components/CreatedCoursesList';
 import { CreatedServiceModulesList } from './components/CreatedServiceModulesList';
+import { UserPoliciesView } from './components/UserPoliciesView';
 
 export const UserDetailsView = () => {
     const { t } = useTranslation();
@@ -147,8 +148,13 @@ export const UserDetailsView = () => {
                             )}
                         </Formik>
                     )}
-
-                    <Box sx={{ my: 4 }} />
+                    <Box sx={{ mt: 4 }}>
+                        <Typography sx={{ ml: 2, mb: 2 }} variant="h5">
+                            {t('admin.userDetails.policies.label')}
+                        </Typography>
+                        <UserPoliciesView user={user} editMode={editMode} />
+                    </Box>
+                    <Box sx={{ mb: 4 }} />
                     <AttendedCoursesList user={user} />
                     <Box sx={{ my: 3 }} />
                     <CreatedCoursesList user={user} />

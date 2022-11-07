@@ -20,6 +20,12 @@ import {
     CourseSummaryDtoToJSON,
 } from './CourseSummaryDto';
 import {
+    PolicyDto,
+    PolicyDtoFromJSON,
+    PolicyDtoFromJSONTyped,
+    PolicyDtoToJSON,
+} from './PolicyDto';
+import {
     ServiceModuleSummaryDto,
     ServiceModuleSummaryDtoFromJSON,
     ServiceModuleSummaryDtoFromJSONTyped,
@@ -92,6 +98,12 @@ export interface UserAdminDetailsDto {
      * @memberof UserAdminDetailsDto
      */
     createdModules: Array<ServiceModuleSummaryDto>;
+    /**
+     * 
+     * @type {Array<PolicyDto>}
+     * @memberof UserAdminDetailsDto
+     */
+    userPolicies: Array<PolicyDto>;
 }
 
 /**
@@ -125,6 +137,7 @@ export function UserAdminDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator:
         'attendedCourses': ((json['attendedCourses'] as Array<any>).map(CourseSummaryDtoFromJSON)),
         'createdCourses': ((json['createdCourses'] as Array<any>).map(CourseSummaryDtoFromJSON)),
         'createdModules': ((json['createdModules'] as Array<any>).map(ServiceModuleSummaryDtoFromJSON)),
+        'userPolicies': ((json['userPolicies'] as Array<any>).map(PolicyDtoFromJSON)),
     };
 }
 
@@ -147,6 +160,7 @@ export function UserAdminDetailsDtoToJSON(value?: UserAdminDetailsDto | null): a
         'attendedCourses': ((value.attendedCourses as Array<any>).map(CourseSummaryDtoToJSON)),
         'createdCourses': ((value.createdCourses as Array<any>).map(CourseSummaryDtoToJSON)),
         'createdModules': ((value.createdModules as Array<any>).map(ServiceModuleSummaryDtoToJSON)),
+        'userPolicies': ((value.userPolicies as Array<any>).map(PolicyDtoToJSON)),
     };
 }
 

@@ -3,6 +3,7 @@ package com.swozo.mapper;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
 import com.swozo.api.web.course.dto.ParticipantDetailsDto;
+import com.swozo.api.web.mda.policy.dto.PolicyDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
@@ -46,7 +47,8 @@ public abstract class UserMapper {
             long storageUsageBytes,
             List<CourseSummaryDto> attendedCourses,
             List<CourseSummaryDto> createdCourses,
-            List<ServiceModuleSummaryDto> createdModules
+            List<ServiceModuleSummaryDto> createdModules,
+            List<PolicyDto> userPolicies
     );
 
     public Role roleToPersistence(RoleDto roleDto) {

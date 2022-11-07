@@ -424,7 +424,7 @@
                 "instruction": "Instrukcja",
                 "mainInfo": "Zostanie utworzony testowy, prywatny kurs z wybraną liczbą testowych studentów ({{studentCount}}). Dostaniesz dane logowania do ich kont oraz link do kursu. Zaraz po uruchomieniu modułu zostaną dostarczone linki umożliwiające wykonanie testu.",
                 "moreInfo": "Po upływie {{validForMinutes}}min (od czasu uruchomienia) moduł zostanie wyłączony, jeśli serwis wspiera zbieranie wyników prac uczniów zostaną one dostarczone i będą dostępne przez kolejne {{resultsValidForMinutes}}min w zakładce 'Pliki' kursu. Po upływie tego czasu kurs, konta studentów i wszystkie pliki zostaną usunięte automatycznie. Nie będziesz mógł ręcznie edytować tego kursu.",
-                "limit": "Pamiętaj że jednocześnie możesz mieć dostęp do tylko jednego środowiska testowego, nie będziesz mógł wcześniej go usunąć.",
+                "limit": "Pamiętaj, że jednocześnie możesz mieć dostęp do ograniczonej administracyjnie liczby środowisk testowych, nie będziesz mógł wcześniej go usunąć żadnego z nich.",
                 "form": {
                     "createButton": "Utwórz środowisko testowe",
                     "studentCount": "Liczba studentów",
@@ -503,7 +503,16 @@
             },
             "saveRoles": "Zapisz zmiany",
             "policies": {
-                "label": "Polityki"
+                "label": "Polityki",
+                "empty": "Użytkownik nie ma przypisanej żadnej polityki",
+                "MAX_VCPU": "Maksymalna liczba wirtualnych procesorów wykorzystywanych w 1 aktywności",
+                "MAX_RAM": "Maksymalna rozmiar pamięci RAM wykorzystywanej w 1 aktywności [GB]",
+                "MAX_DISK": "Maksymalna rozmiar pamięci nieulotnej wykorzystywanej w 1 aktywności [GB]",
+                "MAX_BANDWIDTH": "Maksymalna szerokość pasma wykorzystywana w 1 aktywności [Gb/s]",
+                "MAX_STUDENTS": "Maksymalna liczba studentów w kursie",
+                "MAX_ACTIVITY_DURATION_MINUTES": "Maksymalna długość pojedynczej aktywności [min]",
+                "MAX_PARALLEL_SANDBOXES": "Maksymalna liczba jednocześnie uruchomionych środowisk testowych",
+                "save": "Zaaktualizuj polityki"
             },
             "createdCourses": {
                 "label": "Utworzone kursy",
@@ -547,6 +556,7 @@
         "userCreated": "Użytkownik został utworzony!",
         "passwordChanged": "Hasło zostało zmienione!",
         "rolesUpdated": "Role zostały zaaktualizowane!",
+        "policiesUpdated": "Polityki użytkownika zostały zaaktualizowane",
         "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!"
     },
     "commonErrors": {

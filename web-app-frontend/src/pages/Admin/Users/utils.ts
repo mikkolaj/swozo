@@ -1,5 +1,9 @@
 import {
+    CreatePolicyRequest,
+    CreatePolicyRequestPolicyTypeEnum,
     CreateUserRequest,
+    PolicyDto,
+    PolicyDtoPolicyTypeEnum,
     UserAdminDetailsDto,
     UserAdminSummaryDto,
     UserAdminSummaryDtoRolesEnum,
@@ -7,6 +11,9 @@ import {
 import { QueryClient } from 'react-query';
 import { formatName, naiveTextCompare } from 'utils/util';
 import { UserFiltersData } from './UserFilters';
+
+export type PolicyFormValues = Record<string, number>;
+const INITIAL_POLICY_VALUE = 0;
 
 const matchesTextPhrase = (user: UserAdminSummaryDto, searchPhrase: string) =>
     searchPhrase === '' ||
@@ -46,6 +53,26 @@ export const updateUserCacheAfterCreation = (users: UserAdminDetailsDto[], query
         ...previousUsers,
     ]);
     users.forEach((user) => {
-        queryClient.setQueryData(['users', `${user.id}`], user);
+        queryClient.setQueryData(['users', 'details', `${user.id}`], user);
     });
 };
+
+export const toPolicyFormValues = (policies: PolicyDto[]): PolicyFormValues => {
+    return {
+        ...Object.fromEntries(
+            Object.values(PolicyDtoPolicyTypeEnum).map((policyType) => [policyType, INITIAL_POLICY_VALUE])
+        ),
+        ...Object.fromEntries(policies.map(({ policyType, value }) => [policyType, value])),
+    };
+};
+
+export const updateUserDetailsCache = (user: UserAdminDetailsDto, queryClient: QueryClient) => {
+    queryClient.setQueryData(['users', 'details', `${user.id}`], user);
+};
+
+export const toPolicyUpdateRequest = (teacherId: number, policies: PolicyFormValues): CreatePolicyRequest[] =>
+    Object.entries(policies).map(([policyType, value]) => ({
+        policyType: policyType as CreatePolicyRequestPolicyTypeEnum,
+        value,
+        teacherId,
+    }));

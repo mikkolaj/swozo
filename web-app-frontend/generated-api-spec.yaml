@@ -477,6 +477,37 @@ paths:
                 $ref: '#/components/schemas/PolicyDto'
       security:
       - JWT_AUTH: []
+  /policies/{userId}/overwrite:
+    post:
+      tags:
+      - policy-controller
+      operationId: overwriteAllTeacherPolicies
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreatePolicyRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDto'
+      security:
+      - JWT_AUTH: []
   /courses:
     get:
       tags:
@@ -1089,6 +1120,32 @@ components:
       properties:
         untrustedPossiblyDangerousHtml:
           type: string
+    PolicyDto:
+      required:
+      - id
+      - policyType
+      - user
+      - value
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        policyType:
+          type: string
+          enum:
+          - MAX_VCPU
+          - MAX_RAM
+          - MAX_DISK
+          - MAX_BANDWIDTH
+          - MAX_STUDENTS
+          - MAX_ACTIVITY_DURATION_MINUTES
+          - MAX_PARALLEL_SANDBOXES
+        user:
+          $ref: '#/components/schemas/UserDetailsDto'
+        value:
+          type: integer
+          format: int32
     ServiceModuleSummaryDto:
       required:
       - createdAt
@@ -1138,6 +1195,7 @@ components:
       - roles
       - storageUsageBytes
       - surname
+      - userPolicies
       type: object
       properties:
         id:
@@ -1176,6 +1234,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceModuleSummaryDto'
+        userPolicies:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyDto'
     UserDetailsDto:
       required:
       - email
@@ -1772,32 +1834,12 @@ components:
           - MAX_RAM
           - MAX_DISK
           - MAX_BANDWIDTH
+          - MAX_STUDENTS
+          - MAX_ACTIVITY_DURATION_MINUTES
+          - MAX_PARALLEL_SANDBOXES
         teacherId:
           type: integer
           format: int64
-        value:
-          type: integer
-          format: int32
-    PolicyDto:
-      required:
-      - id
-      - policyType
-      - user
-      - value
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        policyType:
-          type: string
-          enum:
-          - MAX_VCPU
-          - MAX_RAM
-          - MAX_DISK
-          - MAX_BANDWIDTH
-        user:
-          $ref: '#/components/schemas/UserDetailsDto'
         value:
           type: integer
           format: int32
@@ -1893,6 +1935,9 @@ components:
           - MAX_RAM
           - MAX_DISK
           - MAX_BANDWIDTH
+          - MAX_STUDENTS
+          - MAX_ACTIVITY_DURATION_MINUTES
+          - MAX_PARALLEL_SANDBOXES
         teacherId:
           type: integer
           format: int64

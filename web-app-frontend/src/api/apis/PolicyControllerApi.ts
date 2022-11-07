@@ -43,6 +43,11 @@ export interface GetAllTeacherPoliciesRequest {
     teacherId: number;
 }
 
+export interface OverwriteAllTeacherPoliciesRequest {
+    userId: number;
+    createPolicyRequest: Array<CreatePolicyRequest>;
+}
+
 /**
  * 
  */
@@ -230,6 +235,49 @@ export class PolicyControllerApi extends runtime.BaseAPI {
      */
     async getAllTeacherPolicies(requestParameters: GetAllTeacherPoliciesRequest, initOverrides?: RequestInit): Promise<Array<PolicyDto>> {
         const response = await this.getAllTeacherPoliciesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async overwriteAllTeacherPoliciesRaw(requestParameters: OverwriteAllTeacherPoliciesRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<PolicyDto>>> {
+        if (requestParameters.userId === null || requestParameters.userId === undefined) {
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling overwriteAllTeacherPolicies.');
+        }
+
+        if (requestParameters.createPolicyRequest === null || requestParameters.createPolicyRequest === undefined) {
+            throw new runtime.RequiredError('createPolicyRequest','Required parameter requestParameters.createPolicyRequest was null or undefined when calling overwriteAllTeacherPolicies.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/policies/{userId}/overwrite`.replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.userId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters.createPolicyRequest.map(CreatePolicyRequestToJSON),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(PolicyDtoFromJSON));
+    }
+
+    /**
+     */
+    async overwriteAllTeacherPolicies(requestParameters: OverwriteAllTeacherPoliciesRequest, initOverrides?: RequestInit): Promise<Array<PolicyDto>> {
+        const response = await this.overwriteAllTeacherPoliciesRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

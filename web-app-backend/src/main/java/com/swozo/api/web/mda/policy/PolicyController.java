@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 
@@ -25,14 +26,14 @@ public class PolicyController {
 
     @GetMapping("/all-system-policies")
     @PreAuthorize("hasRole('ADMIN')")
-    public Collection<PolicyDto> allSystemPolicies(AccessToken token) {
+    public Collection<PolicyDto> getAllPolicies(AccessToken token) {
         logger.info("getting all policies");
         return policyService.getAllSystemPoliciesDto();
     }
 
     @GetMapping("/all_teacher-policies/{teacherId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Collection<PolicyDto> allTeacherPolicies(AccessToken tokenm, @PathVariable Long teacherId){
+    public List<PolicyDto> getAllTeacherPolicies(AccessToken token, @PathVariable Long teacherId){
         logger.info("policies for userId: {}", teacherId);
         return policyService.getAllTeacherPoliciesDto(teacherId);
     }
@@ -58,5 +59,10 @@ public class PolicyController {
         return policyService.editPolicy(id, editPolicyRequest);
     }
 
-
+    @PostMapping("/{userId}/overwrite")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<PolicyDto> overwriteAllTeacherPolicies(@PathVariable Long userId, @RequestBody List<CreatePolicyRequest> requests) {
+        logger.info("overwriting all user policies for user: {}", userId);
+        return policyService.overwriteAllTeacherPolicies(userId, requests);
+    }
 }

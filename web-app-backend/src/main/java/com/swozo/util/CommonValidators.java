@@ -2,6 +2,7 @@ package com.swozo.util;
 
 import com.swozo.api.web.exceptions.types.common.ValidationError;
 import com.swozo.api.web.exceptions.types.common.ValidationErrorType;
+import com.swozo.api.web.exceptions.types.common.ValidationNames;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,7 +20,10 @@ public class CommonValidators {
 
     public static Optional<ValidationError> numberInBounds(String fieldName, int value, int minInclusive, int maxInclusive) {
         return value > maxInclusive || value < minInclusive ?
-            Optional.of(ValidationErrorType.NOT_IN_BOUNDS.forField(fieldName)) : Optional.empty();
+            Optional.of(ValidationErrorType.NOT_IN_BOUNDS.forField(fieldName))
+                            .map(err -> err.withArg(ValidationNames.Errors.MIN, minInclusive))
+                            .map(err -> err.withArg(ValidationNames.Errors.MAX, maxInclusive))
+                : Optional.empty();
     }
 
     public static  List<ValidationError> allPositive(Map<String, Number> fieldNameToNumber) {

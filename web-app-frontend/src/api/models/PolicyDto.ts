@@ -60,7 +60,10 @@ export enum PolicyDtoPolicyTypeEnum {
     Vcpu = 'MAX_VCPU',
     Ram = 'MAX_RAM',
     Disk = 'MAX_DISK',
-    Bandwidth = 'MAX_BANDWIDTH'
+    Bandwidth = 'MAX_BANDWIDTH',
+    Students = 'MAX_STUDENTS',
+    ActivityDurationMinutes = 'MAX_ACTIVITY_DURATION_MINUTES',
+    ParallelSandboxes = 'MAX_PARALLEL_SANDBOXES'
 }
 
 export function PolicyDtoFromJSON(json: any): PolicyDto {

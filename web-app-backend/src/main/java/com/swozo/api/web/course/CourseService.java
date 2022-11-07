@@ -88,7 +88,7 @@ public class CourseService {
     @Transactional
     public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId, boolean sandboxMode) {
         if (!sandboxMode) {
-            courseValidator.validateNewCourse(createCourseRequest);
+            courseValidator.validateNewCourse(createCourseRequest, teacherId);
         }
 
         var teacher = userService.getUserById(teacherId);
