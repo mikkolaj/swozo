@@ -24,6 +24,7 @@ public class LocalAggregateReadonlyCache<T> {
     private final AtomicBoolean isFetching;
     private final Function<T, String> keyExtractor;
     private final Runnable cacheMissObserver;
+    private boolean shouldSilentlyIgnoreRevalidationErrorsAndReturnStaleData;
 
     public LocalAggregateReadonlyCache(
             Duration serviceCacheRevalidateAfter,
@@ -36,6 +37,11 @@ public class LocalAggregateReadonlyCache<T> {
         this.cache = new AtomicReference<>(Map.of());
         this.lastEvictionTime = new AtomicReference<>(LocalDateTime.now());
         this.isFetching = new AtomicBoolean(false);
+        this.shouldSilentlyIgnoreRevalidationErrorsAndReturnStaleData = false;
+    }
+
+    public void setShouldSilentlyIgnoreRevalidationErrorsAndReturnStaleData(boolean policyValue) {
+        this.shouldSilentlyIgnoreRevalidationErrorsAndReturnStaleData = policyValue;
     }
 
     public List<T> getAll(Supplier<List<T>> cacheMissSupplier) {
@@ -69,6 +75,9 @@ public class LocalAggregateReadonlyCache<T> {
                     )
             );
             lastEvictionTime.set(LocalDateTime.now());
+        } catch (Throwable e) {
+            if (!shouldSilentlyIgnoreRevalidationErrorsAndReturnStaleData || cache.get().isEmpty())
+                throw e;
         } finally {
             isFetching.set(false);
         }

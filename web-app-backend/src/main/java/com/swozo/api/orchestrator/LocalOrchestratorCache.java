@@ -25,6 +25,7 @@ public class LocalOrchestratorCache implements OrchestratorCache {
                 ServiceConfig::serviceName,
                 () -> logger.info("Revalidating service config cache")
         );
+        this.cache.setShouldSilentlyIgnoreRevalidationErrorsAndReturnStaleData(true);
     }
 
     @Override
