@@ -25,6 +25,7 @@ import { PageRoutes } from 'utils/routes';
 import { formatDate } from 'utils/util';
 import { SandboxModal } from './components/SandboxModal';
 import { ServiceModuleGeneralInfo } from './components/ServiceModuleGeneralInfo';
+import { ServiceModuleMdaInfo } from './components/ServiceModuleMdaInfo';
 
 export const MyModuleView = () => {
     const [moduleId] = useRequiredParams(['moduleId']);
@@ -109,6 +110,14 @@ export const MyModuleView = () => {
                         </ServiceModuleGeneralInfo>
                     </Box>
                 </Grid>
+
+                <Grid item xs={12} sx={{ mt: 4 }}>
+                    <Typography variant="h5" gutterBottom>
+                        {t('myModule.mdaInfo')}
+                    </Typography>
+                    <ServiceModuleMdaInfo mda={serviceModule.serviceModuleMdaDto} />
+                </Grid>
+
                 <Grid item xs={12} sx={{ mt: 4 }}>
                     <Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
                         {t('myModule.usedBy.label')}

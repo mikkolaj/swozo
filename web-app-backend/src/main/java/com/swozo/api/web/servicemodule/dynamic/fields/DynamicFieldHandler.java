@@ -4,7 +4,7 @@ import com.swozo.api.web.servicemodule.request.FinishServiceModuleCreationReques
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.properties.FieldType;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 
 import java.util.Optional;
 

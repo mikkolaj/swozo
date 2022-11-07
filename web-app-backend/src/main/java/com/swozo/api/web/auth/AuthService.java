@@ -11,6 +11,7 @@ import com.swozo.api.web.exceptions.types.user.InvalidCredentialsException;
 import com.swozo.api.web.exceptions.types.user.UserNotFoundException;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.email.EmailService;
+import com.swozo.mapper.UserMapper;
 import com.swozo.persistence.user.RefreshTokenEntity;
 import com.swozo.persistence.user.User;
 import com.swozo.security.AccessToken;
@@ -50,6 +51,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final Optional<RoleHierarchy> roleHierarchy;
+    private final UserMapper userMapper;
 
     public AuthDetailsDto authenticateUser(LoginRequest loginRequest) {
         // we return same errors no matter whether user with that email doesn't exist or password is invalid,
@@ -182,7 +184,7 @@ public class AuthService {
                 accessToken.getCredentials(),
                 accessToken.getExpirationTime(),
                 refreshToken,
-                user.getRoles().stream().map(RoleDto::from).toList()
+                user.getRoles().stream().map(userMapper::roleToDto).toList()
         );
     }
 

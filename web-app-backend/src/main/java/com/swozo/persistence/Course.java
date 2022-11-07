@@ -33,8 +33,8 @@ public class Course extends BaseEntity {
     private LocalDateTime creationTime = LocalDateTime.now();
     private Boolean isPublic;
     private Boolean sandboxMode;
+    private Integer expectedStudentCount;
 
-    //FetchType.LAZY - we won't need downloading classes list everytime e.g. in courses view
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "course")
     @ToString.Exclude
     private Collection<Activity> activities = new LinkedList<>();
@@ -81,5 +81,9 @@ public class Course extends BaseEntity {
 
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public boolean isSandbox() {
+        return sandboxMode;
     }
 }

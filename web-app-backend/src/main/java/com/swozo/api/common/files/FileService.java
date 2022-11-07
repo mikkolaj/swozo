@@ -55,6 +55,18 @@ public class FileService {
         return fileRepository.sumStorageBytesUsedByUser(userId);
     }
 
+    public StorageAccessRequest prepareInternalUpload(
+            InitFileUploadRequest initFileUploadRequest,
+            FilePathGenerator filePathGenerator
+    ) {
+        return storageProvider.createAuthorizedUploadRequest(
+                storageProperties.webBucket().name(),
+                filePathGenerator.generate(initFileUploadRequest.filename()),
+                initFileUploadRequest.sizeBytes(),
+                storageProperties.externalUploadValidity()
+        );
+    }
+
     /**
      * Idempotent, new file is created and consumed by fileConsumer within a transaction scope if it doesn't already exist.
      *
@@ -90,6 +102,10 @@ public class FileService {
     public RemoteFile acknowledgeExternalUploadWithoutTxn(User owner, UploadAccessDto uploadAccessDto) {
         validateStorageAccessRequest(uploadAccessDto.storageAccessRequest());
         return fileRepository.save(fileMapper.toPersistence(uploadAccessDto, owner));
+    }
+
+    public RemoteFile acknowledgeInternalUploadWithoutTxn(User owner, UploadAccessDto uploadAccessDto) {
+        return acknowledgeExternalUploadWithoutTxn(owner, uploadAccessDto);
     }
 
     public StorageAccessRequest createExternalDownloadRequest(RemoteFile file) {

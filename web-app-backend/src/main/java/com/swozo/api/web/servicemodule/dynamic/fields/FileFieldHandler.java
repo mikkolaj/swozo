@@ -11,7 +11,7 @@ import com.swozo.mapper.FileMapper;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.properties.FieldType;
 import com.swozo.model.utils.StorageAccessRequest;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

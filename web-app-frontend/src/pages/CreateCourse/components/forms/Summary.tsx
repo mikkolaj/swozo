@@ -62,8 +62,8 @@ export const Summary = ({ course, activities }: Props) => {
                                         {item.name}
                                     </Typography>,
                                     <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-                                        {[...item.generalModules, ...item.lessonModules].map((mod) => (
-                                            <Chip sx={{ margin: 0.5 }} key={mod.id} label={mod.name} />
+                                        {[...item.generalModules, ...item.lessonModules].map(({ module }) => (
+                                            <Chip sx={{ margin: 0.5 }} key={module.id} label={module.name} />
                                         ))}
                                     </Box>,
                                     <Box sx={{ margin: 'auto', ...stylesRow }}>

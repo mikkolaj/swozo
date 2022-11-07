@@ -1,4 +1,9 @@
-import { ParameterDescriptionTypeEnum } from 'api';
+import {
+    ParameterDescriptionTypeEnum,
+    ServiceConfigIsolationModesEnum,
+    ServiceModuleMdaDto,
+    SharedServiceModuleMdaDto,
+} from 'api';
 import { SlideValues2 } from 'common/SlideForm/util';
 
 export const MODULE_INFO_SLIDE = '0';
@@ -25,11 +30,9 @@ export type ModuleValues = {
     isPublic: boolean;
 };
 
-export type ModuleSpecs = {
-    environment: string;
-    storage: number;
-    cpu: string;
-    ram: string;
+export type MdaValues = Omit<Omit<ServiceModuleMdaDto, 'isIsolated'>, 'sharedServiceModuleMdaDto'> & {
+    isolationMode: ServiceConfigIsolationModesEnum;
+    sharedServiceModuleMdaDto: SharedServiceModuleMdaDto;
 };
 
-export type FormValues = SlideValues2<ModuleValues, ModuleSpecs>;
+export type FormValues = SlideValues2<ModuleValues, MdaValues>;

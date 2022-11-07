@@ -2,21 +2,33 @@ import {
     FinishServiceModuleCreationRequest,
     ReserveServiceModuleRequest,
     ServiceConfig,
+    ServiceConfigIsolationModesEnum,
     ServiceModuleReservationDto,
+    SharedServiceModuleMdaDto,
 } from 'api';
+import { ApiError } from 'api/errors';
 import { fieldActionHandlerFactory } from 'common/DynamicFields/fieldActionHandlers';
+import { mergeNestedKeyNames } from 'common/SlideForm/util';
+import { FormikErrors } from 'formik';
+import { TFunction } from 'i18next';
 import _ from 'lodash';
+import { argFormatter, FIELD_SEPARATOR } from 'pages/CreateCourse/util';
 import { AppDispatch } from 'services/store';
+import { prepareErrorForDisplay, prepareFormikValidationErrors } from 'utils/util';
 import { extractValueForReservation } from '../../../common/DynamicFields/utils';
 import {
     DynamicFormResolvedFieldActions,
     DynamicFormValueRegistry,
     FormValues,
-    ModuleSpecs,
+    MdaValues,
     ModuleValues,
     MODULE_INFO_SLIDE,
     MODULE_SPECS_SLIDE,
 } from './types';
+
+const MODULE_INFO_SLIDE_NAME = 'moduleValues';
+const MDA_INFO_SLIDE_NAME = 'mdaValues';
+const DYNAMIC_FIELDS_NAME = '__dynamicFields__';
 
 export const initialModuleValues = (): ModuleValues => ({
     name: 'nowy moduł',
@@ -28,12 +40,26 @@ export const initialModuleValues = (): ModuleValues => ({
     isPublic: true,
 });
 
-export const initialModuleSpecsValues = (): ModuleSpecs => ({
-    environment: 'isolated',
-    storage: 1,
-    cpu: 'big',
-    ram: 'big',
+export const initialMdaValues = (isIsolated: boolean): MdaValues => ({
+    baseBandwidth: 1,
+    baseDisk: 1,
+    baseRam: 1,
+    baseVcpu: 1,
+    isolationMode: isIsolated
+        ? ServiceConfigIsolationModesEnum.Isolated
+        : ServiceConfigIsolationModesEnum.Shared,
+    sharedServiceModuleMdaDto: initialSharedModuleMdaValues(),
 });
+
+export const initialSharedModuleMdaValues = (): SharedServiceModuleMdaDto => ({
+    usersPerAdditionalBandwidthGbps: 10,
+    usersPerAdditionalCore: 10,
+    usersPerAdditionalDiskGb: 10,
+    usersPerAdditionalRamGb: 10,
+});
+
+export const toIsolationMode = (isIsolated: boolean): ServiceConfigIsolationModesEnum =>
+    isIsolated ? ServiceConfigIsolationModesEnum.Isolated : ServiceConfigIsolationModesEnum.Shared;
 
 export const buildReserveServiceModuleRequest = (
     values: FormValues,
@@ -49,9 +75,13 @@ export const buildReserveServiceModuleRequest = (
         teacherInstruction: { untrustedPossiblyDangerousHtml: moduleInfo.teacherInstruction },
         studentInstruction: { untrustedPossiblyDangerousHtml: moduleInfo.studentInstruction },
         isPublic: moduleInfo.isPublic,
-        scheduleTypeName: moduleInfo.service,
+        serviceName: moduleInfo.service,
         subject: moduleInfo.subject,
         description: moduleInfo.description,
+        mdaData: {
+            ..._.omit(values[MODULE_SPECS_SLIDE], 'isolationMode'),
+            isIsolated: values[MODULE_SPECS_SLIDE].isolationMode === ServiceConfigIsolationModesEnum.Isolated,
+        },
     };
 };
 
@@ -97,12 +127,19 @@ export const mapToInitialValues = (data: ReserveServiceModuleRequest): FormValue
         name: data.name,
         description: data.description,
         isPublic: data.isPublic,
-        service: data.scheduleTypeName,
+        service: data.serviceName,
         studentInstruction: data.studentInstruction.untrustedPossiblyDangerousHtml,
         teacherInstruction: data.teacherInstruction.untrustedPossiblyDangerousHtml,
         subject: data.subject,
     },
-    [MODULE_SPECS_SLIDE]: initialModuleSpecsValues(),
+    [MODULE_SPECS_SLIDE]: {
+        ...data.mdaData,
+        isolationMode: toIsolationMode(data.mdaData.isIsolated),
+        sharedServiceModuleMdaDto:
+            data.mdaData.isIsolated || !data.mdaData.sharedServiceModuleMdaDto
+                ? initialSharedModuleMdaValues()
+                : data.mdaData.sharedServiceModuleMdaDto,
+    },
 });
 
 export const preprocessSupportedServices = (
@@ -114,4 +151,26 @@ export const preprocessSupportedServices = (
     return editMode
         ? supportedServices.filter((service) => service.serviceName === values[MODULE_INFO_SLIDE].service)
         : supportedServices;
+};
+
+export const formatErrors = (t: TFunction, error: ApiError): FormikErrors<FormValues> => {
+    const modulePrefix = MODULE_INFO_SLIDE_NAME + FIELD_SEPARATOR;
+    const mdaPrefix = MDA_INFO_SLIDE_NAME + FIELD_SEPARATOR;
+
+    return prepareFormikValidationErrors(
+        error,
+        (key) =>
+            key.startsWith(modulePrefix)
+                ? key.replace(modulePrefix, MODULE_INFO_SLIDE + FIELD_SEPARATOR)
+                : key.replace(mdaPrefix, MODULE_SPECS_SLIDE + FIELD_SEPARATOR),
+        (error) => prepareErrorForDisplay(t, 'createModule', error, argFormatter)
+    );
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const flattenDynamicErrors = (errors: any) => {
+    const dynamicFieldsPrefix = MODULE_INFO_SLIDE + FIELD_SEPARATOR + DYNAMIC_FIELDS_NAME + FIELD_SEPARATOR;
+    return _.mapKeys(mergeNestedKeyNames(errors), (_, key: string) =>
+        key.startsWith(dynamicFieldsPrefix) ? key.substring(dynamicFieldsPrefix.length) : key
+    );
 };

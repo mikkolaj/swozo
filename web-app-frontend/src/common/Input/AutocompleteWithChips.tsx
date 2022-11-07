@@ -13,6 +13,8 @@ type Props<T> = {
     required?: boolean;
     fullWidthChips?: boolean;
     componentToRenderRightToFieldInput?: JSX.Element; // TODO refactor this xD
+    optionEquals?: (first: T, second: T) => boolean;
+    customChipRenderer?: (chips: JSX.Element[]) => JSX.Element;
 };
 
 export function AutocompleteWithChips<T>({
@@ -23,6 +25,8 @@ export function AutocompleteWithChips<T>({
     optionToString,
     setFieldValue,
     componentToRenderRightToFieldInput,
+    customChipRenderer,
+    optionEquals = (a, b) => a === b,
     required = true,
     fullWidthChips = false,
 }: Props<T>) {
@@ -32,13 +36,37 @@ export function AutocompleteWithChips<T>({
     );
     const [key, setKey] = useState(0);
 
+    const chips = useMemo(
+        () =>
+            chosenOptions.map((option, idx) => (
+                <Chip
+                    key={idx}
+                    sx={{ mr: 1 }}
+                    label={optionToString(option)}
+                    variant="outlined"
+                    onDelete={() =>
+                        setFieldValue(
+                            name,
+                            chosenOptions.filter((chosenOption) => chosenOption !== option)
+                        )
+                    }
+                />
+            )),
+        [name, optionToString, setFieldValue, chosenOptions]
+    );
+
     return (
         <>
             <Autocomplete
                 key={key}
                 freeSolo
                 disableClearable
-                options={options.filter((option) => !chosenOptions.includes(option)).map(optionToString)}
+                options={options
+                    .filter(
+                        (option) =>
+                            !chosenOptions.find((comparedOption) => optionEquals(option, comparedOption))
+                    )
+                    .map(optionToString)}
                 onChange={(_, val) => {
                     const selectedOption = optionsMap[val];
                     if (selectedOption && !chosenOptions.includes(selectedOption)) {
@@ -65,30 +93,21 @@ export function AutocompleteWithChips<T>({
                     </Box>
                 )}
             />
-            <Box
-                sx={{
-                    ...stylesRow,
-                    mt: 1,
-                    ml: 2,
-                    width: fullWidthChips ? '100%' : '50%',
-                    flexWrap: 'wrap',
-                }}
-            >
-                {chosenOptions.map((option, idx) => (
-                    <Chip
-                        key={idx}
-                        sx={{ mr: 1 }}
-                        label={optionToString(option)}
-                        variant="outlined"
-                        onDelete={() =>
-                            setFieldValue(
-                                name,
-                                chosenOptions.filter((chosenOption) => chosenOption !== option)
-                            )
-                        }
-                    />
-                ))}
-            </Box>
+            {customChipRenderer ? (
+                customChipRenderer(chips)
+            ) : (
+                <Box
+                    sx={{
+                        ...stylesRow,
+                        mt: 1,
+                        ml: 2,
+                        width: fullWidthChips ? '100%' : '50%',
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    {chips}
+                </Box>
+            )}
         </>
     );
 }

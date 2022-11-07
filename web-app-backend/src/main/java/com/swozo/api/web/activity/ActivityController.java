@@ -7,6 +7,7 @@ import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.model.links.ActivityLinkInfo;
+import com.swozo.model.users.OrchestratorUserDto;
 import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -63,66 +64,48 @@ public class ActivityController {
         return activityService.getPublicActivityFileDownloadRequest(accessToken.getUserId(), activityId, fileId, role);
     }
 
-    @PutMapping(INTERNAL + LINKS + "/{requestId}")
-    public void setActivityLinks(
-            @PathVariable Long requestId,
-            @RequestBody List<ActivityLinkInfo> links
+    @PutMapping("/confirm-link-delivery/{activityModuleId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public void confirmLinkCanBeDeliveredToStudents(
+            AccessToken accessToken,
+            @PathVariable Long activityModuleId
     ) {
-        activityModuleService.setActivityLinks(requestId, links);
+       activityModuleService.confirmLinkCanBeDeliveredToStudents(accessToken.getUserId(), activityModuleId);
     }
 
+    @PutMapping(INTERNAL + LINKS + "/{activityModuleId}/{scheduleRequestId}")
+    public void setActivityLinks(
+            @PathVariable Long activityModuleId,
+            @PathVariable Long scheduleRequestId,
+            @RequestBody List<ActivityLinkInfo> links
+    ) {
+        activityModuleService.addActivityLinks(activityModuleId, scheduleRequestId, links);
+    }
 
-    // TODO return proper DTO types (based on frontend requirements) instead of persistence types
-    //    //wouldn't it be better to pass course_id via path?
-    //    @PostMapping()
-    //    @PreAuthorize("hasRole('TEACHER')")
-    //    public Activity addActivity(AccessToken token, @RequestBody Activity activity) {
-    //        logger.info("creating new activity with name {} by user {}", activity.getName(), token.getUserId());
-    //        return activityService.createActivity(activity);
-    //    }
-    //
-    //    @DeleteMapping("/{id}")
-    //    @PreAuthorize("hasRole('TEACHER')")
-    //    public void deleteActivity(AccessToken token, @PathVariable Long id) {
-    //        logger.info("deleting activity with id: {}", id);
-    //        activityService.deleteActivity(id);
-    //    }
-    //
-    //    @PutMapping("/{id}")
-    //    @PreAuthorize("hasRole('TEACHER')")
-    //    public Activity updateActivity(AccessToken token, @PathVariable Long id, @RequestBody Activity newActivity) {
-    //        logger.info("updating activity with name: {}", newActivity.getName());
-    //        return activityService.updateActivity(id, newActivity);
-    //    }
-    //
-    //    @GetMapping("/{id}/service-modules")
-    //    @PreAuthorize("hasRole('TEACHER')")
-    //    public Collection<ActivityModule> getCourseActivityList(AccessToken token, @PathVariable Long id) {
-    //        logger.info("service serviceModule list from activity with id: {}", id);
-    //        return activityService.getActivityModulesList(id);
-    //    }
-    //
-    //    @PostMapping("/{activityId}/service-modules/{activityModuleId}")
-    //    @PreAuthorize("hasRole('TEACHER')")
-    //    public Activity addModuleToActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
-    //        logger.info("adding serviceModule with id: {} to activity with id: {}", activityModuleId, activityId);
-    //        return activityService.addModuleToActivity(activityId, activityModuleId);
-    //    }
-    //
-    //    @DeleteMapping("/{activityId}/service-modules/{activityModuleId}")
-    //    @PreAuthorize("hasRole('TEACHER')")
-    //    public Activity deleteModuleFromActivity(AccessToken token, @PathVariable Long activityId, @PathVariable Long activityModuleId) {
-    //        logger.info("removing serviceModule with id: {} from activity with id: {}", activityModuleId, activityId);
-    //        return activityService.deleteModuleFromActivity(activityId, activityModuleId);
-    //    }
-    //
-    //
-    //    //imo this endpoint should be removed, connectionDetails are now stored in the ActivityModule, and we already have a method for getting them
-    //    @GetMapping("/{id}/links")
-    //    @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
-    //    public Collection<String> getLinks(AccessToken token, @PathVariable Long id) {
-    //        logger.info("sending connectionDetails");
-    //        return new LinkedList<>();
-    //    }
+    @GetMapping(INTERNAL + USERS + "/{activityModuleId}/{scheduleRequestId}")
+    public List<OrchestratorUserDto> getUserDataForProvisioner(
+            @PathVariable Long activityModuleId,
+            @PathVariable Long scheduleRequestId
+    ) {
+        return activityModuleService.getUserDataForProvisioner(activityModuleId, scheduleRequestId);
+    }
 
+    @GetMapping(INTERNAL + INIT_UPLOAD + "/{activityModuleId}/{userId}")
+    public StorageAccessRequest initUserActivityFileUpload(
+            @PathVariable Long activityModuleId,
+            @PathVariable Long userId,
+            @RequestBody InitFileUploadRequest initFileUploadRequest
+    ) {
+        return activityModuleService.prepareUserActivityFileUpload(initFileUploadRequest, activityModuleId, userId);
+    }
+
+    @PutMapping(INTERNAL + ACK_UPLOAD + "/{activityModuleId}/{scheduleRequestId}/{userId}")
+    public void ackUserActivityFileUpload(
+            @PathVariable Long activityModuleId,
+            @PathVariable Long scheduleRequestId,
+            @PathVariable Long userId,
+            @RequestBody UploadAccessDto uploadAccessDto
+    ) {
+        activityModuleService.ackUserActivityFileUpload(uploadAccessDto, activityModuleId, scheduleRequestId, userId);
+    }
 }

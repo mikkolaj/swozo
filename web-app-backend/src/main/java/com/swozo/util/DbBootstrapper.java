@@ -2,21 +2,28 @@ package com.swozo.util;
 
 import com.swozo.api.common.files.FileRepository;
 import com.swozo.api.web.activity.ActivityRepository;
-import com.swozo.api.web.activitymodule.ActivityModuleRepository;
+import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseRepository;
+import com.swozo.api.web.mda.policy.PolicyRepository;
+import com.swozo.api.web.mda.vm.VmRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
-import com.swozo.model.scheduling.properties.ScheduleType;
+import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
-import com.swozo.persistence.ServiceModule;
 import com.swozo.persistence.activity.Activity;
-import com.swozo.persistence.activity.ActivityLink;
 import com.swozo.persistence.activity.ActivityModule;
+import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
+import com.swozo.persistence.activity.UserActivityModuleInfo;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
+import com.swozo.persistence.mda.VirtualMachine;
+import com.swozo.persistence.mda.policies.Policy;
+import com.swozo.persistence.mda.policies.PolicyType;
+import com.swozo.persistence.servicemodule.IsolatedServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import com.swozo.persistence.user.Role;
 import com.swozo.persistence.user.User;
 import com.swozo.persistence.user.UserCourseData;
@@ -48,8 +55,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final ActivityRepository activityRepository;
     private final AuthService authService;
     private final ServiceModuleRepository serviceModuleRepository;
-    private final ActivityModuleRepository activityModuleRepository;
     private final FileRepository fileRepository;
+    private final PolicyRepository policyRepository;
+    private final VmRepository vmRepository;
+    private final ActivityModuleService activityModuleService;
     @Value("${database.enable-bootstrapping}")
     private final boolean enableBootstrapping;
     private boolean alreadySetup = false;
@@ -106,6 +115,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.setDescription("kurs o pythonie");
         course.setTeacher(teacher);
         course.setPassword("haslo");
+        course.setExpectedStudentCount(2);
         course.setJoinUUID(UUID.randomUUID().toString());
         course.setStudents(List.of(new UserCourseData(student1, course), new UserCourseData(student2, course)));
         course.setSandboxMode(false);
@@ -114,21 +124,25 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         //        FILES
         var mockFile = new RemoteFile();
-        mockFile.setId(0L);
         mockFile.setPath("lab_file.ipynb");
         mockFile.setSizeBytes(2000L);
+        mockFile.setOwner(teacher);
 
         fileRepository.save(mockFile);
 
         //        ServiceModule
-        ServiceModule serviceModule = new ServiceModule();
+        ServiceModule serviceModule = new IsolatedServiceModule();
+        serviceModule.setBaseBandwidth(1);
+        serviceModule.setBaseRam(1);
+        serviceModule.setBaseVcpu(1);
+        serviceModule.setBaseDisk(1);
         serviceModule.setName("Klasy w Pythonie");
         serviceModule.setTeacherInstructionHtml("teach");
         serviceModule.setStudentInstructionHtml("stud");
         serviceModule.setCreator(teacher);
         serviceModule.setDescription("opis1");
         serviceModule.setSubject("INFORMATYKA");
-        serviceModule.setScheduleTypeName(ScheduleType.JUPYTER.toString());
+        serviceModule.setServiceName(ServiceType.JUPYTER.toString());
         serviceModule.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
         serviceModule.setPublic(true);
         serviceModule.setReady(true);
@@ -136,14 +150,18 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule);
 
-        ServiceModule serviceModule2 = new ServiceModule();
+        ServiceModule serviceModule2 = new IsolatedServiceModule();
+        serviceModule2.setBaseBandwidth(1);
+        serviceModule2.setBaseRam(1);
+        serviceModule2.setBaseVcpu(1);
+        serviceModule2.setBaseDisk(1);
         serviceModule2.setName("Funkcje w Pythonie");
         serviceModule2.setTeacherInstructionHtml("teach");
         serviceModule2.setStudentInstructionHtml("stud");
         serviceModule2.setCreator(teacher);
         serviceModule2.setDescription("opis2");
         serviceModule2.setSubject("INFORMATYKA");
-        serviceModule2.setScheduleTypeName(ScheduleType.JUPYTER.toString());
+        serviceModule2.setServiceName(ServiceType.JUPYTER.toString());
         serviceModule2.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
         serviceModule2.setPublic(true);
         serviceModule2.setReady(true);
@@ -151,12 +169,39 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule2);
 
-        var activityLink1 = new ActivityLink();
-        activityLink1.setUrl("http://34.118.97.16/lab");
-        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
-        activityLink1.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
-
         //        ACTIVITIES:
+
+        var activityLink1 = new UserActivityModuleInfo();
+        // this hasn't received links yet
+        activityLink1.setUser(student1);
+
+        var activityLink2 = new UserActivityModuleInfo();
+        activityLink2.setUrl("http://34.118.97.16/lab");
+        activityLink2.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
+        activityLink2.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
+        activityLink2.setUser(teacher);
+
+        var activityModuleScheduleInfo1 = new ActivityModuleScheduleInfo();
+        activityModuleScheduleInfo1.setScheduleRequestId(99999L);
+        activityModuleScheduleInfo1.addUserActivityLink(activityLink1);
+        activityModuleScheduleInfo1.addUserActivityLink(activityLink2);
+
+        var activityLink3 = new UserActivityModuleInfo();
+        activityLink3.setUrl("http://34.118.97.16/lab");
+        activityLink3.setTranslation(new TranslatableActivityLink(SupportedLanguage.PL, "Login: student@123.swozo.com\nHasło: 123123"));
+        activityLink3.setTranslation(new TranslatableActivityLink(SupportedLanguage.EN, "en test"));
+        activityLink3.setUser(teacher);
+
+        var activityModuleScheduleInfo2 = new ActivityModuleScheduleInfo();
+        activityModuleScheduleInfo2.setScheduleRequestId(99998L);
+        activityModuleScheduleInfo2.addUserActivityLink(activityLink3);
+
+        var activityModule1 = new ActivityModule(serviceModule, false);
+        activityModule1.addScheduleInfo(activityModuleScheduleInfo1);
+
+        var activityModule2 = new ActivityModule(serviceModule, true);
+        activityModule2.addScheduleInfo(activityModuleScheduleInfo2);
+
         Activity activity = new Activity();
         activity.setName("Pętle, konstrukcje warunkowe");
         activity.setDescription("podstawy");
@@ -165,13 +210,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activity.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 29, 19, 30, 40));
         activity.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
-        activity.setCourse(course);
-        activity.addActivityModule(new ActivityModule(
-                serviceModule,
-                activity,
-                9999999L,
-                List.of(activityLink1)
-        ));
+        activity.addActivityModule(activityModule1);
         course.addActivity(activity);
         activityRepository.save(activity);
 
@@ -183,14 +222,24 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activity2.setEndTime(LocalDateTime.of(2022,
                 Month.JULY, 30, 17, 0, 40));
         activity2.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
-        activity2.setCourse(course);
-        activity2.addActivityModule(new ActivityModule(
-                serviceModule,
-                activity2,
-                99999L,
-                List.of(activityLink1)
-        ));
+        activity2.addActivityModule(activityModule2);
         course.addActivity(activity2);
         activityRepository.save(activity2);
+
+//        POLICIES:
+        var teacher1 = userRepository.getByEmail("teacher@gmail.com");
+        Policy policy = new Policy();
+        policy.setPolicyType(PolicyType.MAX_RAM);
+        policy.setTeacher(teacher1);
+        policy.setValue(20);
+
+        policyRepository.save(policy);
+
+        VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2, 10);
+        vmRepository.save(vm1);
+        VirtualMachine vm2 = new VirtualMachine("e2-standard-4", 4, 16, 8, 10);
+        vmRepository.save(vm2);
+        VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16, 10);
+        vmRepository.save(vm3);
     }
 }

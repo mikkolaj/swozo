@@ -2,12 +2,11 @@ package com.swozo.mapper;
 
 import com.swozo.api.web.activity.dto.ServiceConnectionDetailsDto;
 import com.swozo.api.web.activitymodule.dto.ActivityModuleDetailsDto;
-import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.utils.InstructionDto;
-import com.swozo.persistence.ServiceModule;
-import com.swozo.persistence.activity.ActivityLink;
 import com.swozo.persistence.activity.ActivityModule;
-import com.swozo.persistence.activity.utils.TranslatableActivityLink;
+import com.swozo.persistence.activity.UserActivityModuleInfo;
+import com.swozo.persistence.servicemodule.ServiceModule;
+import com.swozo.persistence.user.User;
 import com.swozo.utils.SupportedLanguage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,21 +23,11 @@ public abstract class ActivityModuleMapper {
     @Autowired
     protected CommonMappers commonMappers;
 
-    protected abstract ActivityLink toBasicPersistence(ActivityLinkInfo activityLinkInfo);
-
-    public ActivityLink toPersistence(ActivityLinkInfo activityLinkInfo) {
-        var activityLink = toBasicPersistence(activityLinkInfo);
-        activityLinkInfo.connectionInstructionHtml()
-                .forEach((language, value) -> activityLink.setTranslation(new TranslatableActivityLink(language, value)));
-
-        return activityLink;
+    public ActivityModule fromServiceModule(ServiceModule serviceModule, boolean linkConfirmationRequired) {
+        return new ActivityModule(serviceModule, linkConfirmationRequired);
     }
 
-    public ActivityModule fromServiceModule(ServiceModule serviceModule) {
-        return new ActivityModule(serviceModule);
-    }
-
-    protected Map<SupportedLanguage, InstructionDto> instructionsToDto(ActivityLink activityLink) {
+    protected Map<SupportedLanguage, InstructionDto> instructionsToDto(UserActivityModuleInfo activityLink) {
         return activityLink.getTranslations().entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -46,15 +35,26 @@ public abstract class ActivityModuleMapper {
                 ));
     }
 
-    protected List<ServiceConnectionDetailsDto> connectionDetailsToDto(ActivityModule activityModule) {
-        return activityModule.getLinks().stream().map(this::toDto).toList();
+    protected List<ServiceConnectionDetailsDto> connectionDetailsToDto(ActivityModule activityModule, User user) {
+        if (!activityModule.getActivity().getCourse().getTeacher().equals(user) &&
+            !activityModule.canStudentReceiveLink()
+        ) {
+            return List.of();
+        }
+
+        return activityModule.getSchedules().stream()
+                .flatMap(scheduleInfo -> scheduleInfo.getUserActivityModuleData().stream())
+                .filter(userActivityLink -> userActivityLink.getUser().equals(user) && userActivityLink.getUrl().isPresent())
+                .map(userActivityLink -> new ServiceConnectionDetailsDto(
+                        instructionsToDto(userActivityLink),
+                        userActivityLink.getUrl().get())
+                )
+                .toList();
     }
 
-    @Mapping(target = "connectionInstructions", expression = "java(instructionsToDto(activityLink))")
-    protected abstract ServiceConnectionDetailsDto toDto(ActivityLink activityLink);
-
+    @Mapping(target = "id", source = "activityModule.id")
     @Mapping(target = "serviceModule", expression = "java(serviceModuleMapper.toSummaryDto(activityModule.getServiceModule()))")
-    @Mapping(target = "connectionDetails", expression = "java(connectionDetailsToDto(activityModule))")
-    public abstract ActivityModuleDetailsDto toDto(ActivityModule activityModule);
+    @Mapping(target = "connectionDetails", expression = "java(connectionDetailsToDto(activityModule, user))")
+    public abstract ActivityModuleDetailsDto toDto(ActivityModule activityModule, User user);
 }
 

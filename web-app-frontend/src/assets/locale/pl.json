@@ -125,7 +125,10 @@
                 "title": "{{serviceModuleName}} ({{serviceName}})",
                 "linksUnavailable": "Linki nie są jeszcze dostępne, odśwież stronę przed rozpoczęciem zajęć",
                 "connectionInstruction": "Instrukcja podłączenia",
-                "closeButton": "Zamknij"
+                "closeButton": "Zamknij",
+                "linkConfirmationRequired": "Uczniowie nie mogą jeszcze otrzymać linków do tej aktywności",
+                "confirmLinkDelivery": "Potwierdź możliwość dostarczenia linków",
+                "linkDeliveryConfirmed": "Uczniowie dostaną linki gdy tylko będą one dostępne"
             }
         },
         "join": {
@@ -176,7 +179,8 @@
                     "endTime": "Czas zakończenia",
                     "lessonModules": "moduły lekcyjne",
                     "generalModules": "moduły ogólne",
-                    "instructions": "Instrukcje"
+                    "instructions": "Instrukcje",
+                    "linkConfirmationRequiredLabel": "Wymagaj potwierdzenia przed wysłaniem uczniom linków"
                 }
             },
             "2": {
@@ -227,6 +231,7 @@
         "edit": "edytuj",
         "delete": "usuń",
         "generalInfo": "Informacje ogólne",
+        "mdaInfo": "Specyfikacja techniczna modułu",
         "subject": "Tematyka",
         "description": "Opis",
         "serviceName": "Wykorzystywany serwis",
@@ -292,10 +297,25 @@
             "1": {
                 "title": "Specyfikacja techniczna",
                 "form": {
-                    "environment": "Typ środowiska",
-                    "storage": "Wymagane miejsce",
-                    "cpu": "Obciążenie procesora",
-                    "ram": "Wymagany RAM"
+                    "isolation": {
+                        "label": "Typ izolacji środowiska",
+                        "ISOLATED": "Izolowane",
+                        "SHARED": "Współdzielone"
+                    },
+                    "base": {
+                        "label": "Minimalne wymagania sprzętowe maszyny wirtualnej",
+                        "vcpu": "Liczba wirtualnych procesorów",
+                        "ram": "Pamięć RAM [GB]",
+                        "disk": "Pamięć nieulotna [GB]",
+                        "bandwidth": "Wymagana szerokość pasma [Gb/s]"
+                    },
+                    "scaled": {
+                        "label": "Skalowanie wymagań ze względu na liczbę użytkowników",
+                        "vcpu": "Liczba użytkowników potrzebna by zwiększyć liczbę rdzeni o 1",
+                        "ram": "Liczba użytkowników potrzebna by zwiększyć pamięć RAM o 1 GB",
+                        "disk": "Liczba użytkowników potrzebna by zwiększyć pamięć nieulotną o 1 GB",
+                        "bandwidth": "Liczba użytkowników potrzebna by zwiększyć szerokość pasma o 1 GB/s"
+                    }
                 }
             },
             "2": {
@@ -309,6 +329,16 @@
                     "private": {
                         "label": "Moduł jest ustawiony jako prywatny.",
                         "info": "Tylko ty będziesz mógł z niego skorzystać."
+                    }
+                },
+                "isolation": {
+                    "ISOLATED": {
+                        "label": "Wybrano środowisko izolowane.",
+                        "info": "Tylko 1 użytkownik otrzyma dostęp do pojedynczej maszyny wirtualnej z uruchomionym modułem"
+                    },
+                    "SHARED": {
+                        "label": "Wybrano środowisko współdzielone.",
+                        "info": "Wielu użytkowników otrzyma dostęp do tej samej maszyny wirtualnej z uruchomionym modułem"
                     }
                 },
                 "disclaimer": {
@@ -328,10 +358,16 @@
                         },
                         "- Moduł może zostać usunięty tylko gdy nikt z niego jeszcze nie skorzystał",
                         "- Żeby zablokować przyszłe korzystanie z modułu możesz wyłączyć opcję 'Moduł publiczny', jednak osoby które już go wybrały wciąż będą w stanie go użyć",
-                        "- Zmiana typu serwisu nie będzie możliwa, będziesz mógł jednak zmienić jego konfigurację, w szczególności zawartość plików i wymagania techniczne"
+                        "- Zmiana typu izolacji i typu serwisu nie będzie możliwa, będziesz mógł jednak zmienić jego konfigurację, w szczególności zawartość plików i wymagania techniczne"
                     ]
                 }
             }
+        },
+        "validationErrors": {
+            "MISSING": "Pole jest wymagane",
+            "NOT_UNIQUE": "Nazwa jest już zajęta",
+            "NOT_POSITIVE": "Wartość musi być dodatnia",
+            "OPTION_NOT_ALLOWED": "Opcja nie jest już dostępna"
         }
     },
     "activityInstructions": {
@@ -497,7 +533,8 @@
         "defaultMessage": "Coś poszło nie tak...",
         "defaultNavigationBtn": "Wróć do strony głównej",
         "refresh": "Odśwież",
-        "connectionError": "Wystąpił problem z połączeniem, spróbuj ponownie później"
+        "connectionError": "Wystąpił problem z połączeniem, spróbuj ponownie później",
+        "tryAgain": "Coś poszło nie tak, spróbuj ponownie..."
     },
     "toast": {
         "courseCreated": "Kurs został utworzony!",
@@ -509,7 +546,8 @@
         "fileUploaded": "Plik został przesłany!",
         "userCreated": "Użytkownik został utworzony!",
         "passwordChanged": "Hasło zostało zmienione!",
-        "rolesUpdated": "Role zostały zaaktualizowane!"
+        "rolesUpdated": "Role zostały zaaktualizowane!",
+        "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",

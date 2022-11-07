@@ -73,7 +73,10 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
     private Consumer<Optional<VMResourceDetails>> extractDetailsAndReprovision(ScheduleRequestEntity requestEntity) {
         return possibleDetails -> {
             var resourceDetails = possibleDetails.orElseThrow(getNoMatchingVmException(requestEntity));
-            scheduleHandler.provisionSoftwareAndScheduleDeletion(requestEntity).accept(resourceDetails);
+            requestEntity.getServiceDescriptions().forEach(description ->
+                    scheduleHandler.provisionSoftwareAndScheduleDeletion(requestEntity, description)
+                            .accept(resourceDetails)
+            );
         };
     }
 

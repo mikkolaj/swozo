@@ -10,6 +10,8 @@ import com.swozo.api.web.user.dto.UserAdminDetailsDto;
 import com.swozo.api.web.user.dto.UserAdminSummaryDto;
 import com.swozo.api.web.user.dto.UserDetailsDto;
 import com.swozo.api.web.user.request.CreateUserRequest;
+import com.swozo.model.users.ActivityRole;
+import com.swozo.model.users.OrchestratorUserDto;
 import com.swozo.persistence.user.Role;
 import com.swozo.persistence.user.User;
 import com.swozo.persistence.user.UserCourseData;
@@ -56,6 +58,17 @@ public abstract class UserMapper {
     }
 
     protected List<RoleDto> rolesToDto(Collection<Role> roles) {
-        return roles.stream().map(RoleDto::from).toList();
+        return roles.stream().map(this::roleToDto).toList();
+    }
+    public abstract OrchestratorUserDto toOrchestratorDto(User user, ActivityRole role);
+
+    public RoleDto roleToDto(Role role) {
+        return switch (role.getName().toUpperCase()) {
+            case "STUDENT" -> RoleDto.STUDENT;
+            case "TEACHER" -> RoleDto.TEACHER;
+            case "TECHNICAL_TEACHER" -> RoleDto.TECHNICAL_TEACHER;
+            case "ADMIN" -> RoleDto.ADMIN;
+            default -> throw new IllegalArgumentException("Invalid App role: " + role);
+        };
     }
 }

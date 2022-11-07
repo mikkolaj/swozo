@@ -24,7 +24,7 @@ export const formatDateTime = (date: Date): string => {
 };
 
 export const withDate = (time: Dayjs, date: Dayjs): Dayjs =>
-    time.set('year', date.get('year')).set('month', date.get('month')).set('day', date.get('day'));
+    time.set('year', date.get('year')).set('month', date.get('month')).set('date', date.get('date'));
 
 export const formatName = (firstName?: string, lastName?: string) =>
     _.capitalize(`${firstName ?? ''} ${lastName ?? ''}`).trim();

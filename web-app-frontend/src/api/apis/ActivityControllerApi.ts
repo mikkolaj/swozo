@@ -34,6 +34,10 @@ export interface AckPublicActivityFileUploadRequest {
     uploadAccessDto: UploadAccessDto;
 }
 
+export interface ConfirmLinkCanBeDeliveredToStudentsRequest {
+    activityModuleId: number;
+}
+
 export interface GetPublicActivityFileDownloadRequestRequest {
     activityId: number;
     fileId: number;
@@ -90,6 +94,41 @@ export class ActivityControllerApi extends runtime.BaseAPI {
     async ackPublicActivityFileUpload(requestParameters: AckPublicActivityFileUploadRequest, initOverrides?: RequestInit): Promise<ActivityDetailsDto> {
         const response = await this.ackPublicActivityFileUploadRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async confirmLinkCanBeDeliveredToStudentsRaw(requestParameters: ConfirmLinkCanBeDeliveredToStudentsRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.activityModuleId === null || requestParameters.activityModuleId === undefined) {
+            throw new runtime.RequiredError('activityModuleId','Required parameter requestParameters.activityModuleId was null or undefined when calling confirmLinkCanBeDeliveredToStudents.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/activities/confirm-link-delivery/{activityModuleId}`.replace(`{${"activityModuleId"}}`, encodeURIComponent(String(requestParameters.activityModuleId))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async confirmLinkCanBeDeliveredToStudents(requestParameters: ConfirmLinkCanBeDeliveredToStudentsRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.confirmLinkCanBeDeliveredToStudentsRaw(requestParameters, initOverrides);
     }
 
     /**

@@ -11,7 +11,9 @@ public enum ValidationErrorType {
     NOT_IN_BOUNDS,
     INVALID_PASSWORD,
     INVALID_PASSWORD_TOKEN,
-    DOESNT_EXIST
+    DOESNT_EXIST,
+    OPTION_NOT_ALLOWED,
+    NOT_POSITIVE
     ;
 
     public ValidationError forField(String fieldName) {

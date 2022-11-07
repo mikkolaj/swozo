@@ -7,9 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class CommonValidators {
     private CommonValidators() {}
@@ -22,6 +20,13 @@ public class CommonValidators {
     public static Optional<ValidationError> numberInBounds(String fieldName, int value, int minInclusive, int maxInclusive) {
         return value > maxInclusive || value < minInclusive ?
             Optional.of(ValidationErrorType.NOT_IN_BOUNDS.forField(fieldName)) : Optional.empty();
+    }
+
+    public static  List<ValidationError> allPositive(Map<String, Number> fieldNameToNumber) {
+        return fieldNameToNumber.entrySet().stream()
+                .filter(entry -> entry.getValue().doubleValue() <= 0)
+                .map(entry -> ValidationErrorType.NOT_POSITIVE.forField(entry.getKey()))
+                .toList();
     }
 
     public static List<ValidationError> allSchemaRequiredFieldsPresent(Object obj) {
@@ -55,12 +60,17 @@ public class CommonValidators {
         return repeatedValue.map(val -> ValidationErrorType.DOESNT_EXIST.forField(fieldName));
     }
 
+    public static <T> Optional<ValidationError> contains(String fieldName, Collection<T> collection, T value) {
+        return collection.contains(value) ? Optional.empty() :
+                Optional.of(ValidationErrorType.OPTION_NOT_ALLOWED.forField(fieldName));
+    }
+
     public static Optional<ValidationError> timeDeltaInBounds(
-            String fieldName,
-            LocalDateTime start,
-            LocalDateTime end,
-            Duration minDelta,
-            Duration maxDelta
+        String fieldName,
+        LocalDateTime start,
+        LocalDateTime end,
+        Duration minDelta,
+        Duration maxDelta
     ) {
         var delta = Duration.between(start, end);
         if (delta.isNegative())
