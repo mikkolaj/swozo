@@ -5,6 +5,7 @@ import com.swozo.api.common.files.dto.UploadAccessDto;
 import com.swozo.api.common.files.request.InitFileUploadRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
+import com.swozo.api.web.activity.dto.ActivitySummaryDto;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseValidator;
 import com.swozo.api.web.exceptions.types.course.ActivityNotFoundException;
@@ -14,6 +15,9 @@ import com.swozo.mapper.ActivityMapper;
 import com.swozo.model.utils.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +30,16 @@ public class ActivityService {
     private final ActivityMapper activityMapper;
     private final UserService userService;
 
+    public List<ActivitySummaryDto> getUserActivitiesBetween(Long userId, LocalDateTime start, LocalDateTime end) {
+        return activityRepository.getAllUserActivitiesBetween(userId, start, end).stream()
+                .map(activityMapper::toSummaryDto)
+                .toList();
+    }
+
     public StorageAccessRequest preparePublicActivityFileUpload(
-            Long activityId,
-            Long teacherId,
-            InitFileUploadRequest initFileUploadRequest
+        Long activityId,
+        Long teacherId,
+        InitFileUploadRequest initFileUploadRequest
     ) {
         var activity = activityRepository.findById(activityId).orElseThrow();
 
@@ -77,55 +87,4 @@ public class ActivityService {
 
         return fileService.createExternalDownloadRequest(file);
     }
-
-    // TODO: below are old, currently unused and left 'just in case' things
-
-//    public Activity createActivity(Activity newActivity) {
-//        newActivity.getModules().forEach(activityModule -> activityModule.setActivity(newActivity));
-//        var courseID = newActivity.getCourse().getId();
-//        var course = courseRepository.getById(courseID);
-//        course.addActivity(newActivity);
-//        newActivity.setCourse(course);
-//        activityRepository.save(newActivity);
-//        return newActivity;
-//    }
-//
-//    public void deleteActivity(Long activityId) {
-//        var activity = activityRepository.getById(activityId);
-//        var course = courseRepository.getById(activity.getCourse().getId());
-//        course.deleteActivity(activity);
-//        activityRepository.deleteById(activityId);
-//    }
-//
-//    public Activity updateActivity(Long id, Activity newActivity) {
-//        var activity = activityRepository.getById(id);
-//        activity.setName(newActivity.getName());
-//        activity.setDescription(newActivity.getDescription());
-//        activity.setStartTime(newActivity.getStartTime());
-//        activity.setEndTime(newActivity.getEndTime());
-//        activity.setInstructionsFromTeacher(newActivity.getInstructionsFromTeacher());
-//        activityRepository.save(activity);
-//        return activity;
-//    }
-//
-//    public Collection<ActivityModule> getActivityModulesList(Long activityId) {
-//        return activityRepository.getById(activityId).getModules();
-//    }
-//
-//    public Activity addModuleToActivity(Long activityId, Long activityModuleId) {
-//        var activity = activityRepository.getById(activityId);
-//        var activityModule = activityModuleRepository.getById(activityModuleId);
-//        activity.addActivityModule(activityModule);
-//        activityRepository.save(activity);
-//        return activity;
-//    }
-//
-//    public Activity deleteModuleFromActivity(Long activityId, Long activityModuleId) {
-//        var activity = activityRepository.getById(activityId);
-//        var activityModule = activityModuleRepository.getById(activityModuleId);
-//        activity.removeActivityModule(activityModule);
-//        activityRepository.save(activity);
-//        return activity;
-//    }
-
 }

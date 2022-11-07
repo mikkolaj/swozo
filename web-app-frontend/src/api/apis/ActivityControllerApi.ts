@@ -18,6 +18,9 @@ import {
     ActivityDetailsDto,
     ActivityDetailsDtoFromJSON,
     ActivityDetailsDtoToJSON,
+    ActivitySummaryDto,
+    ActivitySummaryDtoFromJSON,
+    ActivitySummaryDtoToJSON,
     InitFileUploadRequest,
     InitFileUploadRequestFromJSON,
     InitFileUploadRequestToJSON,
@@ -41,6 +44,11 @@ export interface ConfirmLinkCanBeDeliveredToStudentsRequest {
 export interface GetPublicActivityFileDownloadRequestRequest {
     activityId: number;
     fileId: number;
+}
+
+export interface GetUserActivitiesRequest {
+    daysInThePast?: number;
+    daysInTheFuture?: number;
 }
 
 export interface PreparePublicActivityFileUploadRequest {
@@ -168,6 +176,46 @@ export class ActivityControllerApi extends runtime.BaseAPI {
      */
     async getPublicActivityFileDownloadRequest(requestParameters: GetPublicActivityFileDownloadRequestRequest, initOverrides?: RequestInit): Promise<StorageAccessRequest> {
         const response = await this.getPublicActivityFileDownloadRequestRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUserActivitiesRaw(requestParameters: GetUserActivitiesRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ActivitySummaryDto>>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.daysInThePast !== undefined) {
+            queryParameters['daysInThePast'] = requestParameters.daysInThePast;
+        }
+
+        if (requestParameters.daysInTheFuture !== undefined) {
+            queryParameters['daysInTheFuture'] = requestParameters.daysInTheFuture;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/activities`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ActivitySummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getUserActivities(requestParameters: GetUserActivitiesRequest = {}, initOverrides?: RequestInit): Promise<Array<ActivitySummaryDto>> {
+        const response = await this.getUserActivitiesRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -11,6 +11,7 @@ apis/index.ts
 index.ts
 models/ActivityDetailsDto.ts
 models/ActivityModuleDetailsDto.ts
+models/ActivitySummaryDto.ts
 models/AuthDetailsDto.ts
 models/CourseDetailsDto.ts
 models/CourseSummaryDto.ts

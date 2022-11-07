@@ -2,6 +2,7 @@
 /* eslint-disable */
 export * from './ActivityDetailsDto';
 export * from './ActivityModuleDetailsDto';
+export * from './ActivitySummaryDto';
 export * from './AuthDetailsDto';
 export * from './CourseDetailsDto';
 export * from './CourseSummaryDto';

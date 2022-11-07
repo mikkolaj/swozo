@@ -1,6 +1,7 @@
 package com.swozo.mapper;
 
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
+import com.swozo.api.web.activity.dto.ActivitySummaryDto;
 import com.swozo.api.web.activity.dto.SelectedServiceModuleDto;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.activitymodule.dto.ActivityModuleDetailsDto;
@@ -27,6 +28,8 @@ public abstract class ActivityMapper {
     protected FileMapper fileMapper;
     @Autowired
     protected CommonMappers commonMappers;
+    @Autowired
+    protected UserMapper userMapper;
 
     protected LinkedList<ActivityModule> modulesToPersistence(CreateActivityRequest createActivityRequest) {
         var mappedActivityModules = new LinkedList<ActivityModule>();
@@ -79,4 +82,9 @@ public abstract class ActivityMapper {
 
     @Mapping(target = "selectedModules", expression = "java(modulesToRequest(activity))")
     public abstract CreateActivityRequest toRequest(Activity activity);
+
+    @Mapping(target = "courseName", source = "activity.course.name")
+    @Mapping(target = "courseId", source = "activity.course.id")
+    @Mapping(target = "teacher", expression = "java(userMapper.toDto(activity.getCourse().getTeacher()))")
+    public abstract ActivitySummaryDto toSummaryDto(Activity activity);
 }

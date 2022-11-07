@@ -49,6 +49,14 @@
             "switchToTeacher": "Widok nauczyciela"
         }
     },
+    "home": {
+        "upcomingActivities": "Nadchodzące aktywności",
+        "noneUpcoming": "Brak aktywności w najbliższym czasie!",
+        "activeCourses": "Ostatnio aktywne kursy",
+        "noneActive": "Brak aktywności w ostatnim miesiącu",
+        "seeAll": "Zobacz wszystkie kursy",
+        "calendarDescription": "Zajęcia: {{name}} o {{time}}"
+    },
     "myCourses": {
         "header": "Moje kursy",
         "createCourseButton": "Utwórz kurs",

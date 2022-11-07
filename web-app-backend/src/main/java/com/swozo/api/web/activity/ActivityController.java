@@ -3,6 +3,7 @@ package com.swozo.api.web.activity;
 import com.swozo.api.common.files.dto.UploadAccessDto;
 import com.swozo.api.common.files.request.InitFileUploadRequest;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
+import com.swozo.api.web.activity.dto.ActivitySummaryDto;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.swozo.config.Config.*;
@@ -32,6 +34,18 @@ public class ActivityController {
     private final ActivityModuleService activityModuleService;
     private final AuthService authService;
 
+    @GetMapping
+    public List<ActivitySummaryDto> getUserActivities(
+            AccessToken accessToken,
+            @RequestParam(defaultValue = "31") Integer daysInThePast,
+            @RequestParam(defaultValue = "31") Integer daysInTheFuture
+    ) {
+        return activityService.getUserActivitiesBetween(
+                accessToken.getUserId(),
+                LocalDateTime.now().minusDays(daysInThePast),
+                LocalDateTime.now().plusDays(daysInTheFuture)
+        );
+    }
 
     @PostMapping("/{activityId}/files")
     @PreAuthorize("hasRole('TEACHER')")

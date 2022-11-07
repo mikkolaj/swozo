@@ -1058,6 +1058,37 @@ paths:
                 $ref: '#/components/schemas/CourseSummaryDto'
       security:
       - JWT_AUTH: []
+  /activities:
+    get:
+      tags:
+      - activity-controller
+      operationId: getUserActivities
+      parameters:
+      - name: daysInThePast
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 31
+      - name: daysInTheFuture
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 31
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivitySummaryDto'
+      security:
+      - JWT_AUTH: []
   /activities/{activityId}/files/{fileId}:
     get:
       tags:
@@ -2035,6 +2066,35 @@ components:
             enum:
             - ISOLATED
             - SHARED
+    ActivitySummaryDto:
+      required:
+      - courseId
+      - courseName
+      - endTime
+      - id
+      - name
+      - startTime
+      - teacher
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        courseId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        courseName:
+          type: string
+        teacher:
+          $ref: '#/components/schemas/UserDetailsDto'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
   securitySchemes:
     JWT_AUTH:
       type: http
