@@ -4,9 +4,9 @@ public interface ValidationNames {
     interface Fields {
         String ACTIVITIES = "activities";
         String BASE_VCPU = "baseVcpu";
-        String BASE_RAM = "baseRam";
-        String BASE_DISK = "baseDisk";
-        String BASE_BANDWIDTH = "baseBandwidth";
+        String BASE_RAM = "baseRamGB";
+        String BASE_DISK = "baseDiskGB";
+        String BASE_BANDWIDTH = "baseBandwidthMbps";
         String COURSE = "course";
         String DYNAMIC_FIELDS = "__dynamicFields__";
         String EMAIL = "email";

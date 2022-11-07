@@ -39,8 +39,8 @@ public class VmService {
 
         request.name().ifPresent(vm::setName);
         request.vCpu().ifPresent(vm::setVcpu);
-        request.ram().ifPresent(vm::setRam);
-        request.bandwidth().ifPresent(vm::setBandwidth);
+        request.ramGB().ifPresent(vm::setRamGB);
+        request.bandwidthMbps().ifPresent(vm::setBandwidthMbps);
 
         vmRepository.save(vm);
 

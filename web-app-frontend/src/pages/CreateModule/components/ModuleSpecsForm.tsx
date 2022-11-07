@@ -40,19 +40,19 @@ export const ModuleSpecsForm = ({ nameBuilder, values, serviceConfig, editMode }
                     labelText={t('createModule.slides.1.form.base.vcpu')}
                 />
                 <FormInputField
-                    name={nameBuilder('baseRam')}
+                    name={nameBuilder('baseRamGB')}
                     textFieldProps={{ fullWidth: true }}
                     type="number"
                     labelText={t('createModule.slides.1.form.base.ram')}
                 />
                 <FormInputField
-                    name={nameBuilder('baseDisk')}
+                    name={nameBuilder('baseDiskGB')}
                     textFieldProps={{ fullWidth: true }}
                     type="number"
                     labelText={t('createModule.slides.1.form.base.disk')}
                 />
                 <FormInputField
-                    name={nameBuilder('baseBandwidth')}
+                    name={nameBuilder('baseBandwidthMbps')}
                     textFieldProps={{ fullWidth: true }}
                     type="number"
                     labelText={t('createModule.slides.1.form.base.bandwidth')}

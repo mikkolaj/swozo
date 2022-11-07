@@ -1135,9 +1135,9 @@ components:
           type: string
           enum:
           - MAX_VCPU
-          - MAX_RAM
-          - MAX_DISK
-          - MAX_BANDWIDTH
+          - MAX_RAM_GB
+          - MAX_DISK_GB
+          - MAX_BANDWIDTH_MBPS
           - MAX_STUDENTS
           - MAX_ACTIVITY_DURATION_MINUTES
           - MAX_PARALLEL_SANDBOXES
@@ -1358,9 +1358,9 @@ components:
           $ref: '#/components/schemas/ServiceModuleMdaDto'
     ServiceModuleMdaDto:
       required:
-      - baseBandwidth
-      - baseDisk
-      - baseRam
+      - baseBandwidthMbps
+      - baseDiskGB
+      - baseRamGB
       - baseVcpu
       - isIsolated
       type: object
@@ -1370,13 +1370,13 @@ components:
         baseVcpu:
           type: integer
           format: int32
-        baseRam:
+        baseRamGB:
           type: integer
           format: int32
-        baseDisk:
+        baseDiskGB:
           type: integer
           format: int32
-        baseBandwidth:
+        baseBandwidthMbps:
           type: integer
           format: int32
         sharedServiceModuleMdaDto:
@@ -1687,9 +1687,9 @@ components:
           $ref: '#/components/schemas/StorageAccessRequest'
     CreateVmRequest:
       required:
-      - bandwidth
+      - bandwidthMbps
       - name
-      - ram
+      - ramGB
       - vcpu
       type: object
       properties:
@@ -1698,18 +1698,18 @@ components:
         vcpu:
           type: integer
           format: int32
-        ram:
+        ramGB:
           type: integer
           format: int32
-        bandwidth:
+        bandwidthMbps:
           type: integer
           format: int32
     VmDto:
       required:
-      - bandwidth
+      - bandwidthMbps
       - id
       - name
-      - ram
+      - ramGB
       - vcpu
       type: object
       properties:
@@ -1721,10 +1721,10 @@ components:
         vcpu:
           type: integer
           format: int32
-        ram:
+        ramGB:
           type: integer
           format: int32
-        bandwidth:
+        bandwidthMbps:
           type: integer
           format: int32
     CreateUserRequest:
@@ -1831,9 +1831,9 @@ components:
           type: string
           enum:
           - MAX_VCPU
-          - MAX_RAM
-          - MAX_DISK
-          - MAX_BANDWIDTH
+          - MAX_RAM_GB
+          - MAX_DISK_GB
+          - MAX_BANDWIDTH_MBPS
           - MAX_STUDENTS
           - MAX_ACTIVITY_DURATION_MINUTES
           - MAX_PARALLEL_SANDBOXES
@@ -1919,10 +1919,10 @@ components:
         vCpu:
           type: integer
           format: int32
-        ram:
+        ramGB:
           type: integer
           format: int32
-        bandwidth:
+        bandwidthMbps:
           type: integer
           format: int32
     EditPolicyRequest:
@@ -1932,9 +1932,9 @@ components:
           type: string
           enum:
           - MAX_VCPU
-          - MAX_RAM
-          - MAX_DISK
-          - MAX_BANDWIDTH
+          - MAX_RAM_GB
+          - MAX_DISK_GB
+          - MAX_BANDWIDTH_MBPS
           - MAX_STUDENTS
           - MAX_ACTIVITY_DURATION_MINUTES
           - MAX_PARALLEL_SANDBOXES

@@ -36,13 +36,13 @@ export interface CreateVmRequest {
      * @type {number}
      * @memberof CreateVmRequest
      */
-    ram: number;
+    ramGB: number;
     /**
      * 
      * @type {number}
      * @memberof CreateVmRequest
      */
-    bandwidth: number;
+    bandwidthMbps: number;
 }
 
 export function CreateVmRequestFromJSON(json: any): CreateVmRequest {
@@ -57,8 +57,8 @@ export function CreateVmRequestFromJSONTyped(json: any, ignoreDiscriminator: boo
         
         'name': json['name'],
         'vcpu': json['vcpu'],
-        'ram': json['ram'],
-        'bandwidth': json['bandwidth'],
+        'ramGB': json['ramGB'],
+        'bandwidthMbps': json['bandwidthMbps'],
     };
 }
 
@@ -73,8 +73,8 @@ export function CreateVmRequestToJSON(value?: CreateVmRequest | null): any {
         
         'name': value.name,
         'vcpu': value.vcpu,
-        'ram': value.ram,
-        'bandwidth': value.bandwidth,
+        'ramGB': value.ramGB,
+        'bandwidthMbps': value.bandwidthMbps,
     };
 }
 

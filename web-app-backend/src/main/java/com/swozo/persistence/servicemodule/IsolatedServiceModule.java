@@ -14,13 +14,13 @@ import javax.persistence.Table;
 @Setter
 @ToString
 public class IsolatedServiceModule extends ServiceModule {
-    public PimVmInfo getPimVmInfo(Integer studens){
+    public PimVmInfo getPimVmInfo(Integer students){
         PimVmInfo translation = new PimVmInfo();
         translation.addModule(this);
         translation.setVcpu(baseVcpu);
-        translation.setRam(baseRam);
-        translation.setDisk(baseDisk);
-        translation.setBandwidth(baseBandwidth);
+        translation.setRam(baseRamGB);
+        translation.setDisk(baseDiskGB);
+        translation.setBandwidth(baseBandwidthMbps);
 
         return translation;
     }

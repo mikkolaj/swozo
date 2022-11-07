@@ -45,9 +45,9 @@ export interface EditPolicyRequest {
 */
 export enum EditPolicyRequestPolicyTypeEnum {
     Vcpu = 'MAX_VCPU',
-    Ram = 'MAX_RAM',
-    Disk = 'MAX_DISK',
-    Bandwidth = 'MAX_BANDWIDTH',
+    RamGb = 'MAX_RAM_GB',
+    DiskGb = 'MAX_DISK_GB',
+    BandwidthMbps = 'MAX_BANDWIDTH_MBPS',
     Students = 'MAX_STUDENTS',
     ActivityDurationMinutes = 'MAX_ACTIVITY_DURATION_MINUTES',
     ParallelSandboxes = 'MAX_PARALLEL_SANDBOXES'

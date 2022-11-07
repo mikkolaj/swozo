@@ -42,7 +42,7 @@ export const ServiceModuleMdaInfo = ({ mda }: Props) => {
                 <FieldPair showSecondChild={!!mda.sharedServiceModuleMdaDto}>
                     <StyledReadonlyField
                         textFieldProps={{ fullWidth: true }}
-                        value={`${mda.baseRam}`}
+                        value={`${mda.baseRamGB}`}
                         labelText={t('createModule.slides.1.form.base.ram')}
                     />
                     <StyledReadonlyField
@@ -55,7 +55,7 @@ export const ServiceModuleMdaInfo = ({ mda }: Props) => {
                 <FieldPair showSecondChild={!!mda.sharedServiceModuleMdaDto}>
                     <StyledReadonlyField
                         textFieldProps={{ fullWidth: true }}
-                        value={`${mda.baseDisk}`}
+                        value={`${mda.baseDiskGB}`}
                         labelText={t('createModule.slides.1.form.base.disk')}
                     />
                     <StyledReadonlyField
@@ -68,7 +68,7 @@ export const ServiceModuleMdaInfo = ({ mda }: Props) => {
                 <FieldPair showSecondChild={!!mda.sharedServiceModuleMdaDto}>
                     <StyledReadonlyField
                         textFieldProps={{ fullWidth: true }}
-                        value={`${mda.baseBandwidth}`}
+                        value={`${mda.baseBandwidthMbps}`}
                         labelText={t('createModule.slides.1.form.base.bandwidth')}
                     />
 

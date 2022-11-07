@@ -36,13 +36,13 @@ export interface EdtiVmRequest {
      * @type {number}
      * @memberof EdtiVmRequest
      */
-    ram?: number;
+    ramGB?: number;
     /**
      * 
      * @type {number}
      * @memberof EdtiVmRequest
      */
-    bandwidth?: number;
+    bandwidthMbps?: number;
 }
 
 export function EdtiVmRequestFromJSON(json: any): EdtiVmRequest {
@@ -57,8 +57,8 @@ export function EdtiVmRequestFromJSONTyped(json: any, ignoreDiscriminator: boole
         
         'name': !exists(json, 'name') ? undefined : json['name'],
         'vCpu': !exists(json, 'vCpu') ? undefined : json['vCpu'],
-        'ram': !exists(json, 'ram') ? undefined : json['ram'],
-        'bandwidth': !exists(json, 'bandwidth') ? undefined : json['bandwidth'],
+        'ramGB': !exists(json, 'ramGB') ? undefined : json['ramGB'],
+        'bandwidthMbps': !exists(json, 'bandwidthMbps') ? undefined : json['bandwidthMbps'],
     };
 }
 
@@ -73,8 +73,8 @@ export function EdtiVmRequestToJSON(value?: EdtiVmRequest | null): any {
         
         'name': value.name,
         'vCpu': value.vCpu,
-        'ram': value.ram,
-        'bandwidth': value.bandwidth,
+        'ramGB': value.ramGB,
+        'bandwidthMbps': value.bandwidthMbps,
     };
 }
 

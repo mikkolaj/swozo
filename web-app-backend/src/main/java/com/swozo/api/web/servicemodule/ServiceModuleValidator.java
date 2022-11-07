@@ -114,9 +114,9 @@ public class ServiceModuleValidator {
                         allPositive(
                                 Map.of(
                                         ValidationNames.Fields.BASE_VCPU, mda.baseVcpu(),
-                                        ValidationNames.Fields.BASE_RAM, mda.baseRam(),
-                                        ValidationNames.Fields.BASE_DISK, mda.baseDisk(),
-                                        ValidationNames.Fields.BASE_BANDWIDTH, mda.baseBandwidth()
+                                        ValidationNames.Fields.BASE_RAM, mda.baseRamGB(),
+                                        ValidationNames.Fields.BASE_DISK, mda.baseDiskGB(),
+                                        ValidationNames.Fields.BASE_BANDWIDTH, mda.baseBandwidthMbps()
                                 )
                 ));
 

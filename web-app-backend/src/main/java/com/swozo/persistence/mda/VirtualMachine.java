@@ -16,7 +16,7 @@ import javax.persistence.Table;
 public class VirtualMachine extends BaseEntity {
     String name;
     Integer vcpu;
-    Integer ram;
-    Integer bandwidth;
-    Integer imageDiskSize;
+    Integer ramGB;
+    Integer bandwidthMbps;
+    Integer imageDiskSizeGB;
 }

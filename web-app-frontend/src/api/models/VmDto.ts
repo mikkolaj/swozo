@@ -42,13 +42,13 @@ export interface VmDto {
      * @type {number}
      * @memberof VmDto
      */
-    ram: number;
+    ramGB: number;
     /**
      * 
      * @type {number}
      * @memberof VmDto
      */
-    bandwidth: number;
+    bandwidthMbps: number;
 }
 
 export function VmDtoFromJSON(json: any): VmDto {
@@ -64,8 +64,8 @@ export function VmDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): VmD
         'id': json['id'],
         'name': json['name'],
         'vcpu': json['vcpu'],
-        'ram': json['ram'],
-        'bandwidth': json['bandwidth'],
+        'ramGB': json['ramGB'],
+        'bandwidthMbps': json['bandwidthMbps'],
     };
 }
 
@@ -81,8 +81,8 @@ export function VmDtoToJSON(value?: VmDto | null): any {
         'id': value.id,
         'name': value.name,
         'vcpu': value.vcpu,
-        'ram': value.ram,
-        'bandwidth': value.bandwidth,
+        'ramGB': value.ramGB,
+        'bandwidthMbps': value.bandwidthMbps,
     };
 }
 

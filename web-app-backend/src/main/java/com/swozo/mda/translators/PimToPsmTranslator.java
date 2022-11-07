@@ -20,19 +20,19 @@ import java.util.Optional;
 public class PimToPsmTranslator{
     private final VmService vmService;
 
-    private VirtualMachine selectVirtualMachine(Integer vcpu, Integer ram, Integer bandwidth){
+    private VirtualMachine selectVirtualMachine(Integer vcpu, Integer ramGB, Integer bandwidthMbps){
         Collection<VirtualMachine> vms = vmService.getAllSystemVms();
         Collection<VirtualMachine> possibleVms = vms.stream().filter(vm ->
-                vm.getVcpu() >= vcpu && vm.getRam() >= ram && vm.getBandwidth() >= bandwidth).toList();
+                vm.getVcpu() >= vcpu && vm.getRamGB() >= ramGB && vm.getBandwidthMbps() >= bandwidthMbps).toList();
 
         if (possibleVms.isEmpty()) {
-            throw NeededVmNotFound.withConditions(vcpu, ram, bandwidth);
+            throw NeededVmNotFound.withConditions(vcpu, ramGB, bandwidthMbps);
         }
 
         return Collections.min(possibleVms,
                 Comparator.comparingInt(VirtualMachine::getVcpu)
-                        .thenComparing(VirtualMachine::getRam)
-                        .thenComparing(VirtualMachine::getBandwidth)
+                        .thenComparing(VirtualMachine::getRamGB)
+                        .thenComparing(VirtualMachine::getBandwidthMbps)
         );
     }
 
@@ -44,7 +44,7 @@ public class PimToPsmTranslator{
         psmVmInfo.setAmount(pimVmInfo.getAmount());
         psmVmInfo.setServiceModules(pimVmInfo.getServiceModules());
         psmVmInfo.setMachineType(virtualMachine.getName());
-        psmVmInfo.setDisk(virtualMachine.getImageDiskSize() + pimVmInfo.getDisk());
+        psmVmInfo.setDisk(virtualMachine.getImageDiskSizeGB() + pimVmInfo.getDisk());
 
         return psmVmInfo;
     }

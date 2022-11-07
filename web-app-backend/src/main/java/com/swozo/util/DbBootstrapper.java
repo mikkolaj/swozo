@@ -134,10 +134,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         //        ServiceModule
         ServiceModule serviceModule = new IsolatedServiceModule();
-        serviceModule.setBaseBandwidth(1);
-        serviceModule.setBaseRam(1);
+        serviceModule.setBaseBandwidthMbps(1);
+        serviceModule.setBaseRamGB(1);
         serviceModule.setBaseVcpu(1);
-        serviceModule.setBaseDisk(1);
+        serviceModule.setBaseDiskGB(1);
         serviceModule.setName("Klasy w Pythonie");
         serviceModule.setTeacherInstructionHtml("teach");
         serviceModule.setStudentInstructionHtml("stud");
@@ -153,10 +153,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModuleRepository.save(serviceModule);
 
         ServiceModule serviceModule2 = new IsolatedServiceModule();
-        serviceModule2.setBaseBandwidth(1);
-        serviceModule2.setBaseRam(1);
+        serviceModule2.setBaseBandwidthMbps(1);
+        serviceModule2.setBaseRamGB(1);
         serviceModule2.setBaseVcpu(1);
-        serviceModule2.setBaseDisk(1);
+        serviceModule2.setBaseDiskGB(1);
         serviceModule2.setName("Funkcje w Pythonie");
         serviceModule2.setTeacherInstructionHtml("teach");
         serviceModule2.setStudentInstructionHtml("stud");
@@ -231,17 +231,17 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 //        POLICIES:
         var teacher1 = userRepository.getByEmail("teacher@gmail.com");
         Policy policy = new Policy();
-        policy.setPolicyType(PolicyType.MAX_RAM);
+        policy.setPolicyType(PolicyType.MAX_RAM_GB);
         policy.setTeacher(teacher1);
         policy.setValue(20);
 
         policyRepository.save(policy);
 
-        VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2, 10);
+        VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2048, 10);
         vmRepository.save(vm1);
-        VirtualMachine vm2 = new VirtualMachine("e2-standard-4", 4, 16, 8, 10);
+        VirtualMachine vm2 = new VirtualMachine("e2-standard-4", 4, 16, 8192, 10);
         vmRepository.save(vm2);
-        VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16, 10);
+        VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16384, 10);
         vmRepository.save(vm3);
 
         policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher1));

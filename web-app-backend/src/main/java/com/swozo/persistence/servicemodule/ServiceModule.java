@@ -41,9 +41,9 @@ public abstract class ServiceModule extends BaseEntity {
     protected User creator;
 
     protected Integer baseVcpu;
-    protected Integer baseRam;
-    protected Integer baseDisk;
-    protected Integer baseBandwidth;
+    protected Integer baseRamGB;
+    protected Integer baseDiskGB;
+    protected Integer baseBandwidthMbps;
 
     public boolean isPublic() {
         return isPublic;
@@ -63,8 +63,8 @@ public abstract class ServiceModule extends BaseEntity {
 
     public void setMdaData(ServiceModuleMdaDto mdaData) {
         baseVcpu = mdaData.baseVcpu();
-        baseRam = mdaData.baseRam();
-        baseBandwidth = mdaData.baseBandwidth();
-        baseDisk = mdaData.baseDisk();
+        baseRamGB = mdaData.baseRamGB();
+        baseBandwidthMbps = mdaData.baseBandwidthMbps();
+        baseDiskGB = mdaData.baseDiskGB();
     }
 }

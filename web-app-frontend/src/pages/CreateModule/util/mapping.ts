@@ -41,9 +41,9 @@ export const initialModuleValues = (): ModuleValues => ({
 });
 
 export const initialMdaValues = (isIsolated: boolean): MdaValues => ({
-    baseBandwidth: 1,
-    baseDisk: 1,
-    baseRam: 1,
+    baseBandwidthMbps: 1,
+    baseDiskGB: 1,
+    baseRamGB: 1,
     baseVcpu: 1,
     isolationMode: isIsolated
         ? ServiceConfigIsolationModesEnum.Isolated

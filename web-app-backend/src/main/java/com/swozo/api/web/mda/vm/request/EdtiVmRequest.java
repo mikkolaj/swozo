@@ -5,7 +5,7 @@ import java.util.Optional;
 public record EdtiVmRequest (
         Optional<String> name,
         Optional<Integer> vCpu,
-        Optional<Integer> ram,
-        Optional<Integer> bandwidth
+        Optional<Integer> ramGB,
+        Optional<Integer> bandwidthMbps
 ){
 }
