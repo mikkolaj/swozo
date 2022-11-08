@@ -27,7 +27,11 @@ public class ServiceDescriptionEntity extends BaseEntity {
 
     private ServiceStatus status = SUBMITTED;
 
+    public boolean canBeProvisioned() {
+        return ServiceStatus.provisioning().contains(status);
+    }
+
     public boolean isNotReadyToBeDeleted() {
-        return status == FAILED_TO_SCHEDULE_CLEANUP || status == WAITING_FOR_CLEANUP || status == CLEANING_UP;
+        return ServiceStatus.exporting().contains(status);
     }
 }

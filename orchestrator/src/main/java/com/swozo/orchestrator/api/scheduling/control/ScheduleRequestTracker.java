@@ -2,9 +2,9 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
-import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ScheduleRequestRepository;
@@ -19,9 +19,11 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 @Service
@@ -40,8 +42,9 @@ public class ScheduleRequestTracker {
         return entity;
     }
 
-    public List<ScheduleRequestEntity> getSchedulesToDelete() {
-        return requestRepository.findByEndTimeLessThanAndServiceDescriptions_StatusEquals(getFurthestProvisioningThreshold(), ServiceStatus.DELETED)
+    public List<ScheduleRequestEntity> getUnfulfilledSchedulesToDelete() {
+        // At least one SD wasn't provisioned
+        return requestRepository.findByEndTimeLessThanAndServiceDescriptions_StatusIn(getFurthestProvisioningThreshold(), ServiceStatus.notYetReady())
                 .stream()
                 .flatMap(this::toScheduleRequestsWithServiceTypes)
                 .filter(this::endsBeforeAvailability)
@@ -50,18 +53,15 @@ public class ScheduleRequestTracker {
     }
 
     public List<ScheduleRequestEntity> getValidSchedulesToRestartFromBeginning() {
-        var submittedSchedules = getValidSchedulesWithStatus(ServiceStatus.SUBMITTED);
-        var schedulesFailedDuringVmCreation = getValidSchedulesWithStatus(ServiceStatus.VM_CREATING);
-        var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(ServiceStatus.VM_CREATION_FAILED);
+        var schedulesToRestart = getValidSchedulesWithStatusIn(ServiceStatus.withoutVm());
 
-        return initializeParameters(combineLists(submittedSchedules, schedulesFailedDuringVmCreation, schedulesFailedOnVmCreation));
+        return initializeParameters(schedulesToRestart);
     }
 
     public List<ScheduleRequestEntity> getValidSchedulesToReprovision() {
-        var submittedSchedules = getValidSchedulesWithStatus(ServiceStatus.PROVISIONING);
-        var schedulesFailedOnVmCreation = getValidSchedulesWithStatus(ServiceStatus.PROVISIONING_FAILED);
+        var submittedSchedules = getValidSchedulesWithStatusIn(ServiceStatus.provisioning());
 
-        return initializeParameters(combineLists(submittedSchedules, schedulesFailedOnVmCreation));
+        return initializeParameters(submittedSchedules);
     }
 
     private List<ScheduleRequestEntity> initializeParameters(List<ScheduleRequestEntity> entities) {
@@ -74,30 +74,36 @@ public class ScheduleRequestTracker {
         return entities;
     }
 
-    public List<ScheduleRequestEntity> getValidReadySchedules() {
-        return getValidSchedulesWithStatus(ServiceStatus.READY);
+    public List<ScheduleRequestEntity> getSchedulesToCleanAndDelete() {
+        var schedules = requestRepository
+                .findByServiceDescriptions_AllStatusIn(ServiceStatus.toBeCleanedAndTerminated())
+                .stream()
+                .toList();
+
+        return initializeParameters(schedules);
+    }
+
+    public List<ScheduleRequestEntity> getSchedulesToDelete() {
+        var schedules = requestRepository
+                .findByServiceDescriptions_StatusEquals(ServiceStatus.toBeDeleted())
+                .stream()
+                .toList();
+
+        return initializeParameters(schedules);
     }
 
     private LocalDateTime getFurthestProvisioningThreshold() {
         return LocalDateTime.now().plusSeconds(TimedSoftwareProvisioner.MAX_PROVISIONING_SECONDS);
     }
 
-    private List<ScheduleRequestEntity> getValidSchedulesWithStatus(ServiceStatus status) {
-        return requestRepository.findByEndTimeGreaterThanAndServiceDescriptions_StatusEquals(LocalDateTime.now(), status)
+    private List<ScheduleRequestEntity> getValidSchedulesWithStatusIn(Set<ServiceStatus> statuses) {
+        return requestRepository.findByEndTimeGreaterThanAndServiceDescriptions_StatusIn(LocalDateTime.now(), statuses)
                 .stream()
                 .flatMap(this::toScheduleRequestsWithServiceTypes)
                 .filter(this::endsAfterAvailability)
                 .map(ScheduleRequestWithServiceType::request)
+                .distinct()
                 .toList();
-    }
-
-    @SafeVarargs
-    private <T> List<T> combineLists(List<T>... lists) {
-        var combined = new ArrayList<T>();
-        for (var list : lists) {
-            combined.addAll(list);
-        }
-        return combined;
     }
 
     private boolean endsBeforeAvailability(ScheduleRequestWithServiceType scheduleData) {
@@ -114,6 +120,14 @@ public class ScheduleRequestTracker {
     private LocalDateTime getTargetAvailability(ServiceTypeEntity serviceType) {
         var provisioningSeconds = provisionerFactory.getProvisioner(serviceType).getProvisioningSeconds();
         return LocalDateTime.now().plusSeconds(provisioningSeconds);
+    }
+
+    public void updateStatus(ScheduleRequestEntity scheduleRequestEntity, ServiceStatus status) {
+        var descriptions = scheduleRequestEntity.getServiceDescriptions().stream().map(description -> {
+            description.setStatus(status);
+            return description;
+        }).toList();
+        descriptionRepository.saveAll(descriptions);
     }
 
     public void updateStatus(ServiceDescriptionEntity serviceDescriptionEntity, ServiceStatus status) {
@@ -147,12 +161,15 @@ public class ScheduleRequestTracker {
     }
 
     private Stream<ActivityLinkInfo> fetchLinks(RequestTypeWithVmResourceId request) {
-        return CheckedExceptionConverter.from(() -> vmProvider.getVMResourceDetails(request.vmResourceId).get())
-                .get()
-                .stream()
-                .flatMap(details -> provisionerFactory.getProvisioner(request.serviceType)
-                        .createLinks(details)
-                        .stream());
+        return CheckedExceptionConverter.from(() ->
+                vmProvider.getVMResourceDetails(request.vmResourceId)
+                        .thenCompose(possibleDetails ->
+                                possibleDetails.map(details ->
+                                        provisionerFactory.getProvisioner(request.serviceType)
+                                                .createLinks(details)
+                                ).orElse(CompletableFuture.completedFuture(Collections.emptyList()))
+                        ).get()
+        ).get().stream();
     }
 
     private Stream<RequestTypeWithVmResourceId> toServiceTypesWithVmResourceIds(ScheduleRequestEntity requestEntity) {

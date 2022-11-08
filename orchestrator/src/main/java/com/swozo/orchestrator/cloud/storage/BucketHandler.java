@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface BucketHandler {
     @Async
-    CompletableFuture<Void> uploadUsersWorkdirToBucket(
+    void uploadUsersWorkdirToBucket(
             VMResourceDetails remoteHost,
             String workdirPath,
             long activityModuleId,
@@ -16,5 +16,5 @@ public interface BucketHandler {
     );
 
     @Async
-    CompletableFuture<Void> downloadToHost(VMResourceDetails remoteHost, String remoteFileId, String destinationPath) throws BucketOperationFailed;
+    void downloadToHost(VMResourceDetails remoteHost, String remoteFileId, String destinationPath) throws BucketOperationFailed;
 }

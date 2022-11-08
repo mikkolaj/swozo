@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Component
@@ -29,17 +30,20 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
 
     @Override
     public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
-        requestTracker.getSchedulesToDelete().forEach(this::deleteCreatedVm);
+        requestTracker.getUnfulfilledSchedulesToDelete().forEach(this::deleteCreatedVm);
         requestTracker.getValidSchedulesToRestartFromBeginning().forEach(this::delegateScheduling);
         requestTracker.getValidSchedulesToReprovision().forEach(this::reprovision);
-        requestTracker.getValidReadySchedules().forEach(this::scheduleTermination);
+        requestTracker.getSchedulesToCleanAndDelete()
+                .forEach(requestEntity -> scheduleAction(requestEntity, this::extractDetailsThenScheduleCleaningAndDeletion));
+        requestTracker.getSchedulesToDelete()
+                .forEach(requestEntity -> scheduleAction(requestEntity, this::extractDetailsThenScheduleDeletion));
     }
 
     private void deleteCreatedVm(ScheduleRequestEntity requestEntity) {
         try {
             requestEntity.getVmResourceId().ifPresent(resourceId ->
                     CheckedExceptionConverter
-                            .from(scheduleHandler::deleteInstance)
+                            .from(scheduleHandler::deleteIfAllExported)
                             .accept(requestEntity, resourceId)
             );
         } catch (RuntimeException ex) {
@@ -73,20 +77,18 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
     private Consumer<Optional<VMResourceDetails>> extractDetailsAndReprovision(ScheduleRequestEntity requestEntity) {
         return possibleDetails -> {
             var resourceDetails = possibleDetails.orElseThrow(getNoMatchingVmException(requestEntity));
-            requestEntity.getServiceDescriptions().forEach(description ->
-                    scheduleHandler.provisionSoftwareAndScheduleDeletion(requestEntity, description)
-                            .accept(resourceDetails)
-            );
+            scheduleHandler.provisionSoftwareAndScheduleDeletion(requestEntity)
+                    .accept(resourceDetails);
         };
     }
 
-    private void scheduleTermination(ScheduleRequestEntity requestEntity) {
+    private void scheduleAction(ScheduleRequestEntity requestEntity, Function<ScheduleRequestEntity, Consumer<Optional<VMResourceDetails>>> consumerProvider) {
         try {
             var resourceId =
                     requestEntity.getVmResourceId().orElseThrow(getNoRegisteredVmException(requestEntity, "delete"));
 
             CheckedExceptionConverter.from(() -> vmProvider.getVMResourceDetails(resourceId)
-                    .thenAccept(extractDetailsAndScheduleTermination(requestEntity))
+                    .thenAccept(consumerProvider.apply(requestEntity))
                     .get()
             ).get();
         } catch (IllegalArgumentException ex) {
@@ -96,10 +98,17 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
         }
     }
 
-    private Consumer<Optional<VMResourceDetails>> extractDetailsAndScheduleTermination(ScheduleRequestEntity requestEntity) {
+    private Consumer<Optional<VMResourceDetails>> extractDetailsThenScheduleCleaningAndDeletion(ScheduleRequestEntity requestEntity) {
         return possibleDetails -> {
             var resourceDetails = possibleDetails.orElseThrow(getNoMatchingVmException(requestEntity));
-            scheduleHandler.scheduleTermination(requestEntity, resourceDetails);
+            scheduleHandler.scheduleExportAndDeletion(requestEntity, resourceDetails);
+        };
+    }
+
+    private Consumer<Optional<VMResourceDetails>> extractDetailsThenScheduleDeletion(ScheduleRequestEntity requestEntity) {
+        return possibleDetails -> {
+            var resourceDetails = possibleDetails.orElseThrow(getNoMatchingVmException(requestEntity));
+            scheduleHandler.scheduleDeletion(requestEntity, resourceDetails);
         };
     }
 

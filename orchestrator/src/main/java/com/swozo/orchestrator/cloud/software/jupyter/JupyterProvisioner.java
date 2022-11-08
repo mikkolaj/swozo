@@ -4,12 +4,13 @@ import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.IsolationMode;
+import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
-import com.swozo.orchestrator.cloud.software.PersistableSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
+import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.NotebookFailed;
@@ -18,16 +19,20 @@ import com.swozo.orchestrator.cloud.storage.BucketHandler;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
-public class JupyterProvisioner implements PersistableSoftwareProvisioner {
+public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.JUPYTER;
+    private static final String WORKDIR = "/home/swozo/jupyter";
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
@@ -40,12 +45,17 @@ public class JupyterProvisioner implements PersistableSoftwareProvisioner {
 
     @Override
     public ServiceConfig getServiceConfig() {
-        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), JupyterParameters.getParameterDescriptions(translationsProvider), Set.of(IsolationMode.ISOLATED));
+        return new ServiceConfig(
+                SUPPORTED_SCHEDULE.toString(),
+                JupyterParameters.getParameterDescriptions(translationsProvider),
+                Set.of(IsolationMode.ISOLATED)
+        );
     }
 
+    @Async
     @Override
     // TODO: getting notebook from specified location
-    public List<ActivityLinkInfo> provision(VMResourceDetails resource, Map<String, String> parameters) throws ProvisioningFailed {
+    public CompletableFuture<List<ActivityLinkInfo>> provision(VMResourceDetails resource, Map<String, String> parameters) throws ProvisioningFailed {
         try {
             logger.info("Started provisioning Jupyter on: {}", resource);
             runPlaybook(resource);
@@ -57,17 +67,18 @@ public class JupyterProvisioner implements PersistableSoftwareProvisioner {
         }
     }
 
+    @Async
     @Override
-    public List<ActivityLinkInfo> createLinks(VMResourceDetails vmResourceDetails) {
+    public CompletableFuture<List<ActivityLinkInfo>> createLinks(VMResourceDetails vmResourceDetails) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
-        return List.of(new ActivityLinkInfo(
+        return CompletableFuture.completedFuture(List.of(new ActivityLinkInfo(
                 1L, // TODO
                 formattedLink,
                 translationsProvider.t(
                         "services.jupyter.connectionInstruction",
                         Map.of("password", MAIN_LINK_DESCRIPTION)
                 )
-        ));
+        )));
     }
 
     @Override
@@ -86,13 +97,8 @@ public class JupyterProvisioner implements PersistableSoftwareProvisioner {
     }
 
     @Override
-    public String getWorkdirToSave() {
-        return "/home/swozo/jupyter";
-    }
-
-    @Override
-    public int getCleanupSeconds() {
-        return 240;
+    public Optional<String> getWorkdirToSave() {
+        return Optional.of(WORKDIR);
     }
 
     private void runPlaybook(VMResourceDetails resource) {

@@ -8,13 +8,14 @@ import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface TimedSoftwareProvisioner {
     int MAX_PROVISIONING_SECONDS = 60 * 60 * 3;
 
-    List<ActivityLinkInfo> provision(VMResourceDetails resourceDetails, Map<String, String> dynamicParameters) throws InterruptedException, ProvisioningFailed;
+    CompletableFuture<List<ActivityLinkInfo>> provision(VMResourceDetails resourceDetails, Map<String, String> dynamicParameters) throws InterruptedException, ProvisioningFailed;
 
-    List<ActivityLinkInfo> createLinks(VMResourceDetails resourceDetails);
+    CompletableFuture<List<ActivityLinkInfo>> createLinks(VMResourceDetails resourceDetails);
 
     void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException;
 
@@ -23,4 +24,7 @@ public interface TimedSoftwareProvisioner {
     ServiceConfig getServiceConfig();
 
     int getProvisioningSeconds();
+
+    Optional<String> getWorkdirToSave();
+
 }
