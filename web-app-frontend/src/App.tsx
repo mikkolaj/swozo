@@ -22,6 +22,7 @@ import { PublicModulesListView } from 'pages/ModulesList/PublicModulesListView';
 import { Route, Routes } from 'react-router-dom';
 import { PopupError } from 'services/features/error/PopupError';
 import { ModalContainer } from 'services/features/modal/ModalContainer';
+import { FileProgressModal } from 'services/features/modal/modals/FileProgressModal';
 import { useAppSelector } from 'services/store';
 import {
     ADMIN,
@@ -117,6 +118,7 @@ function App() {
             <Toaster />
             <PopupError />
             <ModalContainer />
+            <FileProgressModal />
         </>
     );
 }

@@ -51,7 +51,7 @@
     },
     "home": {
         "upcomingActivities": "Nadchodzące aktywności",
-        "noneUpcoming": "Brak aktywności w najbliższym czasie!",
+        "noneUpcoming": "Brak aktywności w najbliższym czasie",
         "activeCourses": "Ostatnio aktywne kursy",
         "noneActive": "Brak aktywności w ostatnim miesiącu",
         "seeAll": "Zobacz wszystkie kursy",
@@ -423,7 +423,13 @@
         "tabs": {
             "public": {
                 "label": "Publiczne pliki",
-                "uploadBtn": "Prześlij plik"
+                "uploadBtn": "Prześlij plik",
+                "headers": {
+                    "name": "Nazwa pliku",
+                    "uploadDate": "Data przesłania",
+                    "size": "Rozmiar pliku"
+                },
+                "empty": "Nie przesłałeś jeszcze żadnego pliku"
             },
             "users": {
                 "label": "Moje pliki"
@@ -631,6 +637,9 @@
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",
         "DUPLICATE_FILE": "Plik już istnieje",
         "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie"
+    },
+    "commonModals": {
+        "upOrDownloading": "Przesyłam pliki"
     },
     "dynamicForm": {
         "file": {

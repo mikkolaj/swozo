@@ -7,6 +7,7 @@ import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from 'react-query';
 import { UserCreator } from './Users/UserCreator';
 import { UserList } from './Users/UserList';
 
@@ -26,6 +27,9 @@ export const AdminPanel = () => {
         removeApiError,
         isApiErrorSet
     );
+
+    // prefetch
+    useQuery(['vms'], () => getApis().vmApi.getAllVms());
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {
         return consumeErrorAction() ?? <></>;

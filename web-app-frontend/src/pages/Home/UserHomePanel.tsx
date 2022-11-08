@@ -24,7 +24,7 @@ export const UserHomePanel = () => {
         ['activities', 'summary'],
         () =>
             getApis().activitiesApi.getUserActivities({
-                daysInThePast: 3100,
+                daysInThePast: 62,
                 daysInTheFuture: 62,
             }),
         pushApiError,

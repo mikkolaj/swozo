@@ -3,6 +3,7 @@ package com.swozo.persistence.activity;
 import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
+import com.swozo.persistence.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -33,7 +34,7 @@ public class Activity extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
-            name = "AcitvityPublicFiles",
+            name = "ActivityPublicFiles",
             joinColumns = @JoinColumn(name = "activity_id"),
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )
@@ -56,5 +57,9 @@ public class Activity extends BaseEntity {
 
     public void addPublicFile(RemoteFile file) {
         publicFiles.add(file);
+    }
+
+    public User getTeacher() {
+        return course.getTeacher();
     }
 }

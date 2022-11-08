@@ -36,9 +36,7 @@ public abstract class ActivityModuleMapper {
     }
 
     protected List<ServiceConnectionDetailsDto> connectionDetailsToDto(ActivityModule activityModule, User user) {
-        if (!activityModule.getActivity().getCourse().getTeacher().equals(user) &&
-            !activityModule.canStudentReceiveLink()
-        ) {
+        if (!activityModule.getTeacher().equals(user) && !activityModule.canStudentReceiveLink()) {
             return List.of();
         }
 

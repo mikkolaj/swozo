@@ -130,7 +130,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         mockFile.setSizeBytes(2000L);
         mockFile.setOwner(teacher);
 
-        fileRepository.save(mockFile);
+        mockFile = fileRepository.save(mockFile);
 
         //        ServiceModule
         ServiceModule serviceModule = new IsolatedServiceModule();

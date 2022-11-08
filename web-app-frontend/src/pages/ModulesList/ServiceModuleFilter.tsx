@@ -32,7 +32,11 @@ export const ServiceModuleFilter = ({ initialValues, supportedServices, onModifi
                 {() => (
                     <Form>
                         <ChangeObserver />
-                        <FormSelectField name={'service'} i18nLabel="createModule.slides.0.form.service">
+                        <FormSelectField
+                            textFieldProps={{ required: false }}
+                            name={'service'}
+                            i18nLabel="createModule.slides.0.form.service"
+                        >
                             <MenuItem value={''}>{t('publicModules.any')}</MenuItem>
                             {supportedServices.map(({ serviceName }) => (
                                 <MenuItem key={serviceName} value={serviceName}>
