@@ -33,7 +33,7 @@ public class Activity extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
-            name = "AcitvityPublicFiles",
+            name = "ActivityPublicFiles",
             joinColumns = @JoinColumn(name = "activity_id"),
             inverseJoinColumns = @JoinColumn(name = "file_id")
     )

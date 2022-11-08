@@ -7,7 +7,9 @@ import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
+import { StackedListHeader } from 'common/StackedList/StackedListHeader';
 import {
+    stylesColumn,
     stylesRowCenteredHorizontal,
     stylesRowCenteredVertical,
     stylesRowWithItemsAtTheEnd,
@@ -26,7 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
-import { formatDateTime } from 'utils/util';
+import { formatBytes, formatDateTime } from 'utils/util';
 
 export const ActivityFilesView = () => {
     const [activityId, courseId] = useRequiredParams(['activityId', 'courseId']);
@@ -129,20 +131,42 @@ export const ActivityFilesView = () => {
                 {currentTab === 0 && (
                     <Container sx={{ mt: 4 }}>
                         <StackedList
+                            /* eslint-disable react/jsx-key */
+                            header={
+                                <StackedListHeader
+                                    proportions={[7, 2, 2, 1]}
+                                    items={['name', 'size', 'uploadDate'].map((label) => (
+                                        <Typography variant="body1" color="GrayText">
+                                            {t(`activityFiles.tabs.public.headers.${label}`)}
+                                        </Typography>
+                                    ))}
+                                />
+                            }
                             content={
                                 <StackedListContent
                                     items={activity.publicFiles}
-                                    proportions={[9, 2, 1]}
+                                    proportions={[7, 2, 2, 1]}
                                     itemKeyExtractor={(file) => file.id}
                                     itemRenderer={(file) => [
-                                        /* eslint-disable react/jsx-key */
                                         <Typography>{file.name}</Typography>,
+                                        <Typography>{formatBytes(file.sizeBytes)}</Typography>,
                                         <Typography>{formatDateTime(file.createdAt)}</Typography>,
-                                        <IconButton color="primary" onClick={() => download(file)}>
+                                        <IconButton
+                                            sx={{ ml: 'auto' }}
+                                            color="primary"
+                                            onClick={() => download(file)}
+                                        >
                                             <DownloadIcon />
                                         </IconButton>,
                                         /* eslint-enable react/jsx-key */
                                     ]}
+                                    emptyItemsComponent={
+                                        <Box sx={{ ...stylesColumn, pt: 1, alignItems: 'center' }}>
+                                            <Typography variant="h6">
+                                                {t('activityFiles.tabs.public.empty')}
+                                            </Typography>
+                                        </Box>
+                                    }
                                 />
                             }
                         />

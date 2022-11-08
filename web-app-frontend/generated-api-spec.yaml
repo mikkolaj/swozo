@@ -1606,6 +1606,7 @@ components:
       - createdAt
       - id
       - name
+      - sizeBytes
       type: object
       properties:
         id:
@@ -1613,6 +1614,9 @@ components:
           format: int64
         name:
           type: string
+        sizeBytes:
+          type: integer
+          format: int64
         createdAt:
           type: string
           format: date-time
