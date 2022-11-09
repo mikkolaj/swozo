@@ -23,6 +23,9 @@
     user: swozo
 
 - name: Run Sozisel
-  shell: |
-    cd /home/swozo/.sozisel
-    docker-compose -f docker-compose.yml --env-file .jitsi_env up
+  hosts: all
+  tasks:
+    - name: Run Sozisel
+      become: yes
+      ansible.builtin.shell:
+        cmd: docker-compose -f /home/swozo/.sozisel/docker-compose.yml --env-file /home/swozo/.sozisel/.jitsi_env up
