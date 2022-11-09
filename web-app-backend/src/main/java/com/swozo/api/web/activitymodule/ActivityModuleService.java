@@ -50,8 +50,7 @@ public class ActivityModuleService {
     }
 
     public List<OrchestratorUserDto> getUserDataForProvisioner(Long activityModuleId, Long scheduleRequestId) {
-        var activity = activityModuleRepository.findById(activityModuleId).orElseThrow();
-        var teacher = activity.getActivity().getCourse().getTeacher();
+        var teacher = activityModuleRepository.findById(activityModuleId).orElseThrow().getTeacher();
 
         return userRepository.getUsersThatUseVmCreatedIn(activityModuleId, scheduleRequestId).stream()
                 .map(user -> userMapper.toOrchestratorDto(user, user.equals(teacher) ? ActivityRole.TEACHER : ActivityRole.STUDENT))
@@ -93,7 +92,7 @@ public class ActivityModuleService {
 
     public void confirmLinkCanBeDeliveredToStudents(Long teacherId, Long activityModuleId) {
         var activityModule = activityModuleRepository.findById(activityModuleId).orElseThrow();
-        if (!activityModule.getActivity().getCourse().getTeacher().getId().equals(teacherId)) {
+        if (!activityModule.getTeacher().getId().equals(teacherId)) {
             throw new UnauthorizedException("You are not authorized to confirm link delivery");
         }
 
