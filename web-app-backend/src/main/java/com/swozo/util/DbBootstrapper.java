@@ -179,7 +179,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activityLink2.setUser(teacher);
 
         var activityModuleScheduleInfo1 = new ActivityModuleScheduleInfo();
-        activityModuleScheduleInfo1.setScheduleRequestId(1L);
+        activityModuleScheduleInfo1.setScheduleRequestId(99999L);
         activityModuleScheduleInfo1.addUserActivityLink(activityLink1);
         activityModuleScheduleInfo1.addUserActivityLink(activityLink2);
 
@@ -190,7 +190,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activityLink3.setUser(teacher);
 
         var activityModuleScheduleInfo2 = new ActivityModuleScheduleInfo();
-        activityModuleScheduleInfo2.setScheduleRequestId(1L);
+        activityModuleScheduleInfo2.setScheduleRequestId(99998L);
         activityModuleScheduleInfo2.addUserActivityLink(activityLink3);
 
         var activityModule1 = new ActivityModule(serviceModule);
