@@ -22,17 +22,22 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
 
     @Override
     public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
-        requestTracker.getOutdatedSchedulesWithoutVm()
-                .forEach(request -> requestTracker.updateStatus(request, ServiceStatus.FAILED));
+        var outdatedSchedules = requestTracker.getOutdatedSchedulesWithoutVm();
         var schedulesToDelete = requestTracker.getSchedulesToDelete();
         var schedulesToRestart = requestTracker.getValidSchedulesToRestartFromBeginning();
         var withVmBeforeExport = requestTracker.getSchedulesWithVmBeforeExport();
+        logger.info("Outdated Vms: {}", outdatedSchedules);
         logger.info("To delete: {}", schedulesToDelete);
         logger.info("To restart: {}", schedulesToRestart);
-        logger.info("To withVm: {}", withVmBeforeExport);
+        logger.info("Living vms waiting for export: {}", withVmBeforeExport);
+        outdatedSchedules.forEach(this::setFailedStatus);
         schedulesToDelete.forEach(this::deleteCreatedVm);
         schedulesToRestart.forEach(this::delegateScheduling);
         withVmBeforeExport.forEach(this::applyActionsToServices);
+    }
+
+    private void setFailedStatus(ScheduleRequestEntity request) {
+        requestTracker.updateStatus(request, ServiceStatus.FAILED);
     }
 
     private void deleteCreatedVm(ScheduleRequestEntity requestEntity) {
