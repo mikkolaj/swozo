@@ -6,6 +6,7 @@ import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestFilter;
+import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestValidator;
 import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestWithServiceDescription;
 import com.swozo.orchestrator.api.scheduling.persistence.RequestHandler;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
@@ -17,7 +18,6 @@ import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 import com.swozo.orchestrator.cloud.software.*;
 import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
 import com.swozo.utils.CheckedExceptionConverter;
-import com.swozo.utils.RetryHandler;
 import com.swozo.utils.VoidMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -198,6 +198,7 @@ public class ScheduleHandler {
 
     private void scheduleWorkspaceExport(String workdirPath, ScheduleRequestEntity requestEntity, ServiceDescriptionEntity description, VmResourceDetails resourceDetails) {
         var exportOffset = timingService.getExportOffset(requestEntity);
+        scheduleRequestTracker.updateStatus(description, WAITING_FOR_EXPORT);
         logger.info("Scheduling export for request [id: {}] and serviceType: {} in {} seconds", requestEntity.getId(), description.getServiceType(), exportOffset);
         scheduler.schedule(VoidMapper.toCallableVoid(() -> exporter.exportToBucket(
                 resourceDetails,
@@ -278,7 +279,7 @@ public class ScheduleHandler {
                 .stream()
                 .filter(ServiceDescriptionEntity::wasInExportingState)
                 .map(failedService -> {
-                    logger.warn("{} couldn't be cleaned up on instance with id: {}. Save progress manually within {} seconds", request, internalResourceId, TimingService.MANUAL_CLEANUP_SECONDS);
+                    logger.warn("Failed to export from instance with id: {}", internalResourceId);
                     return failedService;
                 }).count();
     }

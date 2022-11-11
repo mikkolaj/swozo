@@ -1,11 +1,11 @@
 package com.swozo.orchestrator.cloud.storage;
 
 import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
-import org.springframework.scheduling.annotation.Async;
+
+import java.util.concurrent.CompletableFuture;
 
 public interface BucketHandler {
-    @Async
-    void uploadUsersWorkdirToBucket(
+    CompletableFuture<Void> uploadUsersWorkdirToBucket(
             VmResourceDetails remoteHost,
             String workdirPath,
             long activityModuleId,
@@ -13,6 +13,5 @@ public interface BucketHandler {
             long userId
     );
 
-    @Async
-    void downloadToHost(VmResourceDetails remoteHost, String remoteFileId, String destinationPath) throws BucketOperationFailed;
+    CompletableFuture<Void> downloadToHost(VmResourceDetails remoteHost, String remoteFileId, String destinationPath) throws BucketOperationFailed;
 }

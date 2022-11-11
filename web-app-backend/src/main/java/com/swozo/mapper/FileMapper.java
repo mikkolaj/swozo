@@ -18,6 +18,7 @@ public abstract class FileMapper {
     @Mapping(target = "createdAt", source = "registeredAt")
     public abstract FileDto toDto(RemoteFile file);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "path", expression = "java(uploadAccessDto.storageAccessRequest().filePath())")
     @Mapping(target = "sizeBytes", expression = "java(uploadAccessDto.initFileUploadRequest().sizeBytes())")
     @Mapping(target = "owner", expression = "java(owner)")

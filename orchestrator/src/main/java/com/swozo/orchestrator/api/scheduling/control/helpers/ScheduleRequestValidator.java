@@ -1,4 +1,4 @@
-package com.swozo.orchestrator.api.scheduling.control;
+package com.swozo.orchestrator.api.scheduling.control.helpers;
 
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ServiceTypeMapper;

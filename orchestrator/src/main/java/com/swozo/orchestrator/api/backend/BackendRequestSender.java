@@ -41,7 +41,7 @@ public class BackendRequestSender {
         }));
     }
 
-    public CompletableFuture<StorageAccessRequest> ackUserFileUpload(UploadAccessDto uploadAccessDto, long activityModuleId, long scheduleRequestId, long userId) {
+    public CompletableFuture<Void> ackUserFileUpload(UploadAccessDto uploadAccessDto, long activityModuleId, long scheduleRequestId, long userId) {
         return unwrap(requestSender.sendPut(factory.createUploadAckUri(activityModuleId, scheduleRequestId, userId), uploadAccessDto, new TypeReference<>() {
         }));
     }
