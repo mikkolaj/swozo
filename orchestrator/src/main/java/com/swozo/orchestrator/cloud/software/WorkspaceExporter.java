@@ -6,7 +6,7 @@ import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
-import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 import com.swozo.orchestrator.cloud.storage.BucketHandler;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class WorkspaceExporter {
 
     @Async
     public void exportToBucket(
-            VMResourceDetails resourceDetails,
+            VmResourceDetails resourceDetails,
             String workdirPath,
             ScheduleRequestEntity requestEntity,
             ServiceDescriptionEntity serviceDescription
@@ -39,7 +39,7 @@ public class WorkspaceExporter {
         }).whenComplete((msg, ex) -> {
             if (ex != null) {
                 serviceDescription.setStatus(ServiceStatus.EXPORT_FAILED);
-                logger.error("Failure when saving {} on {}", workdirPath, resourceDetails);
+                logger.error("Failure when saving {} on {}", workdirPath, resourceDetails, ex);
             } else {
                 serviceDescription.setStatus(ServiceStatus.EXPORT_COMPLETE);
             }

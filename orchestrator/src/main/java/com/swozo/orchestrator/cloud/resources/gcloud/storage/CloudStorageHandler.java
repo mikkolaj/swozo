@@ -4,7 +4,7 @@ import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.model.files.UploadAccessDto;
 import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.orchestrator.api.backend.BackendRequestSender;
-import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 import com.swozo.orchestrator.cloud.software.curl.CurlCommandBuilder;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
@@ -33,7 +33,7 @@ public class CloudStorageHandler implements BucketHandler {
 
     @Override
     public void uploadUsersWorkdirToBucket(
-            VMResourceDetails remoteHost,
+            VmResourceDetails remoteHost,
             String workdirPath,
             long activityModuleId,
             long scheduleRequestId,
@@ -80,7 +80,7 @@ public class CloudStorageHandler implements BucketHandler {
     }
 
     @Override
-    public void downloadToHost(VMResourceDetails remoteHost, String remoteFileId, String destinationPath) {
+    public void downloadToHost(VmResourceDetails remoteHost, String remoteFileId, String destinationPath) {
         var accessRequest = CheckedExceptionConverter.from(
                 () -> requestSender.getSignedDownloadUrl(remoteFileId).get(),
                 BucketOperationFailed::new

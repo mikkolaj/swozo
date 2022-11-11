@@ -2,6 +2,7 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestFilter;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
@@ -9,8 +10,7 @@ import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntit
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ScheduleRequestRepository;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ServiceDescriptionRepository;
-import com.swozo.orchestrator.cloud.resources.vm.TimedVMProvider;
-import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
+import com.swozo.orchestrator.cloud.resources.vm.TimedVmProvider;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
 import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 @Service
@@ -34,7 +33,8 @@ public class ScheduleRequestTracker {
     private final ServiceDescriptionRepository descriptionRepository;
     private final ScheduleRequestMapper requestMapper;
     private final TimedSoftwareProvisionerFactory provisionerFactory;
-    private final TimedVMProvider vmProvider;
+    private final ScheduleRequestFilter requestFilter;
+    private final TimedVmProvider vmProvider;
 
     public ScheduleRequestEntity startTracking(ScheduleRequest scheduleRequest) {
         var entity = requestRepository.save(requestMapper.toPersistence(scheduleRequest));
@@ -42,13 +42,21 @@ public class ScheduleRequestTracker {
         return entity;
     }
 
-    public List<ScheduleRequestEntity> getUnfulfilledSchedulesToDelete() {
-        // At least one SD wasn't provisioned
-        return requestRepository.findByEndTimeLessThanAndServiceDescriptions_StatusIn(getFurthestProvisioningThreshold(), ServiceStatus.notYetReady())
-                .stream()
-                .flatMap(this::toScheduleRequestsWithServiceTypes)
-                .filter(this::endsBeforeAvailability)
-                .map(ScheduleRequestWithServiceType::request)
+    public List<ScheduleRequestEntity> getSchedulesToDelete() {
+        var provisioned = requestRepository
+                .findScheduleRequestsWithAllServiceDescriptionsInStatus(
+                        ServiceStatus.asStrings(ServiceStatus.afterExport())
+                );
+
+        return initializeParameters(provisioned);
+    }
+
+    public List<ScheduleRequestEntity> getOutdatedSchedulesWithoutVm() {
+        return requestRepository
+                .findScheduleRequestsWithAllServiceDescriptionsInStatus(
+                        ServiceStatus.asStrings(ServiceStatus.withoutVm())
+                ).stream()
+                .filter(requestEntity -> requestEntity.getEndTime().isBefore(LocalDateTime.now()))
                 .toList();
     }
 
@@ -58,10 +66,17 @@ public class ScheduleRequestTracker {
         return initializeParameters(schedulesToRestart);
     }
 
-    public List<ScheduleRequestEntity> getValidSchedulesToReprovision() {
-        var submittedSchedules = getValidSchedulesWithStatusIn(ServiceStatus.provisioning());
+    public List<ScheduleRequestEntity> getSchedulesWithVmBeforeExport() {
+        var provisioned = requestRepository
+                .findByServiceDescriptions_StatusIn(ServiceStatus.withVmBeforeExport());
 
-        return initializeParameters(submittedSchedules);
+        return initializeParameters(provisioned);
+    }
+
+    private List<ScheduleRequestEntity> getValidSchedulesWithStatusIn(Set<ServiceStatus> statuses) {
+        return requestRepository.findByEndTimeGreaterThanAndServiceDescriptions_StatusIn(LocalDateTime.now(), statuses)
+                .stream()
+                .toList();
     }
 
     private List<ScheduleRequestEntity> initializeParameters(List<ScheduleRequestEntity> entities) {
@@ -72,54 +87,6 @@ public class ScheduleRequestTracker {
             Hibernate.initialize(description.getDynamicProperties());
         });
         return entities;
-    }
-
-    public List<ScheduleRequestEntity> getSchedulesToCleanAndDelete() {
-        var schedules = requestRepository
-                .findByServiceDescriptions_AllStatusIn(ServiceStatus.toBeCleanedAndTerminated())
-                .stream()
-                .toList();
-
-        return initializeParameters(schedules);
-    }
-
-    public List<ScheduleRequestEntity> getSchedulesToDelete() {
-        var schedules = requestRepository
-                .findByServiceDescriptions_StatusEquals(ServiceStatus.toBeDeleted())
-                .stream()
-                .toList();
-
-        return initializeParameters(schedules);
-    }
-
-    private LocalDateTime getFurthestProvisioningThreshold() {
-        return LocalDateTime.now().plusSeconds(TimedSoftwareProvisioner.MAX_PROVISIONING_SECONDS);
-    }
-
-    private List<ScheduleRequestEntity> getValidSchedulesWithStatusIn(Set<ServiceStatus> statuses) {
-        return requestRepository.findByEndTimeGreaterThanAndServiceDescriptions_StatusIn(LocalDateTime.now(), statuses)
-                .stream()
-                .flatMap(this::toScheduleRequestsWithServiceTypes)
-                .filter(this::endsAfterAvailability)
-                .map(ScheduleRequestWithServiceType::request)
-                .distinct()
-                .toList();
-    }
-
-    private boolean endsBeforeAvailability(ScheduleRequestWithServiceType scheduleData) {
-        return scheduleData.request.getEndTime()
-                .isBefore(getTargetAvailability(scheduleData.serviceType));
-    }
-
-    private boolean endsAfterAvailability(ScheduleRequestWithServiceType scheduleData) {
-        return scheduleData.request.getEndTime()
-                .isAfter(getTargetAvailability(scheduleData.serviceType));
-    }
-
-
-    private LocalDateTime getTargetAvailability(ServiceTypeEntity serviceType) {
-        var provisioningSeconds = provisionerFactory.getProvisioner(serviceType).getProvisioningSeconds();
-        return LocalDateTime.now().plusSeconds(provisioningSeconds);
     }
 
     public void updateStatus(ScheduleRequestEntity scheduleRequestEntity, ServiceStatus status) {
@@ -163,12 +130,10 @@ public class ScheduleRequestTracker {
     private Stream<ActivityLinkInfo> fetchLinks(RequestTypeWithVmResourceId request) {
         return CheckedExceptionConverter.from(() ->
                 vmProvider.getVMResourceDetails(request.vmResourceId)
-                        .thenCompose(possibleDetails ->
-                                possibleDetails.map(details ->
-                                        provisionerFactory.getProvisioner(request.serviceType)
-                                                .createLinks(details)
-                                ).orElse(CompletableFuture.completedFuture(Collections.emptyList()))
-                        ).get()
+                        .thenCompose(details -> provisionerFactory.getProvisioner(request.serviceType)
+                                .createLinks(details)
+                        ).exceptionally(ex -> Collections.emptyList())
+                        .get()
         ).get().stream();
     }
 
@@ -180,15 +145,7 @@ public class ScheduleRequestTracker {
         );
     }
 
-    private Stream<ScheduleRequestWithServiceType> toScheduleRequestsWithServiceTypes(ScheduleRequestEntity requestEntity) {
-        return requestEntity.getServiceDescriptions().stream().map(description ->
-                new ScheduleRequestWithServiceType(requestEntity, description.getServiceType())
-        );
-    }
-
     private record RequestTypeWithVmResourceId(ServiceTypeEntity serviceType, long vmResourceId) {
     }
 
-    private record ScheduleRequestWithServiceType(ScheduleRequestEntity request, ServiceTypeEntity serviceType) {
-    }
 }

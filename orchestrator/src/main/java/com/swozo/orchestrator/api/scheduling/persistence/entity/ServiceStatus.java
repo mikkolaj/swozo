@@ -1,5 +1,7 @@
 package com.swozo.orchestrator.api.scheduling.persistence.entity;
 
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,17 +14,19 @@ public enum ServiceStatus {
     PROVISIONING,
     PROVISIONING_FAILED,
     READY,
+    WAITING_FOR_EXPORT,
     EXPORTING,
     EXPORT_FAILED,
     EXPORT_COMPLETE,
-    DELETED;
+    DELETED,
+    FAILED;
 
     public ServiceStatus getNextErrorStatus() throws IllegalStateException {
         return switch (this) {
             case VM_CREATING, VM_CREATION_FAILED -> VM_CREATION_FAILED;
             case PROVISIONING, PROVISIONING_FAILED -> PROVISIONING_FAILED;
-            case READY, EXPORTING, EXPORT_FAILED -> EXPORT_FAILED;
-            default -> throw new IllegalStateException("Unrecognized failure reason.");
+            case READY, WAITING_FOR_EXPORT, EXPORTING, EXPORT_FAILED -> EXPORT_FAILED;
+            default -> FAILED;
         };
     }
 
@@ -48,21 +52,26 @@ public enum ServiceStatus {
         ).collect(Collectors.toSet());
     }
 
-    public static Set<ServiceStatus> exporting() {
+    public static Set<ServiceStatus> wasExporting() {
         return Set.of(
+                WAITING_FOR_EXPORT,
                 EXPORTING,
                 EXPORT_FAILED
         );
     }
 
-    public static Set<ServiceStatus> toBeCleanedAndTerminated() {
+    public static Set<ServiceStatus> withVmBeforeExport() {
         return Stream.concat(
-                Stream.of(READY),
-                exporting().stream()
+                Stream.concat(provisioning().stream(), Stream.of(READY)),
+                wasExporting().stream()
         ).collect(Collectors.toSet());
     }
 
-    public static ServiceStatus toBeDeleted() {
-        return EXPORT_COMPLETE;
+    public static Set<ServiceStatus> afterExport() {
+        return Set.of(EXPORT_COMPLETE);
+    }
+
+    public static Collection<String> asStrings(Collection<ServiceStatus> statuses) {
+        return statuses.stream().map(Objects::toString).toList();
     }
 }

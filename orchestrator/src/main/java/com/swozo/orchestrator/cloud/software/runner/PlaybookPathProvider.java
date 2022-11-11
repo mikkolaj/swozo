@@ -19,9 +19,9 @@ public class PlaybookPathProvider {
     @Autowired
     public PlaybookPathProvider(ApplicationProperties properties) {
         paths = Map.of(
-                Playbook.EXECUTE_COMMAND, properties.ansibleHome() + ADMINISTRATION + "execute-command.yml",
-                Playbook.UPLOAD_TO_BUCKET, properties.ansibleHome() + ADMINISTRATION + "upload-to-bucket.yml",
-                Playbook.PROVISION_JUPYTER, properties.ansibleHome() + SOFTWARE + JUPYTER + "prepare-and-run-jupyter.yml"
+                Playbook.EXECUTE_COMMAND, properties.ansibleHome() + ADMINISTRATION + "/execute-command.yml",
+                Playbook.UPLOAD_TO_BUCKET, properties.ansibleHome() + ADMINISTRATION + "/upload-to-bucket.yml",
+                Playbook.PROVISION_JUPYTER, properties.ansibleHome() + SOFTWARE + JUPYTER + "/prepare-and-run-jupyter.yml"
         );
     }
 

@@ -85,6 +85,7 @@ public class AnsibleRunner {
 
     private Process createAnsibleProcess(AnsibleConnectionDetails connectionDetails, String playbookPath, List<String> userVars)
             throws ProcessFailed {
+        logger.info("Creating ansible process for: {}", connectionDetails);
         var command = createAnsibleCommand(connectionDetails, playbookPath, userVars);
         return processRunner.createProcess(command);
     }

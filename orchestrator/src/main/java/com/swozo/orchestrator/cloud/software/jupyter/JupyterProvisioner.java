@@ -4,9 +4,8 @@ import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.IsolationMode;
-import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
-import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
@@ -55,7 +54,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     @Async
     @Override
     // TODO: getting notebook from specified location
-    public CompletableFuture<List<ActivityLinkInfo>> provision(VMResourceDetails resource, Map<String, String> parameters) throws ProvisioningFailed {
+    public CompletableFuture<List<ActivityLinkInfo>> provision(VmResourceDetails resource, Map<String, String> parameters) throws ProvisioningFailed {
         try {
             logger.info("Started provisioning Jupyter on: {}", resource);
             runPlaybook(resource);
@@ -69,7 +68,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
 
     @Async
     @Override
-    public CompletableFuture<List<ActivityLinkInfo>> createLinks(VMResourceDetails vmResourceDetails) {
+    public CompletableFuture<List<ActivityLinkInfo>> createLinks(VmResourceDetails vmResourceDetails) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
         return CompletableFuture.completedFuture(List.of(new ActivityLinkInfo(
                 1L, // TODO
@@ -101,7 +100,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return Optional.of(WORKDIR);
     }
 
-    private void runPlaybook(VMResourceDetails resource) {
+    private void runPlaybook(VmResourceDetails resource) {
         ansibleRunner.runPlaybook(
                 AnsibleConnectionDetails.from(resource),
                 Playbook.PROVISION_JUPYTER,
@@ -109,7 +108,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         );
     }
 
-    private void handleParameters(Map<String, String> dynamicParameters, VMResourceDetails resource) {
+    private void handleParameters(Map<String, String> dynamicParameters, VmResourceDetails resource) {
         logger.info("Start handling parameters for {}", resource);
         var jupyterParameters = JupyterParameters.from(dynamicParameters);
         bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), "/home/swozo/jupyter/lab_file.ipynb");

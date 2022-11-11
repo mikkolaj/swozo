@@ -1,5 +1,7 @@
 package com.swozo.utils;
 
+import java.util.Optional;
+
 public class RetryManager {
     private int failCounter;
     private long backoffPeriod;
@@ -21,11 +23,19 @@ public class RetryManager {
         return failCounter < attempts;
     }
 
-    public long nextBackoffMillis() {
+    public long registerAttempt() {
         var curPeriod = backoffPeriod;
         failCounter++;
         backoffPeriod *= 2;
         return curPeriod;
+    }
+
+    public Optional<Long> backoffMillis() {
+        if (backoffPeriod > 0) {
+            return Optional.of(backoffPeriod);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public void setLastException(Exception lastException) {
