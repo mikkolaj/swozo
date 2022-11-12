@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import static com.swozo.orchestrator.utils.CollectionUtils.combineLists;
+
 @Component
 @Profile("!test")
 @RequiredArgsConstructor
@@ -32,8 +34,7 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
         logger.info("Living vms waiting for export: {}", withVmBeforeExport);
         outdatedSchedules.forEach(this::setFailedStatus);
         schedulesToDelete.forEach(this::deleteCreatedVm);
-        schedulesToRestart.forEach(this::delegateScheduling);
-        withVmBeforeExport.forEach(this::applyActionsToServices);
+        combineLists(schedulesToRestart, withVmBeforeExport).forEach(this::continueProvisioningFlow);
     }
 
     private void setFailedStatus(ScheduleRequestEntity request) {
@@ -48,17 +49,9 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
         }
     }
 
-    private void delegateScheduling(ScheduleRequestEntity requestEntity) {
+    private void continueProvisioningFlow(ScheduleRequestEntity requestEntity) {
         try {
-            scheduleHandler.delegateScheduling(requestEntity);
-        } catch (RuntimeException ex) {
-            handleRuntimeException(ex);
-        }
-    }
-
-    private void applyActionsToServices(ScheduleRequestEntity requestEntity) {
-        try {
-            scheduleHandler.applyAppropriateActionsOnServices(requestEntity);
+            scheduleHandler.continueProvisioningFlowAfterFailure(requestEntity);
         } catch (RuntimeException ex) {
             handleRuntimeException(ex);
         }

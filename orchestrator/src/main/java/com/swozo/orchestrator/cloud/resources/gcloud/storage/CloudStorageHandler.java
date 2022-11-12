@@ -26,6 +26,8 @@ import java.util.concurrent.CompletableFuture;
 public class CloudStorageHandler implements BucketHandler {
     // TODO: read the filesize
     private static final int PRETTY_BIG_SIZE = 100000000;
+
+    private static final String WORKDIR_SNAPSHOT_FILENAME = "workdirSnapshot.zip";
     private final BackendRequestSender requestSender;
     private final AnsibleRunner ansibleRunner;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -38,10 +40,9 @@ public class CloudStorageHandler implements BucketHandler {
             long scheduleRequestId,
             long userId
     ) {
-        var filename = "workdirSnapshot.zip";
-        var initRequest = new InitFileUploadRequest(filename, PRETTY_BIG_SIZE);
+        var initRequest = new InitFileUploadRequest(WORKDIR_SNAPSHOT_FILENAME, PRETTY_BIG_SIZE);
         return requestSender.initUserFileUpload(initRequest, activityModuleId, userId).thenCompose(accessRequest -> {
-            var fileToUpload = String.format("%s/%s", workdirPath, filename);
+            var fileToUpload = String.format("%s/%s", workdirPath, WORKDIR_SNAPSHOT_FILENAME);
 
             var curlCommand = prepareUploadCurlCommand(accessRequest, fileToUpload);
 
@@ -51,7 +52,7 @@ public class CloudStorageHandler implements BucketHandler {
                     List.of(
                             ansibleRunner.createUserVar("command", curlCommand),
                             ansibleRunner.createUserVar("source_directory", workdirPath),
-                            ansibleRunner.createUserVar("target_filename", filename)
+                            ansibleRunner.createUserVar("target_filename", WORKDIR_SNAPSHOT_FILENAME)
                     ),
                     5
             );
@@ -85,8 +86,13 @@ public class CloudStorageHandler implements BucketHandler {
                     AnsibleConnectionDetails.from(remoteHost),
                     Playbook.EXECUTE_COMMAND,
                     List.of(ansibleRunner.createUserVar("command", commandParameter)),
-                    5
+                    getUploadTimeoutMinutes(PRETTY_BIG_SIZE)
             );
         });
+    }
+
+    public int getUploadTimeoutMinutes(int fileSizeBytes) {
+        // TODO after we implement reading size
+        return 5;
     }
 }

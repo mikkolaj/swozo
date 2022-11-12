@@ -5,11 +5,11 @@ import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.gax.rpc.AbortedException;
 import com.swozo.model.scheduling.properties.MdaVmSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmStatus;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmAddress;
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmRepository;
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmEntity;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmStatus;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.TransactionalVmUtils;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmEntity;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmRepository;
 import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVmProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VmOperationFailed;
@@ -24,8 +24,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.PrimitiveIterator;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.IntSupplier;
+import java.util.stream.IntStream;
 
 import static com.swozo.utils.LoggingUtils.logIfSuccess;
 
@@ -54,7 +55,7 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
     }
 
     private CompletableFuture<VmAddress> handleVmNameCollisions(MdaVmSpecs mdaVmSpecs, String namePrefix) {
-        var supplier = new SequenceProvider();
+        var supplier = IntStream.iterate(0, i -> i + 1).iterator();
 
         return RetryHandler.withImmediateRetries(
                 () -> tryCreatingVmWithName(mdaVmSpecs, appendSuffix(namePrefix, supplier)),
@@ -62,8 +63,8 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
         );
     }
 
-    private String appendSuffix(String namePrefix, IntSupplier supplier) {
-        return String.format("%s-%d", namePrefix, supplier.getAsInt());
+    private String appendSuffix(String namePrefix, PrimitiveIterator.OfInt supplier) {
+        return String.format("%s-%d", namePrefix, supplier.nextInt());
     }
 
     private CompletableFuture<VmAddress> tryCreatingVmWithName(MdaVmSpecs mdaVmSpecs, String name) {
@@ -139,16 +140,6 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
         return new VMSpecs(mdaVmSpecs.machineType(), gCloudProperties.computeImageFamily(), mdaVmSpecs.diskSizeGb());
     }
 
-
     private record VmEntityWithAddress(VmEntity vm, String publicIp) {
-    }
-
-    private static class SequenceProvider implements IntSupplier {
-        private int value = -1;
-
-        public int getAsInt() {
-            value += 1;
-            return value;
-        }
     }
 }

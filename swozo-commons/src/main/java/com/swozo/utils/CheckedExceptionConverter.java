@@ -2,7 +2,6 @@ package com.swozo.utils;
 
 import com.swozo.exceptions.PropagatingException;
 import com.swozo.function.*;
-import lombok.SneakyThrows;
 
 import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
@@ -95,11 +94,6 @@ public class CheckedExceptionConverter {
         } catch (Exception e) {
             throw converter.apply(e);
         }
-    }
-
-    @SneakyThrows
-    public void sneakyThrow(Throwable ex) {
-        throw ex;
     }
 
 }

@@ -14,16 +14,11 @@ public interface ScheduleRequestRepository extends JpaRepository<ScheduleRequest
     @Query(
             nativeQuery = true, value = """
             select sr.* from schedule_requests sr
-            where exists (
+            where not exists (
                 select sd.schedule_request_id from service_descriptions sd
                 where
                     sd.schedule_request_id = sr.id
-                    and sd.status in :statuses
-                group by sd.schedule_request_id
-                having count(*) = (
-                    select count(*) from service_descriptions sd2
-                    where sd2.schedule_request_id = sr.id
-                )
+                    and sd.status not in :statuses
             )"""
     )
     List<ScheduleRequestEntity> findScheduleRequestsWithAllServiceDescriptionsInStatus(@Param("statuses") Collection<String> statuses);

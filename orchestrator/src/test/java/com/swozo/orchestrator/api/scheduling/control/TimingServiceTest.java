@@ -12,12 +12,12 @@ import static org.mockito.Mockito.when;
 class TimingServiceTest {
 
     @Test
-    void getDeletionOffset_EndTimeInThePast_ReturnsNonNegativeOffsetShiftedByExportSeconds() {
+    void getDeletionOffset_EndTimeInThePast_ReturnsNonNegativeOffsetShiftedByCleanupSeconds() {
         var timingService = new TimingService();
         var scheduleRequest = Mockito.mock(ScheduleRequestEntity.class);
-        var exportSeconds = 10;
+        var cleanupSeconds = 10;
         when(scheduleRequest.getEndTime()).thenReturn(LocalDateTime.now().minusDays(365));
 
-        assertEquals(exportSeconds, timingService.getDeletionOffset(scheduleRequest, exportSeconds));
+        assertEquals(cleanupSeconds, timingService.getDeletionOffset(scheduleRequest, cleanupSeconds));
     }
 }

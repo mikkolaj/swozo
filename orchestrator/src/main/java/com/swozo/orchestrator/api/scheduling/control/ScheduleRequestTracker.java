@@ -45,7 +45,7 @@ public class ScheduleRequestTracker {
     public List<ScheduleRequestEntity> getSchedulesToDelete() {
         var provisioned = requestRepository
                 .findScheduleRequestsWithAllServiceDescriptionsInStatus(
-                        ServiceStatus.asStrings(ServiceStatus.afterExport())
+                        ServiceStatus.asStrings(ServiceStatus.readyToBeDeleted())
                 );
 
         return initializeParameters(provisioned);

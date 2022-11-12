@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import static com.google.common.base.Functions.constant;
 import static com.swozo.utils.LoggingUtils.logIfSuccess;
 
 @Service
@@ -39,6 +38,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
     private static final String MAIN_LINK_DESCRIPTION = "swozo123"; // TODO
+    private static final String LAB_FILE_PATH = "/home/swozo/jupyter/lab_file.ipynb";
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
@@ -50,7 +50,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return new ServiceConfig(
                 SUPPORTED_SCHEDULE.toString(),
                 JupyterParameters.getParameterDescriptions(translationsProvider),
-                Set.of(IsolationMode.ISOLATED)
+                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED)
         );
     }
 
@@ -119,7 +119,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private CompletableFuture<Void> handleParameters(Map<String, String> dynamicParameters, VmResourceDetails resource) {
         logger.info("Start handling parameters for {}", resource);
         var jupyterParameters = JupyterParameters.from(dynamicParameters);
-        return bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), "/home/swozo/jupyter/lab_file.ipynb")
+        return bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), LAB_FILE_PATH)
                 .whenComplete(LoggingUtils.log(
                         logger,
                         String.format("Done downloading file for %s", resource),

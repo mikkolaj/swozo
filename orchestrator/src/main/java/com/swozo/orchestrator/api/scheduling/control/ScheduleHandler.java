@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
-import com.google.common.base.Functions;
 import com.google.common.collect.Sets;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
@@ -20,7 +19,7 @@ import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
 import com.swozo.orchestrator.cloud.software.WorkspaceExporter;
 import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
-import com.swozo.utils.LoggingUtils;
+import com.swozo.utils.RetryHandler;
 import com.swozo.utils.VoidMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,7 +29,9 @@ import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus.*;
+import static com.swozo.utils.LoggingUtils.logIfError;
 
 @Component
 @RequiredArgsConstructor
@@ -62,6 +64,36 @@ public class ScheduleHandler {
         return scheduleRequestTracker.startTracking(request);
     }
 
+    public void continueProvisioningFlowAfterFailure(ScheduleRequestEntity requestEntity) {
+        requestEntity.getVmResourceId().ifPresentOrElse(
+                id -> continueProvisioningWithPresentVm(requestEntity, id),
+                () -> delegateScheduling(requestEntity)
+        );
+    }
+
+    private void continueProvisioningWithPresentVm(ScheduleRequestEntity requestEntity, Long id) {
+        var groupedByStatus = requestEntity.getServiceDescriptions()
+                .stream()
+                .collect(Collectors.groupingBy(ServiceDescriptionEntity::getStatus));
+
+        var resourceDetails = timedVmProvider.getVMResourceDetails(id);
+
+        groupedByStatus.forEach((status, services) -> {
+            switch (status) {
+                case PROVISIONING, PROVISIONING_FAILED -> {
+                    var validServices = cancelInvalidServicesAndGetValid(requestEntity, new HashSet<>(services));
+                    resourceDetails.thenCompose(startFromProvisioning(requestEntity, validServices));
+                }
+                case READY, WAITING_FOR_EXPORT, EXPORTING, EXPORT_FAILED ->
+                        resourceDetails.thenCompose(startFromExport(requestEntity, services));
+                default -> {
+                }
+            }
+        });
+
+        resourceDetails.thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS));
+    }
+
     public void delegateScheduling(ScheduleRequestEntity requestEntity) {
         var longestProvisioningTime = getLongestProvisioningTime(requestEntity);
         var offset = timingService.getSchedulingOffset(requestEntity, longestProvisioningTime);
@@ -69,44 +101,18 @@ public class ScheduleHandler {
         scheduler.schedule(VoidMapper.toCallableVoid(() -> scheduleCreationAndDeletion(requestEntity)), offset);
     }
 
-    public void applyAppropriateActionsOnServices(ScheduleRequestEntity requestEntity) {
-        requestEntity.getVmResourceId().ifPresent(id -> {
-                    var groupedByStatus = requestEntity.getServiceDescriptions()
-                            .stream()
-                            .collect(Collectors.groupingBy(ServiceDescriptionEntity::getStatus));
-
-                    var resourceDetails = timedVmProvider.getVMResourceDetails(id);
-
-                    groupedByStatus.forEach((status, services) -> {
-                        switch (status) {
-                            case PROVISIONING, PROVISIONING_FAILED -> {
-                                var validServices = handleInvalidServices(requestEntity, new HashSet<>(services));
-                                resourceDetails.thenCompose(startFromProvisioning(requestEntity, validServices));
-                            }
-                            case READY, WAITING_FOR_EXPORT, EXPORTING, EXPORT_FAILED ->
-                                    resourceDetails.thenCompose(startFromExport(requestEntity, services));
-                            default -> {
-                            }
-                        }
-                    });
-
-                    resourceDetails.thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS));
-                }
-        );
-    }
-
     private void scheduleCreationAndDeletion(ScheduleRequestEntity requestEntity) {
         scheduleRequestTracker.updateStatus(requestEntity, VM_CREATING);
         timedVmProvider
                 .createInstance(requestUtils.toMdaVmSpecs(requestEntity), buildVmNamePrefix(requestEntity, requestEntity))
-                .whenComplete(handleFailedVmCreation(requestEntity))
-                .thenCompose(updateVmResourceId(requestEntity))
+                .whenComplete(handlePossibleVmCreationFailure(requestEntity))
+                .thenApply(updateVmResourceId(requestEntity))
                 .thenCompose(startFromProvisioning(requestEntity, requestEntity.getServiceDescriptions()))
                 .thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS));
     }
 
 
-    private BiConsumer<VmResourceDetails, Throwable> handleFailedVmCreation(ScheduleRequestEntity requestEntity) {
+    private BiConsumer<VmResourceDetails, Throwable> handlePossibleVmCreationFailure(ScheduleRequestEntity requestEntity) {
         return (msg, ex) -> {
             if (ex != null) {
                 logger.error("Error while creating instance for request [id: {}]", requestEntity.getId(), ex);
@@ -115,11 +121,11 @@ public class ScheduleHandler {
         };
     }
 
-    private Function<VmResourceDetails, CompletionStage<VmResourceDetails>> updateVmResourceId(ScheduleRequestEntity request) {
+    private Function<VmResourceDetails, VmResourceDetails> updateVmResourceId(ScheduleRequestEntity request) {
         return resourceDetails -> {
             scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
             scheduleRequestTracker.updateStatus(request, PROVISIONING);
-            return CompletableFuture.completedFuture(resourceDetails);
+            return resourceDetails;
         };
     }
 
@@ -130,7 +136,7 @@ public class ScheduleHandler {
                 );
     }
 
-    public CompletableFuture<List<ServiceDescriptionEntity>> provisionSoftware(
+    private CompletableFuture<List<ServiceDescriptionEntity>> provisionSoftware(
             ScheduleRequestEntity request,
             VmResourceDetails resourceDetails,
             List<ServiceDescriptionEntity> services
@@ -161,7 +167,7 @@ public class ScheduleHandler {
 
             var futureStatus = descriptionWithFutureLinks.links
                     .thenCompose(switchToReadyState(request, serviceDescription))
-                    .thenCompose(Functions.constant(CompletableFuture.completedFuture(true)))
+                    .thenApply(successfulStateUpdate -> true)
                     .exceptionally(handlePossibleProvisioningFailure(request, resourceDetails, serviceDescription));
 
             return new DescriptionWithStatus(serviceDescription, waitForStatus(futureStatus));
@@ -185,7 +191,7 @@ public class ScheduleHandler {
         }
     }
 
-    public Function<VmResourceDetails, CompletableFuture<VmResourceDetails>> startFromExport(ScheduleRequestEntity requestEntity, List<ServiceDescriptionEntity> services) {
+    private Function<VmResourceDetails, CompletableFuture<VmResourceDetails>> startFromExport(ScheduleRequestEntity requestEntity, List<ServiceDescriptionEntity> services) {
         return resourceDetails -> {
             services.forEach(description -> provisionerFactory.getProvisioner(description.getServiceType())
                     .getWorkdirToSave()
@@ -210,22 +216,26 @@ public class ScheduleHandler {
     }
 
 
-    private List<ServiceDescriptionEntity> handleInvalidServices(ScheduleRequestEntity requestEntity, HashSet<ServiceDescriptionEntity> all) {
+    private List<ServiceDescriptionEntity> cancelInvalidServicesAndGetValid(ScheduleRequestEntity requestEntity, HashSet<ServiceDescriptionEntity> all) {
         var invalid = all.stream()
                 .map(description -> description.toScheduleRequestWithServiceDescriptions(requestEntity))
                 .filter(requestFilter::endsBeforeAvailability)
                 .map(ScheduleRequestWithServiceDescription::description)
                 .collect(Collectors.toSet());
 
-        invalid.forEach(description -> scheduleRequestTracker.updateStatus(description, FAILED));
+        invalid.forEach(description -> {
+            logger.info("Marking request with [id: {}] as FAILED.", requestEntity.getId());
+            scheduleRequestTracker.updateStatus(description, FAILED);
+        });
         return Sets.difference(all, invalid).stream().toList();
     }
 
     private Function<List<ActivityLinkInfo>, CompletableFuture<Void>> switchToReadyState(ScheduleRequestEntity request, ServiceDescriptionEntity description) {
         return links -> {
             scheduleRequestTracker.updateStatus(description, READY);
-            return requestSender.putActivityLinks(request.getId(), links)
-                    .exceptionally(LoggingUtils.logAndDefault(logger, "Unable to send links to backend.", null));
+            return RetryHandler.withExponentialBackoff(
+                    () -> requestSender.putActivityLinks(request.getId(), links), 10
+            ).whenComplete(logIfError(logger, "Unable to send links to backend."));
         };
     }
 
@@ -255,7 +265,7 @@ public class ScheduleHandler {
                         "Failed to export all user data before deadline for request [id: {}]. You have {} seconds to collect it manually.",
                         request.getId(), TimingService.MANUAL_CLEANUP_SECONDS
                 );
-                scheduler.schedule(callDelete(request, internalResourceId), TimingService.MANUAL_CLEANUP_SECONDS);
+                scheduler.schedule(() -> delete(request, internalResourceId), TimingService.MANUAL_CLEANUP_SECONDS);
             }
         } catch (VmOperationFailed e) {
             logger.error("Deleting instance for request [id: {}] failed!", request, e);
@@ -273,15 +283,12 @@ public class ScheduleHandler {
                 }).count();
     }
 
-    private Callable<Void> callDelete(ScheduleRequestEntity request, long internalResourceId) {
-        return VoidMapper.toCallableVoid(() -> delete(request, internalResourceId));
-    }
-
-    private void delete(ScheduleRequestEntity request, long internalResourceId) {
+    private Void delete(ScheduleRequestEntity request, long internalResourceId) {
         timedVmProvider.deleteInstance(internalResourceId)
                 .thenRun(() -> request.getServiceDescriptions().forEach(description ->
                         scheduleRequestTracker.updateStatus(description, DELETED))
                 );
+        return null;
     }
 
     private int getLongestProvisioningTime(ScheduleRequestEntity requestEntity) {

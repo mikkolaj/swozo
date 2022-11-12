@@ -33,7 +33,7 @@ public class AnsibleRunner {
     private static final String EXTRA_VARS_DELIMITER = " ";
     private static final String INPUT_BOUNDARY = "\\A";
     private static final int DEFAULT_CONNECTION_ATTEMPTS = 6;
-    private static final int PLAYBOOK_EXECUTION_ATTEMPTS = 3;
+    private static final int PLAYBOOK_EXECUTION_ATTEMPTS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ProcessRunner processRunner;
