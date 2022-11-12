@@ -16,9 +16,7 @@ public record ApplicationProperties(
     private record Scheduler(int threadPoolSize) {
     }
 
-    private record Ansible(String playbookExecutablePath, String home, Jupyter jupyter) {
-        private record Jupyter(String playbookPath) {
-        }
+    private record Ansible(String playbookExecutablePath, String home) {
     }
 
     public record Orchestrator(String secret) {
@@ -30,10 +28,6 @@ public record ApplicationProperties(
 
     public String ansibleHome() {
         return ansible.home;
-    }
-
-    public String jupyterPlaybookPath() {
-        return ansible.jupyter.playbookPath;
     }
 
     public int schedulerThreadPoolSize() {
