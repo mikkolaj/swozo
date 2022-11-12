@@ -5,7 +5,6 @@ import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.IsolationMode;
 import com.swozo.model.users.OrchestratorUserDto;
-import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
@@ -43,11 +42,11 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
     private static final String MAIN_LINK_DESCRIPTION = "swozo123"; // TODO
+    private static final String LAB_FILE_PATH = "/home/swozo/jupyter/lab_file.ipynb";
     private final TranslationsProvider translationsProvider;
-    private final BucketHandler bucketHandler;
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
-    private final BackendRequestSender requestSender;
+    private final BucketHandler bucketHandler;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -55,7 +54,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return new ServiceConfig(
                 SUPPORTED_SCHEDULE.toString(),
                 JupyterParameters.getParameterDescriptions(translationsProvider),
-                Set.of(IsolationMode.ISOLATED)
+                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED)
         );
     }
 
@@ -135,7 +134,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private CompletableFuture<Void> handleParameters(Map<String, String> dynamicParameters, VmResourceDetails resource) {
         logger.info("Start handling parameters for {}", resource);
         var jupyterParameters = JupyterParameters.from(dynamicParameters);
-        return bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), "/home/swozo/jupyter/lab_file.ipynb")
+        return bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), LAB_FILE_PATH)
                 .whenComplete(LoggingUtils.log(
                         logger,
                         String.format("Done downloading file for %s", resource),

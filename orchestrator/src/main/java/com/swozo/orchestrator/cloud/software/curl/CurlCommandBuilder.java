@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CurlCommandBuilder {
@@ -49,14 +50,13 @@ public class CurlCommandBuilder {
         var headerParams = headers.stream().map(header -> String.format("-H '%s'", header));
         var formParams = formEntries.stream().map(entry -> String.format("-F '%s'", entry));
 
-        var elements = Stream.of(
+        return Stream.of(
                 Stream.of("curl"),
                 Optional.ofNullable(httpMethod).map(method -> String.format("-X %s", method)).stream(),
                 headerParams,
                 formParams,
                 Stream.of(url),
                 Optional.ofNullable(outputLocation).map(output -> String.format("--output '%s'", output)).stream()
-        ).flatMap(Function.identity()).toList();
-        return String.join(" ", elements);
+        ).flatMap(Function.identity()).collect(Collectors.joining(" "));
     }
 }

@@ -2,9 +2,11 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestFilter;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.mapper.ScheduleRequestMapper;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ScheduleRequestRepository;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ServiceDescriptionRepository;
@@ -31,6 +33,7 @@ public class ScheduleRequestTracker {
     private final ServiceDescriptionRepository descriptionRepository;
     private final ScheduleRequestMapper requestMapper;
     private final TimedSoftwareProvisionerFactory provisionerFactory;
+    private final ScheduleRequestFilter requestFilter;
     private final TimedVmProvider vmProvider;
 
     public ScheduleRequestEntity startTracking(ScheduleRequest scheduleRequest) {
@@ -42,7 +45,7 @@ public class ScheduleRequestTracker {
     public List<ScheduleRequestEntity> getSchedulesToDelete() {
         var provisioned = requestRepository
                 .findScheduleRequestsWithAllServiceDescriptionsInStatus(
-                        ServiceStatus.asStrings(ServiceStatus.afterExport())
+                        ServiceStatus.asStrings(ServiceStatus.readyToBeDeleted())
                 );
 
         return initializeParameters(provisioned);
@@ -142,6 +145,7 @@ public class ScheduleRequestTracker {
         );
     }
 
+    private record RequestTypeWithVmResourceId(ServiceTypeEntity serviceType, long vmResourceId) {
     private record FullServiceInfo(
             ScheduleRequestEntity requestEntity,
             ServiceDescriptionEntity description,

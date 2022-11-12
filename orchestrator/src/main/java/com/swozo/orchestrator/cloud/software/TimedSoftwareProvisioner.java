@@ -13,8 +13,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface TimedSoftwareProvisioner {
-    int MAX_PROVISIONING_SECONDS = 60 * 60 * 3;
-
     CompletableFuture<List<ActivityLinkInfo>> provision(
             ScheduleRequestEntity requestEntity,
             ServiceDescriptionEntity description,

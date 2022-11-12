@@ -67,7 +67,7 @@ public enum ServiceStatus {
         ).collect(Collectors.toSet());
     }
 
-    public static Set<ServiceStatus> afterExport() {
+    public static Set<ServiceStatus> readyToBeDeleted() {
         return Set.of(EXPORT_COMPLETE);
     }
 

@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.cloud.resources.vm;
 
-import com.google.common.base.Functions;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmRepository;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +34,7 @@ public class BrokenVmCleaner implements ApplicationListener<ApplicationReadyEven
     private long deleteVmsWithBrokenMetadata() {
         return vmRepository.findAllCreatedWithBrokenMetadata().stream()
                 .map(vmEntity -> vmProvider.deleteInstance(vmEntity.getId())
-                        .thenCompose(Functions.constant(CompletableFuture.completedFuture(true)))
+                        .thenApply(successfullyDeletedInstanceStage -> true)
                         .exceptionally(logAndDefault(logger, String.format("Error while deleting %s", vmEntity), false))
                 ).map(this::waitForResult)
                 .filter(Boolean::booleanValue)
