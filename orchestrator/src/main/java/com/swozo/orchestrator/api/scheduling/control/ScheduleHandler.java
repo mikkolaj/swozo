@@ -217,7 +217,7 @@ public class ScheduleHandler {
                 .map(ScheduleRequestWithServiceDescription::description)
                 .collect(Collectors.toSet());
 
-        invalid.forEach(scheduleRequestTracker::markAsFailure);
+        invalid.forEach(description -> scheduleRequestTracker.updateStatus(description, FAILED));
         return Sets.difference(all, invalid).stream().toList();
     }
 
