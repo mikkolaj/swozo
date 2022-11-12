@@ -4,6 +4,10 @@ import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.IsolationMode;
+import com.swozo.model.users.OrchestratorUserDto;
+import com.swozo.orchestrator.api.backend.BackendRequestSender;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
@@ -26,8 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
-import static com.google.common.base.Functions.constant;
 import static com.swozo.utils.LoggingUtils.logIfSuccess;
 
 @Service
@@ -40,9 +44,10 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final String JUPYTER_PORT = "80";
     private static final String MAIN_LINK_DESCRIPTION = "swozo123"; // TODO
     private final TranslationsProvider translationsProvider;
+    private final BucketHandler bucketHandler;
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
-    private final BucketHandler bucketHandler;
+    private final BackendRequestSender requestSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -55,14 +60,18 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
-    public CompletableFuture<List<ActivityLinkInfo>> provision(VmResourceDetails resource, Map<String, String> parameters) {
+    public CompletableFuture<List<ActivityLinkInfo>> provision(
+            ScheduleRequestEntity requestEntity,
+            ServiceDescriptionEntity description,
+            VmResourceDetails resource
+    ) {
         return CompletableFuture.runAsync(() -> {
                     logger.info("Started provisioning Jupyter on: {}", resource);
                     runPlaybook(resource);
-                }).thenCompose(x -> handleParameters(parameters, resource))
+                }).thenCompose(x -> handleParameters(description.getDynamicProperties(), resource))
                 .whenComplete(logIfSuccess(logger, provisioningComplete(resource)))
                 .whenComplete(this::wrapExceptions)
-                .thenCompose(x -> createLinks(resource));
+                .thenCompose(x -> createLinks(requestEntity, description, resource));
     }
 
     private static String provisioningComplete(VmResourceDetails resource) {
@@ -76,16 +85,23 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
-    public CompletableFuture<List<ActivityLinkInfo>> createLinks(VmResourceDetails vmResourceDetails) {
+    public CompletableFuture<List<ActivityLinkInfo>> createLinks(
+            ScheduleRequestEntity requestEntity,
+            ServiceDescriptionEntity description,
+            VmResourceDetails vmResourceDetails
+    ) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
-        return CompletableFuture.completedFuture(List.of(new ActivityLinkInfo(
-                1L, // TODO
-                formattedLink,
-                translationsProvider.t(
-                        "services.jupyter.connectionInstruction",
-                        Map.of("password", MAIN_LINK_DESCRIPTION)
-                )
-        )));
+        return requestSender.getUserData(description.getActivityModuleId(), requestEntity.getId())
+                .thenCompose(users -> CompletableFuture.completedFuture(
+                        users.stream().map(OrchestratorUserDto::id).map(createLink(formattedLink)).toList()
+                ));
+    }
+
+    private Function<Long, ActivityLinkInfo> createLink(String link) {
+        return userId -> new ActivityLinkInfo(userId, link, translationsProvider.t(
+                "services.jupyter.connectionInstruction",
+                Map.of("password", MAIN_LINK_DESCRIPTION)
+        ));
     }
 
     @Override

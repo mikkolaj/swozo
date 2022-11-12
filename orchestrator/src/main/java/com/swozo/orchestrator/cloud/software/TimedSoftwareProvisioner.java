@@ -2,6 +2,8 @@ package com.swozo.orchestrator.cloud.software;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 
@@ -13,9 +15,18 @@ import java.util.concurrent.CompletableFuture;
 public interface TimedSoftwareProvisioner {
     int MAX_PROVISIONING_SECONDS = 60 * 60 * 3;
 
-    CompletableFuture<List<ActivityLinkInfo>> provision(VmResourceDetails resourceDetails, Map<String, String> dynamicParameters);
+    CompletableFuture<List<ActivityLinkInfo>> provision(
+            ScheduleRequestEntity requestEntity,
+            ServiceDescriptionEntity description,
+            VmResourceDetails resourceDetails
+    );
 
-    CompletableFuture<List<ActivityLinkInfo>> createLinks(VmResourceDetails resourceDetails);
+
+    CompletableFuture<List<ActivityLinkInfo>> createLinks(
+            ScheduleRequestEntity requestEntity,
+            ServiceDescriptionEntity description,
+            VmResourceDetails vmResourceDetails
+    );
 
     void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException;
 

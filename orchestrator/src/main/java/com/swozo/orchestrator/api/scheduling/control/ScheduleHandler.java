@@ -135,7 +135,7 @@ public class ScheduleHandler {
             VmResourceDetails resourceDetails,
             List<ServiceDescriptionEntity> services
     ) {
-        return CompletableFuture.supplyAsync(() -> getFutureLinks(services, resourceDetails)
+        return CompletableFuture.supplyAsync(() -> getFutureLinks(request, services, resourceDetails)
                 .map(waitForLinks(request, resourceDetails))
                 .filter(DescriptionWithStatus::succeeded)
                 .map(DescriptionWithStatus::description)
@@ -143,14 +143,18 @@ public class ScheduleHandler {
         );
     }
 
-    private Stream<DescriptionWithFutureLinks> getFutureLinks(List<ServiceDescriptionEntity> services, VmResourceDetails resourceDetails) {
+    private Stream<DescriptionWithFutureLinks> getFutureLinks(
+            ScheduleRequestEntity request,
+            List<ServiceDescriptionEntity> services,
+            VmResourceDetails resourceDetails
+    ) {
         return services.stream()
                 .filter(ServiceDescriptionEntity::canBeProvisioned)
                 .map(description -> {
                     var provisioner = getProvisioner(description.getServiceType());
                     return new DescriptionWithFutureLinks(
                             description,
-                            provisioner.provision(resourceDetails, description.getDynamicProperties())
+                            provisioner.provision(request, description, resourceDetails)
                     );
                 });
     }
