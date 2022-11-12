@@ -1,5 +1,6 @@
 package com.swozo.orchestrator.api.scheduling.persistence.entity;
 
+import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestWithServiceDescription;
 import com.swozo.persistence.BaseEntity;
 import lombok.*;
 
@@ -7,22 +8,43 @@ import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.swozo.orchestrator.api.scheduling.persistence.entity.RequestStatus.SUBMITTED;
+import static com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus.SUBMITTED;
 
 @Entity
+@Table(
+        name = "ServiceDescriptions",
+        indexes = {
+                @Index(name = "service_description_id", columnList = "id"),
+                @Index(name = "service_description_schedule_request_id", columnList = "schedule_request_id")
+        }
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
 public class ServiceDescriptionEntity extends BaseEntity {
+    private Long activityModuleId;
     private ServiceTypeEntity serviceType;
 
     @ElementCollection
     @MapKeyColumn(name = "property_name")
     @Column(name = "property_value")
-    @CollectionTable(name = "dynamic_properties", joinColumns = @JoinColumn(name = "service_description_id"))
+    @CollectionTable(name = "DynamicProperties", joinColumns = @JoinColumn(name = "service_description_id"))
     private Map<String, String> dynamicProperties = new HashMap<>();
 
-    private RequestStatus status = SUBMITTED;
+    @Enumerated(value = EnumType.STRING)
+    private ServiceStatus status = SUBMITTED;
+
+    public boolean canBeProvisioned() {
+        return ServiceStatus.provisioning().contains(status);
+    }
+
+    public boolean wasInExportingState() {
+        return ServiceStatus.wasExporting().contains(status);
+    }
+
+    public ScheduleRequestWithServiceDescription toScheduleRequestWithServiceDescriptions(ScheduleRequestEntity requestEntity) {
+        return new ScheduleRequestWithServiceDescription(requestEntity, this);
+    }
 }

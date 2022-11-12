@@ -1,7 +1,7 @@
 package com.swozo.api.web.activity;
 
 import com.swozo.api.common.files.exceptions.DuplicateFileException;
-import com.swozo.api.common.files.request.InitFileUploadRequest;
+import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.exceptions.types.course.NotACreatorException;

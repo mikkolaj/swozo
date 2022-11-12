@@ -1,14 +1,14 @@
 package com.swozo.api.web.activity;
 
-import com.swozo.api.common.files.dto.UploadAccessDto;
-import com.swozo.api.common.files.request.InitFileUploadRequest;
+import com.swozo.model.files.UploadAccessDto;
+import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.users.OrchestratorUserDto;
-import com.swozo.model.utils.StorageAccessRequest;
+import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -81,7 +81,7 @@ public class ActivityController {
         return activityModuleService.getUserDataForProvisioner(activityModuleId, scheduleRequestId);
     }
 
-    @GetMapping(INTERNAL + INIT_UPLOAD + "/{activityModuleId}/{userId}")
+    @PostMapping(INTERNAL + INIT_UPLOAD + "/{activityModuleId}/{userId}")
     public StorageAccessRequest initUserActivityFileUpload(
             @PathVariable Long activityModuleId,
             @PathVariable Long userId,

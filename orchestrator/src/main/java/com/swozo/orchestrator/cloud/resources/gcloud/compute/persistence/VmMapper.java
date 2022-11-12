@@ -1,15 +1,15 @@
 package com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence;
 
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmAddress;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 
 @Mapper(componentModel = "spring")
-public interface VMMapper {
+public interface VmMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "status", ignore = true)
-    VMEntity toPersistence(VMAddress dto);
+    VmEntity toPersistence(VmAddress dto);
 
-    VMAddress toDto(VMEntity entity);
+    VmAddress toDto(VmEntity entity);
 }

@@ -10,7 +10,7 @@ RUN ["python3","-m","pip","uninstall","-y","pip"]
 
 ENV GCP_SSH_KEY_PATH=/auth/orchestrator_id_rsa
 ENV GOOGLE_APPLICATION_CREDENTIALS=/auth/orchestrator-key.json
-ENV JUPYTER_PLAYBOOK_PATH=/provisioning/software/jupyter/prepare-and-run-jupyter.yml
+ENV ANSIBLE_HOME=/provisioning
 ENV ANSIBLE_PLAYBOOK_EXECUTABLE_PATH=/root/.local/bin/ansible-playbook
 ENV LOG_LEVEL=INFO
 

@@ -3,15 +3,13 @@ package com.swozo.orchestrator.api.scheduling.persistence.entity;
 import com.swozo.persistence.BaseEntity;
 import lombok.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Entity
+@Table(name = "ScheduleRequests")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

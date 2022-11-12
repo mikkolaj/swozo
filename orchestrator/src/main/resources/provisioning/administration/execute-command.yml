@@ -1,0 +1,7 @@
+---
+
+- name: Handle dynamic command
+  hosts: all
+  tasks:
+    - name: Execute command
+      command: '{{ command }}'

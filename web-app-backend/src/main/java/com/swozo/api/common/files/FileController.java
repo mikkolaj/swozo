@@ -1,6 +1,6 @@
 package com.swozo.api.common.files;
 
-import com.swozo.model.utils.StorageAccessRequest;
+import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
