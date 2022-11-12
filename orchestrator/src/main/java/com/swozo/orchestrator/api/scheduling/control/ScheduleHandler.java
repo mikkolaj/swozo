@@ -103,11 +103,13 @@ public class ScheduleHandler {
 
     private void scheduleCreationAndDeletion(ScheduleRequestEntity requestEntity) {
         scheduleRequestTracker.updateStatus(requestEntity, VM_CREATING);
-        timedVmProvider
-                .createInstance(requestUtils.toMdaVmSpecs(requestEntity), buildVmNamePrefix(requestEntity, requestEntity))
+        var resourceDetails = timedVmProvider
+                .createInstance(requestUtils.toMdaVmSpecs(requestEntity), buildVmNamePrefix(requestEntity, requestEntity));
+        resourceDetails
                 .whenComplete(handlePossibleVmCreationFailure(requestEntity))
                 .thenApply(updateVmResourceId(requestEntity))
-                .thenCompose(startFromProvisioning(requestEntity, requestEntity.getServiceDescriptions()))
+                .thenCompose(startFromProvisioning(requestEntity, requestEntity.getServiceDescriptions()));
+        resourceDetails
                 .thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS));
     }
 
@@ -232,7 +234,7 @@ public class ScheduleHandler {
 
     private Function<List<ActivityLinkInfo>, CompletableFuture<Void>> switchToReadyState(ScheduleRequestEntity request, ServiceDescriptionEntity description) {
         return links -> RetryHandler.withExponentialBackoff(
-                        () -> requestSender.putActivityLinks(description.getActivityModuleId(), request.getId(), links), 10
+                        () -> requestSender.putActivityLinks(description.getActivityModuleId(), request.getId(), links), 5
                 ).whenComplete(log(logger, "Successfully sent links to backend", "Unable to send links to backend."))
                 .thenRun(() -> scheduleRequestTracker.updateStatus(description, READY));
     }

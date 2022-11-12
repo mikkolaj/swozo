@@ -3,6 +3,7 @@ package com.swozo.utils;
 import java.util.Optional;
 
 public class RetryManager {
+    private static final int MAX_BACKOFF_MILLIS = 3 * 60 * 1000;
     private int failCounter;
     private long backoffPeriod;
     private Exception lastException;
@@ -23,11 +24,9 @@ public class RetryManager {
         return failCounter < attempts;
     }
 
-    public long registerAttempt() {
-        var curPeriod = backoffPeriod;
+    public void registerAttempt() {
         failCounter++;
-        backoffPeriod *= 2;
-        return curPeriod;
+        backoffPeriod = Math.min(backoffPeriod * 2, MAX_BACKOFF_MILLIS);
     }
 
     public Optional<Long> backoffMillis() {
