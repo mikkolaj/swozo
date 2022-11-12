@@ -146,6 +146,8 @@ public class ScheduleRequestTracker {
     }
 
     private record RequestTypeWithVmResourceId(ServiceTypeEntity serviceType, long vmResourceId) {
+    }
+
     private record FullServiceInfo(
             ScheduleRequestEntity requestEntity,
             ServiceDescriptionEntity description,

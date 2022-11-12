@@ -5,6 +5,7 @@ import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.IsolationMode;
 import com.swozo.model.users.OrchestratorUserDto;
+import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
@@ -47,6 +48,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
     private final BucketHandler bucketHandler;
+    private final BackendRequestSender requestSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
