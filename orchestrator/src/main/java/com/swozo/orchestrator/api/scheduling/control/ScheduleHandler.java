@@ -64,7 +64,7 @@ public class ScheduleHandler {
         return scheduleRequestTracker.startTracking(request);
     }
 
-    public void continueProvisioningFlowAfterFailure(ScheduleRequestEntity requestEntity) {
+    public void continueSchedulingFlowAfterFailure(ScheduleRequestEntity requestEntity) {
         requestEntity.getVmResourceId().ifPresentOrElse(
                 id -> continueProvisioningWithPresentVm(requestEntity, id),
                 () -> delegateScheduling(requestEntity)

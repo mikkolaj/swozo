@@ -51,7 +51,7 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
 
     private void continueProvisioningFlow(ScheduleRequestEntity requestEntity) {
         try {
-            scheduleHandler.continueProvisioningFlowAfterFailure(requestEntity);
+            scheduleHandler.continueSchedulingFlowAfterFailure(requestEntity);
         } catch (RuntimeException ex) {
             handleRuntimeException(ex);
         }
