@@ -20,11 +20,12 @@ public class BackendUriFactory {
     private static final String SEPARATOR = "/";
 
     @SneakyThrows
-    public URI createLinksUri(long scheduleRequestId) {
+    public URI createLinksUri(long activityModuleId, long scheduleRequestId) {
         var endpoint = backendUrl +
                 ACTIVITIES +
                 INTERNAL +
                 LINKS +
+                withSep(activityModuleId);
                 withSep(scheduleRequestId);
         return new URI(endpoint);
     }

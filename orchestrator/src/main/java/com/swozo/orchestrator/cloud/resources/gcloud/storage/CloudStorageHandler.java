@@ -53,7 +53,7 @@ public class CloudStorageHandler implements BucketHandler {
                             ansibleRunner.createUserVar("source_directory", workdirPath),
                             ansibleRunner.createUserVar("target_filename", WORKDIR_SNAPSHOT_FILENAME)
                     ),
-                    5
+                    getUploadTimeoutMinutes(5)
             );
 
             var uploadAccessDto = new UploadAccessDto(initRequest, accessRequest);
@@ -85,13 +85,18 @@ public class CloudStorageHandler implements BucketHandler {
                     AnsibleConnectionDetails.from(remoteHost),
                     Playbook.EXECUTE_COMMAND,
                     List.of(ansibleRunner.createUserVar("command", commandParameter)),
-                    getUploadTimeoutMinutes(PRETTY_BIG_SIZE)
+                    getDownloadTimeoutMinutes(PRETTY_BIG_SIZE)
             );
         });
     }
 
     public int getUploadTimeoutMinutes(int fileSizeBytes) {
         // TODO after we implement reading size
+        return 5;
+    }
+
+    public int getDownloadTimeoutMinutes(int fileSizeBytes) {
+        // TODO after orchestrator receives size of file to download
         return 5;
     }
 }

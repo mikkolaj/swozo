@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus.*;
-import static com.swozo.utils.LoggingUtils.logIfError;
+import static com.swozo.utils.LoggingUtils.log;
 
 @Component
 @RequiredArgsConstructor
@@ -231,12 +231,10 @@ public class ScheduleHandler {
     }
 
     private Function<List<ActivityLinkInfo>, CompletableFuture<Void>> switchToReadyState(ScheduleRequestEntity request, ServiceDescriptionEntity description) {
-        return links -> {
-            scheduleRequestTracker.updateStatus(description, READY);
-            return RetryHandler.withExponentialBackoff(
-                    () -> requestSender.putActivityLinks(request.getId(), links), 10
-            ).whenComplete(logIfError(logger, "Unable to send links to backend."));
-        };
+        return links -> RetryHandler.withExponentialBackoff(
+                        () -> requestSender.putActivityLinks(description.getActivityModuleId(), request.getId(), links), 10
+                ).whenComplete(log(logger, "Successfully sent links to backend", "Unable to send links to backend."))
+                .thenRun(() -> scheduleRequestTracker.updateStatus(description, READY));
     }
 
     public void scheduleConditionalDeletion(ScheduleRequestEntity requestEntity) {

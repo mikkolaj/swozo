@@ -26,8 +26,8 @@ public class BackendRequestSender {
     private final RequestSender requestSender;
     private final BackendUriFactory factory;
 
-    public CompletableFuture<Void> putActivityLinks(Long scheduleRequestId, List<ActivityLinkInfo> links) {
-        return unwrap(requestSender.sendPut(factory.createLinksUri(scheduleRequestId), links, new TypeReference<>() {
+    public CompletableFuture<Void> putActivityLinks(long activityModuleId, long scheduleRequestId, List<ActivityLinkInfo> links) {
+        return unwrap(requestSender.sendPut(factory.createLinksUri(activityModuleId, scheduleRequestId), links, new TypeReference<>() {
         }));
     }
 
