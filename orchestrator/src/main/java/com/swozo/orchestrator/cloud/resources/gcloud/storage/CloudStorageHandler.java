@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 public class CloudStorageHandler implements BucketHandler {
     // TODO: read the filesize
     private static final int PRETTY_BIG_SIZE = 100000000;
-
     private static final String WORKDIR_SNAPSHOT_FILENAME = "workdirSnapshot.zip";
     private final BackendRequestSender requestSender;
     private final AnsibleRunner ansibleRunner;

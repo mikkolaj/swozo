@@ -42,8 +42,8 @@ public class WorkspaceExporter {
             return bucketHandler.uploadUsersWorkdirToBucket(
                     resourceDetails,
                     workdirPath,
-                    requestEntity.getId(),
                     serviceDescription.getActivityModuleId(),
+                    requestEntity.getId(),
                     owner.id()
             );
         }).whenComplete((msg, ex) -> {
