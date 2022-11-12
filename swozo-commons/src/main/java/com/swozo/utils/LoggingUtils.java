@@ -32,10 +32,10 @@ public class LoggingUtils {
         };
     }
 
-    public static <T> BiConsumer<T, Throwable> log(Logger logger, String successTemplate, String failureTemplate) {
+    public static <T> BiConsumer<T, Throwable> log(Logger logger, String successLog, String failureTemplate) {
         return (msg, error) -> {
             if (msg != null) {
-                logger.info(successTemplate, msg);
+                logger.info(successLog);
             } else if (error != null) {
                 logger.error(failureTemplate, error);
             }

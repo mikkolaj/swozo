@@ -84,7 +84,7 @@ public class CloudStorageHandler implements BucketHandler {
             ansibleRunner.runPlaybook(
                     AnsibleConnectionDetails.from(remoteHost),
                     Playbook.EXECUTE_COMMAND,
-                    List.of(commandParameter),
+                    List.of(ansibleRunner.createUserVar("command", commandParameter)),
                     5
             );
         });

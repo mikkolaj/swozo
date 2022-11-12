@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
-import com.google.common.base.Functions;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
@@ -16,6 +15,7 @@ import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.Playbook;
 import com.swozo.orchestrator.cloud.software.runner.PlaybookFailed;
 import com.swozo.orchestrator.cloud.storage.BucketHandler;
+import com.swozo.utils.LoggingUtils;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +26,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+
+import static com.google.common.base.Functions.constant;
+import static com.swozo.utils.LoggingUtils.logIfSuccess;
 
 @Service
 @RequiredArgsConstructor
@@ -56,10 +59,14 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return CompletableFuture.runAsync(() -> {
                     logger.info("Started provisioning Jupyter on: {}", resource);
                     runPlaybook(resource);
-                    handleParameters(parameters, resource);
-                    logger.info("Successfully provisioned Jupyter on resource: {}", resource);
-                }).whenComplete(this::wrapExceptions)
-                .thenCompose(Functions.constant(createLinks(resource)));
+                }).thenCompose(constant(handleParameters(parameters, resource)))
+                .whenComplete(logIfSuccess(logger, provisioningComplete(resource)))
+                .whenComplete(this::wrapExceptions)
+                .thenCompose(constant(createLinks(resource)));
+    }
+
+    private static String provisioningComplete(VmResourceDetails resource) {
+        return String.format("Successfully provisioned Jupyter on resource: %s", resource);
     }
 
     private void wrapExceptions(Void unused, Throwable throwable) {
@@ -109,10 +116,14 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         );
     }
 
-    private void handleParameters(Map<String, String> dynamicParameters, VmResourceDetails resource) {
+    private CompletableFuture<Void> handleParameters(Map<String, String> dynamicParameters, VmResourceDetails resource) {
         logger.info("Start handling parameters for {}", resource);
         var jupyterParameters = JupyterParameters.from(dynamicParameters);
-        bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), "/home/swozo/jupyter/lab_file.ipynb");
-        logger.info("Done downloading file for {}", resource);
+        return bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), "/home/swozo/jupyter/lab_file.ipynb")
+                .whenComplete(LoggingUtils.log(
+                        logger,
+                        String.format("Done downloading file for %s", resource),
+                        String.format("Failed to download file for %s", resource)
+                ));
     }
 }
