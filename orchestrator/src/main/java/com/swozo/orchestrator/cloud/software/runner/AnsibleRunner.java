@@ -46,7 +46,7 @@ public class AnsibleRunner {
             AnsibleConnectionDetails connectionDetails,
             Playbook playbook,
             int timeoutMinutes
-    ) throws PropagatingException, NotebookFailed {
+    ) throws PropagatingException, PlaybookFailed {
         runPlaybook(connectionDetails, playbook, Collections.emptyList(), timeoutMinutes);
     }
 
@@ -55,14 +55,14 @@ public class AnsibleRunner {
             Playbook playbook,
             List<String> userVars,
             int timeoutMinutes
-    ) throws PropagatingException, NotebookFailed {
+    ) throws PropagatingException, PlaybookFailed {
         try {
             var playbookPath = pathProvider.getPlaybookPath(playbook);
             handleSshStartup(connectionDetails);
             tryExecutingPlaybook(() -> createAnsibleProcess(connectionDetails, playbookPath, userVars), timeoutMinutes);
             logger.info("Playbook successful.");
         } catch (ProcessFailed | ConnectionFailed e) {
-            throw new NotebookFailed(e);
+            throw new PlaybookFailed(e);
         }
     }
 
@@ -95,7 +95,7 @@ public class AnsibleRunner {
         logger.info("Connection successful: {}", target);
     }
 
-    private void waitForResult(Process process, int timeoutMinutes) throws InterruptedException, NotebookFailed {
+    private void waitForResult(Process process, int timeoutMinutes) throws InterruptedException, PlaybookFailed {
         try (var outputScanner = new Scanner(process.getInputStream()).useDelimiter(INPUT_BOUNDARY);
              var errorScanner = new Scanner(process.getErrorStream()).useDelimiter(INPUT_BOUNDARY)
         ) {
@@ -106,7 +106,7 @@ public class AnsibleRunner {
             if (process.exitValue() != ProcessRunner.SUCCESS_CODE) {
                 logger.info(output);
                 logger.error(errors);
-                throw new NotebookFailed(errors);
+                throw new PlaybookFailed(errors);
             }
         }
     }

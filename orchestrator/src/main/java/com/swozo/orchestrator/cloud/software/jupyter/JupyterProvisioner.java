@@ -1,5 +1,6 @@
 package com.swozo.orchestrator.cloud.software.jupyter;
 
+import com.google.common.base.Functions;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
@@ -12,13 +13,12 @@ import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
-import com.swozo.orchestrator.cloud.software.runner.NotebookFailed;
 import com.swozo.orchestrator.cloud.software.runner.Playbook;
+import com.swozo.orchestrator.cloud.software.runner.PlaybookFailed;
 import com.swozo.orchestrator.cloud.storage.BucketHandler;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,22 +51,23 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         );
     }
 
-    @Async
     @Override
-    // TODO: getting notebook from specified location
-    public CompletableFuture<List<ActivityLinkInfo>> provision(VmResourceDetails resource, Map<String, String> parameters) throws ProvisioningFailed {
-        try {
-            logger.info("Started provisioning Jupyter on: {}", resource);
-            runPlaybook(resource);
-            handleParameters(parameters, resource);
-            logger.info("Successfully provisioned Jupyter on resource: {}", resource);
-            return createLinks(resource);
-        } catch (InvalidParametersException | NotebookFailed e) {
-            throw new ProvisioningFailed(e);
+    public CompletableFuture<List<ActivityLinkInfo>> provision(VmResourceDetails resource, Map<String, String> parameters) {
+        return CompletableFuture.runAsync(() -> {
+                    logger.info("Started provisioning Jupyter on: {}", resource);
+                    runPlaybook(resource);
+                    handleParameters(parameters, resource);
+                    logger.info("Successfully provisioned Jupyter on resource: {}", resource);
+                }).whenComplete(this::wrapExceptions)
+                .thenCompose(Functions.constant(createLinks(resource)));
+    }
+
+    private void wrapExceptions(Void unused, Throwable throwable) {
+        if (throwable instanceof InvalidParametersException || throwable instanceof PlaybookFailed) {
+            throw new ProvisioningFailed(throwable);
         }
     }
 
-    @Async
     @Override
     public CompletableFuture<List<ActivityLinkInfo>> createLinks(VmResourceDetails vmResourceDetails) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);

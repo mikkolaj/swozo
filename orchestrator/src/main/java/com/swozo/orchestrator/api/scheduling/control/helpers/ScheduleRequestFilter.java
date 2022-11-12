@@ -22,11 +22,9 @@ public class ScheduleRequestFilter {
                 .isAfter(getTargetAvailability(scheduleData.description().getServiceType()));
     }
 
-
     private LocalDateTime getTargetAvailability(ServiceTypeEntity serviceType) {
         var provisioningSeconds = provisionerFactory.getProvisioner(serviceType).getProvisioningSeconds();
         return LocalDateTime.now().plusSeconds(provisioningSeconds);
     }
-
 
 }

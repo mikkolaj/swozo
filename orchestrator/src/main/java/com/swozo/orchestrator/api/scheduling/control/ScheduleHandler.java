@@ -1,23 +1,26 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
+import com.google.common.base.Functions;
 import com.google.common.collect.Sets;
-import com.swozo.exceptions.PropagatingException;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestFilter;
 import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestValidator;
 import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestWithServiceDescription;
-import com.swozo.orchestrator.api.scheduling.persistence.RequestHandler;
+import com.swozo.orchestrator.api.scheduling.persistence.TransactionalRequestUtils;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVmProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VmOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
-import com.swozo.orchestrator.cloud.software.*;
+import com.swozo.orchestrator.cloud.software.InvalidParametersException;
+import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
+import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
+import com.swozo.orchestrator.cloud.software.WorkspaceExporter;
 import com.swozo.orchestrator.scheduler.InternalTaskScheduler;
-import com.swozo.utils.CheckedExceptionConverter;
+import com.swozo.utils.LoggingUtils;
 import com.swozo.utils.VoidMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,9 +30,7 @@ import org.springframework.stereotype.Component;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -48,7 +49,7 @@ public class ScheduleHandler {
     private final TimedVmProvider timedVmProvider;
     private final TimedSoftwareProvisionerFactory provisionerFactory;
     private final ScheduleRequestTracker scheduleRequestTracker;
-    private final RequestHandler requestHandler;
+    private final TransactionalRequestUtils requestUtils;
     private final ScheduleRequestValidator validator;
     private final ScheduleRequestFilter requestFilter;
     private final TimingService timingService;
@@ -97,7 +98,7 @@ public class ScheduleHandler {
     private void scheduleCreationAndDeletion(ScheduleRequestEntity requestEntity) {
         scheduleRequestTracker.updateStatus(requestEntity, VM_CREATING);
         timedVmProvider
-                .createInstance(requestHandler.toMdaVmSpecs(requestEntity), buildVmNamePrefix(requestEntity, requestEntity))
+                .createInstance(requestUtils.toMdaVmSpecs(requestEntity), buildVmNamePrefix(requestEntity, requestEntity))
                 .whenComplete(handleFailedVmCreation(requestEntity))
                 .thenCompose(updateVmResourceId(requestEntity))
                 .thenCompose(startFromProvisioning(requestEntity, requestEntity.getServiceDescriptions()))
@@ -147,7 +148,10 @@ public class ScheduleHandler {
                 .filter(ServiceDescriptionEntity::canBeProvisioned)
                 .map(description -> {
                     var provisioner = getProvisioner(description.getServiceType());
-                    return new DescriptionWithFutureLinks(description, delegateProvisioning(description, provisioner, resourceDetails));
+                    return new DescriptionWithFutureLinks(
+                            description,
+                            provisioner.provision(resourceDetails, description.getDynamicProperties())
+                    );
                 });
     }
 
@@ -156,30 +160,27 @@ public class ScheduleHandler {
             var serviceDescription = descriptionWithFutureLinks.description;
 
             var futureStatus = descriptionWithFutureLinks.links
-                    .whenComplete(handlePossibleProvisioningFailure(request, resourceDetails, serviceDescription))
-                    .thenAccept(links -> switchToReadyState(request, serviceDescription, links))
-                    .thenCompose(x -> CompletableFuture.completedFuture(true))
-                    .exceptionally(x -> false);
+                    .thenCompose(switchToReadyState(request, serviceDescription))
+                    .thenCompose(Functions.constant(CompletableFuture.completedFuture(true)))
+                    .exceptionally(handlePossibleProvisioningFailure(request, resourceDetails, serviceDescription));
 
             return new DescriptionWithStatus(serviceDescription, waitForStatus(futureStatus));
         };
     }
 
-    private BiConsumer<List<ActivityLinkInfo>, Throwable> handlePossibleProvisioningFailure(ScheduleRequestEntity request, VmResourceDetails resourceDetails, ServiceDescriptionEntity serviceDescription) {
-        return (msg, ex) -> {
-            if (ex != null) {
-                logger.error("Provisioning request [id: {}] on: {} failed.", request.getId(), resourceDetails, ex);
-                scheduleRequestTracker.markAsFailure(serviceDescription);
-            }
+    private Function<Throwable, Boolean> handlePossibleProvisioningFailure(ScheduleRequestEntity request, VmResourceDetails resourceDetails, ServiceDescriptionEntity serviceDescription) {
+        return ex -> {
+            logger.error("Provisioning request [id: {}] on: {} failed.", request.getId(), resourceDetails, ex);
+            scheduleRequestTracker.markAsFailure(serviceDescription);
+            return false;
         };
     }
 
-    private static boolean waitForStatus(CompletableFuture<Boolean> futureStatus) {
+    private boolean waitForStatus(CompletableFuture<Boolean> futureStatus) {
         try {
-            return CheckedExceptionConverter.from(() -> futureStatus.get()).get();
-        } catch (PropagatingException ex) {
-            throw ex;
-        } catch (RuntimeException ex) {
+            return futureStatus.join();
+        } catch (CompletionException | CancellationException ex) {
+            logger.error("Failed to wait for links", ex);
             return false;
         }
     }
@@ -220,24 +221,12 @@ public class ScheduleHandler {
         return Sets.difference(all, invalid).stream().toList();
     }
 
-
-    private CompletableFuture<List<ActivityLinkInfo>> delegateProvisioning(ServiceDescriptionEntity serviceDescription, TimedSoftwareProvisioner provisioner, VmResourceDetails resourceDetails) {
-        return CheckedExceptionConverter.from(
-                () -> provisioner.provision(resourceDetails, serviceDescription.getDynamicProperties()),
-                ProvisioningFailed::new
-        ).get();
-    }
-
-    private void switchToReadyState(ScheduleRequestEntity request, ServiceDescriptionEntity description, List<ActivityLinkInfo> links) {
-        scheduleRequestTracker.updateStatus(description, READY);
-        try {
-            CheckedExceptionConverter.from(
-                    () -> requestSender.putActivityLinks(request.getId(), links).get(),
-                    FailedToSaveLinksException::new
-            ).get();
-        } catch (FailedToSaveLinksException ex) {
-            logger.error("Unable to send links to backend.", ex);
-        }
+    private Function<List<ActivityLinkInfo>, CompletableFuture<Void>> switchToReadyState(ScheduleRequestEntity request, ServiceDescriptionEntity description) {
+        return links -> {
+            scheduleRequestTracker.updateStatus(description, READY);
+            return requestSender.putActivityLinks(request.getId(), links)
+                    .exceptionally(LoggingUtils.logAndDefault(logger, "Unable to send links to backend.", null));
+        };
     }
 
     public void scheduleConditionalDeletion(ScheduleRequestEntity requestEntity) {
@@ -341,12 +330,5 @@ public class ScheduleHandler {
             ServiceDescriptionEntity description,
             boolean succeeded
     ) {
-    }
-
-    private static class FailedToSaveLinksException extends RuntimeException {
-        public FailedToSaveLinksException(Throwable exception) {
-            super(exception);
-        }
-
     }
 }

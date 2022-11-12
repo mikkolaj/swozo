@@ -1,7 +1,7 @@
 package com.swozo.orchestrator.cloud.resources.vm;
 
+import com.google.common.base.Functions;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmRepository;
-import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -11,9 +11,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
-import static com.swozo.utils.LoggingUtils.logIfError;
+import static com.swozo.utils.LoggingUtils.logAndDefault;
 
 @Component
 @Profile("!test")
@@ -33,11 +35,19 @@ public class BrokenVmCleaner implements ApplicationListener<ApplicationReadyEven
     private long deleteVmsWithBrokenMetadata() {
         return vmRepository.findAllCreatedWithBrokenMetadata().stream()
                 .map(vmEntity -> vmProvider.deleteInstance(vmEntity.getId())
-                        .thenCompose(x -> CompletableFuture.completedFuture(true))
-                        .whenComplete(logIfError(logger, String.format("Error while deleting %s", vmEntity)))
-                        .exceptionally(ex -> false)
-                ).map(CheckedExceptionConverter.from((CompletableFuture<Boolean> result) -> result.get()))
+                        .thenCompose(Functions.constant(CompletableFuture.completedFuture(true)))
+                        .exceptionally(logAndDefault(logger, String.format("Error while deleting %s", vmEntity), false))
+                ).map(this::waitForResult)
                 .filter(Boolean::booleanValue)
                 .count();
+    }
+
+    private boolean waitForResult(CompletableFuture<Boolean> futureResult) {
+        try {
+            return futureResult.join();
+        } catch (CompletionException | CancellationException ex) {
+            logger.error("Failed to wait for deletion result", ex);
+            return false;
+        }
     }
 }

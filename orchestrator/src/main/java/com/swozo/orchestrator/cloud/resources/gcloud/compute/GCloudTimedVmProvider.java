@@ -9,7 +9,7 @@ import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmStatus;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmRepository;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmEntity;
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmHandler;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.TransactionalVmUtils;
 import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVmProvider;
 import com.swozo.orchestrator.cloud.resources.vm.VmOperationFailed;
@@ -40,7 +40,7 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
     private final GCloudProperties gCloudProperties;
     private final GCloudVmLifecycleManager manager;
     private final VmRepository vmRepository;
-    private final VmHandler vmHandler;
+    private final TransactionalVmUtils vmUtils;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Async
@@ -58,7 +58,7 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
 
         return RetryHandler.withImmediateRetries(
                 () -> tryCreatingVmWithName(mdaVmSpecs, appendSuffix(namePrefix, supplier)),
-                1
+                3
         );
     }
 
@@ -87,7 +87,7 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
     }
 
     private CompletableFuture<VmEntityWithAddress> getVmData(VmAddress vmAddress) {
-        var vmEntity = vmHandler.save(vmAddress);
+        var vmEntity = vmUtils.save(vmAddress);
         var publicIPAddress = manager.getInstanceExternalIP(vmAddress);
         return CompletableFuture.completedFuture(new VmEntityWithAddress(vmEntity, publicIPAddress));
     }
@@ -100,7 +100,7 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
     @Override
     public CompletableFuture<VmResourceDetails> getVMResourceDetails(Long internalId) {
         return CompletableFuture.completedFuture(vmRepository.findById(internalId)
-                .map(vmHandler::toDto)
+                .map(vmUtils::toDto)
                 .map(manager::getInstanceExternalIP)
                 .map(address ->
                         new VmResourceDetails(internalId, address, gCloudProperties.sshUser(), DEFAULT_SSH_PORT, gCloudProperties.sshKeyPath()))
@@ -114,8 +114,8 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
                         .findById(internalId)
                         .orElseThrow(() -> new VmOperationFailed(String.format("No instance with id: %s", internalId)))
                 )
-                .thenCompose(vmEntity -> manager.deleteInstance(vmHandler.toDto(vmEntity))
-                        .thenRun(() -> vmHandler.updateStatus(vmEntity, VmStatus.DELETED))
+                .thenCompose(vmEntity -> manager.deleteInstance(vmUtils.toDto(vmEntity))
+                        .thenRun(() -> vmUtils.updateStatus(vmEntity, VmStatus.DELETED))
                         .thenRun(() -> logger.info("Successfully deleted vm: {}", vmEntity))
                 );
     }

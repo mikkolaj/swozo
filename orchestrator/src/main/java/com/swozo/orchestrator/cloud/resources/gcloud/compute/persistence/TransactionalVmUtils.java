@@ -10,7 +10,7 @@ import javax.transaction.Transactional;
 @Component
 @Transactional
 @RequiredArgsConstructor
-public class VmHandler {
+public class TransactionalVmUtils {
     private final VmRepository vmRepository;
     private final VmMapper vmMapper;
 

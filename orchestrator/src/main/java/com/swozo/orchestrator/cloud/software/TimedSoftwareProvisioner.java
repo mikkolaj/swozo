@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 public interface TimedSoftwareProvisioner {
     int MAX_PROVISIONING_SECONDS = 60 * 60 * 3;
 
-    CompletableFuture<List<ActivityLinkInfo>> provision(VmResourceDetails resourceDetails, Map<String, String> dynamicParameters) throws InterruptedException, ProvisioningFailed;
+    CompletableFuture<List<ActivityLinkInfo>> provision(VmResourceDetails resourceDetails, Map<String, String> dynamicParameters);
 
     CompletableFuture<List<ActivityLinkInfo>> createLinks(VmResourceDetails resourceDetails);
 

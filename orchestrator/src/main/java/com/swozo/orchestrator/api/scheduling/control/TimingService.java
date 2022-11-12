@@ -22,10 +22,6 @@ public class TimingService {
         return offsetTime(request.getEndTime()) + exportSeconds;
     }
 
-    public long getExtendedDeletionOffset(ScheduleRequestEntity request) {
-        return offsetTime(request.getEndTime()) + 2 * 60 * 60;
-    }
-
     private long offsetTime(LocalDateTime targetTime) {
         return nonNegative(targetTime.toEpochSecond(ZoneOffset.UTC)
                 - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));

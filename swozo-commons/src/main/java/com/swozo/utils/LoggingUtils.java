@@ -3,6 +3,7 @@ package com.swozo.utils;
 import org.slf4j.Logger;
 
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class LoggingUtils {
     private LoggingUtils() {
@@ -21,6 +22,13 @@ public class LoggingUtils {
             if (error != null) {
                 logger.error(template, error);
             }
+        };
+    }
+
+    public static <T> Function<Throwable, T> logAndDefault(Logger logger, String template, T fallback) {
+        return error -> {
+            logger.error(template, error);
+            return fallback;
         };
     }
 

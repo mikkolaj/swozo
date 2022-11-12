@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 @Component
 @Transactional
 @RequiredArgsConstructor
-public class RequestHandler {
+public class TransactionalRequestUtils {
     private final ScheduleRequestMapper requestMapper;
 
     public MdaVmSpecs toMdaVmSpecs(ScheduleRequestEntity requestEntity) {
