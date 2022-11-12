@@ -1,8 +1,5 @@
 package com.swozo.orchestrator;
 
-import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
-import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
-import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
 import com.swozo.orchestrator.api.scheduling.persistence.repository.ScheduleRequestRepository;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.GCloudVmLifecycleManager;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
@@ -20,8 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -88,25 +83,6 @@ public class Playground implements Runnable {
         //        deleteInstance();
         //        runNotebookLocally();
         //        runNotebookRemotely();
-
-        var requestEntity = new ScheduleRequestEntity();
-
-        var sd1 = new ServiceDescriptionEntity();
-        var sd2 = new ServiceDescriptionEntity();
-        sd1.setStatus(ServiceStatus.EXPORT_COMPLETE);
-        sd2.setStatus(ServiceStatus.EXPORT_COMPLETE);
-        sd1.setDynamicProperties(Collections.emptyMap());
-        sd2.setDynamicProperties(Collections.emptyMap());
-
-        requestEntity.setDiskSizeGb(1);
-        requestEntity.setVmResourceId(1L);
-        requestEntity.setEndTime(LocalDateTime.now());
-        requestEntity.setStartTime(LocalDateTime.now());
-        requestEntity.setServiceDescriptions(List.of(sd1, sd2));
-
-        requestRepository.save(requestEntity);
-        logger.info("{}", requestRepository.findScheduleRequestsWithAllServiceDescriptionsInStatus(List.of(ServiceStatus.EXPORT_COMPLETE.toString())));
-
 
         internalTaskScheduler.schedule(() -> {
             System.out.println(properties);
