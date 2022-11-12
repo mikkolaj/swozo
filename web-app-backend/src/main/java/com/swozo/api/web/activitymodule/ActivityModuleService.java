@@ -1,8 +1,8 @@
 package com.swozo.api.web.activitymodule;
 
 import com.swozo.api.common.files.FileService;
-import com.swozo.api.common.files.dto.UploadAccessDto;
-import com.swozo.api.common.files.request.InitFileUploadRequest;
+import com.swozo.model.files.UploadAccessDto;
+import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.api.web.user.UserService;
@@ -10,7 +10,7 @@ import com.swozo.mapper.UserMapper;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.users.ActivityRole;
 import com.swozo.model.users.OrchestratorUserDto;
-import com.swozo.model.utils.StorageAccessRequest;
+import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
 import com.swozo.security.exceptions.UnauthorizedException;

@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence;
 
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMStatus;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmStatus;
 import com.swozo.persistence.BaseEntity;
 import lombok.*;
 
@@ -16,11 +16,11 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @ToString
-public class VMEntity extends BaseEntity {
+public class VmEntity extends BaseEntity {
     private String project;
     private String zone;
     private String networkName;
     private String vmName;
     @Enumerated(EnumType.ORDINAL)
-    private VMStatus status = VMStatus.CREATED;
+    private VmStatus status = VmStatus.CREATED;
 }

@@ -9,7 +9,7 @@ import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.IsolationMode;
 import com.swozo.model.scheduling.properties.ServiceType;
-import com.swozo.orchestrator.api.BackendRequestSender;
+import com.swozo.orchestrator.api.backend.BackendRequestSender;
 import com.swozo.orchestrator.api.scheduling.control.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import static com.swozo.config.Config.*;
@@ -61,8 +62,7 @@ public class ScheduleController {
                                 .withTranslatedLabel(translationsProvider.t("services.docker.dynamicParams.resultFilePath.label"))
                                 .ofText().build()
                 ),
-                List.of(IsolationMode.ISOLATED, IsolationMode.SHARED)
-            )
+                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED))
         );
         return s;
     }
