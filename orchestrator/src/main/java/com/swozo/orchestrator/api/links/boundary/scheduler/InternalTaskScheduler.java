@@ -1,4 +1,4 @@
-package com.swozo.orchestrator.scheduler;
+package com.swozo.orchestrator.api.links.boundary.scheduler;
 
 import com.swozo.orchestrator.configuration.ApplicationProperties;
 import org.slf4j.Logger;
