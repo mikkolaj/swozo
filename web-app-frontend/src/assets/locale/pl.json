@@ -347,7 +347,7 @@
                 "accessibility": {
                     "public": {
                         "label": "Moduł jest ustawiony jako publiczny.",
-                        "info": "Wszyscy będą mogli z niego skorzystać zaraz po utworzeniu"
+                        "info": "Wszyscy nauczyciele będą mogli z niego skorzystać zaraz po utworzeniu."
                     },
                     "private": {
                         "label": "Moduł jest ustawiony jako prywatny.",
@@ -357,11 +357,11 @@
                 "isolation": {
                     "ISOLATED": {
                         "label": "Wybrano środowisko izolowane.",
-                        "info": "Tylko 1 użytkownik otrzyma dostęp do pojedynczej maszyny wirtualnej z uruchomionym modułem"
+                        "info": "Tylko 1 użytkownik otrzyma dostęp do pojedynczej maszyny wirtualnej z uruchomionym modułem."
                     },
                     "SHARED": {
                         "label": "Wybrano środowisko współdzielone.",
-                        "info": "Wielu użytkowników otrzyma dostęp do tej samej maszyny wirtualnej z uruchomionym modułem"
+                        "info": "Wielu użytkowników otrzyma dostęp do tej samej maszyny wirtualnej z uruchomionym modułem."
                     }
                 },
                 "disclaimer": {
@@ -432,7 +432,27 @@
                 "empty": "Nie przesłałeś jeszcze żadnego pliku"
             },
             "users": {
-                "label": "Moje pliki"
+                "label": "Moje pliki",
+                "download": "Pobierz",
+                "module": "{{name}} ({{serviceName}})",
+                "my": {
+                    "headers": {
+                        "name": "Nazwa pliku",
+                        "size": "Rozmiar pliku",
+                        "serviceModule": "Moduł"
+                    },
+                    "teacherLabel": "Wyniki przypisane do konta nauczyciela",
+                    "emptyStudent": "Brak wyników z zajęć. Poczekaj parę minut po planowanym końcu zajęć. Skontaktuj się z nauczycielem jeśli uważasz, że pliki powinny się tu znaleźć.",
+                    "emptyTeacher": "Brak wyników z zajęć. Poczekaj parę minut po planowanym końcu zajęć. Skontaktuj się z administratorem jeśli uważasz, że pliki powinny się tu znaleźć."
+                },
+                "allStudents": {
+                    "headers": {
+                        "studentName": "Imię i nazwisku studenta",
+                        "studentEmail": "Adres Email studenta",
+                        "fileSize": "Rozmiar pliku"
+                    },
+                    "empty": "Brak wyników z zajęć dla tej aktywności. Upewnij się, że powinny one się tu znaleźć, poczekaj kilka minut po planowanym zakończeniu zajęć i skontaktuj się z administratorem."
+                }
             }
         },
         "error": {

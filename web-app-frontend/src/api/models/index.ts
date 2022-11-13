@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './ActivityDetailsDto';
+export * from './ActivityFilesDto';
 export * from './ActivityModuleDetailsDto';
 export * from './ActivitySummaryDto';
 export * from './AuthDetailsDto';
@@ -42,6 +43,7 @@ export * from './ServiceModuleSummaryDto';
 export * from './ServiceModuleUsageDto';
 export * from './SharedServiceModuleMdaDto';
 export * from './StorageAccessRequest';
+export * from './TeacherActivityFilesDto';
 export * from './UploadAccessDto';
 export * from './UserAdminDetailsDto';
 export * from './UserAdminSummaryDto';

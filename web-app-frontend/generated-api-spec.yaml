@@ -289,7 +289,7 @@ paths:
       responses:
         "200":
           description: OK
-  /activities/{activityId}/files:
+  /activities/{activityId}/files/public:
     put:
       tags:
       - activity-controller
@@ -1089,7 +1089,76 @@ paths:
                   $ref: '#/components/schemas/ActivitySummaryDto'
       security:
       - JWT_AUTH: []
-  /activities/{activityId}/files/{fileId}:
+  /activities/{activityId}/files/results/teacher:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFilesForAllStudents
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeacherActivityFilesDto'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/results/student:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFilesForUser
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ActivityFilesDto'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/results/download/{fileId}:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFileDownloadRequest
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StorageAccessRequest'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/public/download/{fileId}:
     get:
       tags:
       - activity-controller
@@ -2064,12 +2133,13 @@ components:
           items:
             $ref: '#/components/schemas/ParameterDescription'
         isolationModes:
+          uniqueItems: true
           type: array
           items:
             type: string
             enum:
-            - ISOLATED
             - SHARED
+            - ISOLATED
     ActivitySummaryDto:
       required:
       - courseId
@@ -2099,6 +2169,31 @@ components:
         endTime:
           type: string
           format: date-time
+    ActivityFilesDto:
+      required:
+      - activityModuleIdToUserFiles
+      type: object
+      properties:
+        activityModuleIdToUserFiles:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FileDto'
+    TeacherActivityFilesDto:
+      required:
+      - userIdToUserDetails
+      - userIdToUserFiles
+      type: object
+      properties:
+        userIdToUserFiles:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ActivityFilesDto'
+        userIdToUserDetails:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UserDetailsDto'
   securitySchemes:
     JWT_AUTH:
       type: http

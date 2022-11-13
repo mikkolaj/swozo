@@ -40,10 +40,10 @@ export interface ServiceConfig {
     parameterDescriptions: Array<ParameterDescription>;
     /**
      * 
-     * @type {Array<string>}
+     * @type {Set<string>}
      * @memberof ServiceConfig
      */
-    isolationModes: Array<ServiceConfigIsolationModesEnum>;
+    isolationModes: Set<ServiceConfigIsolationModesEnum>;
 }
 
 /**
@@ -51,8 +51,8 @@ export interface ServiceConfig {
 * @enum {string}
 */
 export enum ServiceConfigIsolationModesEnum {
-    Isolated = 'ISOLATED',
-    Shared = 'SHARED'
+    Shared = 'SHARED',
+    Isolated = 'ISOLATED'
 }
 
 export function ServiceConfigFromJSON(json: any): ServiceConfig {

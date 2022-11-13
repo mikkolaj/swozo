@@ -21,7 +21,7 @@ export const ModuleSpecsForm = ({ nameBuilder, values, serviceConfig, editMode }
                 name={nameBuilder('isolationMode')}
                 i18nLabel="createModule.slides.1.form.isolation.label"
             >
-                {serviceConfig?.isolationModes
+                {[...(serviceConfig?.isolationModes ?? [])]
                     .filter((isolation) => !editMode || isolation === values.isolationMode)
                     .map((isolationMode) => (
                         <MenuItem key={isolationMode} value={isolationMode}>
