@@ -69,6 +69,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return CompletableFuture.runAsync(() -> {
                     logger.info("Started provisioning Jupyter on: {}", resource);
                     runPlaybook(resource);
+                    description.abortIfNecessary();
                 }).thenCompose(x -> handleParameters(description.getDynamicProperties(), resource))
                 .whenComplete(logIfSuccess(logger, provisioningComplete(resource)))
                 .whenComplete(this::wrapExceptions)

@@ -10,9 +10,9 @@ import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestWith
 import com.swozo.orchestrator.api.scheduling.persistence.TransactionalRequestUtils;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.TimedVmProvider;
-import com.swozo.orchestrator.cloud.resources.vm.VmOperationFailed;
 import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
@@ -64,6 +64,11 @@ public class ScheduleHandler {
         return scheduleRequestTracker.startTracking(request);
     }
 
+    public void cancel(long scheduleRequestId) {
+        scheduler.cancelAllTasks(scheduleRequestId);
+        scheduleRequestTracker.stopTracking(scheduleRequestId);
+    }
+
     public void continueSchedulingFlowAfterFailure(ScheduleRequestEntity requestEntity) {
         requestEntity.getVmResourceId().ifPresentOrElse(
                 id -> continueProvisioningWithPresentVm(requestEntity, id),
@@ -71,37 +76,35 @@ public class ScheduleHandler {
         );
     }
 
-    private void continueProvisioningWithPresentVm(ScheduleRequestEntity requestEntity, Long id) {
-        var groupedByStatus = requestEntity.getServiceDescriptions()
-                .stream()
-                .collect(Collectors.groupingBy(ServiceDescriptionEntity::getStatus));
+    private CompletableFuture<Void> continueProvisioningWithPresentVm(ScheduleRequestEntity requestEntity, Long id) {
+        var inProvisioning = requestEntity.getServicesWithStatusesIn(ServiceStatus.provisioning());
+        var toBeCheckedForExport = requestEntity.getServicesWithStatusesIn(ServiceStatus.toBeCheckedForExport());
 
-        var resourceDetails = timedVmProvider.getVMResourceDetails(id);
-
-        groupedByStatus.forEach((status, services) -> {
-            switch (status) {
-                case PROVISIONING, PROVISIONING_FAILED -> {
-                    var validServices = cancelInvalidServicesAndGetValid(requestEntity, new HashSet<>(services));
-                    resourceDetails.thenCompose(startFromProvisioning(requestEntity, validServices));
-                }
-                case READY, WAITING_FOR_EXPORT, EXPORTING, EXPORT_FAILED ->
-                        resourceDetails.thenCompose(startFromExport(requestEntity, services));
-                default -> {
-                }
-            }
-        });
-
-        resourceDetails.thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS));
+        return timedVmProvider.getVMResourceDetails(id)
+                .thenApply(resourceDetails -> {
+                    var validServices = cancelInvalidServicesAndGetValid(requestEntity, new HashSet<>(inProvisioning));
+                    CompletableFuture.runAsync(() ->
+                            startFromProvisioning(requestEntity, validServices).apply(resourceDetails));
+                    CompletableFuture.runAsync(() ->
+                            startFromExport(requestEntity, toBeCheckedForExport).apply(resourceDetails));
+                    return resourceDetails;
+                })
+                .thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS))
+                ;
     }
 
     public void delegateScheduling(ScheduleRequestEntity requestEntity) {
         var longestProvisioningTime = getLongestProvisioningTime(requestEntity);
         var offset = timingService.getSchedulingOffset(requestEntity, longestProvisioningTime);
         logger.info("Creating VM for request [id: {}] in {} seconds.", requestEntity.getId(), offset);
-        scheduler.schedule(VoidMapper.toCallableVoid(() -> scheduleCreationAndDeletion(requestEntity)), offset);
+        scheduler.scheduleCancellableTask(
+                requestEntity.getId(),
+                () -> scheduleCreationAndDeletion(requestEntity),
+                offset
+        );
     }
 
-    private void scheduleCreationAndDeletion(ScheduleRequestEntity requestEntity) {
+    private Void scheduleCreationAndDeletion(ScheduleRequestEntity requestEntity) {
         scheduleRequestTracker.updateStatus(requestEntity, VM_CREATING);
         var resourceDetails = timedVmProvider
                 .createInstance(requestUtils.toMdaVmSpecs(requestEntity), buildVmNamePrefix(requestEntity, requestEntity));
@@ -111,6 +114,7 @@ public class ScheduleHandler {
                 .thenCompose(startFromProvisioning(requestEntity, requestEntity.getServiceDescriptions()));
         resourceDetails
                 .thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS));
+        return null;
     }
 
 
@@ -221,7 +225,6 @@ public class ScheduleHandler {
         )), exportOffset);
     }
 
-
     private List<ServiceDescriptionEntity> cancelInvalidServicesAndGetValid(ScheduleRequestEntity requestEntity, HashSet<ServiceDescriptionEntity> all) {
         var invalid = all.stream()
                 .map(description -> description.toScheduleRequestWithServiceDescriptions(requestEntity))
@@ -244,35 +247,41 @@ public class ScheduleHandler {
     }
 
     public void scheduleConditionalDeletion(ScheduleRequestEntity requestEntity) {
-        requestEntity.getVmResourceId().ifPresent(vmResourceId ->
-                timedVmProvider.getVMResourceDetails(vmResourceId)
-                        .thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS))
+        requestEntity.getVmResourceId().ifPresentOrElse(
+                vmResourceId -> scheduleConditionalDeletion(requestEntity, vmResourceId, getDeletionOffset(requestEntity, EXPORT_SECONDS)),
+                () -> scheduleRequestTracker.updateStatus(requestEntity, DELETED)
         );
     }
 
+    private long getDeletionOffset(ScheduleRequestEntity requestEntity, int cleanupSeconds) {
+        if (scheduleRequestTracker.canBeImmediatelyDeleted(requestEntity.getId())) {
+            return 0;
+        } else {
+            return timingService.getDeletionOffset(requestEntity, cleanupSeconds);
+        }
+    }
+
     private Consumer<VmResourceDetails> scheduleConditionalDeletion(ScheduleRequestEntity requestEntity, int cleanupSeconds) {
-        return resourceDetails -> {
-            var deletionOffset = timingService.getDeletionOffset(requestEntity, cleanupSeconds);
-            logger.info("Scheduling instance deletion for request [id: {}] in {} seconds", requestEntity.getId(), deletionOffset);
-            scheduler.schedule(() -> deleteIfAllExported(requestEntity, resourceDetails.internalResourceId()), deletionOffset);
-        };
+        return resourceDetails ->
+                scheduleConditionalDeletion(requestEntity, resourceDetails.internalResourceId(), getDeletionOffset(requestEntity, cleanupSeconds));
+    }
+
+    private void scheduleConditionalDeletion(ScheduleRequestEntity requestEntity, long internalVmId, long deletionOffset) {
+        logger.info("Scheduling instance deletion for request [id: {}] in {} seconds", requestEntity.getId(), deletionOffset);
+        scheduler.schedule(() -> deleteIfAllExported(requestEntity, internalVmId), deletionOffset);
     }
 
     private Void deleteIfAllExported(ScheduleRequestEntity request, long internalResourceId) {
-        try {
-            var failedExportsCount = processServicesWithFailedExport(request, internalResourceId);
+        var failedExportsCount = processServicesWithFailedExport(request, internalResourceId);
 
-            if (failedExportsCount <= 0) {
-                delete(request, internalResourceId);
-            } else {
-                logger.warn(
-                        "Failed to export all user data before deadline for request [id: {}]. You have {} seconds to collect it manually.",
-                        request.getId(), TimingService.MANUAL_CLEANUP_SECONDS
-                );
-                scheduler.schedule(() -> delete(request, internalResourceId), TimingService.MANUAL_CLEANUP_SECONDS);
-            }
-        } catch (VmOperationFailed e) {
-            logger.error("Deleting instance for request [id: {}] failed!", request, e);
+        if (failedExportsCount <= 0) {
+            delete(request, internalResourceId);
+        } else {
+            logger.warn(
+                    "Failed to export all user data before deadline for request [id: {}]. You have {} seconds to collect it manually.",
+                    request.getId(), TimingService.MANUAL_CLEANUP_SECONDS
+            );
+            scheduler.schedule(() -> delete(request, internalResourceId), TimingService.MANUAL_CLEANUP_SECONDS);
         }
         return null;
     }

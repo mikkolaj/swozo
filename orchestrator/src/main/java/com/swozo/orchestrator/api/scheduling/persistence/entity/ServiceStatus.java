@@ -19,6 +19,7 @@ public enum ServiceStatus {
     EXPORT_FAILED,
     EXPORT_COMPLETE,
     DELETED,
+    CANCELLED,
     FAILED;
 
     public ServiceStatus getNextErrorStatus() throws IllegalStateException {
@@ -26,6 +27,8 @@ public enum ServiceStatus {
             case VM_CREATING, VM_CREATION_FAILED -> VM_CREATION_FAILED;
             case PROVISIONING, PROVISIONING_FAILED -> PROVISIONING_FAILED;
             case READY, WAITING_FOR_EXPORT, EXPORTING, EXPORT_FAILED -> EXPORT_FAILED;
+            case CANCELLED -> CANCELLED;
+            case DELETED -> DELETED;
             default -> FAILED;
         };
     }
@@ -52,6 +55,21 @@ public enum ServiceStatus {
         ).collect(Collectors.toSet());
     }
 
+
+    public static Set<ServiceStatus> withVmBeforeExport() {
+        return Stream.concat(
+                provisioning().stream(),
+                toBeCheckedForExport().stream()
+        ).collect(Collectors.toSet());
+    }
+
+    public static Set<ServiceStatus> toBeCheckedForExport() {
+        return Stream.concat(
+                Stream.of(READY),
+                wasExporting().stream()
+        ).collect(Collectors.toSet());
+    }
+
     public static Set<ServiceStatus> wasExporting() {
         return Set.of(
                 WAITING_FOR_EXPORT,
@@ -60,15 +78,15 @@ public enum ServiceStatus {
         );
     }
 
-    public static Set<ServiceStatus> withVmBeforeExport() {
+    public static Set<ServiceStatus> readyToBeDeleted() {
         return Stream.concat(
-                Stream.concat(provisioning().stream(), Stream.of(READY)),
-                wasExporting().stream()
+                Stream.of(EXPORT_COMPLETE),
+                canBeImmediatelyDeleted().stream()
         ).collect(Collectors.toSet());
     }
 
-    public static Set<ServiceStatus> readyToBeDeleted() {
-        return Set.of(EXPORT_COMPLETE);
+    public static Set<ServiceStatus> canBeImmediatelyDeleted() {
+        return Set.of(CANCELLED, FAILED);
     }
 
     public static Collection<String> asStrings(Collection<ServiceStatus> statuses) {

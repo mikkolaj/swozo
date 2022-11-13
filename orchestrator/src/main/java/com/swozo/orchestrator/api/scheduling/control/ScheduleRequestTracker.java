@@ -87,16 +87,29 @@ public class ScheduleRequestTracker {
     }
 
     public void updateStatus(ScheduleRequestEntity scheduleRequestEntity, ServiceStatus status) {
-        var descriptions = scheduleRequestEntity.getServiceDescriptions().stream().map(description -> {
-            description.setStatus(status);
-            return description;
-        }).toList();
+        var descriptions = requestRepository.getById(scheduleRequestEntity.getId())
+                .getServiceDescriptions()
+                .stream()
+                .map(description -> setStatus(description, status))
+                .toList();
         descriptionRepository.saveAll(descriptions);
     }
 
     public void updateStatus(ServiceDescriptionEntity serviceDescriptionEntity, ServiceStatus status) {
-        serviceDescriptionEntity.setStatus(status);
+        setStatus(serviceDescriptionEntity, status);
         descriptionRepository.save(serviceDescriptionEntity);
+    }
+
+    public boolean canBeImmediatelyDeleted(long scheduleRequestId) {
+        return requestRepository.getById(scheduleRequestId).getServiceDescriptions().stream()
+                .allMatch(description -> ServiceStatus.canBeImmediatelyDeleted().contains(description.getStatus()));
+    }
+
+    public ServiceDescriptionEntity setStatus(ServiceDescriptionEntity serviceDescriptionEntity, ServiceStatus status) {
+        if (serviceDescriptionEntity.getStatus() != ServiceStatus.CANCELLED || status == ServiceStatus.DELETED) {
+            serviceDescriptionEntity.setStatus(status);
+        }
+        return serviceDescriptionEntity;
     }
 
     public void markAsFailure(ServiceDescriptionEntity serviceDescription) {
@@ -110,9 +123,12 @@ public class ScheduleRequestTracker {
         requestRepository.save(scheduleRequestEntity);
     }
 
-    // TODO: use this sometime, maybe after a while it'd be nice to clean the db from old requests
     public void stopTracking(Long scheduleRequestId) {
-        requestRepository.deleteById(scheduleRequestId);
+        requestRepository.findById(scheduleRequestId).ifPresent(requestEntity -> {
+            var serviceDescriptions = requestEntity.getServiceDescriptions();
+            serviceDescriptions.forEach(description -> description.setStatus(ServiceStatus.CANCELLED));
+            descriptionRepository.saveAll(serviceDescriptions);
+        });
     }
 
     public List<ActivityLinkInfo> getLinks(Long scheduleRequestId) {

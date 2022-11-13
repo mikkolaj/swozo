@@ -47,6 +47,12 @@ public class ScheduleController {
         return service.schedule(request);
     }
 
+    @DeleteMapping("/{scheduleRequestId}")
+    public void schedule(@PathVariable long scheduleRequestId) {
+        logger.info("Serving cancellation request for schedule request [id: {}]", scheduleRequestId);
+        service.cancel(scheduleRequestId);
+    }
+
     @GetMapping(CONFIGURATION)
     public List<ServiceConfig> getSupportedServices() {
         logger.info("Serving config request.");
