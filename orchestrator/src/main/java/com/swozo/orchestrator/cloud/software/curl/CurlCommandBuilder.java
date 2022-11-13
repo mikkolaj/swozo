@@ -11,8 +11,8 @@ public class CurlCommandBuilder {
     private String httpMethod;
     private String url;
     private String outputLocation;
-    private List<String> headers = new ArrayList<>();
-    private List<String> formEntries = new ArrayList<>();
+    private final List<String> headers = new ArrayList<>();
+    private final List<String> formEntries = new ArrayList<>();
 
     public CurlCommandBuilder addHttpMethod(String method) {
         this.httpMethod = method;
