@@ -421,6 +421,8 @@
     "activityFiles": {
         "header": "Pliki dla: {{courseName}} - {{activityName}}",
         "goBackBtn": "Wróć do kursu",
+        "addToFavourite": "Dodaj do ulubionych",
+        "removeFromFavourite": "Usuń z ulubionych",
         "tabs": {
             "public": {
                 "label": "Publiczne pliki",
@@ -655,7 +657,9 @@
         "policiesUpdated": "Polityki użytkownika zostały zaaktualizowane",
         "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!",
         "vmDeleted": "Maszyna wirtualna została usunięta",
-        "vmCreated": "Maszyna wirtualna została utworzona"
+        "vmCreated": "Maszyna wirtualna została utworzona",
+        "addedToFavourite": "Plik został oznaczony jako ulubiony",
+        "removedFromFavourite": "Plik został usunięty z ulubionych"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",

@@ -7,9 +7,7 @@ import com.swozo.api.web.mda.policy.dto.PolicyDto;
 import com.swozo.api.web.servicemodule.dto.ServiceModuleSummaryDto;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
-import com.swozo.api.web.user.dto.UserAdminDetailsDto;
-import com.swozo.api.web.user.dto.UserAdminSummaryDto;
-import com.swozo.api.web.user.dto.UserDetailsDto;
+import com.swozo.api.web.user.dto.*;
 import com.swozo.api.web.user.request.CreateUserRequest;
 import com.swozo.model.users.ActivityRole;
 import com.swozo.model.users.OrchestratorUserDto;
@@ -31,6 +29,9 @@ public abstract class UserMapper {
     protected RoleRepository roleRepository;
 
     public abstract UserDetailsDto toDto(User user);
+
+    @Mapping(target = "favouriteFiles", expression = "java(favouriteFiles)")
+    public abstract MeDto toMeDto(User user, List<FavouriteFileDto> favouriteFiles);
 
     @Mapping(target = "participant", expression = "java(toDto(userCourseData.getUser()))")
     public abstract ParticipantDetailsDto toDto(UserCourseData userCourseData);

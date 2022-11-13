@@ -1,14 +1,18 @@
 import DownloadIcon from '@mui/icons-material/Download';
-import { Box, Typography } from '@mui/material';
+import { Box, IconButton, Typography } from '@mui/material';
+
 import { ActivityDetailsDto, AuthDetailsDtoRolesEnum } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
-import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
-import { stylesRowCenteredVertical } from 'common/styles';
+import { FavouriteToggle } from 'common/Styled/FavouriteToggle';
+import { stylesRow, stylesRowCenteredVertical } from 'common/styles';
 import { useDownload } from 'hooks/query/useDownload';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
+import { useMeQuery } from 'hooks/query/useMeQuery';
+import { useSetFileAsFavourite } from 'hooks/query/useSetFileAsFavouriteMutation';
+import { useUnsetFileAsFavourite } from 'hooks/query/useUnsetFileAsFavourite';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useTranslation } from 'react-i18next';
 import { toUserActivityFiles } from './utils';
@@ -21,6 +25,7 @@ type Props = {
 export const UserActivityResultsView = ({ activity, showFor }: Props) => {
     const { t } = useTranslation();
     const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({});
+    const { me } = useMeQuery();
 
     const { data: files } = useErrorHandledQuery(
         ['activities', `${activity.id}`, 'files', 'results'],
@@ -39,6 +44,9 @@ export const UserActivityResultsView = ({ activity, showFor }: Props) => {
         onError: pushApiError,
         deps: [activity],
     });
+
+    const { setFileAsFavouriteMutation } = useSetFileAsFavourite(activity.id);
+    const { unsetFileAsFavouriteMutation } = useUnsetFileAsFavourite();
 
     return (
         <Box>
@@ -67,13 +75,22 @@ export const UserActivityResultsView = ({ activity, showFor }: Props) => {
                         itemRenderer={({ activityModule, file }) => [
                             <Typography>{file.name}</Typography>,
                             <Typography>{activityModule.serviceModule.name}</Typography>,
-                            <ButtonWithIconAndText
-                                sx={{ ml: 'auto' }}
-                                color="primary"
-                                onClick={() => download(file)}
-                                textI18n={'activityFiles.tabs.users.download'}
-                                Icon={DownloadIcon}
-                            />,
+                            <Box sx={{ ...stylesRow, ml: 'auto' }}>
+                                <IconButton color="primary" onClick={() => download(file)}>
+                                    <DownloadIcon />
+                                </IconButton>
+                                {showFor === AuthDetailsDtoRolesEnum.Student && (
+                                    <FavouriteToggle
+                                        isFavourite={
+                                            !!me?.favouriteFiles.find(
+                                                ({ file: favFile }) => favFile.id === file.id
+                                            )
+                                        }
+                                        onSetFavourite={() => setFileAsFavouriteMutation.mutate(file)}
+                                        onUnsetFavourite={() => unsetFileAsFavouriteMutation.mutate(file)}
+                                    />
+                                )}
+                            </Box>,
                             /* eslint-enable react/jsx-key */
                         ]}
                         emptyItemsComponent={

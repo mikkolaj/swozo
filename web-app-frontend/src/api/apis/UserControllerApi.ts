@@ -18,9 +18,15 @@ import {
     CreateUserRequest,
     CreateUserRequestFromJSON,
     CreateUserRequestToJSON,
+    MeDto,
+    MeDtoFromJSON,
+    MeDtoToJSON,
     RefreshTokenDto,
     RefreshTokenDtoFromJSON,
     RefreshTokenDtoToJSON,
+    StorageAccessRequest,
+    StorageAccessRequestFromJSON,
+    StorageAccessRequestToJSON,
     UserAdminDetailsDto,
     UserAdminDetailsDtoFromJSON,
     UserAdminDetailsDtoToJSON,
@@ -36,6 +42,10 @@ export interface CreateUserOperationRequest {
     createUserRequest: CreateUserRequest;
 }
 
+export interface GetFavouriteFileDownloadRequestRequest {
+    remoteFileId: number;
+}
+
 export interface GetUserDetailsForAdminRequest {
     userId: number;
 }
@@ -44,9 +54,18 @@ export interface LogoutRequest {
     refreshTokenDto: RefreshTokenDto;
 }
 
+export interface SetFileAsFavouriteRequest {
+    activityId: number;
+    remoteFileId: number;
+}
+
 export interface SetUserRolesRequest {
     userId: number;
     requestBody: Array<string>;
+}
+
+export interface UnsetFileAsFavouriteRequest {
+    remoteFileId: number;
 }
 
 /**
@@ -90,6 +109,42 @@ export class UserControllerApi extends runtime.BaseAPI {
      */
     async createUser(requestParameters: CreateUserOperationRequest, initOverrides?: RequestInit): Promise<UserAdminDetailsDto> {
         const response = await this.createUserRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getFavouriteFileDownloadRequestRaw(requestParameters: GetFavouriteFileDownloadRequestRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<StorageAccessRequest>> {
+        if (requestParameters.remoteFileId === null || requestParameters.remoteFileId === undefined) {
+            throw new runtime.RequiredError('remoteFileId','Required parameter requestParameters.remoteFileId was null or undefined when calling getFavouriteFileDownloadRequest.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users/favourite/{remoteFileId}`.replace(`{${"remoteFileId"}}`, encodeURIComponent(String(requestParameters.remoteFileId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => StorageAccessRequestFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getFavouriteFileDownloadRequest(requestParameters: GetFavouriteFileDownloadRequestRequest, initOverrides?: RequestInit): Promise<StorageAccessRequest> {
+        const response = await this.getFavouriteFileDownloadRequestRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -163,7 +218,7 @@ export class UserControllerApi extends runtime.BaseAPI {
 
     /**
      */
-    async getUserInfoRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserDetailsDto>> {
+    async getUserInfoRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<MeDto>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -183,12 +238,12 @@ export class UserControllerApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserDetailsDtoFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => MeDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async getUserInfo(initOverrides?: RequestInit): Promise<UserDetailsDto> {
+    async getUserInfo(initOverrides?: RequestInit): Promise<MeDto> {
         const response = await this.getUserInfoRaw(initOverrides);
         return await response.value();
     }
@@ -265,6 +320,46 @@ export class UserControllerApi extends runtime.BaseAPI {
 
     /**
      */
+    async setFileAsFavouriteRaw(requestParameters: SetFileAsFavouriteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<MeDto>> {
+        if (requestParameters.activityId === null || requestParameters.activityId === undefined) {
+            throw new runtime.RequiredError('activityId','Required parameter requestParameters.activityId was null or undefined when calling setFileAsFavourite.');
+        }
+
+        if (requestParameters.remoteFileId === null || requestParameters.remoteFileId === undefined) {
+            throw new runtime.RequiredError('remoteFileId','Required parameter requestParameters.remoteFileId was null or undefined when calling setFileAsFavourite.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users/favourite/{activityId}/files/{remoteFileId}`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))).replace(`{${"remoteFileId"}}`, encodeURIComponent(String(requestParameters.remoteFileId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => MeDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async setFileAsFavourite(requestParameters: SetFileAsFavouriteRequest, initOverrides?: RequestInit): Promise<MeDto> {
+        const response = await this.setFileAsFavouriteRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async setUserRolesRaw(requestParameters: SetUserRolesRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserAdminDetailsDto>> {
         if (requestParameters.userId === null || requestParameters.userId === undefined) {
             throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling setUserRoles.');
@@ -303,6 +398,42 @@ export class UserControllerApi extends runtime.BaseAPI {
      */
     async setUserRoles(requestParameters: SetUserRolesRequest, initOverrides?: RequestInit): Promise<UserAdminDetailsDto> {
         const response = await this.setUserRolesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async unsetFileAsFavouriteRaw(requestParameters: UnsetFileAsFavouriteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<MeDto>> {
+        if (requestParameters.remoteFileId === null || requestParameters.remoteFileId === undefined) {
+            throw new runtime.RequiredError('remoteFileId','Required parameter requestParameters.remoteFileId was null or undefined when calling unsetFileAsFavourite.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users/favourite/{remoteFileId}`.replace(`{${"remoteFileId"}}`, encodeURIComponent(String(requestParameters.remoteFileId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => MeDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async unsetFileAsFavourite(requestParameters: UnsetFileAsFavouriteRequest, initOverrides?: RequestInit): Promise<MeDto> {
+        const response = await this.unsetFileAsFavouriteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -26,12 +26,14 @@ models/DynamicFieldDto.ts
 models/EditCourseRequest.ts
 models/EditPolicyRequest.ts
 models/EdtiVmRequest.ts
+models/FavouriteFileDto.ts
 models/FileDto.ts
 models/FinishServiceModuleCreationRequest.ts
 models/InitFileUploadRequest.ts
 models/InstructionDto.ts
 models/JoinCourseRequest.ts
 models/LoginRequest.ts
+models/MeDto.ts
 models/ModifyParticipantRequest.ts
 models/ParameterDescription.ts
 models/ParticipantDetailsDto.ts

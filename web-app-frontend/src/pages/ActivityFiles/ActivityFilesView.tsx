@@ -8,14 +8,18 @@ import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthL
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
+import { FavouriteToggle } from 'common/Styled/FavouriteToggle';
 import {
     stylesColumn,
+    stylesRow,
     stylesRowCenteredHorizontal,
     stylesRowCenteredVertical,
     stylesRowWithItemsAtTheEnd,
 } from 'common/styles';
 import { useDownload } from 'hooks/query/useDownload';
 import { useMeQuery } from 'hooks/query/useMeQuery';
+import { useSetFileAsFavourite } from 'hooks/query/useSetFileAsFavouriteMutation';
+import { useUnsetFileAsFavourite } from 'hooks/query/useUnsetFileAsFavourite';
 import { useUpload } from 'hooks/query/useUpload';
 import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useFileErrorHandlers, useNoCourseOrNoActivityErrorHandlers } from 'hooks/useCommonErrorHandlers';
@@ -94,6 +98,9 @@ export const ActivityFilesView = () => {
         deps: [activityId, course, courseId, queryClient],
     });
 
+    const { setFileAsFavouriteMutation } = useSetFileAsFavourite(+activityId);
+    const { unsetFileAsFavouriteMutation } = useUnsetFileAsFavourite();
+
     if (isApiError && errorHandler?.shouldTerminateRendering) {
         return consumeErrorAction() ?? <></>;
     }
@@ -155,13 +162,26 @@ export const ActivityFilesView = () => {
                                         <Typography>{file.name}</Typography>,
                                         <Typography>{formatBytes(file.sizeBytes)}</Typography>,
                                         <Typography>{formatDateTime(file.createdAt)}</Typography>,
-                                        <IconButton
-                                            sx={{ ml: 'auto' }}
-                                            color="primary"
-                                            onClick={() => download(file)}
-                                        >
-                                            <DownloadIcon />
-                                        </IconButton>,
+                                        <Box sx={{ ...stylesRow, ml: 'auto' }}>
+                                            <IconButton color="primary" onClick={() => download(file)}>
+                                                <DownloadIcon />
+                                            </IconButton>
+                                            {!isSame(me, course.teacher) && (
+                                                <FavouriteToggle
+                                                    isFavourite={
+                                                        !!me?.favouriteFiles.find(
+                                                            ({ file: favFile }) => favFile.id === file.id
+                                                        )
+                                                    }
+                                                    onSetFavourite={() =>
+                                                        setFileAsFavouriteMutation.mutate(file)
+                                                    }
+                                                    onUnsetFavourite={() =>
+                                                        unsetFileAsFavouriteMutation.mutate(file)
+                                                    }
+                                                />
+                                            )}
+                                        </Box>,
                                         /* eslint-enable react/jsx-key */
                                     ]}
                                     emptyItemsComponent={
