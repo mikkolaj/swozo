@@ -1,16 +1,21 @@
 package com.swozo.mapper;
 
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
+import com.swozo.api.web.activity.dto.SelectedServiceModuleDto;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
+import com.swozo.api.web.activitymodule.dto.ActivityModuleDetailsDto;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityModule;
+import com.swozo.persistence.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedList;
-import java.util.stream.Collectors;
+import java.util.List;
+
+import static com.swozo.util.CollectionUtils.iterateSimultaneously;
 
 @Mapper(componentModel = "spring")
 public abstract class ActivityMapper {
@@ -24,8 +29,35 @@ public abstract class ActivityMapper {
     protected CommonMappers commonMappers;
 
     protected LinkedList<ActivityModule> modulesToPersistence(CreateActivityRequest createActivityRequest) {
-        return moduleRepository.findAllById(createActivityRequest.selectedModulesIds()).stream()
-                .map(activityModuleMapper::fromServiceModule).collect(Collectors.toCollection(LinkedList::new));
+        var mappedActivityModules = new LinkedList<ActivityModule>();
+        var selectedModuleIds = createActivityRequest.selectedModules().stream()
+                .map(SelectedServiceModuleDto::serviceModuleId)
+                .toList();
+
+        iterateSimultaneously(
+                moduleRepository.findAllById(selectedModuleIds),
+                createActivityRequest.selectedModules(),
+                (serviceModule, selectedServiceModuleDto) -> mappedActivityModules.push(
+                        activityModuleMapper.fromServiceModule(serviceModule, selectedServiceModuleDto.linkConfirmationRequired())
+                )
+        );
+
+        return mappedActivityModules;
+    }
+
+    protected List<ActivityModuleDetailsDto> modulesToDto(Activity activity, User user) {
+        return activity.getModules().stream()
+                .map(activityModule -> activityModuleMapper.toDto(activityModule, user))
+                .toList();
+    }
+
+    protected List<SelectedServiceModuleDto> modulesToRequest(Activity activity) {
+        return activity.getModules().stream()
+                .map(activityModule -> new SelectedServiceModuleDto(
+                        activityModule.getServiceModule().getId(),
+                        activityModule.isLinkConfirmationRequired()
+                ))
+                .toList();
     }
 
     @Mapping(target = "modules", expression = "java(modulesToPersistence(createActivityRequest))")
@@ -38,11 +70,13 @@ public abstract class ActivityMapper {
         return activity;
     }
 
+    @Mapping(target = "id", source = "activity.id")
+    @Mapping(target = "name", source = "activity.name")
     @Mapping(target = "instructionFromTeacher", expression = "java(commonMappers.instructionToDto(activity.getInstructionFromTeacherHtml()))")
-    @Mapping(target = "activityModules", expression = "java(activity.getModules().stream().map(activityModuleMapper::toDto).toList())")
+    @Mapping(target = "activityModules", expression = "java(modulesToDto(activity, user))")
     @Mapping(target = "publicFiles", expression = "java(activity.getPublicFiles().stream().map(fileMapper::toDto).toList())")
-    public abstract ActivityDetailsDto toDto(Activity activity);
+    public abstract ActivityDetailsDto toDto(Activity activity, User user);
 
-    @Mapping(target = "selectedModulesIds", expression = "java(activity.getModules().stream().map(module -> module.getId()).toList())")
+    @Mapping(target = "selectedModules", expression = "java(modulesToRequest(activity))")
     public abstract CreateActivityRequest toRequest(Activity activity);
 }

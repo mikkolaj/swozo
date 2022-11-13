@@ -13,14 +13,22 @@ import {
     Modal,
     Typography,
 } from '@mui/material';
-import { ActivityDetailsDto } from 'api';
+import { ActivityDetailsDto, ActivityModuleDetailsDto } from 'api';
+import { getApis } from 'api/initialize-apis';
 import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { InstructionView } from 'common/Styled/InstructionView';
 import { stylesColumnCenteredVertical } from 'common/styles';
+import { useMeQuery } from 'hooks/query/useMeQuery';
 import _ from 'lodash';
 import { CourseContext } from 'pages/Course/CourseView';
+import { setLinkDeliveryConfirmed, updateCourseCache } from 'pages/Course/utils';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMutation, useQueryClient } from 'react-query';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { triggerError } from 'services/features/error/errorSlice';
+import { isSame } from 'utils/roles';
 import { getTranslated } from 'utils/util';
 
 type Props = {
@@ -32,6 +40,26 @@ type Props = {
 export const LinksModal = ({ activity, open, onClose }: Props) => {
     const { i18n, t } = useTranslation();
     const course = useContext(CourseContext);
+    const queryClient = useQueryClient();
+    const dispatch = useDispatch();
+    const { me } = useMeQuery();
+
+    const confirmLinkDeliveryMutation = useMutation(
+        (activityModule: ActivityModuleDetailsDto) =>
+            getApis().activitiesApi.confirmLinkCanBeDeliveredToStudents({
+                activityModuleId: activityModule.id,
+            }),
+        {
+            onSuccess: (_, activityModule) => {
+                if (!course) return;
+                updateCourseCache(queryClient, setLinkDeliveryConfirmed(course, activity, activityModule));
+                toast.success(t('toast.linkDeliveryConfirmed'));
+            },
+            onError: () => {
+                dispatch(triggerError({ message: t('error.tryAgain'), autoClose: true }));
+            },
+        }
+    );
 
     return (
         <Modal open={open} onClose={onClose} sx={{ width: '50%', margin: 'auto' }}>
@@ -98,6 +126,38 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                                     <Typography>
                                                         {t('course.activity.linksInfo.linksUnavailable')}
                                                     </Typography>
+                                                )}
+                                                {isSame(me, course?.teacher) && (
+                                                    <Box>
+                                                        {!activityModule.linkConfirmationRequired ||
+                                                        activityModule.linkConfirmed ? (
+                                                            <Typography>
+                                                                {t(
+                                                                    'course.activity.linksInfo.linkDeliveryConfirmed'
+                                                                )}
+                                                            </Typography>
+                                                        ) : (
+                                                            <Box>
+                                                                <Typography>
+                                                                    {t(
+                                                                        'course.activity.linksInfo.linkConfirmationRequired'
+                                                                    )}
+                                                                </Typography>
+                                                                <Button
+                                                                    sx={{ ml: -1 }}
+                                                                    onClick={() =>
+                                                                        confirmLinkDeliveryMutation.mutate(
+                                                                            activityModule
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {t(
+                                                                        'course.activity.linksInfo.confirmLinkDelivery'
+                                                                    )}
+                                                                </Button>
+                                                            </Box>
+                                                        )}
+                                                    </Box>
                                                 )}
                                                 {activityModule.connectionDetails.map(({ url }) => (
                                                     <Box key={url} sx={stylesColumnCenteredVertical}>

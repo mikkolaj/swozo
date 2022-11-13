@@ -1,26 +1,94 @@
-import { MenuItem } from '@mui/material';
+import { Box, MenuItem, Typography } from '@mui/material';
+import { ServiceConfig, ServiceConfigIsolationModesEnum } from 'api';
+import { FormInputField } from 'common/Input/FormInputField';
 import { FormSelectField } from 'common/Input/FormSelectField';
 import { SlideProps } from 'common/SlideForm/util';
+import { useTranslation } from 'react-i18next';
+import { MdaValues } from '../util/types';
 
-export const ModuleSpecsForm = ({ nameBuilder }: SlideProps) => {
+type Props = SlideProps & {
+    values: MdaValues;
+    serviceConfig?: ServiceConfig;
+    editMode?: boolean;
+};
+
+export const ModuleSpecsForm = ({ nameBuilder, values, serviceConfig, editMode }: Props) => {
+    const { t } = useTranslation();
+
     return (
-        <>
-            {/* This should be dynamic, from server */}
+        <Box>
             <FormSelectField
-                name={nameBuilder('environment')}
-                i18nLabel="createModule.slides.1.form.environment"
+                name={nameBuilder('isolationMode')}
+                i18nLabel="createModule.slides.1.form.isolation.label"
             >
-                <MenuItem value={'isolated'}>Izolowane</MenuItem>
+                {serviceConfig?.isolationModes
+                    .filter((isolation) => !editMode || isolation === values.isolationMode)
+                    .map((isolationMode) => (
+                        <MenuItem key={isolationMode} value={isolationMode}>
+                            {t(`createModule.slides.1.form.isolation.${isolationMode}`)}
+                        </MenuItem>
+                    ))}
             </FormSelectField>
-            <FormSelectField name={nameBuilder('storage')} i18nLabel="createModule.slides.1.form.storage">
-                <MenuItem value={1}>1GB</MenuItem>
-            </FormSelectField>
-            <FormSelectField name={nameBuilder('cpu')} i18nLabel="createModule.slides.1.form.cpu">
-                <MenuItem value={'big'}>Duże</MenuItem>
-            </FormSelectField>
-            <FormSelectField name={nameBuilder('ram')} i18nLabel="createModule.slides.1.form.ram">
-                <MenuItem value={'big'}>Duże</MenuItem>
-            </FormSelectField>
-        </>
+            <Box sx={{ width: '60%', mt: 2 }}>
+                <Typography gutterBottom variant="h6">
+                    {t('createModule.slides.1.form.base.label')}
+                </Typography>
+                <FormInputField
+                    name={nameBuilder('baseVcpu')}
+                    textFieldProps={{ fullWidth: true }}
+                    type="number"
+                    labelText={t('createModule.slides.1.form.base.vcpu')}
+                />
+                <FormInputField
+                    name={nameBuilder('baseRam')}
+                    textFieldProps={{ fullWidth: true }}
+                    type="number"
+                    labelText={t('createModule.slides.1.form.base.ram')}
+                />
+                <FormInputField
+                    name={nameBuilder('baseDisk')}
+                    textFieldProps={{ fullWidth: true }}
+                    type="number"
+                    labelText={t('createModule.slides.1.form.base.disk')}
+                />
+                <FormInputField
+                    name={nameBuilder('baseBandwidth')}
+                    textFieldProps={{ fullWidth: true }}
+                    type="number"
+                    labelText={t('createModule.slides.1.form.base.bandwidth')}
+                />
+                {values.isolationMode === ServiceConfigIsolationModesEnum.Shared && (
+                    <Box sx={{ mt: 2 }}>
+                        <Typography gutterBottom variant="h6">
+                            {t('createModule.slides.1.form.scaled.label')}
+                        </Typography>
+                        <FormInputField
+                            name={nameBuilder('sharedServiceModuleMdaDto.usersPerAdditionalCore')}
+                            textFieldProps={{ fullWidth: true }}
+                            type="number"
+                            labelText={t('createModule.slides.1.form.scaled.vcpu')}
+                        />
+                        <FormInputField
+                            name={nameBuilder('sharedServiceModuleMdaDto.usersPerAdditionalRamGb')}
+                            textFieldProps={{ fullWidth: true }}
+                            type="number"
+                            labelText={t('createModule.slides.1.form.scaled.ram')}
+                        />
+                        <FormInputField
+                            name={nameBuilder('sharedServiceModuleMdaDto.usersPerAdditionalDiskGb')}
+                            textFieldProps={{ fullWidth: true }}
+                            type="number"
+                            labelText={t('createModule.slides.1.form.scaled.disk')}
+                        />
+                        <FormInputField
+                            name={nameBuilder('sharedServiceModuleMdaDto.usersPerAdditionalBandwidthGbps')}
+                            textFieldProps={{ fullWidth: true }}
+                            type="number"
+                            labelText={t('createModule.slides.1.form.scaled.bandwidth')}
+                        />
+                    </Box>
+                )}
+            </Box>
+        </Box>
     );
 };

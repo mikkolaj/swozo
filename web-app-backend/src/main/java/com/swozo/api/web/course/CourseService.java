@@ -1,6 +1,7 @@
 package com.swozo.api.web.course;
 
 import com.swozo.api.orchestrator.ScheduleService;
+import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
@@ -19,6 +20,8 @@ import com.swozo.mapper.CourseMapper;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,11 +32,14 @@ import java.util.function.BiConsumer;
 @Service
 @RequiredArgsConstructor
 public class CourseService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
     private final UserService userService;
     private final CourseMapper courseMapper;
     private final ActivityMapper activityMapper;
+    private final ActivityRepository activityRepository;
     private final ScheduleService scheduleService;
     private final CourseValidator courseValidator;
 
@@ -45,15 +51,17 @@ public class CourseService {
         var courses = userRole.equals(RoleDto.STUDENT) ?
                 courseRepository.getCoursesByStudentsId(userId) :
                 courseRepository.getCoursesByTeacherId(userId);
+        var user = userService.getUserById(userId);
 
         return courses.stream()
-                .map(course -> courseMapper.toDto(course, course.isCreator(userId)))
+                .map(course -> courseMapper.toDto(course, user, course.isCreator(userId)))
                 .toList();
     }
 
     public CourseDetailsDto getCourseDetails(Long courseId, Long userId) {
         var course = courseRepository.getById(courseId);
-        return courseMapper.toDto(course, course.isCreator(userId));
+        var user = userService.getUserById(userId);
+        return courseMapper.toDto(course, user, course.isCreator(userId));
     }
 
     public CourseSummaryDto getCourseSummary(String joinUUID) {
@@ -81,7 +89,8 @@ public class CourseService {
             courseValidator.validateNewCourse(createCourseRequest);
         }
 
-        var course = courseMapper.toPersistence(createCourseRequest, userService.getUserById(teacherId));
+        var teacher = userService.getUserById(teacherId);
+        var course = courseMapper.toPersistence(createCourseRequest, teacher);
         var activities = createCourseRequest.activities().stream().map(activityMapper::toPersistence);
 
         activities.forEach(course::addActivity);
@@ -90,8 +99,11 @@ public class CourseService {
 
         courseRepository.save(course);
 
-        scheduleService.scheduleActivities(course.getActivities());
-        return courseMapper.toDto(course, true);
+        if (!course.getActivities().isEmpty()) {
+            scheduleService.scheduleActivities(course.getActivities());
+        }
+
+        return courseMapper.toDto(course, teacher, true);
     }
 
     @Transactional
@@ -114,8 +126,10 @@ public class CourseService {
         }
 
         course.addStudent(student);
+        scheduleService.addStudentToAlreadyScheduledActivities(course, student);
+
         courseRepository.save(course);
-        return courseMapper.toDto(course, false);
+        return courseMapper.toDto(course, student, false);
     }
 
     @Transactional
@@ -131,7 +145,7 @@ public class CourseService {
 
         courseRepository.save(course);
 
-        return courseMapper.toDto(course, true);
+        return courseMapper.toDto(course, course.getTeacher(), true);
     }
 
     @Transactional
@@ -141,10 +155,10 @@ public class CourseService {
         var activity = activityMapper.toPersistence(request);
 
         course.addActivity(activity);
-        scheduleService.scheduleActivities(List.of(activity));
 
-        courseRepository.save(course);
-        return courseMapper.toDto(course, true);
+        scheduleService.scheduleActivities(List.of(activityRepository.save(activity)));
+
+        return courseMapper.toDto(course, course.getTeacher(), true);
     }
 
     @Transactional
@@ -152,12 +166,16 @@ public class CourseService {
         return modifyCourseParticipant(courseId, modifyParticipantRequest.email(), (student, course) -> {
             courseValidator.validateAddStudentRequest(student, teacherId, course);
             course.addStudent(student);
+            scheduleService.addStudentToAlreadyScheduledActivities(course, student);
         });
     }
 
     @Transactional
     public CourseDetailsDto deleteStudent(Long teacherId, Long courseId, String studentEmail) {
-        return modifyCourseParticipant(courseId, studentEmail, (student, course) -> course.deleteStudent(student));
+        return modifyCourseParticipant(courseId, studentEmail, (student, course) -> {
+            courseValidator.validateCreatorAndNotSandbox(course, teacherId);
+            course.deleteStudent(student);
+        });
     }
 
     private CourseDetailsDto modifyCourseParticipant(Long courseId, String studentEmail, BiConsumer<User, Course> modifier) {
@@ -167,7 +185,7 @@ public class CourseService {
 
         modifier.accept(student, course);
         courseRepository.save(course);
-        return courseMapper.toDto(course, true);
+        return courseMapper.toDto(course, course.getTeacher(), true);
     }
 
     private Course getById(Long courseId) {

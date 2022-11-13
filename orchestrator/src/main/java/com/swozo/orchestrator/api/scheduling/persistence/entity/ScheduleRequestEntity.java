@@ -5,11 +5,11 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
+@Table(name = "ScheduleRequests")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -20,15 +20,10 @@ public class ScheduleRequestEntity extends BaseEntity {
     private LocalDateTime endTime;
     private String machineType;
     private int diskSizeGb;
-    private ScheduleTypeEntity scheduleType;
 
-    @ElementCollection
-    @MapKeyColumn(name = "property_name")
-    @Column(name = "property_value")
-    @CollectionTable(name = "dynamic_properties", joinColumns = @JoinColumn(name = "schedule_request_id"))
-    private Map<String, String> dynamicProperties = new HashMap<>();
-
-    private RequestStatus status = RequestStatus.SUBMITTED;
+    @OneToMany(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "schedule_request_id")
+    private List<ServiceDescriptionEntity> serviceDescriptions;
     private Long vmResourceId;
 
     public Optional<Long> getVmResourceId() {

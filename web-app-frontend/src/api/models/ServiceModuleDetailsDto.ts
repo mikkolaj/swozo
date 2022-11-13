@@ -26,6 +26,12 @@ import {
     InstructionDtoToJSON,
 } from './InstructionDto';
 import {
+    ServiceModuleMdaDto,
+    ServiceModuleMdaDtoFromJSON,
+    ServiceModuleMdaDtoFromJSONTyped,
+    ServiceModuleMdaDtoToJSON,
+} from './ServiceModuleMdaDto';
+import {
     UserDetailsDto,
     UserDetailsDtoFromJSON,
     UserDetailsDtoFromJSONTyped,
@@ -110,6 +116,12 @@ export interface ServiceModuleDetailsDto {
      * @memberof ServiceModuleDetailsDto
      */
     dynamicFields: { [key: string]: DynamicFieldDto; };
+    /**
+     * 
+     * @type {ServiceModuleMdaDto}
+     * @memberof ServiceModuleDetailsDto
+     */
+    serviceModuleMdaDto: ServiceModuleMdaDto;
 }
 
 export function ServiceModuleDetailsDtoFromJSON(json: any): ServiceModuleDetailsDto {
@@ -134,6 +146,7 @@ export function ServiceModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscrimina
         'usedInActivitiesCount': json['usedInActivitiesCount'],
         'isPublic': json['isPublic'],
         'dynamicFields': (mapValues(json['dynamicFields'], DynamicFieldDtoFromJSON)),
+        'serviceModuleMdaDto': ServiceModuleMdaDtoFromJSON(json['serviceModuleMdaDto']),
     };
 }
 
@@ -158,6 +171,7 @@ export function ServiceModuleDetailsDtoToJSON(value?: ServiceModuleDetailsDto | 
         'usedInActivitiesCount': value.usedInActivitiesCount,
         'isPublic': value.isPublic,
         'dynamicFields': (mapValues(value.dynamicFields, DynamicFieldDtoToJSON)),
+        'serviceModuleMdaDto': ServiceModuleMdaDtoToJSON(value.serviceModuleMdaDto),
     };
 }
 

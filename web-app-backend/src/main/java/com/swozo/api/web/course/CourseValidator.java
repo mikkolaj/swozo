@@ -11,6 +11,7 @@ import com.swozo.api.web.exceptions.types.course.NotACreatorException;
 import com.swozo.mapper.ActivityMapper;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.user.User;
+import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -104,13 +105,12 @@ public class CourseValidator {
     }
 
     public void validateAddStudentRequest(User student, Long teacherId, Course course) {
-        if (!course.isCreator(teacherId)) {
-            throw new NotACreatorException("Only course creator can add a student");
-        }
+        validateCreatorAndNotSandbox(course, teacherId);
         validateJoinCourseRequest(student, course);
     }
 
     public void validateJoinCourseRequest(User student, Course course) {
+        validateNotSandbox(course);
         if (course.getStudents().stream().anyMatch(x -> x.getUser().getId().equals(student.getId()))) {
             throw new AlreadyAMemberException(String.format(
                     "%s already belongs to the course: %s", student.getEmail(), course.getName()
@@ -119,10 +119,7 @@ public class CourseValidator {
     }
 
     public void validateEditCourseRequest(Course course, EditCourseRequest request, Long editorId) {
-        if (!course.isCreator(editorId)) {
-            throw new NotACreatorException("Only course creator can edit a course");
-        }
-
+        validateCreatorAndNotSandbox(course, editorId);
         ValidationErrors.builder()
             .putIfFails(request.name().flatMap(name ->
                     unique(ValidationNames.Fields.NAME, courseRepository.findByName(name)))
@@ -132,9 +129,7 @@ public class CourseValidator {
     }
 
     public void validateAddActivityRequest(Course course, CreateActivityRequest request, Long editorId) {
-        if (!course.isCreator(editorId)) {
-            throw new NotACreatorException("Only course creator can add an activity");
-        }
+        validateCreatorAndNotSandbox(course, editorId);
 
         var alreadyPresentActivities = course.getActivities().stream()
                 .map(activityMapper::toRequest)
@@ -143,6 +138,19 @@ public class CourseValidator {
         validateActivityData(request, alreadyPresentActivities)
                 .build()
                 .throwIfAnyPresent("Invalid activity data");
+    }
+
+    public void validateNotSandbox(Course course) {
+        if (course.isSandbox()) {
+            throw new UnauthorizedException("Cant edit sandbox course");
+        }
+    }
+
+    public void validateCreatorAndNotSandbox(Course course, Long userId) {
+        validateNotSandbox(course);
+        if (!course.isCreator(userId)) {
+            throw new NotACreatorException("Only course creator can edit a course");
+        }
     }
 
     private Optional<ValidationError> isAUniqueActivity(

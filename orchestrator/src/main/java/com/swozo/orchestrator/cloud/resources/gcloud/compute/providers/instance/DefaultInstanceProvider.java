@@ -5,6 +5,7 @@ import com.google.cloud.compute.v1.Instance;
 import com.google.cloud.compute.v1.NetworkInterface;
 import com.google.cloud.compute.v1.Tags;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class DefaultInstanceProvider implements InstanceProvider {
     private final MachineTypeProvider machineTypeProvider;
 
-    public Instance createInstance(VMAddress vmAddress, VMSpecs vmSpecs, AttachedDisk disk,
+    public Instance createInstance(VmAddress vmAddress, VMSpecs vmSpecs, AttachedDisk disk,
             NetworkInterface networkInterface) {
         var machineType = machineTypeProvider.constructMachineType(vmAddress.zone(), vmSpecs.machineType());
 
