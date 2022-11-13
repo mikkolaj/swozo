@@ -11,6 +11,8 @@ export enum ErrorType {
     NOT_A_MEMBER = 'NOT_A_MEMBER',
     DUPLICATE_FILE = 'DUPLICATE_FILE',
     FILE_NOT_FOUND = 'FILE_NOT_FOUND',
+    OPTION_NOT_ALLOWED = 'OPTION_NOT_ALLOWED',
+    NOT_POSITIVE = 'NOT_POSITIVE',
 }
 
 export type ApiError = {

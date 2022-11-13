@@ -19,6 +19,12 @@ import {
     InstructionDtoFromJSONTyped,
     InstructionDtoToJSON,
 } from './InstructionDto';
+import {
+    ServiceModuleMdaDto,
+    ServiceModuleMdaDtoFromJSON,
+    ServiceModuleMdaDtoFromJSONTyped,
+    ServiceModuleMdaDtoToJSON,
+} from './ServiceModuleMdaDto';
 
 /**
  * 
@@ -61,7 +67,7 @@ export interface ReserveServiceModuleRequest {
      * @type {string}
      * @memberof ReserveServiceModuleRequest
      */
-    scheduleTypeName: string;
+    serviceName: string;
     /**
      * 
      * @type {{ [key: string]: string; }}
@@ -74,6 +80,12 @@ export interface ReserveServiceModuleRequest {
      * @memberof ReserveServiceModuleRequest
      */
     isPublic: boolean;
+    /**
+     * 
+     * @type {ServiceModuleMdaDto}
+     * @memberof ReserveServiceModuleRequest
+     */
+    mdaData: ServiceModuleMdaDto;
 }
 
 export function ReserveServiceModuleRequestFromJSON(json: any): ReserveServiceModuleRequest {
@@ -91,9 +103,10 @@ export function ReserveServiceModuleRequestFromJSONTyped(json: any, ignoreDiscri
         'description': json['description'],
         'teacherInstruction': InstructionDtoFromJSON(json['teacherInstruction']),
         'studentInstruction': InstructionDtoFromJSON(json['studentInstruction']),
-        'scheduleTypeName': json['scheduleTypeName'],
+        'serviceName': json['serviceName'],
         'dynamicProperties': json['dynamicProperties'],
         'isPublic': json['isPublic'],
+        'mdaData': ServiceModuleMdaDtoFromJSON(json['mdaData']),
     };
 }
 
@@ -111,9 +124,10 @@ export function ReserveServiceModuleRequestToJSON(value?: ReserveServiceModuleRe
         'description': value.description,
         'teacherInstruction': InstructionDtoToJSON(value.teacherInstruction),
         'studentInstruction': InstructionDtoToJSON(value.studentInstruction),
-        'scheduleTypeName': value.scheduleTypeName,
+        'serviceName': value.serviceName,
         'dynamicProperties': value.dynamicProperties,
         'isPublic': value.isPublic,
+        'mdaData': ServiceModuleMdaDtoToJSON(value.mdaData),
     };
 }
 

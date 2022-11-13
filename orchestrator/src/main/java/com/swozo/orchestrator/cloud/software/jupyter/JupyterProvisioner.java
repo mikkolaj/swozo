@@ -3,72 +3,105 @@ package com.swozo.orchestrator.cloud.software.jupyter;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ServiceConfig;
-import com.swozo.model.scheduling.properties.ScheduleType;
-import com.swozo.orchestrator.api.BackendRequestSender;
-import com.swozo.orchestrator.cloud.resources.vm.VMResourceDetails;
+import com.swozo.model.scheduling.properties.IsolationMode;
+import com.swozo.model.users.OrchestratorUserDto;
+import com.swozo.orchestrator.api.backend.BackendRequestSender;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
+import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
 import com.swozo.orchestrator.cloud.software.LinkFormatter;
 import com.swozo.orchestrator.cloud.software.ProvisioningFailed;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
-import com.swozo.orchestrator.cloud.software.runner.NotebookFailed;
-import com.swozo.orchestrator.configuration.ApplicationProperties;
-import com.swozo.utils.CheckedExceptionConverter;
+import com.swozo.orchestrator.cloud.software.runner.Playbook;
+import com.swozo.orchestrator.cloud.software.runner.PlaybookFailed;
+import com.swozo.orchestrator.cloud.storage.BucketHandler;
+import com.swozo.utils.LoggingUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+
+import static com.swozo.utils.LoggingUtils.logIfSuccess;
 
 @Service
 @RequiredArgsConstructor
 public class JupyterProvisioner implements TimedSoftwareProvisioner {
-    private static final ScheduleType SUPPORTED_SCHEDULE = ScheduleType.JUPYTER;
+    private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.JUPYTER;
+    private static final String WORKDIR = "/home/swozo/jupyter";
     private static final int PROVISIONING_SECONDS = 600;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
     private static final String MAIN_LINK_DESCRIPTION = "swozo123"; // TODO
+    private static final String LAB_FILE_PATH = "/home/swozo/jupyter/lab_file.ipynb";
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
-    private final ApplicationProperties properties;
+    private final BucketHandler bucketHandler;
     private final BackendRequestSender requestSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public ServiceConfig getServiceConfig() {
-        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), JupyterParameters.getParameterDescriptions(translationsProvider));
+        return new ServiceConfig(
+                SUPPORTED_SCHEDULE.toString(),
+                JupyterParameters.getParameterDescriptions(translationsProvider),
+                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED)
+        );
     }
 
     @Override
-    // TODO: getting notebook from specified location
-    public List<ActivityLinkInfo> provision(VMResourceDetails resource, Map<String, String> parameters) throws ProvisioningFailed {
-        try {
-            logger.info("Started provisioning Jupyter on: {}", resource);
-            runPlaybook(resource);
-            handleParameters(parameters, resource);
-            logger.info("Successfully provisioned Jupyter on resource: {}", resource);
-            return createLinks(resource);
-        } catch (InvalidParametersException | NotebookFailed e) {
-            throw new ProvisioningFailed(e);
+    public CompletableFuture<List<ActivityLinkInfo>> provision(
+            ScheduleRequestEntity requestEntity,
+            ServiceDescriptionEntity description,
+            VmResourceDetails resource
+    ) {
+        return CompletableFuture.runAsync(() -> {
+                    logger.info("Started provisioning Jupyter on: {}", resource);
+                    runPlaybook(resource);
+                }).thenCompose(x -> handleParameters(description.getDynamicProperties(), resource))
+                .whenComplete(logIfSuccess(logger, provisioningComplete(resource)))
+                .whenComplete(this::wrapExceptions)
+                .thenCompose(x -> createLinks(requestEntity, description, resource));
+    }
+
+    private static String provisioningComplete(VmResourceDetails resource) {
+        return String.format("Successfully provisioned Jupyter on resource: %s", resource);
+    }
+
+    private void wrapExceptions(Void unused, Throwable throwable) {
+        if (throwable instanceof InvalidParametersException || throwable instanceof PlaybookFailed) {
+            throw new ProvisioningFailed(throwable);
         }
     }
 
     @Override
-    public List<ActivityLinkInfo> createLinks(VMResourceDetails vmResourceDetails) {
+    public CompletableFuture<List<ActivityLinkInfo>> createLinks(
+            ScheduleRequestEntity requestEntity,
+            ServiceDescriptionEntity description,
+            VmResourceDetails vmResourceDetails
+    ) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
-        return List.of(new ActivityLinkInfo(
-                formattedLink,
-                translationsProvider.t(
-                        "services.jupyter.connectionInstruction",
-                        Map.of("password", MAIN_LINK_DESCRIPTION)
-                )
+        return requestSender.getUserData(description.getActivityModuleId(), requestEntity.getId())
+                .thenCompose(users -> CompletableFuture.completedFuture(
+                        users.stream().map(OrchestratorUserDto::id).map(createLink(formattedLink)).toList()
+                ));
+    }
+
+    private Function<Long, ActivityLinkInfo> createLink(String link) {
+        return userId -> new ActivityLinkInfo(userId, link, translationsProvider.t(
+                "services.jupyter.connectionInstruction",
+                Map.of("password", MAIN_LINK_DESCRIPTION)
         ));
     }
 
@@ -78,7 +111,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
-    public ScheduleType getScheduleType() {
+    public ServiceTypeEntity getScheduleType() {
         return SUPPORTED_SCHEDULE;
     }
 
@@ -87,46 +120,27 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return PROVISIONING_SECONDS;
     }
 
-    private void runPlaybook(VMResourceDetails resource) {
+    @Override
+    public Optional<String> getWorkdirToSave() {
+        return Optional.of(WORKDIR);
+    }
+
+    private void runPlaybook(VmResourceDetails resource) {
         ansibleRunner.runPlaybook(
                 AnsibleConnectionDetails.from(resource),
-                properties.jupyterPlaybookPath(),
+                Playbook.PROVISION_JUPYTER,
                 PROVISIONING_SECONDS / MINUTES_FACTOR
         );
     }
 
-    @SneakyThrows
-    private void handleParameters(Map<String, String> dynamicParameters, VMResourceDetails resource) {
-        // TODO do this properly
+    private CompletableFuture<Void> handleParameters(Map<String, String> dynamicParameters, VmResourceDetails resource) {
         logger.info("Start handling parameters for {}", resource);
         var jupyterParameters = JupyterParameters.from(dynamicParameters);
-        var resp = CheckedExceptionConverter.from(
-                () -> requestSender.getSignedDownloadUrl(jupyterParameters.notebookLocation()).get(),
-                ProvisioningFailed::new
-        ).get();
-        logger.info("Got resp for {}", resource);
-        var curlCmd = String.format("curl %s --output /home/swozo/jupyter/lab_file.ipynb\n", resp.signedUrl());
-        System.out.println(resp);
-
-        var tempPlaybookFile = File.createTempFile(jupyterParameters.notebookLocation() + "_dl", "_download.yml");
-        try (var writer = new FileWriter(tempPlaybookFile)) {
-            writer.write("- name: Handle dynamic params\n" +
-                    "  hosts: all\n" +
-                    "  tasks:\n" +
-                    "    - name: download notebook\n" +
-                    "      command: " + curlCmd
-            );
-        }
-
-        System.out.println("downloading file");
-        ansibleRunner.runPlaybook(
-                AnsibleConnectionDetails.from(resource),
-                tempPlaybookFile.getPath(),
-                5
-        );
-        System.out.println("done");
-
-        var x = tempPlaybookFile.delete();
-        System.out.println("remove file: " + x);
+        return bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), LAB_FILE_PATH)
+                .whenComplete(LoggingUtils.log(
+                        logger,
+                        String.format("Done downloading file for %s", resource),
+                        String.format("Failed to download file for %s", resource)
+                ));
     }
 }

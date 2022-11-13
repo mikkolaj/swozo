@@ -1,8 +1,8 @@
 package com.swozo.api.web.servicemodule.dynamic.fields;
 
 import com.swozo.api.common.files.FileService;
-import com.swozo.api.common.files.dto.UploadAccessDto;
-import com.swozo.api.common.files.request.InitFileUploadRequest;
+import com.swozo.model.files.UploadAccessDto;
+import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.servicemodule.request.FinishServiceModuleCreationRequest;
 import com.swozo.api.web.servicemodule.request.ReserveServiceModuleRequest;
@@ -10,8 +10,8 @@ import com.swozo.jsonmapper.JsonMapperFacade;
 import com.swozo.mapper.FileMapper;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.properties.FieldType;
-import com.swozo.model.utils.StorageAccessRequest;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.model.files.StorageAccessRequest;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

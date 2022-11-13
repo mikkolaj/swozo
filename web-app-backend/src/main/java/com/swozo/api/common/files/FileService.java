@@ -1,7 +1,7 @@
 package com.swozo.api.common.files;
 
-import com.swozo.api.common.files.dto.UploadAccessDto;
-import com.swozo.api.common.files.request.InitFileUploadRequest;
+import com.swozo.model.files.UploadAccessDto;
+import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.api.common.files.util.FilePathGenerator;
@@ -9,7 +9,7 @@ import com.swozo.api.common.files.util.UploadValidationStrategy;
 import com.swozo.api.web.exceptions.types.files.FileNotFoundException;
 import com.swozo.config.properties.StorageProperties;
 import com.swozo.mapper.FileMapper;
-import com.swozo.model.utils.StorageAccessRequest;
+import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.persistence.RemoteFile;
 import com.swozo.persistence.user.User;
 import com.swozo.security.exceptions.UnauthorizedException;
@@ -51,6 +51,18 @@ public class FileService {
         );
     }
 
+    public StorageAccessRequest prepareInternalUpload(
+            InitFileUploadRequest initFileUploadRequest,
+            FilePathGenerator filePathGenerator
+    ) {
+        return storageProvider.createAuthorizedUploadRequest(
+                storageProperties.webBucket().name(),
+                filePathGenerator.generate(initFileUploadRequest.filename()),
+                initFileUploadRequest.sizeBytes(),
+                storageProperties.externalUploadValidity()
+        );
+    }
+
     /**
      * Idempotent, new file is created and consumed by fileConsumer within a transaction scope if it doesn't already exist.
      *
@@ -86,6 +98,10 @@ public class FileService {
     public RemoteFile acknowledgeExternalUploadWithoutTxn(User owner, UploadAccessDto uploadAccessDto) {
         validateStorageAccessRequest(uploadAccessDto.storageAccessRequest());
         return fileRepository.save(fileMapper.toPersistence(uploadAccessDto, owner));
+    }
+
+    public RemoteFile acknowledgeInternalUploadWithoutTxn(User owner, UploadAccessDto uploadAccessDto) {
+        return acknowledgeExternalUploadWithoutTxn(owner, uploadAccessDto);
     }
 
     public StorageAccessRequest createExternalDownloadRequest(RemoteFile file) {

@@ -1,6 +1,7 @@
 package com.swozo.api.web.sandbox;
 
 import com.swozo.api.orchestrator.ScheduleService;
+import com.swozo.api.web.activity.dto.SelectedServiceModuleDto;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseRepository;
@@ -14,7 +15,7 @@ import com.swozo.api.web.user.UserService;
 import com.swozo.api.web.user.request.CreateUserRequest;
 import com.swozo.mapper.SandboxMapper;
 import com.swozo.model.utils.InstructionDto;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
 import com.swozo.persistence.user.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ public class SandboxService {
                                 startTime,
                                 endTime,
                                 new InstructionDto(""),
-                                List.of(serviceModule.getId())
+                                List.of(new SelectedServiceModuleDto(serviceModule.getId(), false))
                         )
                 ),
                 Optional.of(UUID.randomUUID().toString())

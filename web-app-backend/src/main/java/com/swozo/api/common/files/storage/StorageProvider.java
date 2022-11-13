@@ -1,7 +1,7 @@
 package com.swozo.api.common.files.storage;
 
 import com.swozo.config.CloudProvider;
-import com.swozo.model.utils.StorageAccessRequest;
+import com.swozo.model.files.StorageAccessRequest;
 import org.springframework.scheduling.annotation.Async;
 
 import java.time.Duration;

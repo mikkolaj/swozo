@@ -1,5 +1,6 @@
 package com.swozo.api.web.activity.request;
 
+import com.swozo.api.web.activity.dto.SelectedServiceModuleDto;
 import com.swozo.model.utils.InstructionDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -12,6 +13,6 @@ public record CreateActivityRequest(
         @Schema(required = true) LocalDateTime startTime,
         @Schema(required = true) LocalDateTime endTime,
         @Schema(required = true) InstructionDto instructionFromTeacher,
-        @Schema(required = true) List<Long> selectedModulesIds
+        @Schema(required = true) List<SelectedServiceModuleDto> selectedModules
 ) {
 }

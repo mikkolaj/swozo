@@ -1,4 +1,4 @@
-import { CourseDetailsDto, EditCourseRequest } from 'api';
+import { ActivityDetailsDto, ActivityModuleDetailsDto, CourseDetailsDto, EditCourseRequest } from 'api';
 import { ApiError, ErrorType } from 'api/errors';
 import { FormikProps } from 'formik';
 import { t } from 'i18next';
@@ -43,3 +43,24 @@ export function handleCourseUpdateError<T>(
         pushApiError(error);
     }
 }
+
+export const setLinkDeliveryConfirmed = (
+    course: CourseDetailsDto,
+    activity: ActivityDetailsDto,
+    activityModule: ActivityModuleDetailsDto
+): CourseDetailsDto => ({
+    ...course,
+    activities: [
+        ...(course?.activities.filter((ac) => ac !== activity) ?? []),
+        {
+            ...activity,
+            activityModules: [
+                ...activity.activityModules.filter((acm) => acm.id !== activityModule.id),
+                {
+                    ...activityModule,
+                    linkConfirmed: true,
+                },
+            ],
+        },
+    ],
+});

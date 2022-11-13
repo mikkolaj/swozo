@@ -1,7 +1,7 @@
 package com.swozo.mapper;
 
 import com.swozo.api.common.files.dto.FileDto;
-import com.swozo.api.common.files.dto.UploadAccessDto;
+import com.swozo.model.files.UploadAccessDto;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.persistence.RemoteFile;
 import com.swozo.persistence.user.User;
@@ -18,6 +18,7 @@ public abstract class FileMapper {
     @Mapping(target = "createdAt", source = "registeredAt")
     public abstract FileDto toDto(RemoteFile file);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "path", expression = "java(uploadAccessDto.storageAccessRequest().filePath())")
     @Mapping(target = "sizeBytes", expression = "java(uploadAccessDto.initFileUploadRequest().sizeBytes())")
     @Mapping(target = "owner", expression = "java(owner)")

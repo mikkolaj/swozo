@@ -1,6 +1,5 @@
 import { Box, Typography } from '@mui/material';
 import { ServiceModuleSummaryDto } from 'api';
-import { AutocompleteWithChips } from 'common/Input/AutocompleteWithChips';
 import { FormDatePicker } from 'common/Input/FormDatePicker';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormTimePicker } from 'common/Input/FormTimePicker';
@@ -13,6 +12,7 @@ import { ActivityValues } from 'pages/CreateCourse/util';
 import { useTranslation } from 'react-i18next';
 import { ValidationSchema } from 'utils/types';
 import * as Yup from 'yup';
+import { ServiceModuleInput } from './ServiceModuleInput';
 
 type Props = SlideProps & {
     values: { activities: ActivityValues[] };
@@ -96,24 +96,26 @@ export const ActivitiesForm = ({
                                     />
                                 </Box>
 
-                                <AutocompleteWithChips
-                                    labelPath="createCourse.slides.1.form.lessonModules"
-                                    name={nameBuilder(`activities.${idx}.lessonModules`)}
-                                    chosenOptions={value.lessonModules}
-                                    options={availableLessonModules}
-                                    optionToString={({ name }) => name}
+                                <ServiceModuleInput
+                                    slideIndependantName={`activities.${idx}.lessonModules`}
+                                    availableModules={availableLessonModules}
+                                    labelI18n="createCourse.slides.1.form.lessonModules"
+                                    selectBoxLabelI18n="createCourse.slides.1.form.linkConfirmationRequiredLabel"
                                     setFieldValue={setFieldValue}
-                                    required={false}
+                                    nameBuilder={nameBuilder}
+                                    value={value}
+                                    listExtractor={(v) => v.lessonModules}
                                 />
 
-                                <AutocompleteWithChips
-                                    labelPath="createCourse.slides.1.form.generalModules"
-                                    name={nameBuilder(`activities.${idx}.generalModules`)}
-                                    chosenOptions={value.generalModules}
-                                    options={availableGeneralModules}
-                                    optionToString={({ name }) => name}
+                                <ServiceModuleInput
+                                    slideIndependantName={`activities.${idx}.generalModules`}
+                                    availableModules={availableGeneralModules}
+                                    labelI18n="createCourse.slides.1.form.generalModules"
+                                    selectBoxLabelI18n="createCourse.slides.1.form.linkConfirmationRequiredLabel"
                                     setFieldValue={setFieldValue}
-                                    required={false}
+                                    nameBuilder={nameBuilder}
+                                    value={value}
+                                    listExtractor={(v) => v.generalModules}
                                 />
 
                                 <Typography sx={{ mt: 1 }} variant="subtitle1">

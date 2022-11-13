@@ -3,6 +3,7 @@ import { InitFileUploadRequest, ParameterDescriptionTypeEnum } from 'api';
 export type InputFieldUtils = {
     setFieldValue: (value: unknown, type: ParameterDescriptionTypeEnum) => void;
     setAssociatedValue?: (value: unknown) => void;
+    errorMessage?: string;
 };
 
 export type DisplayFieldUtils = {

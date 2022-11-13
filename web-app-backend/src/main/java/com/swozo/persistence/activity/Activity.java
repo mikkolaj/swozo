@@ -3,6 +3,7 @@ package com.swozo.persistence.activity;
 import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
+import com.swozo.persistence.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,13 +26,16 @@ public class Activity extends BaseEntity {
     private String instructionFromTeacherHtml;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "activity_module_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "activity")
     @ToString.Exclude
     private Collection<ActivityModule> modules = new LinkedList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "file.id")
+    @JoinTable(
+            name = "AcitvityPublicFiles",
+            joinColumns = @JoinColumn(name = "activity_id"),
+            inverseJoinColumns = @JoinColumn(name = "file_id")
+    )
     @ToString.Exclude
     private Collection<RemoteFile> publicFiles = new LinkedList<>();
 
@@ -40,8 +44,9 @@ public class Activity extends BaseEntity {
     @ToString.Exclude
     private Course course;
 
-    public void addActivityModule(ActivityModule newModuleMetadata) {
-        modules.add(newModuleMetadata);
+    public void addActivityModule(ActivityModule activityModule) {
+        activityModule.setActivity(this);
+        modules.add(activityModule);
     }
 
     public void removeActivityModule(ActivityModule activityModule) {
@@ -50,5 +55,9 @@ public class Activity extends BaseEntity {
 
     public void addPublicFile(RemoteFile file) {
         publicFiles.add(file);
+    }
+
+    public User getTeacher() {
+        return course.getTeacher();
     }
 }

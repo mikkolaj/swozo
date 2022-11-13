@@ -16,7 +16,7 @@ export const inputFieldFactory = (): InputFieldFactory => {
         FILE: (
             { name, required, translatedLabel, clientValidationHelpers }: ParameterDescription,
             i18n,
-            { setFieldValue, setAssociatedValue }
+            { setFieldValue, setAssociatedValue, errorMessage }
         ) => (
             <Box sx={stylesRowCenteredVertical}>
                 <FormInputField
@@ -24,7 +24,12 @@ export const inputFieldFactory = (): InputFieldFactory => {
                     wrapperSx={{ mt: 0 }}
                     type="text"
                     labelText={getTranslated(i18n, translatedLabel)}
-                    textFieldProps={{ inputProps: { readOnly: true }, required }}
+                    textFieldProps={{
+                        inputProps: { readOnly: true },
+                        required,
+                        error: !!errorMessage,
+                        helperText: errorMessage,
+                    }}
                 />
                 <FileInputButton
                     text={i18n.t('dynamicForm.file.button')}
@@ -41,7 +46,11 @@ export const inputFieldFactory = (): InputFieldFactory => {
                 />
             </Box>
         ),
-        TEXT: ({ name, required, translatedLabel }: ParameterDescription, i18n, { setFieldValue }) => (
+        TEXT: (
+            { name, required, translatedLabel }: ParameterDescription,
+            i18n,
+            { setFieldValue, errorMessage }
+        ) => (
             <FormInputField
                 wrapperSx={{ mt: 0, width: '50%' }}
                 textFieldProps={{
@@ -50,6 +59,8 @@ export const inputFieldFactory = (): InputFieldFactory => {
                     onChange: (e) => {
                         setFieldValue(e.target.value, ParameterDescriptionTypeEnum.Text);
                     },
+                    error: !!errorMessage,
+                    helperText: errorMessage,
                 }}
                 name={name}
                 type="text"

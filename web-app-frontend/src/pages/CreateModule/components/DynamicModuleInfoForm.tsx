@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { ServiceConfig } from 'api';
 import { DynamicField } from 'common/DynamicFields/Input/DynamicField';
-import { Formik, FormikProps } from 'formik';
+import { Formik, FormikErrors, FormikProps } from 'formik';
 import _ from 'lodash';
 import { DynamicFormFields, DynamicFormValueRegistry } from 'pages/CreateModule/util/types';
 import { MutableRefObject, RefObject } from 'react';
@@ -11,9 +11,15 @@ type Props = {
     serviceConfig: ServiceConfig;
     currentValuesRef: MutableRefObject<DynamicFormValueRegistry>;
     dynamicFormRef: RefObject<FormikProps<DynamicFormFields>>;
+    dynamicFormErrors?: FormikErrors<DynamicFormFields>;
 };
 
-export const DynamicModuleInfoForm = ({ currentValuesRef, serviceConfig, dynamicFormRef }: Props) => {
+export const DynamicModuleInfoForm = ({
+    currentValuesRef,
+    serviceConfig,
+    dynamicFormRef,
+    dynamicFormErrors,
+}: Props) => {
     const initialValues = !_.isEmpty(currentValuesRef.current)
         ? _.mapValues(currentValuesRef.current, ({ fieldValue }) => fieldValue)
         : Object.fromEntries(
@@ -38,6 +44,7 @@ export const DynamicModuleInfoForm = ({ currentValuesRef, serviceConfig, dynamic
                             }}
                         >
                             <DynamicField
+                                errorMessage={dynamicFormErrors?.[param.name]}
                                 param={param}
                                 setFieldValue={(val, type) => {
                                     setFieldValue(param.name, val);

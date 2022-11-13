@@ -47,6 +47,11 @@ public class ValidationErrors {
             return this;
         }
 
+        public Builder extendWith(Builder other) {
+            this.errors.putAll(other.errors);
+            return this;
+        }
+
         public Builder combineWithIndices(ArrayList<Builder> builders, String fieldPrefix) {
             for (int i=0; i<builders.size(); i++) {
                 combineWith(builders.get(i), fieldPrefix + SEPARATOR + i);

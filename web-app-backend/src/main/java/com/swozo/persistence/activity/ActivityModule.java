@@ -1,13 +1,13 @@
 package com.swozo.persistence.activity;
 
 import com.swozo.persistence.BaseEntity;
-import com.swozo.persistence.ServiceModule;
+import com.swozo.persistence.servicemodule.ServiceModule;
+import com.swozo.persistence.user.User;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 
 @Entity
 @Table(name = "ActivityModules")
@@ -25,27 +25,36 @@ public class ActivityModule extends BaseEntity {
     @JoinColumn(name = "activity_id")
     private Activity activity;
 
-    private Long requestId;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "link_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "activityModule")
     @ToString.Exclude
-    private Collection<ActivityLink> links = new ArrayList<>();
+    private Collection<ActivityModuleScheduleInfo> schedules = new ArrayList<>();
 
-    /*
-    insert some MDA info fields here
-     */
+    private Boolean linkConfirmationRequired = false;
+    private Boolean linkConfirmed = false;
 
-    // not sure about this, we can wrap connectionDetails and instructionHtml in optional instead
-    public ActivityModule(ServiceModule serviceModule) {
+    public ActivityModule(ServiceModule serviceModule, boolean linkConfirmationRequired) {
         this.serviceModule = serviceModule;
+        this.linkConfirmationRequired = linkConfirmationRequired;
     }
 
-    public void addLink(ActivityLink link) {
-        links.add(link);
+    public void addScheduleInfo(ActivityModuleScheduleInfo scheduleInfo) {
+        this.schedules.add(scheduleInfo);
+        scheduleInfo.setActivityModule(this);
     }
 
-    public Optional<Long> getRequestId() {
-        return Optional.ofNullable(requestId);
+    public boolean isLinkConfirmationRequired() {
+        return linkConfirmationRequired;
+    }
+
+    public boolean isLinkConfirmed() {
+        return linkConfirmed;
+    }
+
+    public boolean canStudentReceiveLink() {
+        return linkConfirmed || !linkConfirmationRequired;
+    }
+
+    public User getTeacher() {
+        return activity.getTeacher();
     }
 }

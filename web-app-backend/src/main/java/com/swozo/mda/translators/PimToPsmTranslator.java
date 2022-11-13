@@ -1,31 +1,50 @@
 package com.swozo.mda.translators;
 
-import com.swozo.persistence.models.Pim;
-import com.swozo.persistence.models.Psm;
-import com.swozo.persistence.vminfo.PimVmInfo;
-import com.swozo.persistence.vminfo.PsmVmInfo;
-import lombok.*;
+import com.swozo.api.web.exceptions.types.mda.NeededVmNotFound;
+import com.swozo.api.web.mda.vm.VmService;
+import com.swozo.persistence.mda.VirtualMachine;
+import com.swozo.persistence.mda.models.Pim;
+import com.swozo.persistence.mda.models.Psm;
+import com.swozo.persistence.mda.vminfo.PimVmInfo;
+import com.swozo.persistence.mda.vminfo.PsmVmInfo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Optional;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Service
+@RequiredArgsConstructor
 public class PimToPsmTranslator{
+    private final VmService vmService;
 
-    private String getMachineType(Integer vCPUs, Integer ram, Integer bandwith){
-        //         TODO remember about repository of machines
-        return "e2-medium";
+    private VirtualMachine selectVirtualMachine(Integer vcpu, Integer ram, Integer bandwidth){
+        Collection<VirtualMachine> vms = vmService.getAllSystemVms();
+        Collection<VirtualMachine> possibleVms = vms.stream().filter(vm ->
+                vm.getVcpu() >= vcpu && vm.getRam() >= ram && vm.getBandwidth() >= bandwidth).toList();
+
+        if (possibleVms.isEmpty()) {
+            throw NeededVmNotFound.withConditions(vcpu, ram, bandwidth);
+        }
+
+        return Collections.min(possibleVms,
+                Comparator.comparingInt(VirtualMachine::getVcpu)
+                        .thenComparing(VirtualMachine::getRam)
+                        .thenComparing(VirtualMachine::getBandwidth)
+        );
     }
 
     private PsmVmInfo getPsmVmInfo(PimVmInfo pimVmInfo){
         PsmVmInfo psmVmInfo = new PsmVmInfo();
+        VirtualMachine virtualMachine = selectVirtualMachine(pimVmInfo.getVcpu(), pimVmInfo.getRam(),
+                pimVmInfo.getBandwidth());
+
         psmVmInfo.setAmount(pimVmInfo.getAmount());
-        psmVmInfo.setModuleIds(pimVmInfo.getModuleIds());
-        psmVmInfo.setMachine_type(getMachineType(pimVmInfo.getVCPUs(), pimVmInfo.getRam(),
-                pimVmInfo.getBandiwth()));
-        psmVmInfo.setDisk(pimVmInfo.getDisk());
+        psmVmInfo.setServiceModules(pimVmInfo.getServiceModules());
+        psmVmInfo.setMachineType(virtualMachine.getName());
+        psmVmInfo.setDisk(virtualMachine.getImageDiskSize() + pimVmInfo.getDisk());
 
         return psmVmInfo;
     }
