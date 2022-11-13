@@ -28,4 +28,10 @@
     - name: Run Sozisel
       become: yes
       ansible.builtin.shell:
-        cmd: docker-compose -f /home/swozo/.sozisel/docker-compose.yml --env-file /home/swozo/.sozisel/.jitsi_env up
+        cmd: docker compose -f /home/swozo/.sozisel/docker-compose.yml --env-file /home/swozo/.sozisel/.jitsi_env up
+
+#          - name: Run sozisel container
+#            community.docker.docker_compose:
+#              files:
+#                - /home/swozo/.sozisel/docker-compose.yml
+#              env_file: /home/swozo/.sozisel/.jitsi_env

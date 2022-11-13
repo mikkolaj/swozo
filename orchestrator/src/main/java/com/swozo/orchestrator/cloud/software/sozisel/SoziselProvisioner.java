@@ -26,9 +26,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 class SoziselProvisioner implements TimedSoftwareProvisioner {
     private static final ScheduleType SUPPORTED_SCHEDULE = ScheduleType.SOZISEL;
-    private static final int PROVISIONING_SECONDS = 600;
+    private static final int PROVISIONING_SECONDS = 900;
     private static final int MINUTES = 5;
-    private static final String SOZISEL_PORT = "4000";
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
@@ -38,11 +37,10 @@ class SoziselProvisioner implements TimedSoftwareProvisioner {
 
 
     @Override
-    public List<ActivityLinkInfo> provision(VMResourceDetails resourceDetails, Map<String, String> dynamicParameters) throws InterruptedException, ProvisioningFailed {
+    public List<ActivityLinkInfo> provision(VMResourceDetails resourceDetails, Map<String, String> dynamicParameters) throws ProvisioningFailed {
         try {
             logger.info("Started provisioning Sozisel on: {}", resourceDetails);
             runPlaybook(resourceDetails);
-//            handleParameters(dynamicParameters, resourceDetails);
             logger.info("Successfully provisioned Sozisel on resource: {}", resourceDetails);
             return createLinks(resourceDetails);
         } catch (InvalidParametersException | NotebookFailed e) {
@@ -52,7 +50,7 @@ class SoziselProvisioner implements TimedSoftwareProvisioner {
 
     @Override
     public List<ActivityLinkInfo> createLinks(VMResourceDetails resourceDetails) {
-        return null;
+        return new SoziselLinksProvider(resourceDetails.publicIpAddress()).createLinks();
     }
 
     @Override
