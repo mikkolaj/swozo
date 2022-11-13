@@ -22,6 +22,21 @@
     path_to: /home/swozo/.sozisel
     user: swozo
 
+- name: Copy set-ip-env file
+  import_playbook: ../../administration/copy-files.yml
+  vars:
+    path_from: ../software/sozisel/set-ip-env.sh
+    path_to: /home/swozo/.sozisel
+    user: swozo
+
+- name: Set public IP env
+  hosts: all
+  tasks:
+    - name: Set public IP env
+      become: yes
+      ansible.builtin.shell:
+        cmd: sh /home/swozo/.sozisel/set-ip-env.sh
+
 - name: Run Sozisel
   hosts: all
   tasks:

@@ -4,7 +4,6 @@ import com.google.cloud.compute.v1.AttachedDisk;
 import com.google.cloud.compute.v1.Instance;
 import com.google.cloud.compute.v1.NetworkInterface;
 import com.google.cloud.compute.v1.Tags;
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import lombok.RequiredArgsConstructor;

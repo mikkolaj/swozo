@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.cloud.software.sozisel;
 
-import com.swozo.model.links.ActivityLinkInfo;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -9,7 +8,6 @@ import org.json.JSONException;
 
 
 import java.io.IOException;
-import java.util.List;
 
 class SoziselLinksProvider {
     private static final String SOZISEL_PORT = "4000";
@@ -23,7 +21,7 @@ class SoziselLinksProvider {
         this.uri = "http://" +  hostAddress + ":" + SOZISEL_PORT + "/api/graphql";
     }
 
-    List<ActivityLinkInfo> createLinks() {
+    String createLinks() {
         String mail = "test@test.pl", name = "Imie", surname = "Nazwisko";
         Integer estimatedTime = 90;
         sendRegister(mail, name, surname);
@@ -33,16 +31,12 @@ class SoziselLinksProvider {
         sendStartSession(roomId);
         String jitsiToken = sendGenerateJitsiToken(mail, name, surname, roomId);
 
-        String link = jitsiHost +
+        return jitsiHost +
                 "/" +
                 roomId +
                 "?jwt=" +
                 jitsiToken +
                 SoziselRequestTemplate.JITSI_LINK_PARAMETERS;
-
-        System.out.println(link);
-        ActivityLinkInfo activityLinkInfo = new ActivityLinkInfo(link, null);
-        return List.of(activityLinkInfo);
     }
 
     private void sendRegister(String mail, String name, String surname) {
