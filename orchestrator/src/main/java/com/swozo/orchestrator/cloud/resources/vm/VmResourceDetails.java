@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.cloud.resources.vm;
 
-public record VMResourceDetails(
+public record VmResourceDetails(
         long internalResourceId,
         String publicIpAddress,
         String sshUser,

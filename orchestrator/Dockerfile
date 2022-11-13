@@ -12,7 +12,7 @@ ARG JAR_FILE=build/libs/\*.jar
 ENV GCP_SSH_KEY_PATH /auth/orchestrator_id_rsa
 ENV GOOGLE_APPLICATION_CREDENTIALS /auth/orchestrator-key.json
 
-ENV ANSIBLE_PLAYBOOK_EXECUTABLE_PATH=/root/.local/bin/ansible-playbook
+ENV ANSIBLE_HOME=/provisioning
 ENV JUPYTER_PLAYBOOK_PATH=/provisioning/software/jupyter/prepare-and-run-jupyter.yml
 ENV LOG_LEVEL=INFO
 COPY ./src/main/resources/provisioning/administration /provisioning/administration

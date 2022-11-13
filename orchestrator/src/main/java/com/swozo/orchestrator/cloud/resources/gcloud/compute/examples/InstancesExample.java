@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class InstancesExample {
-    public static void main(String[] args) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+    public static void main(String[] args) throws IOException {
         var project = "hybrid-text-350213";
         var zone = "europe-central2-a";
         //        createInstance(project, zone, "super-instancja");
