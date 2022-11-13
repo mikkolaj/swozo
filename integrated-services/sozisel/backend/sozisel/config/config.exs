@@ -16,7 +16,7 @@ config :sozisel, Sozisel.Repo,
 
 # Configures the endpoint
 config :sozisel, SoziselWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: System.fetch_env!("HOST")],
   secret_key_base: "5ZddLiYfufVtVfpB2ZxEpmulcNDXTaVWaoJAeg9Tr0MzZ3yntRFeAZF21i/Gv5IE",
   render_errors: [view: SoziselWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Sozisel.PubSub,

@@ -1,4 +1,4 @@
 #!/bin/bash
 
-public_ip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+public_ip="$(curl ifconfig.co/)"
 echo "HOST=$public_ip" >> /home/swozo/.sozisel/.jitsi_env

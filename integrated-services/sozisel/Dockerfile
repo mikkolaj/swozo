@@ -13,14 +13,6 @@ RUN bash -c 'mkdir -p ~/.jitsi-meet-cfg/{web/letsencrypt,web/keys,transcripts,pr
     mv key.pem cert.key; \
     mv cert.crt cert.key ~/.jitsi-meet-cfg/web/keys
 
-WORKDIR "/backend/sozisel/"
-
-RUN mix local.hex --force; \
-    mix local.rebar --force; \
-    mix deps.get
-
-WORKDIR "/"
-
 EXPOSE 4000
 
 ENTRYPOINT ["sh", "./startup.sh"]
