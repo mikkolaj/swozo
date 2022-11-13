@@ -11,7 +11,7 @@ public class LoggingUtils {
 
     public static <T> BiConsumer<T, Throwable> logIfSuccess(Logger logger, String template) {
         return (msg, error) -> {
-            if (msg != null) {
+            if (error == null) {
                 logger.info(template, msg);
             }
         };
@@ -34,9 +34,9 @@ public class LoggingUtils {
 
     public static <T> BiConsumer<T, Throwable> log(Logger logger, String successLog, String failureTemplate) {
         return (msg, error) -> {
-            if (msg != null) {
+            if (error == null) {
                 logger.info(successLog);
-            } else if (error != null) {
+            } else {
                 logger.error(failureTemplate, error);
             }
         };

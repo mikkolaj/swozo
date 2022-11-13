@@ -25,7 +25,7 @@ public class BackendUriFactory {
                 ACTIVITIES +
                 INTERNAL +
                 LINKS +
-                withSep(activityModuleId);
+                withSep(activityModuleId) +
                 withSep(scheduleRequestId);
         return new URI(endpoint);
     }
