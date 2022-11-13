@@ -779,6 +779,22 @@ paths:
                 $ref: '#/components/schemas/UserAdminDetailsDto'
       security:
       - JWT_AUTH: []
+  /users/admins:
+    get:
+      tags:
+      - user-controller
+      operationId: getSystemAdmins
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetailsDto'
+      security:
+      - JWT_AUTH: []
   /service-modules/{serviceModuleId}:
     get:
       tags:

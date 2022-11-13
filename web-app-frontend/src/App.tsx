@@ -13,6 +13,7 @@ import { PublicCourseListView } from 'pages/CoursesList/PublicCourseListView';
 import { CreateCourseView } from 'pages/CreateCourse/CreateCourseView';
 import { CreateModuleView } from 'pages/CreateModule/CreateModuleView';
 import { FilesListView } from 'pages/FilesList/FilesListView';
+import { HelpView } from 'pages/Help/HelpView';
 import { Home } from 'pages/Home/Home';
 import { LoginView } from 'pages/Login/LoginView';
 import { MyModuleView } from 'pages/Module/MyModuleView';
@@ -46,6 +47,7 @@ function App() {
             <Routes>
                 <Route path={PageRoutes.LOGIN} element={guarded(<LoginView />, NOT_LOGGED_IN)} />
                 <Route path={PageRoutes.HOME} element={guarded(<Home />, ANY_LOGGED_IN)} />
+                <Route path={PageRoutes.HELP} element={guarded(<HelpView />, ANY_LOGGED_IN)} />
                 <Route
                     path={PageRoutes.PUBLIC_COURSES}
                     element={guarded(<PublicCourseListView />, ANY_LOGGED_IN)}

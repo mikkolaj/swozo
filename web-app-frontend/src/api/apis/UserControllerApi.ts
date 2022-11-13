@@ -95,6 +95,38 @@ export class UserControllerApi extends runtime.BaseAPI {
 
     /**
      */
+    async getSystemAdminsRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<UserDetailsDto>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/users/admins`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(UserDetailsDtoFromJSON));
+    }
+
+    /**
+     */
+    async getSystemAdmins(initOverrides?: RequestInit): Promise<Array<UserDetailsDto>> {
+        const response = await this.getSystemAdminsRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async getUserDetailsForAdminRaw(requestParameters: GetUserDetailsForAdminRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserAdminDetailsDto>> {
         if (requestParameters.userId === null || requestParameters.userId === undefined) {
             throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling getUserDetailsForAdmin.');

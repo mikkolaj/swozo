@@ -36,6 +36,11 @@ public class UserController {
         return userService.getUserInfo(userId);
     }
 
+    @GetMapping("/admins")
+    public List<UserDetailsDto> getSystemAdmins() {
+        return userService.getSystemAdmins();
+    }
+
     @PostMapping("/me/logout")
     public void logout(AccessToken accessToken, @RequestBody RefreshTokenDto refreshTokenDto) {
         authService.logout(refreshTokenDto, accessToken.getUserId());

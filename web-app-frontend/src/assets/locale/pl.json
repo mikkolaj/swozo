@@ -44,6 +44,7 @@
         "virtualMachines": "repozytorium maszyn wirtualnych",
         "userManagement": "zarządzanie użytkownikami",
         "menu": {
+            "help": "Pomoc",
             "logout": "wyloguj",
             "switchToTechnical": "Widok nauczyciela technicznego",
             "switchToTeacher": "Widok nauczyciela"
@@ -629,6 +630,9 @@
                 }
             }
         }
+    },
+    "help": {
+        "header": "Dane kontaktowe do administratorów systemu"
     },
     "error": {
         "defaultMessage": "Coś poszło nie tak...",

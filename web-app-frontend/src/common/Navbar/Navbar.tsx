@@ -1,4 +1,5 @@
 import { Logout, SwitchAccount } from '@mui/icons-material';
+import HelpIcon from '@mui/icons-material/Help';
 import { Avatar, Divider, IconButton, ListItemIcon, MenuItem } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -8,6 +9,7 @@ import { stylesRowFullyCentered } from 'common/styles';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
 import {
@@ -30,6 +32,7 @@ export const HEIGHT = 64;
 export const Navbar = () => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { me } = useMeQuery();
 
@@ -101,6 +104,12 @@ export const Navbar = () => {
                     </WithPreference>
                 </WithRole>
 
+                <MenuItem onClick={() => navigate(PageRoutes.HELP)}>
+                    <ListItemIcon>
+                        <HelpIcon />
+                    </ListItemIcon>
+                    {t('navbar.menu.help')}
+                </MenuItem>
                 <MenuItem onClick={() => dispatch(logout())} sx={{ textTransform: 'capitalize' }}>
                     <ListItemIcon>
                         <Logout fontSize="small" />

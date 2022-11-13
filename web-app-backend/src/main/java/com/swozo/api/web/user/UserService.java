@@ -20,6 +20,7 @@ public class UserService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final AuthService authService;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UserMapper userMapper;
 
     public UserDetailsDto getUserInfo(Long userId) {
@@ -40,6 +41,13 @@ public class UserService {
                     userMapper.rolesToPersistence(roles)
                 )
         );
+    }
+
+    public List<UserDetailsDto> getSystemAdmins() {
+        var adminRole = roleRepository.findByName(RoleDto.ADMIN.toString());
+        return userRepository.getUsersByRolesIn(List.of(adminRole)).stream()
+                .map(userMapper::toDto)
+                .toList();
     }
 
     @Transactional
