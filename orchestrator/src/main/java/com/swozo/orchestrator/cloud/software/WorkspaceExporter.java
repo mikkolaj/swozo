@@ -38,6 +38,7 @@ public class WorkspaceExporter {
         var usersDetails =
                 requestSender.getUserData(serviceDescription.getActivityModuleId(), requestEntity.getId());
         usersDetails.thenCompose(details -> {
+            assertDetailsNotEmpty(details, requestEntity, serviceDescription);
             var owner = extractOwner(details);
             return bucketHandler.uploadUsersWorkdirToBucket(
                     resourceDetails,
@@ -66,4 +67,14 @@ public class WorkspaceExporter {
         }
     }
 
+    private void assertDetailsNotEmpty(
+            List<OrchestratorUserDto> details, ScheduleRequestEntity scheduleRequest, ServiceDescriptionEntity serviceDescription
+    ) {
+        if (details.isEmpty()) {
+            throw new IllegalStateException(String.format(
+                    "Got empty user details for schedule request: %s, activityModuleId: %s",
+                    scheduleRequest.getId(), serviceDescription.getActivityModuleId()
+            ));
+        }
+    }
 }

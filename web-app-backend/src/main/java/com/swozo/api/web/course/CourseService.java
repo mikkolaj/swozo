@@ -127,11 +127,15 @@ public class CourseService {
             throw new InvalidCoursePasswordException();
         }
 
+        addStudentToCourse(course, student);
+        return courseMapper.toDto(course, student, false);
+    }
+
+    public void addStudentToCourse(Course course, User student) {
         course.addStudent(student);
         scheduleService.addStudentToAlreadyScheduledActivities(course, student);
 
         courseRepository.save(course);
-        return courseMapper.toDto(course, student, false);
     }
 
     @Transactional
