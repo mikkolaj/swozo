@@ -19,6 +19,7 @@ public record ServiceModuleDetailsDto(
         @Schema(required = true) LocalDateTime createdAt,
         @Schema(required = true) int usedInActivitiesCount,
         @Schema(required = true) boolean isPublic,
-        @Schema(required = true) Map<String, DynamicFieldDto> dynamicFields
+        @Schema(required = true) Map<String, DynamicFieldDto> dynamicFields,
+        @Schema(required = true) ServiceModuleMdaDto serviceModuleMdaDto
 ) {
 }

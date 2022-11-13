@@ -45,8 +45,8 @@ public class OrchestratorRequestSender {
         return unwrap(requestSender.sendGet(uri, new TypeReference<>(){}));
     }
 
-    public CompletableFuture<ServiceConfig> getServiceConfig(String scheduleType) {
-        var uri = uriFactory.createServiceConfigurationUri(scheduleType);
+    public CompletableFuture<ServiceConfig> getServiceConfig(String serviceName) {
+        var uri = uriFactory.createServiceConfigurationUri(serviceName);
         return unwrap(requestSender.sendGet(uri, new TypeReference<>(){}));
     }
 }

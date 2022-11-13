@@ -15,6 +15,7 @@ import com.swozo.mapper.ServiceModuleMapper;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.persistence.servicemodule.ServiceModule;
+import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -86,9 +87,9 @@ public class ServiceModuleService {
 
     @Transactional
     public ServiceModuleReservationDto initServiceModuleCreation(Long creatorId, ReserveServiceModuleRequest request) {
-        var serviceConfig = orchestratorService.getServiceConfig(request.scheduleTypeName());
+        var serviceConfig = orchestratorService.getServiceConfig(request.serviceName());
         var creator = userRepository.findById(creatorId).orElseThrow();
-        serviceModuleValidator.validateReservation(creator, serviceConfig, request);
+        serviceModuleValidator.validateReservation(creator, serviceConfig, request, false);
 
         var serviceModuleReservation = serviceModuleRepository.save(
                 serviceModuleMapper.toPersistenceReservation(request, creator)
@@ -106,10 +107,11 @@ public class ServiceModuleService {
                 .orElseThrow(() -> ServiceModuleNotFoundException.ofReservation(request.reservationId()));
         var serviceConfig = orchestratorService.getServiceConfig(reservation.getServiceName());
         if (!reservation.getCreator().getId().equals(creatorId)) {
-            throw new RuntimeException("you are not a creator");
+            throw new UnauthorizedException("you are not a creator");
         }
         if (reservation.getReady()) {
-            // TODO compare action results, if different throw else return result
+            // TODO: compare action results, if different throw
+            return serviceModuleMapper.toDto(reservation, serviceConfig);
         }
 
         var dynamicProperties = handleDynamicFieldTypesForCreation(reservation, request, serviceConfig);
@@ -125,12 +127,15 @@ public class ServiceModuleService {
     public ServiceModuleDetailsDto updateCommonData(Long userId, Long serviceModuleId, ReserveServiceModuleRequest request) {
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
         var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
+        var editor = userRepository.findById(userId).orElseThrow();
+        serviceModuleValidator.validateEditCommonFields(editor, serviceModule, serviceConfig, request);
 
         serviceModuleMapper.updateCommonFields(serviceModule, request);
         serviceModuleRepository.save(serviceModule);
         return serviceModuleMapper.toDto(serviceModule, serviceConfig);
     }
 
+    @Transactional
     public Map<String, Object> initServiceConfigUpdate(Long userId, Long serviceModuleId, ReserveServiceModuleRequest request) {
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
         var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());

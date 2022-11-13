@@ -1,5 +1,6 @@
 package com.swozo.persistence.servicemodule;
 
+import com.swozo.api.web.servicemodule.dto.ServiceModuleMdaDto;
 import com.swozo.persistence.mda.vminfo.PimVmInfo;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,5 +32,16 @@ public class SharedServiceModule extends ServiceModule {
     @Override
     public Boolean isIsolated() {
         return false;
+    }
+
+    @Override
+    public void setMdaData(ServiceModuleMdaDto mdaData) {
+        super.setMdaData(mdaData);
+        mdaData.sharedServiceModuleMdaDto().ifPresent(sharedMda -> {
+           usersPerAdditionalCore = sharedMda.usersPerAdditionalCore();
+           usersPerAdditionalRamGb = sharedMda.usersPerAdditionalRamGb();
+           usersPerAdditionalDiskGb = sharedMda.usersPerAdditionalDiskGb();
+           usersPerAdditionalBandwidthGbps = sharedMda.usersPerAdditionalBandwidthGbps();
+        });
     }
 }

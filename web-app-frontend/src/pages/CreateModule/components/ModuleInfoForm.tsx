@@ -5,7 +5,7 @@ import { FormSelectField } from 'common/Input/FormSelectField';
 import { RichTextEditor } from 'common/Input/RichTextEditor';
 import { SlideProps } from 'common/SlideForm/util';
 import { stylesRowCenteredVertical } from 'common/styles';
-import { FormikProps } from 'formik';
+import { FormikErrors, FormikProps } from 'formik';
 import _ from 'lodash';
 import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ type Props = SlideProps & {
     supportedServices: ServiceConfig[];
     dynamicFormRef: RefObject<FormikProps<DynamicFormFields>>;
     dynamicFormValueRegistryRef: MutableRefObject<DynamicFormValueRegistry>;
+    dynamicFormErrors?: FormikErrors<DynamicFormValueRegistry>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleChange: (e: ChangeEvent<any>) => void;
     setFieldValue: (name: string, value: unknown) => void;
@@ -30,6 +31,7 @@ export const ModuleInfoForm = ({
     setFieldValue,
     dynamicFormRef,
     dynamicFormValueRegistryRef,
+    dynamicFormErrors,
 }: Props) => {
     const { t } = useTranslation();
     const serviceConfig = useMemo(() => {
@@ -87,6 +89,7 @@ export const ModuleInfoForm = ({
                             dynamicFormRef={dynamicFormRef}
                             serviceConfig={serviceConfig}
                             currentValuesRef={dynamicFormValueRegistryRef}
+                            dynamicFormErrors={dynamicFormErrors}
                         />
                     </Box>
                     <Divider sx={{ width: '75%', mt: 2 }} />

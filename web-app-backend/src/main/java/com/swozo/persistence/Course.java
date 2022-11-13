@@ -82,4 +82,8 @@ public class Course extends BaseEntity {
     public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
+
+    public boolean isSandbox() {
+        return sandboxMode;
+    }
 }

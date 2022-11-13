@@ -1,6 +1,7 @@
 package com.swozo.api.web.sandbox;
 
 import com.swozo.api.orchestrator.ScheduleService;
+import com.swozo.api.web.activity.dto.SelectedServiceModuleDto;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseRepository;
@@ -89,7 +90,7 @@ public class SandboxService {
                                 startTime,
                                 endTime,
                                 new InstructionDto(""),
-                                List.of(serviceModule.getId())
+                                List.of(new SelectedServiceModuleDto(serviceModule.getId(), false))
                         )
                 ),
                 Optional.of(UUID.randomUUID().toString())

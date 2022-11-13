@@ -50,6 +50,18 @@ export interface ActivityModuleDetailsDto {
      * @memberof ActivityModuleDetailsDto
      */
     connectionDetails: Array<ServiceConnectionDetailsDto>;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ActivityModuleDetailsDto
+     */
+    linkConfirmationRequired: boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ActivityModuleDetailsDto
+     */
+    linkConfirmed: boolean;
 }
 
 export function ActivityModuleDetailsDtoFromJSON(json: any): ActivityModuleDetailsDto {
@@ -65,6 +77,8 @@ export function ActivityModuleDetailsDtoFromJSONTyped(json: any, ignoreDiscrimin
         'id': json['id'],
         'serviceModule': ServiceModuleSummaryDtoFromJSON(json['serviceModule']),
         'connectionDetails': ((json['connectionDetails'] as Array<any>).map(ServiceConnectionDetailsDtoFromJSON)),
+        'linkConfirmationRequired': json['linkConfirmationRequired'],
+        'linkConfirmed': json['linkConfirmed'],
     };
 }
 
@@ -80,6 +94,8 @@ export function ActivityModuleDetailsDtoToJSON(value?: ActivityModuleDetailsDto 
         'id': value.id,
         'serviceModule': ServiceModuleSummaryDtoToJSON(value.serviceModule),
         'connectionDetails': ((value.connectionDetails as Array<any>).map(ServiceConnectionDetailsDtoToJSON)),
+        'linkConfirmationRequired': value.linkConfirmationRequired,
+        'linkConfirmed': value.linkConfirmed,
     };
 }
 

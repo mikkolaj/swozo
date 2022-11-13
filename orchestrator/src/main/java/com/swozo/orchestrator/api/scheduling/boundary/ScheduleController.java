@@ -62,8 +62,8 @@ public class ScheduleController {
                                 .withTranslatedLabel(translationsProvider.t("services.docker.dynamicParams.resultFilePath.label"))
                                 .ofText().build()
                 ),
-                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED)))
-        ;
+                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED))
+        );
         return s;
     }
 

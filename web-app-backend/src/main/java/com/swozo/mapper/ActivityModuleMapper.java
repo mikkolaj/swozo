@@ -23,8 +23,8 @@ public abstract class ActivityModuleMapper {
     @Autowired
     protected CommonMappers commonMappers;
 
-    public ActivityModule fromServiceModule(ServiceModule serviceModule) {
-        return new ActivityModule(serviceModule);
+    public ActivityModule fromServiceModule(ServiceModule serviceModule, boolean linkConfirmationRequired) {
+        return new ActivityModule(serviceModule, linkConfirmationRequired);
     }
 
     protected Map<SupportedLanguage, InstructionDto> instructionsToDto(UserActivityModuleInfo activityLink) {
@@ -36,6 +36,10 @@ public abstract class ActivityModuleMapper {
     }
 
     protected List<ServiceConnectionDetailsDto> connectionDetailsToDto(ActivityModule activityModule, User user) {
+        if (!activityModule.getTeacher().equals(user) && !activityModule.canStudentReceiveLink()) {
+            return List.of();
+        }
+
         return activityModule.getSchedules().stream()
                 .flatMap(scheduleInfo -> scheduleInfo.getUserActivityModuleData().stream())
                 .filter(userActivityLink -> userActivityLink.getUser().equals(user) && userActivityLink.getUrl().isPresent())

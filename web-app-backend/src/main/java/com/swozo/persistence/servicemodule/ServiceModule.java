@@ -1,5 +1,6 @@
 package com.swozo.persistence.servicemodule;
 
+import com.swozo.api.web.servicemodule.dto.ServiceModuleMdaDto;
 import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.mda.vminfo.PimVmInfo;
 import com.swozo.persistence.user.User;
@@ -59,4 +60,11 @@ public abstract class ServiceModule extends BaseEntity {
     public abstract PimVmInfo getPimVmInfo(Integer students);
 
     public abstract Boolean isIsolated();
+
+    public void setMdaData(ServiceModuleMdaDto mdaData) {
+        baseVcpu = mdaData.baseVcpu();
+        baseRam = mdaData.baseRam();
+        baseBandwidth = mdaData.baseBandwidth();
+        baseDisk = mdaData.baseDisk();
+    }
 }

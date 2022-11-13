@@ -13,6 +13,7 @@ import com.swozo.model.users.OrchestratorUserDto;
 import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
+import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,7 @@ public class ActivityModuleService {
     }
 
     public List<OrchestratorUserDto> getUserDataForProvisioner(Long activityModuleId, Long scheduleRequestId) {
-        var activity = activityModuleRepository.findById(activityModuleId).orElseThrow();
-        var teacher = activity.getActivity().getCourse().getTeacher();
+        var teacher = activityModuleRepository.findById(activityModuleId).orElseThrow().getTeacher();
 
         return userRepository.getUsersThatUseVmCreatedIn(activityModuleId, scheduleRequestId).stream()
                 .map(user -> userMapper.toOrchestratorDto(user, user.equals(teacher) ? ActivityRole.TEACHER : ActivityRole.STUDENT))
@@ -88,6 +88,16 @@ public class ActivityModuleService {
                 initFileUploadRequest,
                 filePathProvider.userActivityModuleFilePath(activityModule, user)
         );
+    }
+
+    public void confirmLinkCanBeDeliveredToStudents(Long teacherId, Long activityModuleId) {
+        var activityModule = activityModuleRepository.findById(activityModuleId).orElseThrow();
+        if (!activityModule.getTeacher().getId().equals(teacherId)) {
+            throw new UnauthorizedException("You are not authorized to confirm link delivery");
+        }
+
+        activityModule.setLinkConfirmed(true);
+        activityModuleRepository.save(activityModule);
     }
 
     @Transactional

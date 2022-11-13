@@ -172,7 +172,10 @@ public class CourseService {
 
     @Transactional
     public CourseDetailsDto deleteStudent(Long teacherId, Long courseId, String studentEmail) {
-        return modifyCourseParticipant(courseId, studentEmail, (student, course) -> course.deleteStudent(student));
+        return modifyCourseParticipant(courseId, studentEmail, (student, course) -> {
+            courseValidator.validateCreatorAndNotSandbox(course, teacherId);
+            course.deleteStudent(student);
+        });
     }
 
     private CourseDetailsDto modifyCourseParticipant(Long courseId, String studentEmail, BiConsumer<User, Course> modifier) {

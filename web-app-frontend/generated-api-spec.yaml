@@ -281,6 +281,23 @@ paths:
                 $ref: '#/components/schemas/StorageAccessRequest'
       security:
       - JWT_AUTH: []
+  /activities/confirm-link-delivery/{activityModuleId}:
+    put:
+      tags:
+      - activity-controller
+      operationId: confirmLinkCanBeDeliveredToStudents
+      parameters:
+      - name: activityModuleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
   /sandbox/{serviceModuleId}:
     post:
       tags:
@@ -781,6 +798,7 @@ components:
       - id
       - isPublic
       - name
+      - serviceModuleMdaDto
       - serviceName
       - studentInstruction
       - subject
@@ -817,6 +835,53 @@ components:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/DynamicFieldDto'
+        serviceModuleMdaDto:
+          $ref: '#/components/schemas/ServiceModuleMdaDto'
+    ServiceModuleMdaDto:
+      required:
+      - baseBandwidth
+      - baseDisk
+      - baseRam
+      - baseVcpu
+      - isIsolated
+      type: object
+      properties:
+        isIsolated:
+          type: boolean
+        baseVcpu:
+          type: integer
+          format: int32
+        baseRam:
+          type: integer
+          format: int32
+        baseDisk:
+          type: integer
+          format: int32
+        baseBandwidth:
+          type: integer
+          format: int32
+        sharedServiceModuleMdaDto:
+          $ref: '#/components/schemas/SharedServiceModuleMdaDto'
+    SharedServiceModuleMdaDto:
+      required:
+      - usersPerAdditionalBandwidthGbps
+      - usersPerAdditionalCore
+      - usersPerAdditionalDiskGb
+      - usersPerAdditionalRamGb
+      type: object
+      properties:
+        usersPerAdditionalCore:
+          type: integer
+          format: int32
+        usersPerAdditionalRamGb:
+          type: integer
+          format: int32
+        usersPerAdditionalDiskGb:
+          type: integer
+          format: int32
+        usersPerAdditionalBandwidthGbps:
+          type: integer
+          format: int32
     UserDetailsDto:
       required:
       - email
@@ -834,10 +899,10 @@ components:
       required:
       - description
       - dynamicProperties
-      - isIsolated
       - isPublic
+      - mdaData
       - name
-      - scheduleTypeName
+      - serviceName
       - studentInstruction
       - subject
       - teacherInstruction
@@ -853,7 +918,7 @@ components:
           $ref: '#/components/schemas/InstructionDto'
         studentInstruction:
           $ref: '#/components/schemas/InstructionDto'
-        scheduleTypeName:
+        serviceName:
           type: string
         dynamicProperties:
           type: object
@@ -861,15 +926,15 @@ components:
             type: string
         isPublic:
           type: boolean
-        isIsolated:
-          type: boolean
+        mdaData:
+          $ref: '#/components/schemas/ServiceModuleMdaDto'
     CreateActivityRequest:
       required:
       - description
       - endTime
       - instructionFromTeacher
       - name
-      - selectedModulesIds
+      - selectedModules
       - startTime
       type: object
       properties:
@@ -885,11 +950,21 @@ components:
           format: date-time
         instructionFromTeacher:
           $ref: '#/components/schemas/InstructionDto'
-        selectedModulesIds:
+        selectedModules:
           type: array
           items:
-            type: integer
-            format: int64
+            $ref: '#/components/schemas/SelectedServiceModuleDto'
+    SelectedServiceModuleDto:
+      required:
+      - linkConfirmationRequired
+      - serviceModuleId
+      type: object
+      properties:
+        serviceModuleId:
+          type: integer
+          format: int64
+        linkConfirmationRequired:
+          type: boolean
     ActivityDetailsDto:
       required:
       - activityModules
@@ -929,6 +1004,8 @@ components:
       required:
       - connectionDetails
       - id
+      - linkConfirmationRequired
+      - linkConfirmed
       - serviceModule
       type: object
       properties:
@@ -941,6 +1018,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceConnectionDetailsDto'
+        linkConfirmationRequired:
+          type: boolean
+        linkConfirmed:
+          type: boolean
     CourseDetailsDto:
       required:
       - activities
@@ -1271,6 +1352,7 @@ components:
           format: date-time
     ServiceConfig:
       required:
+      - isolationModes
       - parameterDescriptions
       - serviceName
       type: object
@@ -1281,6 +1363,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ParameterDescription'
+        isolationModes:
+          type: array
+          items:
+            type: string
+            enum:
+            - ISOLATED
+            - SHARED
     CourseSummaryDto:
       required:
       - creationTime
