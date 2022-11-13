@@ -33,7 +33,8 @@ public class InternalTaskScheduler {
     public <T> CompletableFuture<T> schedule(Callable<T> task, long secondsOffset) {
         var futureResult = new CompletableFuture<T>();
         executorService.schedule(
-                () -> completeResultAndExecuteCleanup(task, futureResult, () -> {}),
+                () -> completeResultAndExecuteCleanup(task, futureResult, () -> {
+                }),
                 secondsOffset,
                 TimeUnit.SECONDS
         );
@@ -65,9 +66,7 @@ public class InternalTaskScheduler {
     public void cancelAllTasks(long scheduleRequestId) {
         Optional.ofNullable(scheduleRequestsTasks.get(scheduleRequestId))
                 .ifPresent(tasks -> {
-                    new ArrayList<>(tasks).forEach(taskDescription ->
-                            taskDescription.executorsFuture.cancel(true)
-                    );
+                    tasks.forEach(taskDescription -> taskDescription.executorsFuture.cancel(true));
                     scheduleRequestsTasks.remove(scheduleRequestId);
                 });
     }

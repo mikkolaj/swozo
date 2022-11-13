@@ -89,8 +89,7 @@ public class ScheduleHandler {
                             startFromExport(requestEntity, toBeCheckedForExport).apply(resourceDetails));
                     return resourceDetails;
                 })
-                .thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS))
-                ;
+                .thenAccept(scheduleConditionalDeletion(requestEntity, EXPORT_SECONDS));
     }
 
     public void delegateScheduling(ScheduleRequestEntity requestEntity) {

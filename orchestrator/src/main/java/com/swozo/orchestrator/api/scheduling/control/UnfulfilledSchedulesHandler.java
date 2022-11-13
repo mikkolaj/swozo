@@ -34,7 +34,7 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
         logger.info("Living vms waiting for export: {}", withVmBeforeExport);
         outdatedSchedules.forEach(this::setFailedStatus);
         schedulesToDelete.forEach(this::deleteCreatedVm);
-        combineLists(schedulesToRestart, withVmBeforeExport).forEach(this::continueProvisioningFlow);
+        combineLists(schedulesToRestart, withVmBeforeExport).forEach(this::continueSchedulingFlow);
     }
 
     private void setFailedStatus(ScheduleRequestEntity request) {
@@ -49,7 +49,7 @@ public class UnfulfilledSchedulesHandler implements ApplicationListener<Applicat
         }
     }
 
-    private void continueProvisioningFlow(ScheduleRequestEntity requestEntity) {
+    private void continueSchedulingFlow(ScheduleRequestEntity requestEntity) {
         try {
             scheduleHandler.continueSchedulingFlowAfterFailure(requestEntity);
         } catch (RuntimeException ex) {
