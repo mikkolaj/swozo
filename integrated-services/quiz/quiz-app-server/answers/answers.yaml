@@ -1,0 +1,16 @@
+SomeName SomeSurname (email@gmail.com):
+  score: 3
+  results:
+    - id: 0
+      question: What year was the game Team Fortress 2 released?
+      user_answer: "2007"
+    - id: 1
+      question: >-
+        Which of these is NOT the name of an album released by English
+        singer-songwriter Adele?
+      user_answer: "12"
+    - id: 2
+      question: >-
+        In the Season One Championship of "League of Legends", the highest
+        achievable rank was Diamond.
+      user_answer: "False"
