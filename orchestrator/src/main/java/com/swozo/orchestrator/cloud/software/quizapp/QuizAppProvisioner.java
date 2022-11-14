@@ -149,13 +149,13 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
         var userIdToUuidMapping = createUserIdToRandomUuidMapping(userData);
         var paramsFile = createQuizAppParamsFile(quizAppParams, userIdToUuidMapping, userData);
 
-        prepareSystem(resource, quizAppParams, paramsFile);
-
-        cleanupAfterSystemPreparation(paramsFile);
-
-        runQuizApp(resource);
-
-        return userIdToUuidMapping;
+        try {
+            prepareSystem(resource, quizAppParams, paramsFile);
+            runQuizApp(resource);
+            return userIdToUuidMapping;
+        } finally {
+            cleanupAfterSystemPreparation(paramsFile);
+        }
     }
 
     private void runQuizApp(VmResourceDetails resource) {
