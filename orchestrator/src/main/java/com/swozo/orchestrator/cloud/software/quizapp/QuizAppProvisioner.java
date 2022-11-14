@@ -115,10 +115,8 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
         return new ActivityLinkInfo(
                 userId,
                 linkFormatter.appendQueryParams(baseUrl, Map.of(USER_KEY_QUERY_PARAM, uuid)),
-                translationsProvider.t(
-                "services.jupyter.connectionInstruction",
-                Map.of("password", "TODO")
-        ));
+                translationsProvider.t("services.quizApp.connectionInstruction")
+        );
     }
 
     @Override

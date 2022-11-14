@@ -24,7 +24,6 @@ import java.util.function.Supplier;
 @Service
 @RequiredArgsConstructor
 public class AnsibleRunner {
-    public static final String DEFAULT_USER = "swozo";
     private static final String INVENTORY_ARG_NAME = "-i";
     private static final String PRIVATE_KEY_ARG_NAME = "--private-key";
     private static final String EXTRA_VARS_ARG_NAME = "--extra-vars";
