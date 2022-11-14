@@ -247,22 +247,20 @@ public class ScheduleHandler {
 
     public void scheduleConditionalDeletion(ScheduleRequestEntity requestEntity) {
         requestEntity.getVmResourceId().ifPresentOrElse(
-                vmResourceId -> scheduleConditionalDeletion(requestEntity, vmResourceId, getDeletionOffset(requestEntity, EXPORT_SECONDS)),
-                () -> scheduleRequestTracker.updateStatus(requestEntity, DELETED)
+                vmResourceId -> scheduleConditionalDeletion(
+                        requestEntity,
+                        vmResourceId,
+                        timingService.getDeletionOffset(requestEntity, EXPORT_SECONDS)
+                ), () -> scheduleRequestTracker.updateStatus(requestEntity, DELETED)
         );
     }
 
-    private long getDeletionOffset(ScheduleRequestEntity requestEntity, int cleanupSeconds) {
-        if (scheduleRequestTracker.canBeImmediatelyDeleted(requestEntity.getId())) {
-            return 0;
-        } else {
-            return timingService.getDeletionOffset(requestEntity, cleanupSeconds);
-        }
-    }
-
     private Consumer<VmResourceDetails> scheduleConditionalDeletion(ScheduleRequestEntity requestEntity, int cleanupSeconds) {
-        return resourceDetails ->
-                scheduleConditionalDeletion(requestEntity, resourceDetails.internalResourceId(), getDeletionOffset(requestEntity, cleanupSeconds));
+        return resourceDetails -> scheduleConditionalDeletion(
+                requestEntity,
+                resourceDetails.internalResourceId(),
+                timingService.getDeletionOffset(requestEntity, cleanupSeconds)
+        );
     }
 
     private void scheduleConditionalDeletion(ScheduleRequestEntity requestEntity, long internalVmId, long deletionOffset) {

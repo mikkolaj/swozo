@@ -86,7 +86,7 @@ public enum ServiceStatus {
     }
 
     public static Set<ServiceStatus> canBeImmediatelyDeleted() {
-        return Set.of(CANCELLED, FAILED);
+        return Set.of(CANCELLED);
     }
 
     public static Collection<String> asStrings(Collection<ServiceStatus> statuses) {

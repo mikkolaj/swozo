@@ -1,6 +1,5 @@
 package com.swozo.orchestrator.api.scheduling.persistence.entity;
 
-import com.swozo.orchestrator.api.scheduling.control.helpers.CancelledScheduleException;
 import com.swozo.orchestrator.api.scheduling.control.helpers.ScheduleRequestWithServiceDescription;
 import com.swozo.persistence.BaseEntity;
 import lombok.*;
@@ -9,7 +8,6 @@ import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus.CANCELLED;
 import static com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus.SUBMITTED;
 
 @Entity
@@ -48,11 +46,5 @@ public class ServiceDescriptionEntity extends BaseEntity {
 
     public ScheduleRequestWithServiceDescription toScheduleRequestWithServiceDescriptions(ScheduleRequestEntity requestEntity) {
         return new ScheduleRequestWithServiceDescription(requestEntity, this);
-    }
-
-    public void abortIfNecessary() throws CancelledScheduleException {
-        if (status == CANCELLED) {
-            throw new CancelledScheduleException("This schedule has been cancelled");
-        }
     }
 }

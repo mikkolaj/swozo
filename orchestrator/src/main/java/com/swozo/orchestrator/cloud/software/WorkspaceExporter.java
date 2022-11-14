@@ -34,7 +34,7 @@ public class WorkspaceExporter {
             ScheduleRequestEntity requestEntity,
             ServiceDescriptionEntity serviceDescription
     ) {
-        serviceDescription.abortIfNecessary();
+        requestTracker.abortIfNecessary(serviceDescription.getId());
         requestTracker.updateStatus(serviceDescription, ServiceStatus.EXPORTING);
         var usersDetails =
                 requestSender.getUserData(serviceDescription.getActivityModuleId(), requestEntity.getId());

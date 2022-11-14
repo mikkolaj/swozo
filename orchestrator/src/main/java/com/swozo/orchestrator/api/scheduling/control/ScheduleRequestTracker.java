@@ -2,6 +2,7 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
+import com.swozo.orchestrator.api.scheduling.control.helpers.CancelledScheduleException;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
@@ -37,6 +38,12 @@ public class ScheduleRequestTracker {
         var entity = requestRepository.save(requestMapper.toPersistence(scheduleRequest));
         initializeParameters(List.of(entity));
         return entity;
+    }
+
+    public void abortIfNecessary(long serviceDescriptionId) throws CancelledScheduleException {
+        if (descriptionRepository.getById(serviceDescriptionId).getStatus() == ServiceStatus.CANCELLED) {
+            throw new CancelledScheduleException(String.format("Service with [id: %s] has been cancelled.", serviceDescriptionId));
+        }
     }
 
     public List<ScheduleRequestEntity> getSchedulesToDelete() {
