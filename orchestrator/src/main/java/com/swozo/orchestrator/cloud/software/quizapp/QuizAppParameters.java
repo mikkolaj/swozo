@@ -13,9 +13,9 @@ public record QuizAppParameters(int quizDurationSeconds, String questionsLocatio
     private static final String QUIZ_DURATION_SECONDS_PARAM = "quizDurationSeconds";
 
     public static QuizAppParameters from(Map<String, String> dynamicParameters) throws InvalidParametersException {
-        var notebookLocation = getRequiredParam(dynamicParameters, QUESTIONS_LOCATION_PARAM);
+        var questionsLocation = getRequiredParam(dynamicParameters, QUESTIONS_LOCATION_PARAM);
         var quizDurationSeconds = Integer.valueOf(getRequiredParam(dynamicParameters, QUIZ_DURATION_SECONDS_PARAM));
-        return new QuizAppParameters(quizDurationSeconds, notebookLocation);
+        return new QuizAppParameters(quizDurationSeconds, questionsLocation);
     }
 
     public static List<ParameterDescription> getParameterDescriptions(TranslationsProvider translationsProvider) {
