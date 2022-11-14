@@ -2,7 +2,7 @@ client source: https://github.com/SafdarJamal/quiz-app
 
 setup:
 
-- orchestrator needs number of students, and their ids
+- orchestrator needs data of users (smth that will allow human see who got what score, and something that will let quizapp see which user got which link, so that results can be properly mapped)
 - quiz for everyone runs on this single machine
 - link requires query param: `ukey`, this param should be random (so that users can't guess access to the quiz before its available) and it should uniquely identify each user, because after quiz ends answers are mapped to user by this key
 
@@ -21,7 +21,7 @@ test:
   - question: ...
 ```
 
-- `/usr/src/server/params/params.json` that contain time in seconds for quiz duration and mapping between user key and something that will allow teacher to see whos results are these
+- `/usr/src/server/params/params.json` that contain time in seconds for quiz duration and mapping between user key and something that will allow teacher to see whose results are these
 
 example:
 
