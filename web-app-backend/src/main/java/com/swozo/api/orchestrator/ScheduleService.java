@@ -81,7 +81,7 @@ public class ScheduleService {
 
     public LocalDateTime getAsapScheduleAvailability() {
         // TODO don't hardcode this
-        return LocalDateTime.now().plusMinutes(10);
+        return LocalDateTime.now().plusMinutes(5);
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> buildScheduleRequestsForActivity(Activity activity) {

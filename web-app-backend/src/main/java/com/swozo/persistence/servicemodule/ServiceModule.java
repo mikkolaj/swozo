@@ -18,7 +18,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class ServiceModule extends BaseEntity {
     protected String name;
     protected String subject;
@@ -41,6 +41,7 @@ public abstract class ServiceModule extends BaseEntity {
     protected Map<String, String> dynamicProperties = new HashMap<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @ToString.Exclude
     protected User creator;
 
     protected Integer baseVcpu;

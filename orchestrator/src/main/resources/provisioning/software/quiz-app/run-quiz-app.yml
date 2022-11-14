@@ -1,0 +1,23 @@
+---
+
+- name: Run QuizApp container
+  hosts: all
+  tasks:
+    - name: Run QuizApp container
+      community.docker.docker_container:
+        name: quizapp
+        image: flok3n/quiz-app:latest
+        auto_remove: yes
+        ports:
+          - "8998:8080"
+        mounts:
+          - source: /home/swozo/quiz-app/params
+            target: /usr/src/server/params
+            type: bind
+          - source: /home/swozo/quiz-app/questions
+            target: /usr/src/server/questions
+            type: bind
+          - source: /home/swozo/quiz-app/answers
+            target: /usr/src/server/answers
+            type: bind
+      become: yes

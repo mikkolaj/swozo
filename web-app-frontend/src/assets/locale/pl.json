@@ -476,7 +476,7 @@
                 "instruction": "Instrukcja",
                 "mainInfo": "Zostanie utworzony testowy, prywatny kurs z wybraną liczbą testowych studentów ({{studentCount}}). Dostaniesz dane logowania do ich kont oraz link do kursu. Zaraz po uruchomieniu modułu zostaną dostarczone linki umożliwiające wykonanie testu.",
                 "moreInfo": "Po upływie {{validForMinutes}}min (od czasu uruchomienia) moduł zostanie wyłączony, jeśli serwis wspiera zbieranie wyników prac uczniów zostaną one dostarczone i będą dostępne przez kolejne {{resultsValidForMinutes}}min w zakładce 'Pliki' kursu. Po upływie tego czasu kurs, konta studentów i wszystkie pliki zostaną usunięte automatycznie. Nie będziesz mógł ręcznie edytować tego kursu.",
-                "limit": "Pamiętaj, że jednocześnie możesz mieć dostęp do ograniczonej administracyjnie liczby środowisk testowych, nie będziesz mógł wcześniej go usunąć żadnego z nich.",
+                "limit": "Pamiętaj, że jednocześnie możesz mieć dostęp do ograniczonej administracyjnie liczby środowisk testowych, nie będziesz mógł wcześniej usunąć żadnego z nich.",
                 "form": {
                     "createButton": "Utwórz środowisko testowe",
                     "studentCount": "Liczba studentów",
