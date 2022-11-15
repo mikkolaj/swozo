@@ -1,6 +1,7 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import { ActivityDetailsDto } from 'api';
+import dayjs from 'dayjs';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { CourseContext } from 'pages/Course/CourseView';
 import { useContext, useState } from 'react';
@@ -73,7 +74,9 @@ export const ActivityView = ({ activity }: Props) => {
                             onClick={() => setLinksModalOpen(true)}
                             textI18n="course.activity.links"
                         />
-                        {(isSame(me, course.teacher) || activity.publicFiles.length > 0) && (
+                        {(isSame(me, course.teacher) ||
+                            activity.publicFiles.length > 0 ||
+                            dayjs().isAfter(activity.endTime)) && (
                             <ActivityActionButton
                                 onClick={() => navigate(PageRoutes.ActivityFiles(course.id, activity.id))}
                                 textI18n="course.activity.files"

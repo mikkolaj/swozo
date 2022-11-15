@@ -33,7 +33,7 @@ export const useDownload = ({ fetcher, onError, deps }: Props) => {
 
                 if (storageAccessRequest !== undefined) {
                     const handler = getFileHandler(storageAccessRequest);
-                    handler.download(file.name, storageAccessRequest);
+                    await handler.download(file.name, storageAccessRequest);
                 }
             } finally {
                 setDownloading(false);

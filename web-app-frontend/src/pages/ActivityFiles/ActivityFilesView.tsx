@@ -1,6 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import { Box, Button, Container, Divider, Grid, IconButton, Tab, Tabs, Typography } from '@mui/material';
-import { ActivityDetailsDto } from 'api';
+import { ActivityDetailsDto, AuthDetailsDtoRolesEnum } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { FileInputButton } from 'common/Input/FileInputButton';
 import { PageContainer } from 'common/PageContainer/PageContainer';
@@ -8,14 +8,18 @@ import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthL
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
+import { FavouriteToggle } from 'common/Styled/FavouriteToggle';
 import {
     stylesColumn,
+    stylesRow,
     stylesRowCenteredHorizontal,
     stylesRowCenteredVertical,
     stylesRowWithItemsAtTheEnd,
 } from 'common/styles';
 import { useDownload } from 'hooks/query/useDownload';
 import { useMeQuery } from 'hooks/query/useMeQuery';
+import { useSetFileAsFavourite } from 'hooks/query/useSetFileAsFavouriteMutation';
+import { useUnsetFileAsFavourite } from 'hooks/query/useUnsetFileAsFavourite';
 import { useUpload } from 'hooks/query/useUpload';
 import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useFileErrorHandlers, useNoCourseOrNoActivityErrorHandlers } from 'hooks/useCommonErrorHandlers';
@@ -29,6 +33,10 @@ import { toast } from 'react-toastify';
 import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatBytes, formatDateTime } from 'utils/util';
+import { AggregatedActivityResultsView } from './AggregatedActivityResultsView';
+import { UserActivityResultsView } from './UserActivityResultsView';
+
+type Tab = 'public' | 'users';
 
 export const ActivityFilesView = () => {
     const [activityId, courseId] = useRequiredParams(['activityId', 'courseId']);
@@ -37,7 +45,7 @@ export const ActivityFilesView = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
-    const [currentTab, setCurrentTab] = useState(0);
+    const [currentTab, setCurrentTab] = useState<Tab>('public');
     const errorHandlers: HandlerConfig = {
         ...useNoCourseOrNoActivityErrorHandlers(courseId, activityId),
         ...useFileErrorHandlers(),
@@ -90,6 +98,9 @@ export const ActivityFilesView = () => {
         deps: [activityId, course, courseId, queryClient],
     });
 
+    const { setFileAsFavouriteMutation } = useSetFileAsFavourite(+activityId);
+    const { unsetFileAsFavouriteMutation } = useUnsetFileAsFavourite();
+
     if (isApiError && errorHandler?.shouldTerminateRendering) {
         return consumeErrorAction() ?? <></>;
     }
@@ -123,12 +134,12 @@ export const ActivityFilesView = () => {
             </Grid>
             <Divider />
             <Tabs value={currentTab} onChange={(_, tab) => setCurrentTab(tab)} centered variant="fullWidth">
-                <Tab label={t('activityFiles.tabs.public.label')} />
-                <Tab label={t('activityFiles.tabs.users.label')} />
+                <Tab value="public" label={t('activityFiles.tabs.public.label')} />
+                <Tab value="users" label={t('activityFiles.tabs.users.label')} />
             </Tabs>
 
             <Grid container sx={{ p: 2 }}>
-                {currentTab === 0 && (
+                {currentTab === 'public' && (
                     <Container sx={{ mt: 4 }}>
                         <StackedList
                             /* eslint-disable react/jsx-key */
@@ -151,13 +162,26 @@ export const ActivityFilesView = () => {
                                         <Typography>{file.name}</Typography>,
                                         <Typography>{formatBytes(file.sizeBytes)}</Typography>,
                                         <Typography>{formatDateTime(file.createdAt)}</Typography>,
-                                        <IconButton
-                                            sx={{ ml: 'auto' }}
-                                            color="primary"
-                                            onClick={() => download(file)}
-                                        >
-                                            <DownloadIcon />
-                                        </IconButton>,
+                                        <Box sx={{ ...stylesRow, ml: 'auto' }}>
+                                            <IconButton color="primary" onClick={() => download(file)}>
+                                                <DownloadIcon />
+                                            </IconButton>
+                                            {!isSame(me, course.teacher) && (
+                                                <FavouriteToggle
+                                                    isFavourite={
+                                                        !!me?.favouriteFiles.find(
+                                                            ({ file: favFile }) => favFile.id === file.id
+                                                        )
+                                                    }
+                                                    onSetFavourite={() =>
+                                                        setFileAsFavouriteMutation.mutate(file)
+                                                    }
+                                                    onUnsetFavourite={() =>
+                                                        unsetFileAsFavouriteMutation.mutate(file)
+                                                    }
+                                                />
+                                            )}
+                                        </Box>,
                                         /* eslint-enable react/jsx-key */
                                     ]}
                                     emptyItemsComponent={
@@ -183,7 +207,19 @@ export const ActivityFilesView = () => {
                     </Container>
                 )}
 
-                {currentTab === 1 && <Grid container>TODO</Grid>}
+                {currentTab === 'users' && (
+                    <Box sx={{ width: '100%' }}>
+                        <UserActivityResultsView
+                            activity={activity}
+                            showFor={
+                                isSame(me, course.teacher)
+                                    ? AuthDetailsDtoRolesEnum.Teacher
+                                    : AuthDetailsDtoRolesEnum.Student
+                            }
+                        />
+                        {isSame(me, course.teacher) && <AggregatedActivityResultsView activity={activity} />}
+                    </Box>
+                )}
             </Grid>
         </PageContainer>
     );

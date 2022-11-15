@@ -1,6 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export * from './ActivityDetailsDto';
+export * from './ActivityFilesDto';
 export * from './ActivityModuleDetailsDto';
 export * from './ActivitySummaryDto';
 export * from './AuthDetailsDto';
@@ -16,12 +17,14 @@ export * from './DynamicFieldDto';
 export * from './EditCourseRequest';
 export * from './EditPolicyRequest';
 export * from './EdtiVmRequest';
+export * from './FavouriteFileDto';
 export * from './FileDto';
 export * from './FinishServiceModuleCreationRequest';
 export * from './InitFileUploadRequest';
 export * from './InstructionDto';
 export * from './JoinCourseRequest';
 export * from './LoginRequest';
+export * from './MeDto';
 export * from './ModifyParticipantRequest';
 export * from './ParameterDescription';
 export * from './ParticipantDetailsDto';
@@ -42,6 +45,7 @@ export * from './ServiceModuleSummaryDto';
 export * from './ServiceModuleUsageDto';
 export * from './SharedServiceModuleMdaDto';
 export * from './StorageAccessRequest';
+export * from './TeacherActivityFilesDto';
 export * from './UploadAccessDto';
 export * from './UserAdminDetailsDto';
 export * from './UserAdminSummaryDto';

@@ -3,10 +3,12 @@ package com.swozo.api.web.user;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RefreshTokenDto;
 import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.api.web.user.dto.MeDto;
 import com.swozo.api.web.user.dto.UserAdminDetailsDto;
 import com.swozo.api.web.user.dto.UserAdminSummaryDto;
 import com.swozo.api.web.user.dto.UserDetailsDto;
 import com.swozo.api.web.user.request.CreateUserRequest;
+import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +32,37 @@ public class UserController {
     private final AuthService authService;
 
     @GetMapping("/me")
-    public UserDetailsDto getUserInfo(AccessToken token) {
+    public MeDto getUserInfo(AccessToken token) {
         var userId = token.getUserId();
         logger.info("user info for user with id: {}", userId);
         return userService.getUserInfo(userId);
     }
 
+    @GetMapping("/admins")
+    public List<UserDetailsDto> getSystemAdmins() {
+        return userService.getSystemAdmins();
+    }
+
     @PostMapping("/me/logout")
     public void logout(AccessToken accessToken, @RequestBody RefreshTokenDto refreshTokenDto) {
         authService.logout(refreshTokenDto, accessToken.getUserId());
+    }
+
+    @PostMapping("/favourite/{activityId}/files/{remoteFileId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public MeDto setFileAsFavourite(AccessToken accessToken, @PathVariable Long activityId, @PathVariable Long remoteFileId) {
+        return userService.setFileAsFavourite(accessToken.getUserId(), activityId, remoteFileId);
+    }
+
+    @DeleteMapping("/favourite/{remoteFileId}")
+    @PreAuthorize("hasRole('STUDENT')")
+    public MeDto unsetFileAsFavourite(AccessToken accessToken, @PathVariable Long remoteFileId) {
+        return userService.unsetFileAsFavourite(accessToken.getUserId(), remoteFileId);
+    }
+
+    @GetMapping("/favourite/{remoteFileId}")
+    public StorageAccessRequest getFavouriteFileDownloadRequest(AccessToken accessToken, @PathVariable Long remoteFileId) {
+        return userService.getFavouriteFileDownloadRequest(accessToken.getUserId(), remoteFileId);
     }
 
     @PostMapping

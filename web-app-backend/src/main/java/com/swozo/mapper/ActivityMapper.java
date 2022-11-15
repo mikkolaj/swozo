@@ -85,6 +85,6 @@ public abstract class ActivityMapper {
 
     @Mapping(target = "courseName", source = "activity.course.name")
     @Mapping(target = "courseId", source = "activity.course.id")
-    @Mapping(target = "teacher", expression = "java(userMapper.toDto(activity.getCourse().getTeacher()))")
+    @Mapping(target = "teacher", expression = "java(userMapper.toDto(activity.getTeacher()))")
     public abstract ActivitySummaryDto toSummaryDto(Activity activity);
 }

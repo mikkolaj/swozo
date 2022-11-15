@@ -2,6 +2,7 @@ package com.swozo.persistence.activity;
 
 import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.servicemodule.ServiceModule;
+import com.swozo.persistence.user.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -51,5 +52,9 @@ public class ActivityModule extends BaseEntity {
 
     public boolean canStudentReceiveLink() {
         return linkConfirmed || !linkConfirmationRequired;
+    }
+
+    public User getTeacher() {
+        return activity.getTeacher();
     }
 }

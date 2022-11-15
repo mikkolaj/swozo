@@ -19,7 +19,7 @@ export const FileProgressModal = ({ cardSx }: Props) => {
         setFilesBeingUploaded(Object.values(uploadState).filter(({ isUploading }) => isUploading));
     }, [uploadState]);
 
-    if (filesBeingUploaded.length === 0) return <></>;
+    if (filesBeingUploaded.length === 0 && downloads.length === 0) return <></>;
 
     return (
         <Card

@@ -1,0 +1,15 @@
+---
+
+- name: Copy user's workdir to bucket
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create an archive
+      community.general.archive:
+        path: '{{ source_directory }}'
+        dest: '{{ source_directory }}/{{ target_filename }}'
+        format: zip
+        force_archive: yes
+
+- name: Put files in bucket
+  import_playbook: ./execute-command.yml

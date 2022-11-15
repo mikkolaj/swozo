@@ -10,6 +10,7 @@ apis/VmControllerApi.ts
 apis/index.ts
 index.ts
 models/ActivityDetailsDto.ts
+models/ActivityFilesDto.ts
 models/ActivityModuleDetailsDto.ts
 models/ActivitySummaryDto.ts
 models/AuthDetailsDto.ts
@@ -25,12 +26,14 @@ models/DynamicFieldDto.ts
 models/EditCourseRequest.ts
 models/EditPolicyRequest.ts
 models/EdtiVmRequest.ts
+models/FavouriteFileDto.ts
 models/FileDto.ts
 models/FinishServiceModuleCreationRequest.ts
 models/InitFileUploadRequest.ts
 models/InstructionDto.ts
 models/JoinCourseRequest.ts
 models/LoginRequest.ts
+models/MeDto.ts
 models/ModifyParticipantRequest.ts
 models/ParameterDescription.ts
 models/ParticipantDetailsDto.ts
@@ -51,6 +54,7 @@ models/ServiceModuleSummaryDto.ts
 models/ServiceModuleUsageDto.ts
 models/SharedServiceModuleMdaDto.ts
 models/StorageAccessRequest.ts
+models/TeacherActivityFilesDto.ts
 models/UploadAccessDto.ts
 models/UserAdminDetailsDto.ts
 models/UserAdminSummaryDto.ts

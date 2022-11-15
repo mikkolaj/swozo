@@ -33,35 +33,41 @@ public class AnsibleRunner {
     private static final String EXTRA_VARS_DELIMITER = " ";
     private static final String INPUT_BOUNDARY = "\\A";
     private static final int DEFAULT_CONNECTION_ATTEMPTS = 6;
-    private static final int PLAYBOOK_EXECUTION_ATTEMPTS = 3;
+    private static final int PLAYBOOK_EXECUTION_ATTEMPTS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ProcessRunner processRunner;
     private final SshService sshService;
+    private final PlaybookPathProvider pathProvider;
     private final ApplicationProperties properties;
 
 
     public void runPlaybook(
             AnsibleConnectionDetails connectionDetails,
-            String playbookPath,
+            Playbook playbook,
             int timeoutMinutes
-    ) throws PropagatingException, NotebookFailed {
-        runPlaybook(connectionDetails, playbookPath, Collections.emptyList(), timeoutMinutes);
+    ) throws PropagatingException, PlaybookFailed {
+        runPlaybook(connectionDetails, playbook, Collections.emptyList(), timeoutMinutes);
     }
 
     public void runPlaybook(
             AnsibleConnectionDetails connectionDetails,
-            String playbookPath,
+            Playbook playbook,
             List<String> userVars,
             int timeoutMinutes
-    ) throws PropagatingException, NotebookFailed {
+    ) throws PropagatingException, PlaybookFailed {
         try {
+            var playbookPath = pathProvider.getPlaybookPath(playbook);
             handleSshStartup(connectionDetails);
             tryExecutingPlaybook(() -> createAnsibleProcess(connectionDetails, playbookPath, userVars), timeoutMinutes);
             logger.info("Playbook successful.");
         } catch (ProcessFailed | ConnectionFailed e) {
-            throw new NotebookFailed(e);
+            throw new PlaybookFailed(e);
         }
+    }
+
+    public String createUserVar(String key, String value) {
+        return String.format("%s='%s'", key, value);
     }
 
     private void tryExecutingPlaybook(Supplier<Process> processCreator, int timeoutMinutes) {
@@ -79,6 +85,7 @@ public class AnsibleRunner {
 
     private Process createAnsibleProcess(AnsibleConnectionDetails connectionDetails, String playbookPath, List<String> userVars)
             throws ProcessFailed {
+        logger.info("Creating ansible process for: {}", connectionDetails);
         var command = createAnsibleCommand(connectionDetails, playbookPath, userVars);
         return processRunner.createProcess(command);
     }
@@ -88,7 +95,7 @@ public class AnsibleRunner {
         logger.info("Connection successful: {}", target);
     }
 
-    private void waitForResult(Process process, int timeoutMinutes) throws InterruptedException, NotebookFailed {
+    private void waitForResult(Process process, int timeoutMinutes) throws InterruptedException, PlaybookFailed {
         try (var outputScanner = new Scanner(process.getInputStream()).useDelimiter(INPUT_BOUNDARY);
              var errorScanner = new Scanner(process.getErrorStream()).useDelimiter(INPUT_BOUNDARY)
         ) {
@@ -99,7 +106,7 @@ public class AnsibleRunner {
             if (process.exitValue() != ProcessRunner.SUCCESS_CODE) {
                 logger.info(output);
                 logger.error(errors);
-                throw new NotebookFailed(errors);
+                throw new PlaybookFailed(errors);
             }
         }
     }

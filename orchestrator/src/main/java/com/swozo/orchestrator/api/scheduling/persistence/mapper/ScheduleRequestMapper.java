@@ -23,7 +23,7 @@ public interface ScheduleRequestMapper {
     @Mapping(target = "mdaVmSpecs", expression = "java(new MdaVmSpecs(request.getMachineType(), request.getDiskSizeGb()))")
     ScheduleRequest toDto(ScheduleRequestEntity request);
 
-    default MdaVmSpecs toPsm(ScheduleRequestEntity requestEntity) {
+    default MdaVmSpecs toMdaVmSpecs(ScheduleRequestEntity requestEntity) {
         return new MdaVmSpecs(requestEntity.getMachineType(), requestEntity.getDiskSizeGb());
     }
 }

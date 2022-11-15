@@ -1,29 +1,44 @@
 /* eslint-disable react/jsx-key */
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import ShareIcon from '@mui/icons-material/Share';
-import { Container, Grid, IconButton, Typography } from '@mui/material';
+import { Box, Container, Grid, IconButton, Typography } from '@mui/material';
+import { getApis } from 'api/initialize-apis';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
 import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesRow, stylesRowCenteredVertical } from 'common/styles';
+import { useDownload } from 'hooks/query/useDownload';
+import { useMeQuery } from 'hooks/query/useMeQuery';
+import { useUnsetFileAsFavourite } from 'hooks/query/useUnsetFileAsFavourite';
+import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mockFiles } from 'utils/mocks';
 import { formatDate } from 'utils/util';
 import { opposite, SortDirection, sorted, SortKey, withSortDirection } from './utils';
 
 export const FilesListView = () => {
     const { t } = useTranslation();
-    const [files] = useState(mockFiles);
+    const { me } = useMeQuery();
+    const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({});
     const [sortDirection, setSortDirection] = useState<SortDirection>('DESC');
     const [sortKey, setSortKey] = useState<SortKey>('createdAt');
-    const sortedFiles = useMemo(() => sorted(files, sortKey), [files, sortKey]);
+    const sortedFiles = useMemo(() => sorted(me?.favouriteFiles, sortKey), [me, sortKey]);
+
+    const { download } = useDownload({
+        fetcher: (file) =>
+            getApis().userApi.getFavouriteFileDownloadRequest({
+                remoteFileId: file.id,
+            }),
+        onError: pushApiError,
+        deps: [me],
+    });
+
+    const { unsetFileAsFavouriteMutation } = useUnsetFileAsFavourite();
 
     return (
         <PageContainer
@@ -82,7 +97,7 @@ export const FilesListView = () => {
                         <StackedListContent
                             proportions={[5, 4, 1, 1]}
                             items={withSortDirection(sortedFiles, sortDirection)}
-                            itemKeyExtractor={(file) => file.id}
+                            itemKeyExtractor={({ file }) => file.id}
                             itemWraperSxProvider={(idx) => {
                                 if (idx === 3) {
                                     return {
@@ -91,26 +106,24 @@ export const FilesListView = () => {
                                     };
                                 }
                             }}
-                            itemRenderer={(file) => [
+                            itemRenderer={({ file, activitySummaryDto }) => [
                                 <>
                                     <InsertDriveFileIcon sx={{ height: '80%' }} />
                                     <Typography variant="body1">{file.name}</Typography>
                                 </>,
-                                <Typography variant="body1">{file.courseName}</Typography>,
-                                <Typography variant="body1">
-                                    {formatDate(file.createdAt.toDate())}
-                                </Typography>,
-                                <>
-                                    <IconButton color="primary">
+                                <Typography variant="body1">{activitySummaryDto.courseName}</Typography>,
+                                <Typography variant="body1">{formatDate(file.createdAt)}</Typography>,
+                                <Box sx={{ ...stylesRow, ml: 'auto' }}>
+                                    <IconButton color="primary" onClick={() => download(file)}>
                                         <DownloadIcon />
                                     </IconButton>
-                                    <IconButton color="primary">
-                                        <ShareIcon />
+                                    <IconButton
+                                        color="primary"
+                                        onClick={() => unsetFileAsFavouriteMutation.mutate(file)}
+                                    >
+                                        <FavoriteIcon />
                                     </IconButton>
-                                    <IconButton color="primary">
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </>,
+                                </Box>,
                             ]}
                         />
                     }

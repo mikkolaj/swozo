@@ -103,7 +103,7 @@ public class ScheduleService {
 
             teacherServiceDescriptions.push(buildServiceDescription(activityModule, serviceModule));
 
-            assignEmptyLinkToUser(scheduleInfo, activity.getCourse().getTeacher());
+            assignEmptyLinkToUser(scheduleInfo, activity.getTeacher());
 
             if (!serviceModule.isIsolated()) {
                 assignLinksToStudents(activity, scheduleInfo);

@@ -27,7 +27,7 @@ public class SandboxValidator {
         var maxStudents = getPolicyValueOrDefault(policies, PolicyType.MAX_STUDENTS);
         var maxActivityLength = getPolicyValueOrDefault(policies, PolicyType.MAX_ACTIVITY_DURATION_MINUTES);
 
-        if (courseRepository.countBySandboxModeIsTrueAndTeacherId(creatorId) > maxParallelSandboxes) {
+        if (courseRepository.countBySandboxModeIsTrueAndTeacherId(creatorId) >= maxParallelSandboxes) {
             throw new MaxSandboxesCountExceededException();
         }
 

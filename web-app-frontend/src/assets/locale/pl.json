@@ -44,6 +44,7 @@
         "virtualMachines": "repozytorium maszyn wirtualnych",
         "userManagement": "zarządzanie użytkownikami",
         "menu": {
+            "help": "Pomoc",
             "logout": "wyloguj",
             "switchToTechnical": "Widok nauczyciela technicznego",
             "switchToTeacher": "Widok nauczyciela"
@@ -347,7 +348,7 @@
                 "accessibility": {
                     "public": {
                         "label": "Moduł jest ustawiony jako publiczny.",
-                        "info": "Wszyscy będą mogli z niego skorzystać zaraz po utworzeniu"
+                        "info": "Wszyscy nauczyciele będą mogli z niego skorzystać zaraz po utworzeniu."
                     },
                     "private": {
                         "label": "Moduł jest ustawiony jako prywatny.",
@@ -357,11 +358,11 @@
                 "isolation": {
                     "ISOLATED": {
                         "label": "Wybrano środowisko izolowane.",
-                        "info": "Tylko 1 użytkownik otrzyma dostęp do pojedynczej maszyny wirtualnej z uruchomionym modułem"
+                        "info": "Tylko 1 użytkownik otrzyma dostęp do pojedynczej maszyny wirtualnej z uruchomionym modułem."
                     },
                     "SHARED": {
                         "label": "Wybrano środowisko współdzielone.",
-                        "info": "Wielu użytkowników otrzyma dostęp do tej samej maszyny wirtualnej z uruchomionym modułem"
+                        "info": "Wielu użytkowników otrzyma dostęp do tej samej maszyny wirtualnej z uruchomionym modułem."
                     }
                 },
                 "disclaimer": {
@@ -420,6 +421,8 @@
     "activityFiles": {
         "header": "Pliki dla: {{courseName}} - {{activityName}}",
         "goBackBtn": "Wróć do kursu",
+        "addToFavourite": "Dodaj do ulubionych",
+        "removeFromFavourite": "Usuń z ulubionych",
         "tabs": {
             "public": {
                 "label": "Publiczne pliki",
@@ -432,7 +435,27 @@
                 "empty": "Nie przesłałeś jeszcze żadnego pliku"
             },
             "users": {
-                "label": "Moje pliki"
+                "label": "Moje pliki",
+                "download": "Pobierz",
+                "module": "{{name}} ({{serviceName}})",
+                "my": {
+                    "headers": {
+                        "name": "Nazwa pliku",
+                        "size": "Rozmiar pliku",
+                        "serviceModule": "Moduł"
+                    },
+                    "teacherLabel": "Wyniki przypisane do konta nauczyciela",
+                    "emptyStudent": "Brak wyników z zajęć. Poczekaj parę minut po planowanym końcu zajęć. Skontaktuj się z nauczycielem jeśli uważasz, że pliki powinny się tu znaleźć.",
+                    "emptyTeacher": "Brak wyników z zajęć. Poczekaj parę minut po planowanym końcu zajęć. Skontaktuj się z administratorem jeśli uważasz, że pliki powinny się tu znaleźć."
+                },
+                "allStudents": {
+                    "headers": {
+                        "studentName": "Imię i nazwisku studenta",
+                        "studentEmail": "Adres Email studenta",
+                        "fileSize": "Rozmiar pliku"
+                    },
+                    "empty": "Brak wyników z zajęć dla tej aktywności. Upewnij się, że powinny one się tu znaleźć, poczekaj kilka minut po planowanym zakończeniu zajęć i skontaktuj się z administratorem."
+                }
             }
         },
         "error": {
@@ -610,6 +633,9 @@
             }
         }
     },
+    "help": {
+        "header": "Dane kontaktowe do administratorów systemu"
+    },
     "error": {
         "defaultMessage": "Coś poszło nie tak...",
         "defaultNavigationBtn": "Wróć do strony głównej",
@@ -631,7 +657,9 @@
         "policiesUpdated": "Polityki użytkownika zostały zaaktualizowane",
         "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!",
         "vmDeleted": "Maszyna wirtualna została usunięta",
-        "vmCreated": "Maszyna wirtualna została utworzona"
+        "vmCreated": "Maszyna wirtualna została utworzona",
+        "addedToFavourite": "Plik został oznaczony jako ulubiony",
+        "removedFromFavourite": "Plik został usunięty z ulubionych"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",

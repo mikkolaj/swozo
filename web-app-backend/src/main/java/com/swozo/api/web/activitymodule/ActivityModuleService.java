@@ -1,16 +1,16 @@
 package com.swozo.api.web.activitymodule;
 
 import com.swozo.api.common.files.FileService;
-import com.swozo.api.common.files.dto.UploadAccessDto;
-import com.swozo.api.common.files.request.InitFileUploadRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.web.user.UserRepository;
 import com.swozo.api.web.user.UserService;
 import com.swozo.mapper.UserMapper;
+import com.swozo.model.files.InitFileUploadRequest;
+import com.swozo.model.files.StorageAccessRequest;
+import com.swozo.model.files.UploadAccessDto;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.users.ActivityRole;
 import com.swozo.model.users.OrchestratorUserDto;
-import com.swozo.model.utils.StorageAccessRequest;
 import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
 import com.swozo.security.exceptions.UnauthorizedException;
@@ -50,8 +50,7 @@ public class ActivityModuleService {
     }
 
     public List<OrchestratorUserDto> getUserDataForProvisioner(Long activityModuleId, Long scheduleRequestId) {
-        var activity = activityModuleRepository.findById(activityModuleId).orElseThrow();
-        var teacher = activity.getActivity().getCourse().getTeacher();
+        var teacher = activityModuleRepository.findById(activityModuleId).orElseThrow().getTeacher();
 
         return userRepository.getUsersThatUseVmCreatedIn(activityModuleId, scheduleRequestId).stream()
                 .map(user -> userMapper.toOrchestratorDto(user, user.equals(teacher) ? ActivityRole.TEACHER : ActivityRole.STUDENT))
@@ -93,7 +92,7 @@ public class ActivityModuleService {
 
     public void confirmLinkCanBeDeliveredToStudents(Long teacherId, Long activityModuleId) {
         var activityModule = activityModuleRepository.findById(activityModuleId).orElseThrow();
-        if (!activityModule.getActivity().getCourse().getTeacher().getId().equals(teacherId)) {
+        if (!activityModule.getTeacher().getId().equals(teacherId)) {
             throw new UnauthorizedException("You are not authorized to confirm link delivery");
         }
 

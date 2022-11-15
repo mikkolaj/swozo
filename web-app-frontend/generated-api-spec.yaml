@@ -289,7 +289,7 @@ paths:
       responses:
         "200":
           description: OK
-  /activities/{activityId}/files:
+  /activities/{activityId}/files/public:
     put:
       tags:
       - activity-controller
@@ -428,6 +428,33 @@ paths:
       responses:
         "200":
           description: OK
+      security:
+      - JWT_AUTH: []
+  /users/favourite/{activityId}/files/{remoteFileId}:
+    post:
+      tags:
+      - user-controller
+      operationId: setFileAsFavourite
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: remoteFileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MeDto'
       security:
       - JWT_AUTH: []
   /sandbox/{serviceModuleId}:
@@ -755,7 +782,48 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/UserDetailsDto'
+                $ref: '#/components/schemas/MeDto'
+      security:
+      - JWT_AUTH: []
+  /users/favourite/{remoteFileId}:
+    get:
+      tags:
+      - user-controller
+      operationId: getFavouriteFileDownloadRequest
+      parameters:
+      - name: remoteFileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StorageAccessRequest'
+      security:
+      - JWT_AUTH: []
+    delete:
+      tags:
+      - user-controller
+      operationId: unsetFileAsFavourite
+      parameters:
+      - name: remoteFileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MeDto'
       security:
       - JWT_AUTH: []
   /users/details/{userId}:
@@ -777,6 +845,22 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/UserAdminDetailsDto'
+      security:
+      - JWT_AUTH: []
+  /users/admins:
+    get:
+      tags:
+      - user-controller
+      operationId: getSystemAdmins
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetailsDto'
       security:
       - JWT_AUTH: []
   /service-modules/{serviceModuleId}:
@@ -1089,7 +1173,76 @@ paths:
                   $ref: '#/components/schemas/ActivitySummaryDto'
       security:
       - JWT_AUTH: []
-  /activities/{activityId}/files/{fileId}:
+  /activities/{activityId}/files/results/teacher:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFilesForAllStudents
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeacherActivityFilesDto'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/results/student:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFilesForUser
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ActivityFilesDto'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/results/download/{fileId}:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFileDownloadRequest
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StorageAccessRequest'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/public/download/{fileId}:
     get:
       tags:
       - activity-controller
@@ -1806,6 +1959,63 @@ components:
           format: int64
         refreshToken:
           type: string
+    ActivitySummaryDto:
+      required:
+      - courseId
+      - courseName
+      - endTime
+      - id
+      - name
+      - startTime
+      - teacher
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        courseId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        courseName:
+          type: string
+        teacher:
+          $ref: '#/components/schemas/UserDetailsDto'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+    FavouriteFileDto:
+      required:
+      - activitySummaryDto
+      - file
+      type: object
+      properties:
+        file:
+          $ref: '#/components/schemas/FileDto'
+        activitySummaryDto:
+          $ref: '#/components/schemas/ActivitySummaryDto'
+    MeDto:
+      required:
+      - email
+      - favouriteFiles
+      - name
+      - surname
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        favouriteFiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavouriteFileDto'
     ServiceModuleReservationDto:
       required:
       - dynamicFieldAdditionalActions
@@ -2064,41 +2274,38 @@ components:
           items:
             $ref: '#/components/schemas/ParameterDescription'
         isolationModes:
+          uniqueItems: true
           type: array
           items:
             type: string
             enum:
-            - ISOLATED
             - SHARED
-    ActivitySummaryDto:
+            - ISOLATED
+    ActivityFilesDto:
       required:
-      - courseId
-      - courseName
-      - endTime
-      - id
-      - name
-      - startTime
-      - teacher
+      - activityModuleIdToUserFiles
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-        courseId:
-          type: integer
-          format: int64
-        name:
-          type: string
-        courseName:
-          type: string
-        teacher:
-          $ref: '#/components/schemas/UserDetailsDto'
-        startTime:
-          type: string
-          format: date-time
-        endTime:
-          type: string
-          format: date-time
+        activityModuleIdToUserFiles:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FileDto'
+    TeacherActivityFilesDto:
+      required:
+      - userIdToUserDetails
+      - userIdToUserFiles
+      type: object
+      properties:
+        userIdToUserFiles:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ActivityFilesDto'
+        userIdToUserDetails:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UserDetailsDto'
   securitySchemes:
     JWT_AUTH:
       type: http
