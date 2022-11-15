@@ -1,5 +1,6 @@
 package com.swozo.persistence.mda.vminfo;
 
+import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.servicemodule.ServiceModule;
 import lombok.*;
 
@@ -15,4 +16,9 @@ public class PsmVmInfo {
     private ArrayList<ServiceModule> serviceModules = new ArrayList<>();
     private String machineType;
     private Integer disk;
+
+    @Override
+    public String toString(){
+        return String.format("PsmVmInfo(amount:%s, ServiceModuleIds:%s, machineType:%s, disk:%s)", amount, serviceModules.stream().map(BaseEntity::getId).toList(), machineType, disk);
+    }
 }

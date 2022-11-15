@@ -1,5 +1,6 @@
 package com.swozo.persistence.mda.vminfo;
 
+import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.servicemodule.ServiceModule;
 import lombok.*;
 
@@ -33,5 +34,10 @@ public class PimVmInfo {
             throw new IllegalArgumentException("module already added");
         }
         serviceModules.add(serviceModule);
+    }
+
+    @Override
+    public String toString(){
+        return String.format("PimVmInfo(amount:%s, ServiceModuleIds:%s, vcpu:%s, ramGB:%s, imageDiskSizeGB:%s, bandwidthMbps:%s)", amount, serviceModules.stream().map(BaseEntity::getId).toList(), vcpu, ram, disk, bandwidth);
     }
 }
