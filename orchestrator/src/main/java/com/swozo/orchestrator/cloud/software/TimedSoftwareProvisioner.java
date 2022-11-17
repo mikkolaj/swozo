@@ -28,7 +28,7 @@ public interface TimedSoftwareProvisioner {
 
     void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException;
 
-    ServiceTypeEntity getScheduleType();
+    ServiceTypeEntity getServiceType();
 
     ServiceConfig getServiceConfig();
 

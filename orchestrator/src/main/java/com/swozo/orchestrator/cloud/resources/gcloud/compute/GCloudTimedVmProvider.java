@@ -99,7 +99,7 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
 
     @Async
     @Override
-    public CompletableFuture<VmResourceDetails> getVMResourceDetails(Long internalId) {
+    public CompletableFuture<VmResourceDetails> getVMResourceDetails(long internalId) {
         return CompletableFuture.completedFuture(vmRepository.findById(internalId)
                 .map(vmUtils::toDto)
                 .map(manager::getInstanceExternalIP)

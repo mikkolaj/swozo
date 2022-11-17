@@ -114,7 +114,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
-    public ServiceTypeEntity getScheduleType() {
+    public ServiceTypeEntity getServiceType() {
         return SUPPORTED_SCHEDULE;
     }
 
