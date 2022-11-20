@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public class SharedServiceModule extends ServiceModule {
     private final static int MB_MULTIPLIER = 1024;
     private Integer usersPerAdditionalCore;

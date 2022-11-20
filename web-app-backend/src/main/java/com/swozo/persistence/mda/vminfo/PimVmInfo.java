@@ -38,6 +38,6 @@ public class PimVmInfo {
 
     @Override
     public String toString(){
-        return String.format("PimVmInfo(amount:%s, ServiceModuleIds:%s, vcpu:%s, ramGB:%s, imageDiskSizeGB:%s, bandwidthMbps:%s)", amount, serviceModules.stream().map(BaseEntity::getId).toList(), vcpu, ram, disk, bandwidth);
+        return String.format("PimVmInfo(amount=%s, ServiceModuleIds=%s, vcpu=%s, ramGB=%s, imageDiskSizeGB=%s, bandwidthMbps=%s)", amount, serviceModules.stream().map(BaseEntity::getId).toList(), vcpu, ram, disk, bandwidth);
     }
 }

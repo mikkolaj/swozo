@@ -18,6 +18,6 @@ public class Cim{
 
     @Override
     public String toString(){
-        return String.format("Cim(ServiceModuleIds:%s, teacherId:%s, studentsNumber:%s)", selectedModules.stream().map(BaseEntity::getId).toList(), teacherId, studentsNumber);
+        return String.format("Cim(ServiceModuleIds=%s, teacherId=%s, studentsNumber=%s)", selectedModules.stream().map(BaseEntity::getId).toList(), teacherId, studentsNumber);
     }
 }

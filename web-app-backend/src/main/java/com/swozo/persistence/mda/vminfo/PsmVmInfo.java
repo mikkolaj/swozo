@@ -19,6 +19,6 @@ public class PsmVmInfo {
 
     @Override
     public String toString(){
-        return String.format("PsmVmInfo(amount:%s, ServiceModuleIds:%s, machineType:%s, disk:%s)", amount, serviceModules.stream().map(BaseEntity::getId).toList(), machineType, disk);
+        return String.format("PsmVmInfo(amount=%s, ServiceModuleIds=%s, machineType=%s, disk=%s)", amount, serviceModules.stream().map(BaseEntity::getId).toList(), machineType, disk);
     }
 }

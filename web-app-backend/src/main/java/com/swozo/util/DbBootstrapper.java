@@ -142,10 +142,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setBaseVcpu(1);
         serviceModule.setBaseDiskGB(1);
         serviceModule.setName("Klasy w Pythonie");
-        serviceModule.setTeacherInstructionHtml("teach");
-        serviceModule.setStudentInstructionHtml("stud");
+        serviceModule.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji o zmiennych");
+        serviceModule.setStudentInstructionHtml("Przypomnij sobie wiedze z lekcji o zmiennych");
         serviceModule.setCreator(teacher);
-        serviceModule.setDescription("opis1");
+        serviceModule.setDescription("Modul przybliza wiedze o klasach w pythonie");
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setServiceName(ServiceType.JUPYTER.toString());
         serviceModule.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
@@ -162,7 +162,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule2.setBaseRamGB(1);
         serviceModule2.setBaseVcpu(1);
         serviceModule2.setBaseDiskGB(1);
-        serviceModule2.setName("Funkcje w Pythonie");
+        serviceModule2.setName("Funkcje w Pythonie 1");
         serviceModule2.setTeacherInstructionHtml("teach");
         serviceModule2.setStudentInstructionHtml("stud");
         serviceModule2.setCreator(teacher);
@@ -186,10 +186,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule3.setUsersPerAdditionalCore(15);
         serviceModule3.setUsersPerAdditionalDiskGb(2);
         serviceModule3.setName("Funkcje w Pythonie2");
-        serviceModule3.setTeacherInstructionHtml("teach");
-        serviceModule3.setStudentInstructionHtml("stud");
+        serviceModule3.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji: Funkcje w Pythonie 1");
+        serviceModule3.setStudentInstructionHtml("Przypomnij sobie wiedze z poprzednich zajec o funckjach");
         serviceModule3.setCreator(teacher);
-        serviceModule3.setDescription("opis2");
+        serviceModule3.setDescription("Modul ma na celu poszerzyc wiedze o funkcjach w Pythonie");
         serviceModule3.setSubject("INFORMATYKA");
         serviceModule3.setServiceName(ServiceType.JUPYTER.toString());
         serviceModule3.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
