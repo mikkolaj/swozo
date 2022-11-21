@@ -70,12 +70,13 @@ export const ActivityView = ({ activity }: Props) => {
                         </Typography>
                     </Box>
                     <Container>
-                        {dayjs().isBefore(activity.endTime) && (
-                            <ActivityActionButton
-                                onClick={() => setLinksModalOpen(true)}
-                                textI18n="course.activity.links"
-                            />
-                        )}
+                        {dayjs().isBefore(activity.endTime) ||
+                            (true && (
+                                <ActivityActionButton
+                                    onClick={() => setLinksModalOpen(true)}
+                                    textI18n="course.activity.links"
+                                />
+                            ))}
                         {(isSame(me, course.teacher) ||
                             activity.publicFiles.length > 0 ||
                             dayjs().isAfter(activity.endTime)) && (

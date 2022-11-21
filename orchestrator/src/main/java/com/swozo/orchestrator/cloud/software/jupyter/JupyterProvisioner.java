@@ -56,6 +56,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     @Override
     public ServiceConfig getServiceConfig() {
         return new ServiceConfig(
+                "Jupyter Notebook",
                 SUPPORTED_SCHEDULE.toString(),
                 JupyterParameters.getParameterDescriptions(translationsProvider),
                 Set.of(IsolationMode.ISOLATED),

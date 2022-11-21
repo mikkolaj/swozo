@@ -80,9 +80,7 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                         variant="h6"
                                     >
                                         {t('course.activity.linksInfo.title', {
-                                            serviceName: _.capitalize(
-                                                activityModule.serviceModule.serviceName
-                                            ),
+                                            serviceName: activityModule.serviceModule.serviceName,
                                             serviceModuleName: activityModule.serviceModule.name,
                                         })}
                                     </Typography>

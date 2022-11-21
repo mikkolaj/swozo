@@ -60,6 +60,7 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
     @Override
     public ServiceConfig getServiceConfig() {
         return new ServiceConfig(
+                "QuizApp",
                 SUPPORTED_SCHEDULE.toString(),
                 QuizAppParameters.getParameterDescriptions(translationsProvider),
                 Set.of(IsolationMode.SHARED),

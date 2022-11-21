@@ -156,6 +156,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setServiceName(ServiceType.JUPYTER.toString());
         serviceModule.setDynamicProperties(Map.of("notebookLocation", jupyterFile.getId().toString()));
+        serviceModule.setServiceDisplayName("Jupyter Notebook");
         serviceModule.setPublic(true);
         serviceModule.setReady(true);
         serviceModule.setCreatedAt(LocalDateTime.of(2022,

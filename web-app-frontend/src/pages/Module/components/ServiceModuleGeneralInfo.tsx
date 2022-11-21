@@ -22,10 +22,7 @@ export const ServiceModuleGeneralInfo = ({ serviceModule, children }: PropsWithC
                 i18nLabel="myModule.description"
             />
             <StyledReadonlyField value={_.capitalize(serviceModule.subject)} i18nLabel="myModule.subject" />
-            <StyledReadonlyField
-                value={_.capitalize(serviceModule.serviceName)}
-                i18nLabel="myModule.serviceName"
-            />
+            <StyledReadonlyField value={serviceModule.serviceName} i18nLabel="myModule.serviceName" />
             {children}
             <Box sx={{ m: 1 }}>
                 <Typography>{t('myModule.teacherInstruction')}</Typography>

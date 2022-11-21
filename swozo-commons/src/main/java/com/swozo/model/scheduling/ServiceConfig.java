@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 public record ServiceConfig(
+        @Schema(required = true) String displayName,
         @Schema(required = true) String serviceName,
         @Schema(required = true) List<ParameterDescription> parameterDescriptions,
         @Schema(required = true) Set<IsolationMode> isolationModes,

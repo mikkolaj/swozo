@@ -10,7 +10,6 @@ import { stylesRowCenteredVertical } from 'common/styles';
 import { useDownload } from 'hooks/query/useDownload';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
-import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatName } from 'utils/util';
@@ -61,7 +60,7 @@ export const AggregatedActivityResultsView = ({ activity }: Props) => {
                     <Typography variant="h5" gutterBottom sx={{ my: 2 }}>
                         {t('activityFiles.tabs.users.module', {
                             name: activityModule.serviceModule.name,
-                            serviceName: _.capitalize(activityModule.serviceModule.serviceName),
+                            serviceName: activityModule.serviceModule.serviceName,
                         })}
                     </Typography>
                     <StackedList

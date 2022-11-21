@@ -9,7 +9,6 @@ import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useNoCourseOrNoActivityErrorHandlers } from 'hooks/useCommonErrorHandlers';
 import { useCourseWithActivity } from 'hooks/useCourseActivity';
 import { useRequiredParams } from 'hooks/useRequiredParams';
-import _ from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -96,7 +95,7 @@ export const ActivityInstructionsView = () => {
                                 <Paper sx={{ width: '100%', p: 2, boxShadow: 3 }}>
                                     <Typography variant="h5" component="div" gutterBottom>
                                         {t('activityInstructions.tabs.modules.serviceModuleTitle', {
-                                            serviceName: _.capitalize(serviceModule.serviceName),
+                                            serviceName: serviceModule.serviceName,
                                             serviceModuleName: serviceModule.name,
                                         })}
                                     </Typography>

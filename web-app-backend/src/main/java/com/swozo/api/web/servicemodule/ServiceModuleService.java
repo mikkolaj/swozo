@@ -92,7 +92,7 @@ public class ServiceModuleService {
         serviceModuleValidator.validateReservation(creator, serviceConfig, request, false);
 
         var serviceModuleReservation = serviceModuleRepository.save(
-                serviceModuleMapper.toPersistenceReservation(request, creator)
+                serviceModuleMapper.toPersistenceReservation(request, creator, serviceConfig)
         );
 
         var additionalFieldActions = handleDynamicFieldTypesForReservation(
