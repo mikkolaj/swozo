@@ -38,8 +38,8 @@
         "adminLogo": "SWOZO ADMIN",
         "myCourses": "moje kursy",
         "myModules": "moje moduły",
-        "publicCourses": "wszystkie kursy",
-        "publicModules": "wszystkie moduły",
+        "publicCourses": "publiczne kursy",
+        "publicModules": "publiczne moduły",
         "myFiles": "pliki",
         "virtualMachines": "repozytorium maszyn wirtualnych",
         "userManagement": "zarządzanie użytkownikami",
@@ -85,7 +85,8 @@
             "activities": {
                 "button": "Aktywności",
                 "empty": "Nie utworzyłeś jeszcze żadnej aktywności w tym kursie",
-                "emptyButton": "Dodaj aktywności"
+                "emptyButton": "Dodaj aktywności",
+                "scrollToClosest": "Przewiń do najbliższej aktywności ({{date}})"
             },
             "participants": {
                 "button": "Uczestnicy",

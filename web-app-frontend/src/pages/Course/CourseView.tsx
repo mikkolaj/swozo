@@ -10,13 +10,15 @@ import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { buildErrorPageHandler } from 'hooks/useCommonErrorHandlers';
 import { useRequiredParams } from 'hooks/useRequiredParams';
 import _ from 'lodash';
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TEACHER, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
+import { formatDateTime } from 'utils/util';
 import { ActivityView } from './components/Activity/ActivityView';
 import { Editor } from './components/Options/ParticipantsList/Editor';
 import { ParticipantsListView } from './components/Options/ParticipantsList/ParticipantsListView';
+import { findClosestActivity } from './utils';
 
 export const CourseContext = React.createContext<CourseDetailsDto | undefined>(undefined);
 
@@ -24,30 +26,18 @@ type Tab = 'activities' | 'participants' | 'editor';
 type TabConfig = {
     type: Tab;
     roles?: AuthDetailsDtoRolesEnum[];
-    tabRenderer: (course: CourseDetailsDto) => JSX.Element;
 };
 
 const tabs: Record<Tab, TabConfig> = {
     activities: {
         type: 'activities',
-        tabRenderer: (course) => (
-            <Stack spacing={2} sx={{ px: 2 }}>
-                {_.sortBy(course.activities, (activity) => activity.startTime).map((activity) => (
-                    <ActivityView key={activity.id} activity={activity} />
-                ))}
-            </Stack>
-        ),
     },
     participants: {
         type: 'participants',
-        tabRenderer: (course) => <ParticipantsListView course={course} />,
     },
     editor: {
         type: 'editor',
         roles: [TEACHER],
-        tabRenderer: (course) => (
-            <Editor course={course} initialTab={course.activities.length > 0 ? 'course' : 'addActivity'} />
-        ),
     },
 };
 
@@ -63,6 +53,7 @@ export const CourseView = () => {
     });
     const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling(errorHandlers);
+    const closestActivityRef = useRef<HTMLElement>(null);
 
     const { data: course } = useErrorHandledQuery(
         ['courses', courseId],
@@ -71,6 +62,8 @@ export const CourseView = () => {
         removeApiError,
         isApiErrorSet
     );
+
+    const closestActivity = useMemo(() => (course ? findClosestActivity(course) : undefined), [course]);
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {
         return consumeErrorAction() ?? <></>;
@@ -83,7 +76,22 @@ export const CourseView = () => {
                 header={
                     <>
                         <Grid item xs={7}>
-                            <PageHeaderText text={course?.name} />
+                            <Box>
+                                <PageHeaderText text={course?.name} />
+                                {closestActivity && tab.type === 'activities' && (
+                                    <Button
+                                        onClick={() =>
+                                            closestActivityRef?.current?.scrollIntoView({
+                                                behavior: 'smooth',
+                                            })
+                                        }
+                                    >
+                                        {t('course.options.activities.scrollToClosest', {
+                                            date: formatDateTime(closestActivity.startTime),
+                                        })}
+                                    </Button>
+                                )}
+                            </Box>
                         </Grid>
                         <Grid item xs={5} sx={stylesRowWithItemsAtTheEnd}>
                             {Object.entries(tabs).map(([type, config]) => (
@@ -104,7 +112,32 @@ export const CourseView = () => {
                 <Container>
                     {course &&
                         (tab.type !== 'activities' || course.activities.length > 0 ? (
-                            tab.tabRenderer(course)
+                            <Box>
+                                {tab.type === 'activities' && (
+                                    <Stack spacing={2} sx={{ px: 2 }}>
+                                        {_.sortBy(course.activities, (activity) => activity.startTime).map(
+                                            (activity) => (
+                                                <ActivityView
+                                                    boxRef={
+                                                        activity === closestActivity
+                                                            ? closestActivityRef
+                                                            : undefined
+                                                    }
+                                                    key={activity.id}
+                                                    activity={activity}
+                                                />
+                                            )
+                                        )}
+                                    </Stack>
+                                )}
+                                {tab.type === 'participants' && <ParticipantsListView course={course} />}
+                                {tab.type === 'editor' && (
+                                    <Editor
+                                        course={course}
+                                        initialTab={course.activities.length > 0 ? 'course' : 'addActivity'}
+                                    />
+                                )}
+                            </Box>
                         ) : (
                             <Box sx={{ ...stylesColumnCenteredHorizontal, justifyContent: 'center', mt: 8 }}>
                                 <Typography

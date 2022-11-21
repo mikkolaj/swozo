@@ -10,6 +10,8 @@ import { formatDateTime, prepareErrorForDisplay, prepareFormikValidationErrors, 
 export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 30;
 export const DEFAULT_MIN_TIME_OFFSET = 5;
 
+export const MAX_HOUR_TO_TRY_HANDLING_MIDNIGHT_OVERLAP = 3;
+
 export type FormValues = SlideValues2<CourseValues, ActivitesFormValues>;
 
 const COURSE_SLIDE_DATA_NAME = 'course';
@@ -92,12 +94,21 @@ export const resizeActivityValuesList = (
     return currentValues.slice(0, targetSize);
 };
 
+const handleMidnightOverlap = (startTime: Dayjs, endTime: Dayjs) => {
+    if (endTime.isBefore(startTime) && endTime.hour() < MAX_HOUR_TO_TRY_HANDLING_MIDNIGHT_OVERLAP)
+        return endTime.add(1, 'day');
+    return endTime;
+};
+
 export const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityRequest => {
+    const startTime = withDate(activity.startTime, activity.date);
+    const endTime = handleMidnightOverlap(startTime, withDate(activity.endTime, activity.date));
+
     return {
         name: activity.name,
         description: activity.description,
-        startTime: withDate(activity.startTime, activity.date).toDate(),
-        endTime: withDate(activity.endTime, activity.date).toDate(),
+        startTime: startTime.toDate(),
+        endTime: endTime.toDate(),
         instructionFromTeacher: {
             untrustedPossiblyDangerousHtml: activity.instructions,
         },

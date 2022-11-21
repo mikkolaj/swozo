@@ -4,7 +4,7 @@ import { ActivityDetailsDto } from 'api';
 import dayjs from 'dayjs';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { CourseContext } from 'pages/Course/CourseView';
-import { useContext, useState } from 'react';
+import { Ref, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { isSame } from 'utils/roles';
@@ -15,9 +15,10 @@ import { LinksModal } from './components/LinksModal';
 
 type Props = {
     activity: ActivityDetailsDto;
+    boxRef?: Ref<HTMLElement>;
 };
 
-export const ActivityView = ({ activity }: Props) => {
+export const ActivityView = ({ activity, boxRef }: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const course = useContext(CourseContext);
@@ -29,7 +30,8 @@ export const ActivityView = ({ activity }: Props) => {
     }
 
     return (
-        <Box>
+        <Box sx={{ position: 'relative' }}>
+            <Box ref={boxRef} sx={{ position: 'absolute', top: '-70px' }}></Box>
             <Card sx={{ boxShadow: 3 }}>
                 <CardContent sx={{ position: 'relative' }}>
                     <Box sx={{ maxWidth: '75%' }}>
@@ -70,13 +72,12 @@ export const ActivityView = ({ activity }: Props) => {
                         </Typography>
                     </Box>
                     <Container>
-                        {dayjs().isBefore(activity.endTime) ||
-                            (true && (
-                                <ActivityActionButton
-                                    onClick={() => setLinksModalOpen(true)}
-                                    textI18n="course.activity.links"
-                                />
-                            ))}
+                        {dayjs().isBefore(activity.endTime) && (
+                            <ActivityActionButton
+                                onClick={() => setLinksModalOpen(true)}
+                                textI18n="course.activity.links"
+                            />
+                        )}
                         {(isSame(me, course.teacher) ||
                             activity.publicFiles.length > 0 ||
                             dayjs().isAfter(activity.endTime)) && (

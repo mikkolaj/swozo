@@ -1,7 +1,9 @@
 import { ActivityDetailsDto, ActivityModuleDetailsDto, CourseDetailsDto, EditCourseRequest } from 'api';
 import { ApiError, ErrorType } from 'api/errors';
+import dayjs from 'dayjs';
 import { FormikProps } from 'formik';
 import { t } from 'i18next';
+import _ from 'lodash';
 import { argFormatter, CourseValues } from 'pages/CreateCourse/util';
 import { QueryClient } from 'react-query';
 import { prepareErrorForDisplay, prepareFormikValidationErrors } from 'utils/util';
@@ -64,3 +66,9 @@ export const setLinkDeliveryConfirmed = (
         },
     ],
 });
+
+export const findClosestActivity = (course: CourseDetailsDto): ActivityDetailsDto | undefined =>
+    _.minBy(
+        course.activities.filter((activity) => dayjs().isBefore(activity.endTime)),
+        (activity) => activity.endTime.getTime()
+    );

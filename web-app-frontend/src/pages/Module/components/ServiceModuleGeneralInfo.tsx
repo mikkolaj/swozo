@@ -8,15 +8,20 @@ import { useTranslation } from 'react-i18next';
 
 type Props = {
     serviceModule: ServiceModuleSummaryDto;
+    descriptionWidth?: string;
 };
 
-export const ServiceModuleGeneralInfo = ({ serviceModule, children }: PropsWithChildren<Props>) => {
+export const ServiceModuleGeneralInfo = ({
+    serviceModule,
+    descriptionWidth,
+    children,
+}: PropsWithChildren<Props>) => {
     const { t } = useTranslation();
 
     return (
         <>
             <StyledReadonlyField
-                wrapperSx={{ width: '50%' }}
+                wrapperSx={{ width: descriptionWidth ?? '50%' }}
                 value={serviceModule.description}
                 textFieldProps={{ multiline: true, fullWidth: true }}
                 i18nLabel="myModule.description"

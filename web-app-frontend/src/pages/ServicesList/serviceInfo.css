@@ -12,11 +12,11 @@
     font-weight: 600;
 }
 
-a {
+.summary a {
     text-decoration: none;
     color: #1976d2;
 }
 
-a:hover {
+.summary a:hover {
     color: #0756a5;
 }

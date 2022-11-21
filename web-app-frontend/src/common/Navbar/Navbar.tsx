@@ -45,6 +45,9 @@ export const Navbar = () => {
                         <WithRole roles={[STUDENT]}>
                             <NavbarItem textI18n="navbar.myFiles" route={PageRoutes.FILES} />
                         </WithRole>
+                        <WithRole roles={[TEACHER, TECHNICAL_TEACHER]}>
+                            <NavbarItem textI18n="navbar.services" route={PageRoutes.SERVICES} />
+                        </WithRole>
                         <WithRole roles={[TEACHER]}>
                             <NavbarItem textI18n="navbar.publicModules" route={PageRoutes.PUBLIC_MODULES} />
                         </WithRole>
@@ -56,9 +59,6 @@ export const Navbar = () => {
                         </WithRole>
                         <WithRole roles={ANY_EXCEPT_ADMIN}>
                             <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
-                        </WithRole>
-                        <WithRole roles={[TEACHER, TECHNICAL_TEACHER]}>
-                            <NavbarItem textI18n="navbar.services" route={PageRoutes.SERVICES} />
                         </WithRole>
                         <WithRole roles={ANY_EXCEPT_ADMIN}>
                             <NotificationBell notifications={[]} />

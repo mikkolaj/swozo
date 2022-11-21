@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { ActivityDetailsDto, ActivityModuleDetailsDto } from 'api';
 import { getApis } from 'api/initialize-apis';
-import { InstructionView } from 'common/Styled/InstructionView';
 import { ScrollableCenteredModal } from 'common/Styled/ScrollableCenteredModal';
 import { stylesColumnCenteredVertical } from 'common/styles';
 import { useMeQuery } from 'hooks/query/useMeQuery';
@@ -27,6 +26,7 @@ import { toast } from 'react-toastify';
 import { triggerError } from 'services/features/error/errorSlice';
 import { isSame } from 'utils/roles';
 import { getTranslated } from 'utils/util';
+import './connectionInstructions.css';
 
 type Props = {
     activity: ActivityDetailsDto;
@@ -133,9 +133,9 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                     {activityModule.connectionDetails.map(
                                         ({ connectionInstructions }, idx) => (
                                             <Box key={idx} sx={{ mt: 2 }}>
-                                                <InstructionView
-                                                    instruction={{
-                                                        untrustedPossiblyDangerousHtml: getTranslated(
+                                                <span
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: getTranslated(
                                                             i18n,
                                                             _.mapValues(
                                                                 connectionInstructions,
