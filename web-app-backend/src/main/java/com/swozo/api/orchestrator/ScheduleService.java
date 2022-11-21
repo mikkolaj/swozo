@@ -79,9 +79,8 @@ public class ScheduleService {
         activityScheduleInfoRepository.saveAll(scheduleInfos);
     }
 
-    public LocalDateTime getAsapScheduleAvailability() {
-        // TODO don't hardcode this
-        return LocalDateTime.now().plusMinutes(5);
+    public LocalDateTime getAsapScheduleAvailability(String serviceName) {
+        return orchestratorService.getEstimatedAsapServiceAvailability(serviceName);
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> buildScheduleRequestsForActivity(Activity activity) {
@@ -162,7 +161,6 @@ public class ScheduleService {
         scheduleRequestData.scheduleInfos()
                 .forEach(scheduleInfo -> scheduleInfo.setScheduleRequestId(scheduleRequestId));
     }
-
 
     private boolean canAcceptNewStudent(ActivityModuleScheduleInfo scheduleInfo) {
         return scheduleInfo.getUserActivityModuleData().isEmpty() ||

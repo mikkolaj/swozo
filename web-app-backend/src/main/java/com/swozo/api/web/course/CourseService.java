@@ -112,8 +112,9 @@ public class CourseService {
 
     @Transactional
     public void deleteCourse(Long id) {
-        courseRepository.deleteById(id);
-        // TODO: remove all files
+        var course = courseRepository.getById(id);
+        course.getActivities().forEach(activityService::removeAllActivityFiles);
+        courseRepository.delete(course);
     }
 
     @Transactional

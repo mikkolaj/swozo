@@ -110,7 +110,6 @@ public class ServiceModuleService {
             throw new UnauthorizedException("you are not a creator");
         }
         if (reservation.getReady()) {
-            // TODO: compare action results, if different throw
             return serviceModuleMapper.toDto(reservation, serviceConfig);
         }
 

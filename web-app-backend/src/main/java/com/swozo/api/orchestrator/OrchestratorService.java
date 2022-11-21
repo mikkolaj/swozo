@@ -6,6 +6,7 @@ import com.swozo.model.scheduling.ServiceConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -40,6 +41,10 @@ public class OrchestratorService {
                     .toArray(CompletableFuture[]::new)
                 )
                 .join();
+    }
+
+    public LocalDateTime getEstimatedAsapServiceAvailability(String serviceName) {
+        return requestSender.getEstimatedAsapServiceAvailability(serviceName).join();
     }
 
     private Supplier<List<ServiceConfig>> serviceConfigsSupplier() {

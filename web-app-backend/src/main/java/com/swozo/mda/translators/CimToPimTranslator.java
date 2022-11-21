@@ -50,14 +50,9 @@ public class CimToPimTranslator{
 
         Collection<Policy> policiesToCheck = policyService.getAllTeacherPolicies(cim.getTeacherId());
 
-
-//        THROWABLE:
         checkPolicies(policiesToCheck, teacherPimVmInfo);
         checkPolicies(policiesToCheck, studentPimVmInfo);
 
-
-
-//        TODO check policies
         return pim;
     }
 }

@@ -167,6 +167,18 @@ public class ActivityService {
         return fileService.createExternalDownloadRequest(file);
     }
 
+    public void removeAllActivityFiles(Activity activity) {
+        // TODO consider bulk remove
+        activity.getPublicFiles().forEach(fileService::removeFileInternally);
+        activity.getModules().stream()
+                .flatMap(activityModule -> activityModule.getSchedules().stream())
+                .flatMap(scheduleInfo -> scheduleInfo.getUserActivityModuleData().stream())
+                .map(UserActivityModuleInfo::getFile)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(fileService::removeFileInternally);
+    }
+
     private ActivityFilesDto collectUserActivityFiles(Long userId, Activity activity) {
         var activityModuleIdToUserFiles = new HashMap<Long, List<FileDto>>();
 
@@ -193,17 +205,5 @@ public class ActivityService {
                         .map(ActivityModuleScheduleInfo::getScheduleRequestId)
                         .toList()
         );
-    }
-
-    private void removeAllActivityFiles(Activity activity) {
-        // TODO consider bulk remove
-        activity.getPublicFiles().forEach(fileService::removeFileInternally);
-        activity.getModules().stream()
-                .flatMap(activityModule -> activityModule.getSchedules().stream())
-                .flatMap(scheduleInfo -> scheduleInfo.getUserActivityModuleData().stream())
-                .map(UserActivityModuleInfo::getFile)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(fileService::removeFileInternally);
     }
 }
