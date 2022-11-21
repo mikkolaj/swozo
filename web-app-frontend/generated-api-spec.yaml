@@ -2262,9 +2262,11 @@ components:
           format: date-time
     ServiceConfig:
       required:
+      - configurationInstructionHtml
       - isolationModes
       - parameterDescriptions
       - serviceName
+      - usageInstructionHtml
       type: object
       properties:
         serviceName:
@@ -2281,6 +2283,14 @@ components:
             enum:
             - SHARED
             - ISOLATED
+        configurationInstructionHtml:
+          type: object
+          additionalProperties:
+            type: string
+        usageInstructionHtml:
+          type: object
+          additionalProperties:
+            type: string
     ActivityFilesDto:
       required:
       - activityModuleIdToUserFiles

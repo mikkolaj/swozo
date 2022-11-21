@@ -315,7 +315,12 @@
                         "teacher": "Instrukcja dla nauczyciela",
                         "student": "Instrukcja dla studenta"
                     },
-                    "public": "Moduł publiczny"
+                    "public": "Moduł publiczny",
+                    "help": {
+                        "openBtn": "Pokaż pomoc w konfiguracji",
+                        "header": "Pomoc w konfiguracji serwisu: {{name}}",
+                        "closeBtn": "Zamknij"
+                    }
                 }
             },
             "1": {

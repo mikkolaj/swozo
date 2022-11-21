@@ -1,4 +1,4 @@
-import { Box, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
 import { ServiceConfig } from 'api';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormSelectField } from 'common/Input/FormSelectField';
@@ -7,10 +7,11 @@ import { SlideProps } from 'common/SlideForm/util';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { FormikErrors, FormikProps } from 'formik';
 import _ from 'lodash';
-import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo } from 'react';
+import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DynamicFormFields, DynamicFormValueRegistry, ModuleValues } from '../util/types';
 import { DynamicModuleInfoForm } from './DynamicModuleInfoForm';
+import { ServiceConfigurationHelp } from './ServiceConfigurationHelp';
 
 type Props = SlideProps & {
     values: ModuleValues;
@@ -36,6 +37,7 @@ export const ModuleInfoForm = ({
     onServiceChanged,
 }: Props) => {
     const { t } = useTranslation();
+    const [helpOpen, setHelpOpen] = useState(false);
     const serviceConfig = useMemo(() => {
         return supportedServices.find((cfg) => cfg.serviceName === values.service);
     }, [supportedServices, values.service]);
@@ -71,13 +73,20 @@ export const ModuleInfoForm = ({
                 textFieldProps={{ multiline: true, fullWidth: true, required: false }}
                 i18nLabel="createModule.slides.0.form.description"
             />
-            <FormSelectField name={nameBuilder('service')} i18nLabel="createModule.slides.0.form.service">
-                {supportedServices.map(({ serviceName }) => (
-                    <MenuItem key={serviceName} value={serviceName}>
-                        {_.capitalize(serviceName)}
-                    </MenuItem>
-                ))}
-            </FormSelectField>
+            <Box sx={{ ...stylesRowCenteredVertical }}>
+                <FormSelectField name={nameBuilder('service')} i18nLabel="createModule.slides.0.form.service">
+                    {supportedServices.map(({ serviceName }) => (
+                        <MenuItem key={serviceName} value={serviceName}>
+                            {_.capitalize(serviceName)}
+                        </MenuItem>
+                    ))}
+                </FormSelectField>
+                {serviceConfig && (
+                    <Button sx={{ mt: 2, ml: 4 }} onClick={() => setHelpOpen(true)}>
+                        {t('createModule.slides.0.form.help.openBtn')}
+                    </Button>
+                )}
+            </Box>
 
             {serviceConfig && serviceConfig.parameterDescriptions && (
                 <>
@@ -131,6 +140,13 @@ export const ModuleInfoForm = ({
                 name={nameBuilder('isPublic')}
                 onChange={handleChange}
             />
+            {serviceConfig && (
+                <ServiceConfigurationHelp
+                    open={helpOpen}
+                    onClose={() => setHelpOpen(false)}
+                    serviceConfig={serviceConfig}
+                />
+            )}
         </>
     );
 };

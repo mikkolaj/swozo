@@ -44,6 +44,18 @@ export interface ServiceConfig {
      * @memberof ServiceConfig
      */
     isolationModes: Set<ServiceConfigIsolationModesEnum>;
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof ServiceConfig
+     */
+    configurationInstructionHtml: { [key: string]: string; };
+    /**
+     * 
+     * @type {{ [key: string]: string; }}
+     * @memberof ServiceConfig
+     */
+    usageInstructionHtml: { [key: string]: string; };
 }
 
 /**
@@ -68,6 +80,8 @@ export function ServiceConfigFromJSONTyped(json: any, ignoreDiscriminator: boole
         'serviceName': json['serviceName'],
         'parameterDescriptions': ((json['parameterDescriptions'] as Array<any>).map(ParameterDescriptionFromJSON)),
         'isolationModes': json['isolationModes'],
+        'configurationInstructionHtml': json['configurationInstructionHtml'],
+        'usageInstructionHtml': json['usageInstructionHtml'],
     };
 }
 
@@ -83,6 +97,8 @@ export function ServiceConfigToJSON(value?: ServiceConfig | null): any {
         'serviceName': value.serviceName,
         'parameterDescriptions': ((value.parameterDescriptions as Array<any>).map(ParameterDescriptionToJSON)),
         'isolationModes': value.isolationModes,
+        'configurationInstructionHtml': value.configurationInstructionHtml,
+        'usageInstructionHtml': value.usageInstructionHtml,
     };
 }
 

@@ -62,7 +62,9 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
         return new ServiceConfig(
                 SUPPORTED_SCHEDULE.toString(),
                 QuizAppParameters.getParameterDescriptions(translationsProvider),
-                Set.of(IsolationMode.SHARED)
+                Set.of(IsolationMode.SHARED),
+                QuizAppParameters.getConfigurationInstruction(translationsProvider),
+                QuizAppParameters.getUsageInstruction(translationsProvider)
         );
     }
 
@@ -101,7 +103,7 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
         return CompletableFuture.completedFuture(List.of());
     }
 
-    public List<ActivityLinkInfo> createLinks(
+    private List<ActivityLinkInfo> createLinks(
             VmResourceDetails vmResourceDetails,
             Map<Long, String> userIdToUUid
     ) {
@@ -115,7 +117,7 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
         return new ActivityLinkInfo(
                 userId,
                 linkFormatter.appendQueryParams(baseUrl, Map.of(USER_KEY_QUERY_PARAM, uuid)),
-                translationsProvider.t("services.quizApp.connectionInstruction")
+                translationsProvider.t("services.quizApp.instructions.connection")
         );
     }
 

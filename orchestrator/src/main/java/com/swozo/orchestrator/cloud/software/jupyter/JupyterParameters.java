@@ -3,6 +3,7 @@ package com.swozo.orchestrator.cloud.software.jupyter;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
+import com.swozo.utils.SupportedLanguage;
 
 import java.util.List;
 import java.util.Map;
@@ -27,5 +28,13 @@ public record JupyterParameters(String notebookLocation) {
                         .withAllowedExtensions(List.of("ipynb"))
                         .build()
         );
+    }
+
+    public static Map<SupportedLanguage, String> getConfigurationInstruction(TranslationsProvider translationsProvider) {
+        return translationsProvider.t("services.jupyter.instructions.configuration");
+    }
+
+    public static Map<SupportedLanguage, String> getUsageInstruction(TranslationsProvider translationsProvider) {
+        return translationsProvider.t("services.jupyter.instructions.usage");
     }
 }

@@ -31,8 +31,8 @@ export const withRole = (...roles: AuthDetailsDtoRolesEnum[]): AuthRequirement =
 };
 
 export const hasRole = (authData?: AuthDetailsDto, ...roles: AuthDetailsDtoRolesEnum[]): boolean => {
-    // TODO handling admin
     if (!authData) return false;
+    if (authData.roles.includes(AuthDetailsDtoRolesEnum.Admin)) return true;
     return roles.find((role) => authData.roles.includes(role)) !== undefined;
 };
 

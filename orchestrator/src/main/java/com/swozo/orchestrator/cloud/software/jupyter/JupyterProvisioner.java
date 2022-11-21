@@ -58,7 +58,9 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return new ServiceConfig(
                 SUPPORTED_SCHEDULE.toString(),
                 JupyterParameters.getParameterDescriptions(translationsProvider),
-                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED)
+                Set.of(IsolationMode.ISOLATED),
+                JupyterParameters.getConfigurationInstruction(translationsProvider),
+                JupyterParameters.getUsageInstruction(translationsProvider)
         );
     }
 
@@ -103,7 +105,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
 
     private Function<Long, ActivityLinkInfo> createLink(String link) {
         return userId -> new ActivityLinkInfo(userId, link, translationsProvider.t(
-                "services.jupyter.connectionInstruction",
+                "services.jupyter.instructions.connection",
                 Map.of("password", MAIN_LINK_DESCRIPTION)
         ));
     }

@@ -5,18 +5,15 @@ import {
     AccordionSummary,
     Box,
     Button,
-    Card,
-    CardContent,
     Divider,
     Grid,
     Link,
-    Modal,
     Typography,
 } from '@mui/material';
 import { ActivityDetailsDto, ActivityModuleDetailsDto } from 'api';
 import { getApis } from 'api/initialize-apis';
-import { AbsolutelyCentered } from 'common/Styled/AbsolutetlyCentered';
 import { InstructionView } from 'common/Styled/InstructionView';
+import { ScrollableCenteredModal } from 'common/Styled/ScrollableCenteredModal';
 import { stylesColumnCenteredVertical } from 'common/styles';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import _ from 'lodash';
@@ -62,149 +59,102 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
     );
 
     return (
-        <Modal open={open} onClose={onClose} sx={{ width: '50%', margin: 'auto' }}>
-            <AbsolutelyCentered>
-                <Card
-                    sx={{
-                        borderRadius: 5,
-                        border: 'none',
-                        boxShadow: 3,
-                    }}
-                >
-                    <CardContent
-                        sx={{
-                            minHeight: '500px',
-                            maxHeight: '80vh',
-                            p: 0,
-                            overflowY: 'scroll',
-                            '::-webkit-scrollbar': {
-                                display: 'none',
-                            },
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                position: 'sticky',
-                                top: 0,
-                                mt: 1,
-                                mb: 2,
-                                zIndex: 100000,
-                                background: '#fff',
-                            }}
-                        >
-                            <Typography sx={{ paddingX: 2 }} component="h1" variant="h6" gutterBottom>
-                                {t('course.activity.linksInfo.info', {
-                                    courseName: course?.name,
-                                    activityName: activity.name,
-                                })}
-                            </Typography>
-                            <Divider />
-                        </Box>
-
-                        <Grid container sx={{ p: 2 }}>
-                            <Grid item xs={12}>
-                                {activity.activityModules.map((activityModule) => (
-                                    <Accordion sx={{ mb: 2, boxShadow: 3 }} key={activityModule.id}>
-                                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                            <Box
-                                                sx={{ cursor: 'default', pr: 4 }}
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                <Typography
-                                                    sx={{ textTransform: 'capitalize' }}
-                                                    component="h3"
-                                                    variant="h6"
-                                                >
-                                                    {t('course.activity.linksInfo.title', {
-                                                        serviceName: _.capitalize(
-                                                            activityModule.serviceModule.serviceName
-                                                        ),
-                                                        serviceModuleName: activityModule.serviceModule.name,
-                                                    })}
+        <ScrollableCenteredModal
+            open={open}
+            onClose={onClose}
+            header={t('course.activity.linksInfo.info', {
+                courseName: course?.name,
+                activityName: activity.name,
+            })}
+            closeBtn={t('course.activity.linksInfo.closeButton')}
+        >
+            <Grid container sx={{ p: 2 }}>
+                <Grid item xs={12}>
+                    {activity.activityModules.map((activityModule) => (
+                        <Accordion sx={{ mb: 2, boxShadow: 3 }} key={activityModule.id}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Box sx={{ cursor: 'default', pr: 4 }} onClick={(e) => e.stopPropagation()}>
+                                    <Typography
+                                        sx={{ textTransform: 'capitalize' }}
+                                        component="h3"
+                                        variant="h6"
+                                    >
+                                        {t('course.activity.linksInfo.title', {
+                                            serviceName: _.capitalize(
+                                                activityModule.serviceModule.serviceName
+                                            ),
+                                            serviceModuleName: activityModule.serviceModule.name,
+                                        })}
+                                    </Typography>
+                                    {activityModule.connectionDetails.length === 0 && (
+                                        <Typography>
+                                            {t('course.activity.linksInfo.linksUnavailable')}
+                                        </Typography>
+                                    )}
+                                    {isSame(me, course?.teacher) && (
+                                        <Box>
+                                            {!activityModule.linkConfirmationRequired ||
+                                            activityModule.linkConfirmed ? (
+                                                <Typography>
+                                                    {t('course.activity.linksInfo.linkDeliveryConfirmed')}
                                                 </Typography>
-                                                {activityModule.connectionDetails.length === 0 && (
+                                            ) : (
+                                                <Box>
                                                     <Typography>
-                                                        {t('course.activity.linksInfo.linksUnavailable')}
-                                                    </Typography>
-                                                )}
-                                                {isSame(me, course?.teacher) && (
-                                                    <Box>
-                                                        {!activityModule.linkConfirmationRequired ||
-                                                        activityModule.linkConfirmed ? (
-                                                            <Typography>
-                                                                {t(
-                                                                    'course.activity.linksInfo.linkDeliveryConfirmed'
-                                                                )}
-                                                            </Typography>
-                                                        ) : (
-                                                            <Box>
-                                                                <Typography>
-                                                                    {t(
-                                                                        'course.activity.linksInfo.linkConfirmationRequired'
-                                                                    )}
-                                                                </Typography>
-                                                                <Button
-                                                                    sx={{ ml: -1 }}
-                                                                    onClick={() =>
-                                                                        confirmLinkDeliveryMutation.mutate(
-                                                                            activityModule
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    {t(
-                                                                        'course.activity.linksInfo.confirmLinkDelivery'
-                                                                    )}
-                                                                </Button>
-                                                            </Box>
+                                                        {t(
+                                                            'course.activity.linksInfo.linkConfirmationRequired'
                                                         )}
-                                                    </Box>
-                                                )}
-                                                {activityModule.connectionDetails.map(({ url }) => (
-                                                    <Box key={url} sx={stylesColumnCenteredVertical}>
-                                                        <Link target="_blank" rel="noopener" href={url}>
-                                                            {url}
-                                                        </Link>
-                                                    </Box>
-                                                ))}
+                                                    </Typography>
+                                                    <Button
+                                                        sx={{ ml: -1 }}
+                                                        onClick={() =>
+                                                            confirmLinkDeliveryMutation.mutate(activityModule)
+                                                        }
+                                                    >
+                                                        {t('course.activity.linksInfo.confirmLinkDelivery')}
+                                                    </Button>
+                                                </Box>
+                                            )}
+                                        </Box>
+                                    )}
+                                    {activityModule.connectionDetails.map(({ url }) => (
+                                        <Box key={url} sx={stylesColumnCenteredVertical}>
+                                            <Link target="_blank" rel="noopener" href={url}>
+                                                {url}
+                                            </Link>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ mt: -1 }}>
+                                <Typography component="h4" variant="h6">
+                                    {t('course.activity.linksInfo.connectionInstruction')}
+                                </Typography>
+                                <Divider />
+                                <Box sx={{ mt: 1 }}>
+                                    {activityModule.connectionDetails.map(
+                                        ({ connectionInstructions }, idx) => (
+                                            <Box key={idx} sx={{ mt: 2 }}>
+                                                <InstructionView
+                                                    instruction={{
+                                                        untrustedPossiblyDangerousHtml: getTranslated(
+                                                            i18n,
+                                                            _.mapValues(
+                                                                connectionInstructions,
+                                                                (v) => v.untrustedPossiblyDangerousHtml
+                                                            )
+                                                        ),
+                                                    }}
+                                                />
                                             </Box>
-                                        </AccordionSummary>
-                                        <AccordionDetails sx={{ mt: -1 }}>
-                                            <Typography component="h4" variant="h6">
-                                                {t('course.activity.linksInfo.connectionInstruction')}
-                                            </Typography>
-                                            <Divider />
-                                            <Box sx={{ mt: 1 }}>
-                                                {activityModule.connectionDetails.map(
-                                                    ({ connectionInstructions }, idx) => (
-                                                        <Box key={idx} sx={{ mt: 2 }}>
-                                                            <InstructionView
-                                                                instruction={{
-                                                                    untrustedPossiblyDangerousHtml:
-                                                                        getTranslated(
-                                                                            i18n,
-                                                                            _.mapValues(
-                                                                                connectionInstructions,
-                                                                                (v) =>
-                                                                                    v.untrustedPossiblyDangerousHtml
-                                                                            )
-                                                                        ),
-                                                                }}
-                                                            />
-                                                        </Box>
-                                                    )
-                                                )}
-                                            </Box>
-                                        </AccordionDetails>
-                                    </Accordion>
-                                ))}
-                            </Grid>
-                        </Grid>
-                    </CardContent>
-                    <Grid container sx={{ justifyContent: 'flex-end', p: 1 }}>
-                        <Button onClick={onClose}>{t('course.activity.linksInfo.closeButton')}</Button>
-                    </Grid>
-                </Card>
-            </AbsolutelyCentered>
-        </Modal>
+                                        )
+                                    )}
+                                </Box>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))}
+                </Grid>
+            </Grid>
+        </ScrollableCenteredModal>
     );
 };
