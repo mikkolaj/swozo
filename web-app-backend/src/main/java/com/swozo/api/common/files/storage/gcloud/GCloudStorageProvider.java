@@ -9,6 +9,8 @@ import com.swozo.config.CloudProvider;
 import com.swozo.config.cloud.gcloud.storage.GCloudStorageCondition;
 import com.swozo.model.files.StorageAccessRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 @Conditional(GCloudStorageCondition.class)
 public class GCloudStorageProvider implements StorageProvider {
     public static final String SIZE_VALIDATION_HEADER = "X-Goog-Content-Length-Range";
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Storage storage;
 
@@ -73,7 +76,9 @@ public class GCloudStorageProvider implements StorageProvider {
 
     @Override
     public CompletableFuture<Void> cleanup(String bucketName, String storageObjectName) {
-        // TODO
+        logger.info("Deleting file {} from bucket {}", storageObjectName, bucketName);
+        storage.delete(BlobId.of(bucketName, storageObjectName));
+        logger.info("Successfully deleted file {} from bucket {}", storageObjectName, bucketName);
         return CompletableFuture.completedFuture(null);
     }
 

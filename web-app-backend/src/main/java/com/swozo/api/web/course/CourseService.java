@@ -2,6 +2,7 @@ package com.swozo.api.web.course;
 
 import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activity.ActivityRepository;
+import com.swozo.api.web.activity.ActivityService;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
@@ -39,6 +40,7 @@ public class CourseService {
     private final UserService userService;
     private final CourseMapper courseMapper;
     private final ActivityMapper activityMapper;
+    private final ActivityService activityService;
     private final ActivityRepository activityRepository;
     private final ScheduleService scheduleService;
     private final CourseValidator courseValidator;
@@ -182,6 +184,19 @@ public class CourseService {
             courseValidator.validateCreatorAndNotSandbox(course, teacherId);
             course.deleteStudent(student);
         });
+    }
+
+    @Transactional
+    public CourseDetailsDto deleteActivity(Long teacherId, Long courseId, Long activityId) {
+        var course = getById(courseId);
+        if (course.getActivities().stream().noneMatch(activity -> activity.getId().equals(activityId))) {
+            throw new IllegalArgumentException("Activity " + activityId + "doesn't belong to course " + courseId);
+        }
+
+        var deletedActivity = activityService.deleteActivity(teacherId, activityId);
+        course.deleteActivity(deletedActivity);
+        courseRepository.save(course);
+        return courseMapper.toDto(course, course.getTeacher(), true);
     }
 
     private List<Course> getUserCourses(Long userId, RoleDto userRole) {

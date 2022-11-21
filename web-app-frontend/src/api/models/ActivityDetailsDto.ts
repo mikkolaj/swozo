@@ -86,6 +86,12 @@ export interface ActivityDetailsDto {
      * @memberof ActivityDetailsDto
      */
     publicFiles: Array<FileDto>;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ActivityDetailsDto
+     */
+    cancelled: boolean;
 }
 
 export function ActivityDetailsDtoFromJSON(json: any): ActivityDetailsDto {
@@ -106,6 +112,7 @@ export function ActivityDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: 
         'instructionFromTeacher': InstructionDtoFromJSON(json['instructionFromTeacher']),
         'activityModules': ((json['activityModules'] as Array<any>).map(ActivityModuleDetailsDtoFromJSON)),
         'publicFiles': ((json['publicFiles'] as Array<any>).map(FileDtoFromJSON)),
+        'cancelled': json['cancelled'],
     };
 }
 
@@ -126,6 +133,7 @@ export function ActivityDetailsDtoToJSON(value?: ActivityDetailsDto | null): any
         'instructionFromTeacher': InstructionDtoToJSON(value.instructionFromTeacher),
         'activityModules': ((value.activityModules as Array<any>).map(ActivityModuleDetailsDtoToJSON)),
         'publicFiles': ((value.publicFiles as Array<any>).map(FileDtoToJSON)),
+        'cancelled': value.cancelled,
     };
 }
 

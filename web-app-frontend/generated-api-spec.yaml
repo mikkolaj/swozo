@@ -606,6 +606,27 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AuthDetailsDto'
+  /activities/{activityId}/cancel:
+    post:
+      tags:
+      - activity-controller
+      operationId: cancelActivity
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ActivityDetailsDto'
+      security:
+      - JWT_AUTH: []
   /vms/{id}:
     delete:
       tags:
@@ -1269,6 +1290,33 @@ paths:
                 $ref: '#/components/schemas/StorageAccessRequest'
       security:
       - JWT_AUTH: []
+  /courses/{courseId}/activities/{activityId}:
+    delete:
+      tags:
+      - course-controller
+      operationId: deleteActivity
+      parameters:
+      - name: courseId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
 components:
   schemas:
     CourseSummaryDto:
@@ -1658,6 +1706,7 @@ components:
     ActivityDetailsDto:
       required:
       - activityModules
+      - cancelled
       - description
       - endTime
       - id
@@ -1690,6 +1739,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FileDto'
+        cancelled:
+          type: boolean
     ActivityModuleDetailsDto:
       required:
       - connectionDetails

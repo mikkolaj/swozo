@@ -152,7 +152,9 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
                             )}
                         </Formik>
                     )}
-                    {option === 'deleteActivity' && <DeleteActivityTab course={course} />}
+                    {option === 'deleteActivity' && (
+                        <DeleteActivityTab onLastDeleted={() => setOption('addActivity')} course={course} />
+                    )}
                 </Box>
             </Box>
         </Box>

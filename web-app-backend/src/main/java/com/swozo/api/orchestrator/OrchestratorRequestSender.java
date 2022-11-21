@@ -49,4 +49,9 @@ public class OrchestratorRequestSender {
         var uri = uriFactory.createServiceConfigurationUri(serviceName);
         return unwrap(requestSender.sendGet(uri, new TypeReference<>(){}));
     }
+
+    public CompletableFuture<Void> cancelScheduleRequest(Long scheduleRequestId) {
+        // TODO
+        return CompletableFuture.completedFuture(null);
+    }
 }

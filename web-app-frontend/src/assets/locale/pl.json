@@ -132,10 +132,10 @@
                         "label": "Usuń aktywność",
                         "selectLabel": "Wybierz aktywność",
                         "deleteWithAllData": "Usuń wraz z wszystkimi danymi",
-                        "justCancel": "Odwołaj uruchamianie modułów",
+                        "justCancel": "Odwołaj Aktywność",
                         "confirmDeletion": "Czy na pewno chcesz usunąć tę aktywność? Cofnięcie tej akcji nie będzie możliwe.",
-                        "confirmCancel": "Czy na pewno chcesz odwołać uruchamianie modułów? Cofnięcie tej akcji nie będzie możliwe.",
-                        "no": "Nie usuwaj",
+                        "confirmCancel": "Czy na pewno chcesz odwołać aktywność i anulować uruchamianie modułów? Cofnięcie tej akcji nie będzie możliwe.",
+                        "no": "Nie",
                         "yes": "Tak"
                     }
                 }
@@ -146,6 +146,9 @@
             "files": "pliki",
             "instructions": "instrukcje",
             "timeRange": "{{startTime}} - {{endTime}}",
+            "cancelled": "Zajęcia zostały odwołane",
+            "finished": "Zajęcia już się odbyły",
+            "notStarted": "Zajęcia odbędą się zgodnie z planem",
             "linksInfo": {
                 "info": "Linki dla: {{courseName}} - {{activityName}}",
                 "title": "{{serviceModuleName}} ({{serviceName}})",
@@ -657,6 +660,8 @@
         "courseCreated": "Kurs został utworzony!",
         "courseUpdated": "Dane kursu zostały zaaktualizowane!",
         "activityAdded": "Aktywność została utworzona!",
+        "activityDeleted": "Aktywność została usunięta!",
+        "activityCancelled": "Aktywność została odwołana!",
         "serviceModuleCreated": "Moduł został utworzony!",
         "serviceModuleUpdated": "Moduł został zaaktualizowany!",
         "serviceModuleDeleted": "Moduł został usunięty!",

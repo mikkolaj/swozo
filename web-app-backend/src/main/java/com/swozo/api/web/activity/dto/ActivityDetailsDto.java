@@ -16,6 +16,7 @@ public record ActivityDetailsDto(
         @Schema(required = true) LocalDateTime endTime,
         @Schema(required = true) InstructionDto instructionFromTeacher,
         @Schema(required = true) List<ActivityModuleDetailsDto> activityModules,
-        @Schema(required = true) List<FileDto> publicFiles
+        @Schema(required = true) List<FileDto> publicFiles,
+        @Schema(required = true) boolean cancelled
 ) {
 }

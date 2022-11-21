@@ -17,7 +17,7 @@ import java.util.LinkedList;
 public class ActivityModuleScheduleInfo extends BaseEntity {
     Long scheduleRequestId;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "activity_module_id")
     @ToString.Exclude
     private ActivityModule activityModule;

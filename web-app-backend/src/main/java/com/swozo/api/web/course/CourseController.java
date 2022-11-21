@@ -102,6 +102,13 @@ public class CourseController {
         return courseService.addSingleActivity(token.getUserId(), id, createActivityRequest);
     }
 
+    @DeleteMapping("/{courseId}/activities/{activityId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public CourseDetailsDto deleteActivity(AccessToken accessToken, @PathVariable Long courseId, @PathVariable Long activityId) {
+        logger.info("deleting activity with id: {}", activityId);
+        return courseService.deleteActivity(accessToken.getUserId(), courseId, activityId);
+    }
+
     @PutMapping("/{courseId}/students")
     @PreAuthorize("hasRole('TEACHER')")
     public CourseDetailsDto addStudentToCourse(AccessToken token, @PathVariable Long courseId, @RequestBody ModifyParticipantRequest student) {

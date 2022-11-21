@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 @Service
@@ -30,6 +31,15 @@ public class OrchestratorService {
 
     public ServiceConfig getServiceConfig(String serviceName) {
         return cache.getServiceConfig(serviceConfigsSupplier(), serviceName);
+    }
+
+    public void cancelScheduleRequests(Collection<Long> scheduleRequestIds) {
+        CompletableFuture.allOf(
+                scheduleRequestIds.stream()
+                    .map(requestSender::cancelScheduleRequest)
+                    .toArray(CompletableFuture[]::new)
+                )
+                .join();
     }
 
     private Supplier<List<ServiceConfig>> serviceConfigsSupplier() {

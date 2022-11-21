@@ -11,6 +11,7 @@ import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatDate, formatTime } from 'utils/util';
 import { ActivityActionButton } from './components/ActivityActionButton';
+import { ActivityStatus } from './components/ActivityStatus';
 import { LinksModal } from './components/LinksModal';
 
 type Props = {
@@ -71,8 +72,11 @@ export const ActivityView = ({ activity, boxRef }: Props) => {
                             })}
                         </Typography>
                     </Box>
+                    <Box sx={{ position: 'absolute', right: 10, bottom: 2 }}>
+                        <ActivityStatus activity={activity} />
+                    </Box>
                     <Container>
-                        {dayjs().isBefore(activity.endTime) && (
+                        {dayjs().isBefore(activity.endTime) && !activity.cancelled && (
                             <ActivityActionButton
                                 onClick={() => setLinksModalOpen(true)}
                                 textI18n="course.activity.links"

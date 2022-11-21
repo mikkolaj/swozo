@@ -54,8 +54,15 @@ public class ActivityController {
     }
 
     @GetMapping("/{activityId}/files/results/teacher")
+    @PreAuthorize("hasRole('TEACHER')")
     public TeacherActivityFilesDto getActivityResultFilesForAllStudents(AccessToken accessToken, @PathVariable Long activityId) {
         return activityService.getActivityResultFilesForAllStudents(accessToken.getUserId(), activityId);
+    }
+
+    @PostMapping("/{activityId}/cancel")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ActivityDetailsDto cancelActivity(AccessToken accessToken, @PathVariable Long activityId) {
+        return activityService.cancelActivity(accessToken.getUserId(), activityId);
     }
 
     @PostMapping("/{activityId}/files/public")

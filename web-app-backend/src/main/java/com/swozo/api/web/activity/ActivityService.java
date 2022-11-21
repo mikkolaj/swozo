@@ -4,6 +4,7 @@ import com.swozo.api.common.files.FileRepository;
 import com.swozo.api.common.files.FileService;
 import com.swozo.api.common.files.dto.FileDto;
 import com.swozo.api.common.files.storage.FilePathProvider;
+import com.swozo.api.orchestrator.OrchestratorService;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.activity.dto.ActivityFilesDto;
 import com.swozo.api.web.activity.dto.ActivitySummaryDto;
@@ -20,10 +21,12 @@ import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.model.files.UploadAccessDto;
 import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.activity.Activity;
+import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
 import com.swozo.persistence.activity.UserActivityModuleInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +46,7 @@ public class ActivityService {
     private final UserMapper userMapper;
     private final FileMapper fileMapper;
     private final FileRepository fileRepository;
+    private final OrchestratorService orchestratorService;
 
     public List<ActivitySummaryDto> getUserActivitiesBetween(Long userId, LocalDateTime start, LocalDateTime end) {
         return activityRepository.getAllUserActivitiesBetween(userId, start, end).stream()
@@ -72,6 +76,32 @@ public class ActivityService {
                             userMapper::toDto
                     ))
         );
+    }
+
+    public ActivityDetailsDto cancelActivity(Long teacherId, Long activityId) {
+        var activity = activityRepository.findById(activityId).orElseThrow();
+        activityValidator.validateIsTeacher(teacherId, activity);
+        if (!activity.getCancelled() && LocalDateTime.now().isBefore(activity.getEndTime())) {
+            cancelAllActivitySchedules(activity);
+        }
+
+        activity.setCancelled(true);
+        activityRepository.save(activity);
+        return activityMapper.toDto(activity, activity.getTeacher());
+    }
+
+    @Transactional
+    public Activity deleteActivity(Long teacherId, Long activityId) {
+        var activity = activityRepository.findById(activityId).orElseThrow();
+        activityValidator.validateIsTeacher(teacherId, activity);
+        if (LocalDateTime.now().isBefore(activity.getEndTime()) && !activity.getCancelled()) {
+            cancelAllActivitySchedules(activity);
+        }
+
+        removeAllActivityFiles(activity);
+
+        activityRepository.delete(activity);
+        return activity;
     }
 
     public StorageAccessRequest preparePublicActivityFileUpload(
@@ -154,5 +184,26 @@ public class ActivityService {
         }
 
         return new ActivityFilesDto(activityModuleIdToUserFiles);
+    }
+
+    private void cancelAllActivitySchedules(Activity activity) {
+        orchestratorService.cancelScheduleRequests(
+                activity.getModules().stream()
+                        .flatMap(activityModule -> activityModule.getSchedules().stream())
+                        .map(ActivityModuleScheduleInfo::getScheduleRequestId)
+                        .toList()
+        );
+    }
+
+    private void removeAllActivityFiles(Activity activity) {
+        // TODO consider bulk remove
+        activity.getPublicFiles().forEach(fileService::removeFileInternally);
+        activity.getModules().stream()
+                .flatMap(activityModule -> activityModule.getSchedules().stream())
+                .flatMap(scheduleInfo -> scheduleInfo.getUserActivityModuleData().stream())
+                .map(UserActivityModuleInfo::getFile)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(fileService::removeFileInternally);
     }
 }

@@ -43,6 +43,10 @@ export interface AckPublicActivityFileUploadRequest {
     uploadAccessDto: UploadAccessDto;
 }
 
+export interface CancelActivityRequest {
+    activityId: number;
+}
+
 export interface ConfirmLinkCanBeDeliveredToStudentsRequest {
     activityModuleId: number;
 }
@@ -120,6 +124,42 @@ export class ActivityControllerApi extends runtime.BaseAPI {
      */
     async ackPublicActivityFileUpload(requestParameters: AckPublicActivityFileUploadRequest, initOverrides?: RequestInit): Promise<ActivityDetailsDto> {
         const response = await this.ackPublicActivityFileUploadRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async cancelActivityRaw(requestParameters: CancelActivityRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ActivityDetailsDto>> {
+        if (requestParameters.activityId === null || requestParameters.activityId === undefined) {
+            throw new runtime.RequiredError('activityId','Required parameter requestParameters.activityId was null or undefined when calling cancelActivity.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/activities/{activityId}/cancel`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ActivityDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async cancelActivity(requestParameters: CancelActivityRequest, initOverrides?: RequestInit): Promise<ActivityDetailsDto> {
+        const response = await this.cancelActivityRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
