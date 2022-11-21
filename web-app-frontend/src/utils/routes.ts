@@ -20,6 +20,7 @@ export class PageRoutes {
     static readonly ADMIN = '/admin';
     static readonly ADMIN_USER_DETAILS = `${this.ADMIN}/users/:userId`;
     static readonly VIRTUAL_MACHINES = `${this.ADMIN}/virtual-machines`;
+    static readonly SERVICES = '/services';
     static readonly HELP = '/help';
 
     static Course(courseId: string | number): string {

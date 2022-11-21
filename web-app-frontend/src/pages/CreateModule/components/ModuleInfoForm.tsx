@@ -6,7 +6,6 @@ import { RichTextEditor } from 'common/Input/RichTextEditor';
 import { SlideProps } from 'common/SlideForm/util';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { FormikErrors, FormikProps } from 'formik';
-import _ from 'lodash';
 import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DynamicFormFields, DynamicFormValueRegistry, ModuleValues } from '../util/types';
@@ -75,9 +74,9 @@ export const ModuleInfoForm = ({
             />
             <Box sx={{ ...stylesRowCenteredVertical }}>
                 <FormSelectField name={nameBuilder('service')} i18nLabel="createModule.slides.0.form.service">
-                    {supportedServices.map(({ serviceName }) => (
+                    {supportedServices.map(({ serviceName, displayName }) => (
                         <MenuItem key={serviceName} value={serviceName}>
-                            {_.capitalize(serviceName)}
+                            {displayName}
                         </MenuItem>
                     ))}
                 </FormSelectField>

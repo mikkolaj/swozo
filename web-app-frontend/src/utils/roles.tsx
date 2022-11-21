@@ -6,7 +6,7 @@ export const STUDENT = AuthDetailsDtoRolesEnum.Student;
 export const TEACHER = AuthDetailsDtoRolesEnum.Teacher;
 export const TECHNICAL_TEACHER = AuthDetailsDtoRolesEnum.TechnicalTeacher;
 export const ADMIN = AuthDetailsDtoRolesEnum.Admin;
-export const ANY_BUT_NOT_ADMIN = [STUDENT, TEACHER, TECHNICAL_TEACHER];
+export const ANY_EXCEPT_ADMIN = [STUDENT, TEACHER, TECHNICAL_TEACHER];
 
 export type AuthRequirement = {
     loggedIn: boolean;

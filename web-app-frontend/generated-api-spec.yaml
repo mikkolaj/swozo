@@ -2263,12 +2263,15 @@ components:
     ServiceConfig:
       required:
       - configurationInstructionHtml
+      - displayName
       - isolationModes
       - parameterDescriptions
       - serviceName
       - usageInstructionHtml
       type: object
       properties:
+        displayName:
+          type: string
         serviceName:
           type: string
         parameterDescriptions:

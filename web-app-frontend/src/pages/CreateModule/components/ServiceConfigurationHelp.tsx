@@ -1,10 +1,9 @@
 import { Box } from '@mui/material';
 import { ServiceConfig } from 'api';
-import { RichTextViewer } from 'common/Styled/RichTextViewer';
 import { ScrollableCenteredModal } from 'common/Styled/ScrollableCenteredModal';
-import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from 'utils/util';
+import './configHelp.css';
 
 type Props = {
     open: boolean;
@@ -19,16 +18,15 @@ export const ServiceConfigurationHelp = ({ onClose, open, serviceConfig }: Props
             open={open}
             onClose={onClose}
             header={t('createModule.slides.0.form.help.header', {
-                name: _.capitalize(serviceConfig.serviceName),
+                name: serviceConfig.displayName,
             })}
             closeBtn={t('createModule.slides.0.form.help.closeBtn')}
         >
             <Box sx={{ mx: 4 }}>
-                <RichTextViewer
-                    untrustedPossiblyDangerousHtml={getTranslated(
-                        i18n,
-                        serviceConfig.configurationInstructionHtml
-                    )}
+                <span
+                    dangerouslySetInnerHTML={{
+                        __html: getTranslated(i18n, serviceConfig.configurationInstructionHtml),
+                    }}
                 />
             </Box>
         </ScrollableCenteredModal>

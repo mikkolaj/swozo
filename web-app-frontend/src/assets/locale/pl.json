@@ -43,6 +43,7 @@
         "myFiles": "pliki",
         "virtualMachines": "repozytorium maszyn wirtualnych",
         "userManagement": "zarządzanie użytkownikami",
+        "services": "Serwisy",
         "menu": {
             "help": "Pomoc",
             "logout": "wyloguj",
@@ -637,6 +638,9 @@
                 }
             }
         }
+    },
+    "services": {
+        "header": "Dostępne serwisy"
     },
     "help": {
         "header": "Dane kontaktowe do administratorów systemu"

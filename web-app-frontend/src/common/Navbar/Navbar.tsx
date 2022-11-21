@@ -14,7 +14,7 @@ import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
 import {
     ADMIN,
-    ANY_BUT_NOT_ADMIN,
+    ANY_EXCEPT_ADMIN,
     STUDENT,
     TEACHER,
     TECHNICAL_TEACHER,
@@ -54,8 +54,13 @@ export const Navbar = () => {
                         <WithRole roles={[STUDENT]}>
                             <NavbarItem textI18n="navbar.publicCourses" route={PageRoutes.PUBLIC_COURSES} />
                         </WithRole>
-                        <WithRole roles={ANY_BUT_NOT_ADMIN}>
+                        <WithRole roles={ANY_EXCEPT_ADMIN}>
                             <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
+                        </WithRole>
+                        <WithRole roles={[TEACHER, TECHNICAL_TEACHER]}>
+                            <NavbarItem textI18n="navbar.services" route={PageRoutes.SERVICES} />
+                        </WithRole>
+                        <WithRole roles={ANY_EXCEPT_ADMIN}>
                             <NotificationBell notifications={[]} />
                         </WithRole>
                         <WithRole roles={[ADMIN]}>

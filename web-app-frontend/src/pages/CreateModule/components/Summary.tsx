@@ -1,15 +1,16 @@
 import { Box, Divider, Paper, Typography } from '@mui/material';
+import { ServiceConfig } from 'api';
 import { stylesColumnCenteredVertical, stylesRowCenteredHorizontal } from 'common/styles';
-import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { FormValues, MODULE_INFO_SLIDE, MODULE_SPECS_SLIDE } from '../util/types';
 
 type Props = {
     formValues: FormValues;
     editMode: boolean;
+    supportedServices: ServiceConfig[];
 };
 
-export const Summary = ({ formValues, editMode }: Props) => {
+export const Summary = ({ formValues, editMode, supportedServices }: Props) => {
     const { t } = useTranslation();
     const moduleInfo = formValues[MODULE_INFO_SLIDE];
     const mdaInfo = formValues[MODULE_SPECS_SLIDE];
@@ -26,7 +27,9 @@ export const Summary = ({ formValues, editMode }: Props) => {
                     <Paper sx={{ p: 2, boxShadow: 3 }}>
                         <Typography variant="h5">
                             {t('createModule.slides.2.service', {
-                                serviceName: _.capitalize(moduleInfo.service),
+                                serviceName: supportedServices.find(
+                                    (service) => service.serviceName === formValues[MODULE_INFO_SLIDE].service
+                                )?.displayName,
                             })}
                         </Typography>
                     </Paper>

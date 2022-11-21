@@ -184,7 +184,13 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                         {...slideProps}
                     />
                 ),
-                (_, { values }) => <Summary editMode={editMode} formValues={values} />,
+                (_, { values }) => (
+                    <Summary
+                        supportedServices={supportedServices ?? []}
+                        editMode={editMode}
+                        formValues={values}
+                    />
+                ),
             ]}
             onSubmit={() => {
                 if (!formRef.current?.values) return;

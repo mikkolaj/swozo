@@ -31,6 +31,12 @@ export interface ServiceConfig {
      * @type {string}
      * @memberof ServiceConfig
      */
+    displayName: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServiceConfig
+     */
     serviceName: string;
     /**
      * 
@@ -77,6 +83,7 @@ export function ServiceConfigFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
+        'displayName': json['displayName'],
         'serviceName': json['serviceName'],
         'parameterDescriptions': ((json['parameterDescriptions'] as Array<any>).map(ParameterDescriptionFromJSON)),
         'isolationModes': json['isolationModes'],
@@ -94,6 +101,7 @@ export function ServiceConfigToJSON(value?: ServiceConfig | null): any {
     }
     return {
         
+        'displayName': value.displayName,
         'serviceName': value.serviceName,
         'parameterDescriptions': ((value.parameterDescriptions as Array<any>).map(ParameterDescriptionToJSON)),
         'isolationModes': value.isolationModes,

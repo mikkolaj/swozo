@@ -1,0 +1,22 @@
+.usage-list {
+    margin-top: 15px;
+}
+
+.usage-list ul {
+    margin-left: 50px;
+    margin-bottom: 20px;
+}
+
+.results-info pre {
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+a {
+    text-decoration: none;
+    color: #1976d2;
+}
+
+a:hover {
+    color: #0756a5;
+}
