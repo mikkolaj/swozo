@@ -123,7 +123,10 @@
                     "addActivity": {
                         "label": "Dodaj aktywność",
                         "button": "Utwórz aktywność",
-                        "secondaryButton": "Wyczyść formularz"
+                        "secondaryButton": "Wyczyść formularz",
+                        "error": {
+                            "POLICY_NOT_MET": "Nie masz możliwości wykorzystania ilości zasobów sprzętowych potrzebnej do uruchomienia środowiska w tej aktywności. Skontaktuj się z administratorem lub wybierz inne moduły."
+                        }
                     },
                     "editActivity": {
                         "label": "Edytuj aktywność"
@@ -238,6 +241,9 @@
             "TOO_SOON": "Minimalny czas rozpoczęcia aktywności to {{minStartTime}}",
             "TOO_SHORT_PERIOD_BETWEEN": "Minimalny czas między aktywnościami to {{minTimeBetween}} minut",
             "NOT_IN_BOUNDS": "Liczba musi być w zakresie {{min}} - {{max}}"
+        },
+        "error": {
+            "POLICY_NOT_MET": "Nie masz możliwości wykorzystania ilości zasobów sprzętowych potrzebnej do uruchomienia środowiska w aktywności \"{{activityName}}\". Skontaktuj się z administratorem lub wybierz inne moduły."
         }
     },
     "myModules": {

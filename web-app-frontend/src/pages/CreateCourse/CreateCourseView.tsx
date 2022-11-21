@@ -9,7 +9,7 @@ import { clearErrorsForSlide, getSortedSlidesWithErrors } from 'common/SlideForm
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikErrors, FormikProps } from 'formik';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
-import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { buildMessagePopupErrorHandler, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import _ from 'lodash';
 import { updateCourseCache } from 'pages/Course/utils';
 import { useEffect, useRef, useState } from 'react';
@@ -17,6 +17,8 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { triggerError } from 'services/features/error/errorSlice';
+import { useAppDispatch } from 'services/store';
 import { mockGeneralModuleSummaryList } from 'utils/mocks';
 import { PageRoutes } from 'utils/routes';
 import * as Yup from 'yup';
@@ -44,10 +46,16 @@ export const CreateCourseView = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const dispatch = useAppDispatch();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [formattedApiErrors, setFormattedApiErrors] = useState<FormikErrors<FormValues>>();
 
-    const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({});
+    const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({
+        [ErrorType.POLICY_NOT_MET]: buildMessagePopupErrorHandler(
+            dispatch,
+            t('createCourse.error.POLICY_NOT_MET')
+        ),
+    });
 
     const formRef = useRef<FormikProps<FormValues>>(null);
     const { data: availableLessonModules } = useErrorHandledQuery(
@@ -74,6 +82,14 @@ export const CreateCourseView = () => {
                     const formattedErrors = formatErrors(t, error);
                     setFormattedApiErrors(formattedErrors);
                     setCurrentSlide(getSortedSlidesWithErrors(formattedErrors)[0]);
+                } else if (error.errorType === ErrorType.POLICY_NOT_MET) {
+                    dispatch(
+                        triggerError({
+                            message: t('createCourse.error.POLICY_NOT_MET', {
+                                activityName: error.additionalData?.['activityName'] ?? '',
+                            }),
+                        })
+                    );
                 } else {
                     pushApiError(error);
                 }

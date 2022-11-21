@@ -30,6 +30,7 @@ public interface ValidationNames {
     }
 
     interface Errors {
+        String ACTIVITY_NAME = "activityName";
         String MAX = "max";
         String MAX_DURATION = "maxDuration";
         String MIN = "min";

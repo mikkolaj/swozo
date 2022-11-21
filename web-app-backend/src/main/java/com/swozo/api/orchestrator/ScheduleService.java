@@ -2,6 +2,7 @@ package com.swozo.api.orchestrator;
 
 import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activitymodule.ActivityScheduleInfoRepository;
+import com.swozo.api.web.exceptions.types.mda.PolicyNotMetException;
 import com.swozo.mda.MdaEngine;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
@@ -83,12 +84,25 @@ public class ScheduleService {
         return orchestratorService.getEstimatedAsapServiceAvailability(serviceName);
     }
 
+    public void cancelAllActivitySchedules(Activity activity) {
+        orchestratorService.cancelScheduleRequests(
+                activity.getModules().stream()
+                        .flatMap(activityModule -> activityModule.getSchedules().stream())
+                        .map(ActivityModuleScheduleInfo::getScheduleRequestId)
+                        .toList()
+        );
+    }
+
     private Stream<ScheduleRequestWithScheduleInfos> buildScheduleRequestsForActivity(Activity activity) {
-        var psm = engine.processCim(activity.getCourse(), activity);
-        return Stream.concat(
-                handleTeacherScheduling(psm, activity),
-                handleStudentScheduling(psm, activity)
+        try {
+            var psm = engine.processCim(activity.getCourse(), activity);
+            return Stream.concat(
+                    handleTeacherScheduling(psm, activity),
+                    handleStudentScheduling(psm, activity)
             );
+        } catch (PolicyNotMetException policyNotMetException) {
+            throw policyNotMetException.withAdditionalInfoAbout(activity);
+        }
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> handleTeacherScheduling(Psm psm, Activity activity) {
