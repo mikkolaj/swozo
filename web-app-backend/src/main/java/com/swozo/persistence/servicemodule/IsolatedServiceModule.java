@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Table(name = "IsolatedServiceModules")
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public class IsolatedServiceModule extends ServiceModule {
     public PimVmInfo getPimVmInfo(Integer students){
         PimVmInfo translation = new PimVmInfo();

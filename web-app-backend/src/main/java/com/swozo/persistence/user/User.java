@@ -31,7 +31,9 @@ public class User extends BaseEntity {
     private String name;
     private String surname;
     private String email;
+    @ToString.Exclude
     private String password;
+    @ToString.Exclude
     private String changePasswordToken;
     private LocalDateTime createdAt = LocalDateTime.now();
     @ManyToMany(fetch = FetchType.EAGER)

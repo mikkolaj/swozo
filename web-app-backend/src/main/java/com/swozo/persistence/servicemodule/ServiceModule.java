@@ -70,4 +70,13 @@ public abstract class ServiceModule extends BaseEntity {
         baseBandwidthMbps = mdaData.baseBandwidthMbps();
         baseDiskGB = mdaData.baseDiskGB();
     }
+
+    @Override
+    public String toString(){
+        return String.format("ServiceModule(name=%s, subject=%s, description=%s, teacherInstructionHtml=%s," +
+                " studentInstructionHtml=%s, serviceName=%s, isPublic = %s, ready=%s, createdAt=%s, dynamicProperites=%s," +
+                " creatorId=%s, baseVcpu=%s, baseRamGB=%s, baseDiskGB=%s, baseBandwidthMbps=%s)", name, subject,
+                description, teacherInstructionHtml, studentInstructionHtml, serviceName, isPublic, ready, createdAt,
+                dynamicProperties, creator.getId(), baseVcpu, baseRamGB, baseDiskGB, baseBandwidthMbps);
+    }
 }

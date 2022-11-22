@@ -12,6 +12,7 @@ import com.swozo.api.web.mda.vm.VmRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
 import com.swozo.api.web.user.UserRepository;
+import com.swozo.mda.MdaEngine;
 import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
@@ -62,6 +63,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final VmRepository vmRepository;
     private final PolicyService policyService;
     private final ActivityModuleService activityModuleService;
+    private final MdaEngine mdaEngine;
     @Value("${database.enable-bootstrapping}")
     private final boolean enableBootstrapping;
     private boolean alreadySetup = false;
@@ -142,15 +144,15 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         //        ServiceModule
         ServiceModule serviceModule = new IsolatedServiceModule();
-        serviceModule.setBaseBandwidthMbps(1);
+        serviceModule.setBaseBandwidthMbps(2048);
         serviceModule.setBaseRamGB(1);
         serviceModule.setBaseVcpu(1);
         serviceModule.setBaseDiskGB(1);
         serviceModule.setName("Klasy w Pythonie (JUPYTER TEST)");
-        serviceModule.setTeacherInstructionHtml("teach");
-        serviceModule.setStudentInstructionHtml("stud");
+        serviceModule.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji o zmiennych");
+        serviceModule.setStudentInstructionHtml("Przypomnij sobie wiedze z lekcji o zmiennych");
         serviceModule.setCreator(teacher);
-        serviceModule.setDescription("opis1");
+        serviceModule.setDescription("Modul przybliza wiedze o klasach w pythonie");
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setServiceName(ServiceType.JUPYTER.toString());
         serviceModule.setDynamicProperties(Map.of("notebookLocation", jupyterFile.getId().toString()));
@@ -160,31 +162,33 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule);
 
-        SharedServiceModule serviceModule2 = new SharedServiceModule();
-        serviceModule2.setBaseBandwidthMbps(1);
-        serviceModule2.setBaseRamGB(1);
-        serviceModule2.setBaseVcpu(1);
-        serviceModule2.setBaseDiskGB(1);
-        serviceModule2.setUsersPerAdditionalDiskGb(10);
-        serviceModule2.setUsersPerAdditionalCore(10);
-        serviceModule2.setUsersPerAdditionalRamGb(10);
-        serviceModule2.setUsersPerAdditionalBandwidthGbps(10);
-        serviceModule2.setName("super quiz (QuizApp)");
-        serviceModule2.setTeacherInstructionHtml("teach");
-        serviceModule2.setStudentInstructionHtml("stud");
-        serviceModule2.setCreator(teacher);
-        serviceModule2.setDescription("opis2");
-        serviceModule2.setSubject("Inne");
-        serviceModule2.setServiceName(ServiceType.QUIZAPP.toString());
-        serviceModule2.setDynamicProperties(Map.of(
+        SharedServiceModule serviceModule3 = new SharedServiceModule();
+        serviceModule3.setBaseBandwidthMbps(1024);
+        serviceModule3.setBaseRamGB(1);
+        serviceModule3.setBaseVcpu(1);
+        serviceModule3.setBaseDiskGB(1);
+        serviceModule3.setUsersPerAdditionalBandwidthGbps(2);
+        serviceModule3.setUsersPerAdditionalRamGb(15);
+        serviceModule3.setUsersPerAdditionalCore(15);
+        serviceModule3.setUsersPerAdditionalDiskGb(2);
+        serviceModule3.setName("Funkcje w Pythonie2");
+        serviceModule3.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji: Funkcje w Pythonie 1");
+        serviceModule3.setStudentInstructionHtml("Przypomnij sobie wiedze z poprzednich zajec o funckjach");
+        serviceModule3.setCreator(teacher);
+        serviceModule3.setDescription("Modul ma na celu poszerzyc wiedze o funkcjach w Pythonie");
+        serviceModule3.setSubject("INFORMATYKA");
+        serviceModule3.setServiceName(ServiceType.QUIZAPP.toString());
+        serviceModule3.setDynamicProperties(Map.of(
                 "questionsLocation", quizFile.getId().toString(),
                 "quizDurationSeconds", "120")
         );
-        serviceModule2.setPublic(true);
-        serviceModule2.setReady(true);
-        serviceModule2.setCreatedAt(LocalDateTime.of(2022,
+        serviceModule3.setPublic(true);
+        serviceModule3.setReady(true);
+        serviceModule3.setCreatedAt(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
-        serviceModuleRepository.save(serviceModule2);
+        serviceModuleRepository.save(serviceModule3);
+
+        System.out.println("service module 3:  " + serviceModule3);
 
         //        ACTIVITIES:
 
@@ -219,6 +223,9 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         var activityModule2 = new ActivityModule(serviceModule, true);
         activityModule2.addScheduleInfo(activityModuleScheduleInfo2);
 
+        var activityModule3 = new ActivityModule(serviceModule3, true);
+        activityModule3.addScheduleInfo(activityModuleScheduleInfo2);
+
         Activity activity = new Activity();
         activity.setName("Pętle, konstrukcje warunkowe");
         activity.setDescription("podstawy");
@@ -243,6 +250,19 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.addActivity(activity2);
         activityRepository.save(activity2);
 
+        Activity activity3 = new Activity();
+        activity3.setName("Pętle, konstrukcje warunkowe");
+        activity3.setDescription("podstawy");
+        activity3.setStartTime(LocalDateTime.of(2022,
+                Month.JULY, 29, 17, 30, 40));
+        activity3.setEndTime(LocalDateTime.of(2022,
+                Month.JULY, 29, 19, 30, 40));
+        activity3.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity3.addActivityModule(activityModule1);
+        activity3.addActivityModule(activityModule3);
+        course.addActivity(activity3);
+        activityRepository.save(activity3);
+
 //        POLICIES:
         var teacher1 = userRepository.getByEmail("teacher@gmail.com");
         Policy policy = new Policy();
@@ -261,5 +281,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher1));
         policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher2));
+
+        mdaEngine.processCim(course, activity3);
     }
 }
