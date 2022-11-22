@@ -25,6 +25,7 @@ import com.swozo.persistence.mda.policies.Policy;
 import com.swozo.persistence.mda.policies.PolicyType;
 import com.swozo.persistence.servicemodule.IsolatedServiceModule;
 import com.swozo.persistence.servicemodule.ServiceModule;
+import com.swozo.persistence.servicemodule.SharedServiceModule;
 import com.swozo.persistence.user.Role;
 import com.swozo.persistence.user.User;
 import com.swozo.persistence.user.UserCourseData;
@@ -125,12 +126,19 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         courseRepository.save(course);
 
         //        FILES
-        var mockFile = new RemoteFile();
-        mockFile.setPath("lab_file.ipynb");
-        mockFile.setSizeBytes(2000L);
-        mockFile.setOwner(teacher);
+        var jupyterFile = new RemoteFile();
+        jupyterFile.setPath("lab_file.ipynb");
+        jupyterFile.setSizeBytes(2000L);
+        jupyterFile.setOwner(teacher);
 
-        mockFile = fileRepository.save(mockFile);
+        jupyterFile = fileRepository.save(jupyterFile);
+
+        var quizFile = new RemoteFile();
+        quizFile.setPath("questions.yaml");
+        quizFile.setSizeBytes(463L);
+        quizFile.setOwner(teacher);
+
+        quizFile = fileRepository.save(quizFile);
 
         //        ServiceModule
         ServiceModule serviceModule = new IsolatedServiceModule();
@@ -138,33 +146,40 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setBaseRamGB(1);
         serviceModule.setBaseVcpu(1);
         serviceModule.setBaseDiskGB(1);
-        serviceModule.setName("Klasy w Pythonie");
+        serviceModule.setName("Klasy w Pythonie (JUPYTER TEST)");
         serviceModule.setTeacherInstructionHtml("teach");
         serviceModule.setStudentInstructionHtml("stud");
         serviceModule.setCreator(teacher);
         serviceModule.setDescription("opis1");
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setServiceName(ServiceType.JUPYTER.toString());
-        serviceModule.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
+        serviceModule.setDynamicProperties(Map.of("notebookLocation", jupyterFile.getId().toString()));
         serviceModule.setPublic(true);
         serviceModule.setReady(true);
         serviceModule.setCreatedAt(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule);
 
-        ServiceModule serviceModule2 = new IsolatedServiceModule();
+        SharedServiceModule serviceModule2 = new SharedServiceModule();
         serviceModule2.setBaseBandwidthMbps(1);
         serviceModule2.setBaseRamGB(1);
         serviceModule2.setBaseVcpu(1);
         serviceModule2.setBaseDiskGB(1);
-        serviceModule2.setName("Funkcje w Pythonie");
+        serviceModule2.setUsersPerAdditionalDiskGb(10);
+        serviceModule2.setUsersPerAdditionalCore(10);
+        serviceModule2.setUsersPerAdditionalRamGb(10);
+        serviceModule2.setUsersPerAdditionalBandwidthGbps(10);
+        serviceModule2.setName("super quiz (QuizApp)");
         serviceModule2.setTeacherInstructionHtml("teach");
         serviceModule2.setStudentInstructionHtml("stud");
         serviceModule2.setCreator(teacher);
         serviceModule2.setDescription("opis2");
-        serviceModule2.setSubject("INFORMATYKA");
-        serviceModule2.setServiceName(ServiceType.JUPYTER.toString());
-        serviceModule2.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
+        serviceModule2.setSubject("Inne");
+        serviceModule2.setServiceName(ServiceType.QUIZAPP.toString());
+        serviceModule2.setDynamicProperties(Map.of(
+                "questionsLocation", quizFile.getId().toString(),
+                "quizDurationSeconds", "120")
+        );
         serviceModule2.setPublic(true);
         serviceModule2.setReady(true);
         serviceModule2.setCreatedAt(LocalDateTime.of(2022,
