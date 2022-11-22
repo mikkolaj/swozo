@@ -171,7 +171,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule3.setUsersPerAdditionalRamGb(15);
         serviceModule3.setUsersPerAdditionalCore(15);
         serviceModule3.setUsersPerAdditionalDiskGb(2);
-        serviceModule3.setName("Funkcje w Pythonie2");
+        serviceModule3.setName("TestQuiz (QuizApp)");
         serviceModule3.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji: Funkcje w Pythonie 1");
         serviceModule3.setStudentInstructionHtml("Przypomnij sobie wiedze z poprzednich zajec o funckjach");
         serviceModule3.setCreator(teacher);
