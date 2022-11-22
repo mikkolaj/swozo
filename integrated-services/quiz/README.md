@@ -2,13 +2,13 @@ client source: https://github.com/SafdarJamal/quiz-app
 
 setup:
 
-- orchestrator needs data of users (smth that will allow human see who got what score, and something that will let quizapp see which user got which link, so that results can be properly mapped)
+- orchestrator needs data of users (something that will allow human see who got what score, and something that will let quizapp see which user got which link, so that results can be properly mapped)
 - quiz for everyone runs on this single machine
 - link requires query param: `ukey`, this param should be random (so that users can't guess access to the quiz before its available) and it should uniquely identify each user, because after quiz ends answers are mapped to user by this key
 
 # we need to provide:
 
-- `/usr/src/server/questions/questions.yaml` in format (this should be a file uploaded by teacher and orchestrator should just dl it):
+- `/usr/src/server/questions/questions.yaml` in format (this should be a file uploaded by teacher and orchestrator should just download it):
 
 ```yaml
 test:
@@ -38,7 +38,7 @@ example:
 
 # after quiz ends we need to extract:
 
-- `/usr/src/server/answers/asnwers.yaml` and upload them in a way that teacher can see them, results are mapped by human readable string supplied in `params.json/userMapping`
+- `/usr/src/server/answers/answers.yaml` and upload them in a way that teacher can see them, results are mapped by human-readable string supplied in `params.json/userMapping`
 
 See `quiz-app-server/{params, questions, answers}` for examples.
 

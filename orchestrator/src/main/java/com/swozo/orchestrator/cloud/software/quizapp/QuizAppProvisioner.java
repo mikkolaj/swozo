@@ -181,7 +181,7 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
 
     private void cleanupAfterSystemPreparation(File paramsFile) {
         if (!paramsFile.delete()) {
-            logger.warn("Failed to delete temp quizApp params file at " + paramsFile.getAbsolutePath());
+            logger.warn("Failed to delete temp quizApp params file at {}", paramsFile.getAbsolutePath());
         }
     }
 
