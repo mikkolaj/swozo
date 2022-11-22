@@ -65,12 +65,15 @@ export const Navbar = () => {
                         </WithRole>
                         <WithRole roles={[ADMIN]}>
                             <NavbarItem
+                                textI18n="navbar.upcomingActivities"
+                                route={PageRoutes.UPCOMING_ACTIVITIES}
+                            />
+                            <NavbarItem
                                 textI18n="navbar.virtualMachines"
                                 route={PageRoutes.VIRTUAL_MACHINES}
                             />
                             <NavbarItem textI18n="navbar.userManagement" route={PageRoutes.HOME} />
                         </WithRole>
-
                         <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
                             <Avatar sx={{ width: AVATAR_WIDTH, height: AVATAR_HEIGHT }}>
                                 {me?.name[0]?.toUpperCase() ?? '?'}

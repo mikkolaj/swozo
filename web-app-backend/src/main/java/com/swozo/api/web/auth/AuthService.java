@@ -163,6 +163,11 @@ public class AuthService {
         return getUserRoles(getUsersAuthorities(user)).contains(role);
     }
 
+    public boolean isAdmin(Long userId) {
+        // TODO ensure proper caching of admins (+ invalidate on user data update)
+        return userRepository.findById(userId).map(user -> hasRole(user, RoleDto.ADMIN)).orElse(false);
+    }
+
     /**
      * @param possibleRoles - access token MUST provide exactly one of specified roles
      * @throws IllegalStateException - user has none or more than one of specified roles

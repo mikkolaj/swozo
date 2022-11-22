@@ -64,6 +64,10 @@ export interface GetActivityResultFilesForUserRequest {
     activityId: number;
 }
 
+export interface GetAllNotCancelledFutureActivitiesInRangeRequest {
+    daysInTheFuture?: number;
+}
+
 export interface GetPublicActivityFileDownloadRequestRequest {
     activityId: number;
     fileId: number;
@@ -307,6 +311,42 @@ export class ActivityControllerApi extends runtime.BaseAPI {
      */
     async getActivityResultFilesForUser(requestParameters: GetActivityResultFilesForUserRequest, initOverrides?: RequestInit): Promise<ActivityFilesDto> {
         const response = await this.getActivityResultFilesForUserRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getAllNotCancelledFutureActivitiesInRangeRaw(requestParameters: GetAllNotCancelledFutureActivitiesInRangeRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ActivitySummaryDto>>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.daysInTheFuture !== undefined) {
+            queryParameters['daysInTheFuture'] = requestParameters.daysInTheFuture;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/activities/not-cancelled`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ActivitySummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getAllNotCancelledFutureActivitiesInRange(requestParameters: GetAllNotCancelledFutureActivitiesInRangeRequest = {}, initOverrides?: RequestInit): Promise<Array<ActivitySummaryDto>> {
+        const response = await this.getAllNotCancelledFutureActivitiesInRangeRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

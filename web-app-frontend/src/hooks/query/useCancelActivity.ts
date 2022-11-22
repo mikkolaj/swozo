@@ -7,7 +7,8 @@ import { toast } from 'react-toastify';
 
 export const useCancelActivity = (
     cacheUpdater: (activity: ActivityDetailsDto) => void,
-    pushApiError: (err: ApiError) => void
+    pushApiError: (err: ApiError) => void,
+    onSuccessDecorator?: (activity: ActivityDetailsDto) => void
 ) => {
     const { t } = useTranslation();
 
@@ -17,6 +18,7 @@ export const useCancelActivity = (
             onSuccess: (activityDetails) => {
                 cacheUpdater(activityDetails);
                 toast.success(t('toast.activityCancelled'));
+                onSuccessDecorator?.(activityDetails);
             },
             onError: pushApiError,
         }

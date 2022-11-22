@@ -43,6 +43,7 @@
         "myFiles": "pliki",
         "virtualMachines": "repozytorium maszyn wirtualnych",
         "userManagement": "zarządzanie użytkownikami",
+        "upcomingActivities": "Nadchodzące aktywności",
         "services": "Serwisy",
         "menu": {
             "help": "Pomoc",
@@ -448,7 +449,10 @@
                     "uploadDate": "Data przesłania",
                     "size": "Rozmiar pliku"
                 },
-                "empty": "Nie przesłałeś jeszcze żadnego pliku"
+                "empty": {
+                    "teacher": "Nie przesłałeś jeszcze żadnego pliku",
+                    "student": "Nauczyciel nie przesłał żadnego pliku"
+                }
             },
             "users": {
                 "label": "Moje pliki",
@@ -647,6 +651,21 @@
                     "submit": "Zapisz metadane maszyny"
                 }
             }
+        },
+        "activities": {
+            "header": "Nadchodzące aktywności",
+            "list": {
+                "headers": {
+                    "name": "Nazwa",
+                    "teacher": "Nauczyciel",
+                    "date": "Data zajęć"
+                },
+                "empty": "Brak nadchodzących aktywności",
+                "cancel": "Odwołaj aktywność",
+                "areYouSure": "Czy na pewno chcesz odwołać tą aktywność? Cofnięcie tej akcji nie będzie możliwe. Pamiętaj o powiadomieniu nauczyciela!",
+                "timeRange": "{{start}} - {{end}} {{date}}",
+                "teacher": "{{firstName}} {{lastName}} ({{email}})"
+            }
         }
     },
     "services": {
@@ -688,7 +707,9 @@
         "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie"
     },
     "commonModals": {
-        "upOrDownloading": "Przesyłam pliki"
+        "upOrDownloading": "Przesyłam pliki",
+        "yes": "Tak",
+        "no": "Nie"
     },
     "dynamicForm": {
         "file": {

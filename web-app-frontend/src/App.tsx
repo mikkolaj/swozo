@@ -4,6 +4,7 @@ import { PageGuard } from 'common/PageGuard/PageGuard';
 import { Toaster } from 'common/Styled/Toaster';
 import { ActivityFilesView } from 'pages/ActivityFiles/ActivityFilesView';
 import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
+import { UpcomingActivitiesList } from 'pages/Admin/UpcomingActivities/UpcominActivitiesList';
 import { UserDetailsView } from 'pages/Admin/Users/UserDetailsView';
 import { VirtualMachinesPanel } from 'pages/Admin/VirtualMachines/VirtualMachinesPanel';
 import { CourseView } from 'pages/Course/CourseView';
@@ -114,6 +115,10 @@ function App() {
                 <Route
                     path={PageRoutes.ADMIN_USER_DETAILS}
                     element={guarded(<UserDetailsView />, withRole(ADMIN))}
+                />
+                <Route
+                    path={PageRoutes.UPCOMING_ACTIVITIES}
+                    element={guarded(<UpcomingActivitiesList />, withRole(ADMIN))}
                 />
                 <Route
                     path={PageRoutes.SERVICES}

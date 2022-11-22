@@ -34,7 +34,7 @@ export const ActivityView = ({ activity, boxRef }: Props) => {
         <Box sx={{ position: 'relative' }}>
             <Box ref={boxRef} sx={{ position: 'absolute', top: '-70px' }}></Box>
             <Card sx={{ boxShadow: 3 }}>
-                <CardContent sx={{ position: 'relative' }}>
+                <CardContent sx={{ position: 'relative', minHeight: '150px' }}>
                     <Box sx={{ maxWidth: '75%' }}>
                         <Typography
                             component="h1"
@@ -76,12 +76,14 @@ export const ActivityView = ({ activity, boxRef }: Props) => {
                         <ActivityStatus activity={activity} />
                     </Box>
                     <Container>
-                        {dayjs().isBefore(activity.endTime) && !activity.cancelled && (
-                            <ActivityActionButton
-                                onClick={() => setLinksModalOpen(true)}
-                                textI18n="course.activity.links"
-                            />
-                        )}
+                        {dayjs().isBefore(activity.endTime) &&
+                            !activity.cancelled &&
+                            activity.activityModules.length > 0 && (
+                                <ActivityActionButton
+                                    onClick={() => setLinksModalOpen(true)}
+                                    textI18n="course.activity.links"
+                                />
+                            )}
                         {(isSame(me, course.teacher) ||
                             activity.publicFiles.length > 0 ||
                             dayjs().isAfter(activity.endTime)) && (

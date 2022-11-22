@@ -179,6 +179,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule3.setDescription("Modul ma na celu poszerzyc wiedze o funkcjach w Pythonie");
         serviceModule3.setSubject("INFORMATYKA");
         serviceModule3.setServiceName(ServiceType.QUIZAPP.toString());
+        serviceModule3.setServiceDisplayName("QuizApp");
         serviceModule3.setDynamicProperties(Map.of(
                 "questionsLocation", quizFile.getId().toString(),
                 "quizDurationSeconds", "120")
@@ -251,19 +252,6 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.addActivity(activity2);
         activityRepository.save(activity2);
 
-        Activity activity3 = new Activity();
-        activity3.setName("Pętle, konstrukcje warunkowe");
-        activity3.setDescription("podstawy");
-        activity3.setStartTime(LocalDateTime.of(2022,
-                Month.JULY, 29, 17, 30, 40));
-        activity3.setEndTime(LocalDateTime.of(2022,
-                Month.JULY, 29, 19, 30, 40));
-        activity3.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
-        activity3.addActivityModule(activityModule1);
-        activity3.addActivityModule(activityModule3);
-        course.addActivity(activity3);
-        activityRepository.save(activity3);
-
 //        POLICIES:
         var teacher1 = userRepository.getByEmail("teacher@gmail.com");
         Policy policy = new Policy();
@@ -282,7 +270,5 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher1));
         policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher2));
-
-        mdaEngine.processCim(course, activity3);
     }
 }

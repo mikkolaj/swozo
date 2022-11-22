@@ -4,6 +4,7 @@ import com.swozo.api.orchestrator.ScheduleService;
 import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activity.ActivityService;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
+import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.dto.CourseDetailsDto;
 import com.swozo.api.web.course.dto.CourseSummaryDto;
@@ -44,6 +45,7 @@ public class CourseService {
     private final ActivityRepository activityRepository;
     private final ScheduleService scheduleService;
     private final CourseValidator courseValidator;
+    private final AuthService authService;
 
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -65,6 +67,9 @@ public class CourseService {
     public CourseDetailsDto getCourseDetails(Long courseId, Long userId) {
         var course = courseRepository.getById(courseId);
         var user = userService.getUserById(userId);
+        if (!authService.isAdmin(userId)) {
+            courseValidator.validateBelongsToCourse(user, course);
+        }
         return courseMapper.toDto(course, user, course.isCreator(userId));
     }
 

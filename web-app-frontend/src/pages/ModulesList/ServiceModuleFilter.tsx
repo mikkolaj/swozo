@@ -37,8 +37,8 @@ export const ServiceModuleFilter = ({ initialValues, supportedServices, onModifi
                             i18nLabel="createModule.slides.0.form.service"
                         >
                             <MenuItem value={''}>{t('publicModules.any')}</MenuItem>
-                            {supportedServices.map(({ serviceName, displayName }) => (
-                                <MenuItem key={serviceName} value={serviceName}>
+                            {supportedServices.map(({ displayName }) => (
+                                <MenuItem key={displayName} value={displayName}>
                                     {displayName}
                                 </MenuItem>
                             ))}

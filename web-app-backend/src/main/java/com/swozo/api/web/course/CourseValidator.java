@@ -127,6 +127,12 @@ public class CourseValidator {
         }
     }
 
+    public void validateBelongsToCourse(User user, Course course) {
+        if (!course.isParticipant(user.getId()) && !course.getTeacher().equals(user)) {
+            throw new UnauthorizedException("User " + user.getId() + " can't access details of course " + course.getId());
+        }
+    }
+
     public void validateEditCourseRequest(Course course, EditCourseRequest request, Long editorId) {
         validateCreatorAndNotSandbox(course, editorId);
         ValidationErrors.builder()

@@ -12,4 +12,8 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
            "WHERE (cs.id.userId = :userId OR cs.course.teacher.id = :userId) " +
            "AND activity.startTime >= :start AND activity.startTime <= :end")
     List<Activity> getAllUserActivitiesBetween(Long userId, LocalDateTime start, LocalDateTime end);
+
+    @Query("SELECT activity FROM Activity activity " +
+           "WHERE activity.cancelled = false AND activity.startTime >= :start AND activity.startTime <= :end")
+    List<Activity> getAllNotCancelledActivitiesBetween(LocalDateTime start, LocalDateTime end);
 }

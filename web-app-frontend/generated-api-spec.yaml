@@ -1290,6 +1290,30 @@ paths:
                 $ref: '#/components/schemas/StorageAccessRequest'
       security:
       - JWT_AUTH: []
+  /activities/not-cancelled:
+    get:
+      tags:
+      - activity-controller
+      operationId: getAllNotCancelledFutureActivitiesInRange
+      parameters:
+      - name: daysInTheFuture
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 31
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivitySummaryDto'
+      security:
+      - JWT_AUTH: []
   /courses/{courseId}/activities/{activityId}:
     delete:
       tags:
@@ -2012,6 +2036,7 @@ components:
           type: string
     ActivitySummaryDto:
       required:
+      - cancelled
       - courseId
       - courseName
       - endTime
@@ -2039,6 +2064,8 @@ components:
         endTime:
           type: string
           format: date-time
+        cancelled:
+          type: boolean
     FavouriteFileDto:
       required:
       - activitySummaryDto

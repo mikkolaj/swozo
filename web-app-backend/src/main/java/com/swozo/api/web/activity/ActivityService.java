@@ -9,6 +9,7 @@ import com.swozo.api.web.activity.dto.ActivityDetailsDto;
 import com.swozo.api.web.activity.dto.ActivityFilesDto;
 import com.swozo.api.web.activity.dto.ActivitySummaryDto;
 import com.swozo.api.web.activity.dto.TeacherActivityFilesDto;
+import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.course.CourseValidator;
 import com.swozo.api.web.exceptions.types.course.ActivityNotFoundException;
 import com.swozo.api.web.exceptions.types.files.FileNotFoundException;
@@ -46,9 +47,16 @@ public class ActivityService {
     private final FileMapper fileMapper;
     private final FileRepository fileRepository;
     private final ScheduleService scheduleService;
+    private final AuthService authService;
 
     public List<ActivitySummaryDto> getUserActivitiesBetween(Long userId, LocalDateTime start, LocalDateTime end) {
         return activityRepository.getAllUserActivitiesBetween(userId, start, end).stream()
+                .map(activityMapper::toSummaryDto)
+                .toList();
+    }
+
+    public List<ActivitySummaryDto> getAllNotCancelledActivitiesBetween(LocalDateTime start, LocalDateTime end) {
+        return activityRepository.getAllNotCancelledActivitiesBetween(start, end).stream()
                 .map(activityMapper::toSummaryDto)
                 .toList();
     }
@@ -79,7 +87,9 @@ public class ActivityService {
 
     public ActivityDetailsDto cancelActivity(Long teacherId, Long activityId) {
         var activity = activityRepository.findById(activityId).orElseThrow();
-        activityValidator.validateIsTeacher(teacherId, activity);
+        if (!authService.isAdmin(teacherId)) {
+            activityValidator.validateIsTeacher(teacherId, activity);
+        }
         if (!activity.getCancelled() && LocalDateTime.now().isBefore(activity.getEndTime())) {
              scheduleService.cancelAllActivitySchedules(activity);
         }

@@ -47,6 +47,7 @@ public class ScheduleService {
 
     public void scheduleActivities(Collection<Activity> activities) {
         var scheduleRequestsWithInfos= activities.stream()
+                .filter(activity -> !activity.getModules().isEmpty())
                 .flatMap(this::buildScheduleRequestsForActivity)
                 .toList();
 
