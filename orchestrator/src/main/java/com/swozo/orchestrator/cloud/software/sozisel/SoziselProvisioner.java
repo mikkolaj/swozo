@@ -18,6 +18,7 @@ import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.Playbook;
 import com.swozo.orchestrator.configuration.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,8 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
     private final BackendRequestSender requestSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private boolean waitedForSoziselSetup = false;
+
 
     @Override
     public CompletableFuture<List<ActivityLinkInfo>> provision(
@@ -69,7 +72,9 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
             ServiceDescriptionEntity description,
             VmResourceDetails vmResourceDetails
     ) {
-
+        if(!waitedForSoziselSetup) {
+            waitForSoziselSetup();
+        }
         var link = new SoziselLinksProvider(vmResourceDetails.publicIpAddress()).createLinks();
         return requestSender.getUserData(description.getActivityModuleId(), requestEntity.getId())
                 .thenCompose(users -> CompletableFuture.completedFuture(
@@ -115,5 +120,11 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
                 Playbook.PROVISION_SOZISEL,
                 MINUTES
         );
+    }
+
+    @SneakyThrows
+    private void waitForSoziselSetup() {
+        Thread.sleep(180000);
+        waitedForSoziselSetup = true;
     }
 }

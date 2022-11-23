@@ -4,7 +4,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-import org.json.JSONException;
 
 
 import java.io.IOException;
@@ -22,7 +21,9 @@ class SoziselLinksProvider {
     }
 
     String createLinks() {
-        String mail = "test@test.pl", name = "Imie", surname = "Nazwisko";
+        String mail = "test@test.pl";
+        String name = "Imie";
+        String surname = "Nazwisko";
         Integer estimatedTime = 90;
         sendRegister(mail, name, surname);
         sendLogin(mail);
@@ -82,24 +83,18 @@ class SoziselLinksProvider {
     private JSONObject sendRequest(String query, String variables) {
         try {
             HttpResponse response = SoziselRequestSender.sendRequest(uri, query, variables, bearerToken);
-            JSONObject jsonObject = parseResponse(response);
-            System.out.println(jsonObject);
-            return jsonObject;
-        } catch (IOException | JSONException e) {
+            return parseResponseToJSON(response);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private JSONObject parseResponse(HttpResponse response) throws IOException, JSONException {
+    private JSONObject parseResponseToJSON(HttpResponse response) throws IOException {
         HttpEntity entity = response.getEntity();
         return new JSONObject(EntityUtils.toString(entity, "UTF-8"));
     }
 
     private String retrieveValueFromResponse(JSONObject response, String operationName, String fieldName) {
-        try {
-            return response.getJSONObject("data").getJSONObject(operationName).getString(fieldName);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+        return response.getJSONObject("data").getJSONObject(operationName).getString(fieldName);
     }
 }
