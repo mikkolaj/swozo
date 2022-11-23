@@ -37,6 +37,7 @@ import static com.swozo.utils.LoggingUtils.logIfSuccess;
 public class SoziselProvisioner implements TimedSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.SOZISEL;
     private static final int PROVISIONING_SECONDS = 600;
+    private static final int SOZISEL_SETUP_MILLISECONDS = 180000;
     private static final String MAIN_LINK_DESCRIPTION = "Very cool Jitsi link";
     private static final int MINUTES = 5;
     private final TranslationsProvider translationsProvider;
@@ -45,8 +46,8 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
     private final ApplicationProperties properties;
     private final BackendRequestSender requestSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private boolean waitedForSoziselSetup = false;
+    private boolean wereLinksGenerated = false;
+    private String link;
 
 
     @Override
@@ -72,10 +73,10 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
             ServiceDescriptionEntity description,
             VmResourceDetails vmResourceDetails
     ) {
-        if(!waitedForSoziselSetup) {
+        if(!wereLinksGenerated) {
             waitForSoziselSetup();
+            link = new SoziselLinksProvider(vmResourceDetails.publicIpAddress()).createLinks();
         }
-        var link = new SoziselLinksProvider(vmResourceDetails.publicIpAddress()).createLinks();
         return requestSender.getUserData(description.getActivityModuleId(), requestEntity.getId())
                 .thenCompose(users -> CompletableFuture.completedFuture(
                         users.stream().map(OrchestratorUserDto::id).map(createLink(link)).toList()
@@ -124,7 +125,7 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
 
     @SneakyThrows
     private void waitForSoziselSetup() {
-        Thread.sleep(180000);
-        waitedForSoziselSetup = true;
+        Thread.sleep(SOZISEL_SETUP_MILLISECONDS);
+        wereLinksGenerated = true;
     }
 }
