@@ -70,6 +70,11 @@
         - docker
       become: yes
 
+    - name: Pip install docker-compose
+      become: yes
+      ansible.builtin.shell:
+        cmd: pip install docker-compose
+
     - name: Reboot if needed
       reboot:
         reboot_command: shutdown -r now removes=/var/run/reboot-required

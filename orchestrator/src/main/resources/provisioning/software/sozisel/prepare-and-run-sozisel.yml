@@ -11,7 +11,7 @@
 - name: Copy Jitsi config file
   import_playbook: ../../administration/copy-files.yml
   vars:
-    path_from: ../software/sozisel/.jitsi_env
+    path_from: ../software/sozisel/.env
     path_to: /home/swozo/.sozisel
     user: swozo
 
@@ -42,11 +42,5 @@
   tasks:
     - name: Run Sozisel
       become: yes
-      ansible.builtin.shell:
-        cmd: docker compose -f /home/swozo/.sozisel/docker-compose.yml --env-file /home/swozo/.sozisel/.jitsi_env up
-
-#          - name: Run sozisel container
-#            community.docker.docker_compose:
-#              files:
-#                - /home/swozo/.sozisel/docker-compose.yml
-#              env_file: /home/swozo/.sozisel/.jitsi_env
+      community.docker.docker_compose:
+        project_src: /home/swozo/.sozisel

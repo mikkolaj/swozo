@@ -35,8 +35,8 @@ import static com.swozo.utils.LoggingUtils.logIfSuccess;
 @RequiredArgsConstructor
 public class SoziselProvisioner implements TimedSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.SOZISEL;
-    private static final int PROVISIONING_SECONDS = 900;
-    private static final String MAIN_LINK_DESCRIPTION = "swozo123"; // TODO
+    private static final int PROVISIONING_SECONDS = 600;
+    private static final String MAIN_LINK_DESCRIPTION = "Very cool Jitsi link";
     private static final int MINUTES = 5;
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
@@ -60,7 +60,7 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
     }
 
     private static String provisioningComplete(VmResourceDetails resource) {
-        return String.format("Successfully provisioned Jupyter on resource: %s", resource);
+        return String.format("Successfully provisioned Sozisel on resource: %s", resource);
     }
 
     @Override
