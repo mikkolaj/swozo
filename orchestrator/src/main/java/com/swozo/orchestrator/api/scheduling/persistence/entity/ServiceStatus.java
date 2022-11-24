@@ -1,10 +1,12 @@
 package com.swozo.orchestrator.api.scheduling.persistence.entity;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static com.swozo.orchestrator.utils.CollectionUtils.addElements;
+import static com.swozo.orchestrator.utils.CollectionUtils.combineSets;
 
 public enum ServiceStatus {
 
@@ -22,14 +24,23 @@ public enum ServiceStatus {
     CANCELLED,
     FAILED;
 
-    public ServiceStatus getNextErrorStatus() throws IllegalStateException {
+    public boolean canTransitionTo(ServiceStatus status) {
+        return getValidFollowingStatuses().contains(status);
+    }
+
+    private Set<ServiceStatus> getValidFollowingStatuses() {
+        var notReadyTransitions = Set.of(FAILED, CANCELLED);
+        var readyTransitions = Set.of(DELETED, CANCELLED);
         return switch (this) {
-            case VM_CREATING, VM_CREATION_FAILED -> VM_CREATION_FAILED;
-            case PROVISIONING, PROVISIONING_FAILED -> PROVISIONING_FAILED;
-            case READY, WAITING_FOR_EXPORT, EXPORTING, EXPORT_FAILED -> EXPORT_FAILED;
-            case CANCELLED -> CANCELLED;
-            case DELETED -> DELETED;
-            default -> FAILED;
+            case SUBMITTED, VM_CREATION_FAILED -> addElements(notReadyTransitions, VM_CREATING);
+            case VM_CREATING -> addElements(notReadyTransitions, VM_CREATION_FAILED, PROVISIONING);
+            case PROVISIONING -> addElements(notReadyTransitions, PROVISIONING_FAILED, READY);
+            case PROVISIONING_FAILED -> addElements(notReadyTransitions, PROVISIONING);
+            case READY -> addElements(readyTransitions, WAITING_FOR_EXPORT);
+            case WAITING_FOR_EXPORT, EXPORT_FAILED -> addElements(readyTransitions, EXPORTING);
+            case EXPORTING -> addElements(readyTransitions, EXPORT_FAILED, EXPORT_COMPLETE);
+            case EXPORT_COMPLETE, FAILED, CANCELLED -> Set.of(DELETED);
+            case DELETED -> Collections.emptySet();
         };
     }
 
@@ -49,28 +60,18 @@ public enum ServiceStatus {
     }
 
     public static Set<ServiceStatus> notYetReady() {
-        return Stream.concat(
-                withoutVm().stream(),
-                provisioning().stream()
-        ).collect(Collectors.toSet());
+        return combineSets(withoutVm(), provisioning());
     }
 
-
     public static Set<ServiceStatus> withVmBeforeExport() {
-        return Stream.concat(
-                provisioning().stream(),
-                toBeCheckedForExport().stream()
-        ).collect(Collectors.toSet());
+        return combineSets(provisioning(), toBeCheckedForExport());
     }
 
     public static Set<ServiceStatus> toBeCheckedForExport() {
-        return Stream.concat(
-                Stream.of(READY),
-                wasExporting().stream()
-        ).collect(Collectors.toSet());
+        return addElements(wasInExportingState(), READY);
     }
 
-    public static Set<ServiceStatus> wasExporting() {
+    public static Set<ServiceStatus> wasInExportingState() {
         return Set.of(
                 WAITING_FOR_EXPORT,
                 EXPORTING,
@@ -79,14 +80,15 @@ public enum ServiceStatus {
     }
 
     public static Set<ServiceStatus> readyToBeDeleted() {
-        return Stream.concat(
-                Stream.of(EXPORT_COMPLETE),
-                canBeImmediatelyDeleted().stream()
-        ).collect(Collectors.toSet());
+        return addElements(canBeImmediatelyDeleted(), EXPORT_COMPLETE);
+    }
+
+    public static Set<ServiceStatus> toBeAborted() {
+        return addElements(canBeImmediatelyDeleted(), DELETED);
     }
 
     public static Set<ServiceStatus> canBeImmediatelyDeleted() {
-        return Set.of(CANCELLED);
+        return Set.of(FAILED, CANCELLED);
     }
 
     public static Collection<String> asStrings(Collection<ServiceStatus> statuses) {

@@ -2,7 +2,6 @@ package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.scheduling.ScheduleRequest;
-import com.swozo.orchestrator.api.scheduling.control.helpers.CancelledScheduleException;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceStatus;
@@ -13,15 +12,11 @@ import com.swozo.orchestrator.cloud.resources.vm.TimedVmProvider;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
 import com.swozo.utils.CheckedExceptionConverter;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 @Service
@@ -31,80 +26,44 @@ public class ScheduleRequestTracker {
     private final ScheduleRequestRepository requestRepository;
     private final ServiceDescriptionRepository descriptionRepository;
     private final ScheduleRequestMapper requestMapper;
+    private final ScheduleRequestInitializer initializer;
     private final TimedSoftwareProvisionerFactory provisionerFactory;
     private final TimedVmProvider vmProvider;
 
     public ScheduleRequestEntity startTracking(ScheduleRequest scheduleRequest) {
         var entity = requestRepository.save(requestMapper.toPersistence(scheduleRequest));
-        initializeParameters(List.of(entity));
+        initializer.initializeParameters(entity);
         return entity;
     }
 
-    public void abortIfNecessary(long serviceDescriptionId) throws CancelledScheduleException {
-        if (descriptionRepository.getById(serviceDescriptionId).getStatus() == ServiceStatus.CANCELLED) {
-            throw new CancelledScheduleException(String.format("Service with [id: %s] has been cancelled.", serviceDescriptionId));
+    public ScheduleRequestEntity getScheduleRequest(long scheduleRequestId) {
+        return initializer.initializeParameters(requestRepository.getById(scheduleRequestId));
+    }
+
+    public void updateStatus(ScheduleRequestEntity requestEntity, ServiceStatus status) {
+        var currentRequestEntity = requestRepository.getById(requestEntity.getId());
+        currentRequestEntity.getServiceDescriptions()
+                .forEach(description -> setStatusIfTransitionIsValid(description, status));
+        descriptionRepository.saveAll(currentRequestEntity.getServiceDescriptions());
+    }
+
+    public void updateStatus(ServiceDescriptionEntity descriptionEntity, ServiceStatus status) {
+        var description = descriptionRepository.getById(descriptionEntity.getId());
+        setStatusIfTransitionIsValid(description, status);
+        descriptionRepository.save(description);
+    }
+
+    private void setStatusIfTransitionIsValid(ServiceDescriptionEntity serviceDescriptionEntity, ServiceStatus status) {
+        if (serviceDescriptionEntity.getStatus().canTransitionTo(status)) {
+            serviceDescriptionEntity.setStatus(status);
+        } else {
+            throw new IllegalStateException(String.format(
+                    "Tried invalid state transition from %s to %s for serviceDescription [id: %s].",
+                    serviceDescriptionEntity.getStatus(),
+                    status,
+                    serviceDescriptionEntity.getId()
+            ));
         }
-    }
-
-    public List<ScheduleRequestEntity> getSchedulesToDelete() {
-        var provisioned = requestRepository
-                .findScheduleRequestsWithAllServiceDescriptionsInStatus(
-                        ServiceStatus.asStrings(ServiceStatus.readyToBeDeleted())
-                );
-
-        return initializeParameters(provisioned);
-    }
-
-    public List<ScheduleRequestEntity> getOutdatedSchedulesWithoutVm() {
-        return requestRepository
-                .findScheduleRequestsWithAllServiceDescriptionsInStatus(
-                        ServiceStatus.asStrings(ServiceStatus.withoutVm())
-                ).stream()
-                .filter(requestEntity -> requestEntity.getEndTime().isBefore(LocalDateTime.now()))
-                .toList();
-    }
-
-    public List<ScheduleRequestEntity> getValidSchedulesToRestartFromBeginning() {
-        var schedulesToRestart = getValidSchedulesWithStatusIn(ServiceStatus.withoutVm());
-
-        return initializeParameters(schedulesToRestart);
-    }
-
-    public List<ScheduleRequestEntity> getSchedulesWithVmBeforeExport() {
-        var provisioned = requestRepository
-                .findByServiceDescriptions_StatusIn(ServiceStatus.withVmBeforeExport());
-
-        return initializeParameters(provisioned);
-    }
-
-    private List<ScheduleRequestEntity> getValidSchedulesWithStatusIn(Set<ServiceStatus> statuses) {
-        return requestRepository.findByEndTimeGreaterThanAndServiceDescriptions_StatusIn(LocalDateTime.now(), statuses)
-                .stream()
-                .toList();
-    }
-
-    private List<ScheduleRequestEntity> initializeParameters(List<ScheduleRequestEntity> entities) {
-        var serviceDescriptions =
-                entities.stream().map(ScheduleRequestEntity::getServiceDescriptions).flatMap(Collection::stream);
-        serviceDescriptions.forEach(description -> {
-            Hibernate.initialize(description);
-            Hibernate.initialize(description.getDynamicProperties());
-        });
-        return entities;
-    }
-
-    public void updateStatus(ScheduleRequestEntity scheduleRequestEntity, ServiceStatus status) {
-        var descriptions = requestRepository.getById(scheduleRequestEntity.getId())
-                .getServiceDescriptions()
-                .stream()
-                .map(description -> setStatus(description, status))
-                .toList();
-        descriptionRepository.saveAll(descriptions);
-    }
-
-    public void updateStatus(ServiceDescriptionEntity serviceDescriptionEntity, ServiceStatus status) {
-        setStatus(serviceDescriptionEntity, status);
-        descriptionRepository.save(serviceDescriptionEntity);
     }
 
     public boolean canBeImmediatelyDeleted(long scheduleRequestId) {
@@ -112,25 +71,31 @@ public class ScheduleRequestTracker {
                 .allMatch(description -> ServiceStatus.canBeImmediatelyDeleted().contains(description.getStatus()));
     }
 
-    public ServiceDescriptionEntity setStatus(ServiceDescriptionEntity serviceDescriptionEntity, ServiceStatus status) {
-        if (serviceDescriptionEntity.getStatus() != ServiceStatus.CANCELLED || status == ServiceStatus.DELETED) {
-            serviceDescriptionEntity.setStatus(status);
-        }
-        return serviceDescriptionEntity;
+    public boolean serviceWasCancelled(long serviceDescriptionId) {
+        return descriptionRepository.getById(serviceDescriptionId)
+                .getStatus() == ServiceStatus.CANCELLED;
     }
 
-    public void markAsFailure(ServiceDescriptionEntity serviceDescription) {
-        serviceDescription.setStatus(serviceDescription.getStatus().getNextErrorStatus());
-        descriptionRepository.save(serviceDescription);
+    public boolean canBeProvisioned(long serviceDescriptionId) {
+        return ServiceStatus.provisioning().contains(getServiceStatus(serviceDescriptionId));
     }
 
-    public void fillVmResourceId(long scheduleRequestId, long vmResourceId) {
+    public boolean wasNotExported(ServiceDescriptionEntity description) {
+        return ServiceStatus.withVmBeforeExport().contains(description.getStatus());
+    }
+
+    private ServiceStatus getServiceStatus(long serviceDescriptionId) {
+        return descriptionRepository.getById(serviceDescriptionId).getStatus();
+    }
+
+    public ScheduleRequestEntity fillVmResourceId(long scheduleRequestId, long vmResourceId) {
         var scheduleRequestEntity = requestRepository.getById(scheduleRequestId);
         scheduleRequestEntity.setVmResourceId(vmResourceId);
         requestRepository.save(scheduleRequestEntity);
+        return scheduleRequestEntity;
     }
 
-    public void stopTracking(Long scheduleRequestId) {
+    public void stopTracking(long scheduleRequestId) {
         requestRepository.findById(scheduleRequestId).ifPresent(requestEntity -> {
             var serviceDescriptions = requestEntity.getServiceDescriptions();
             serviceDescriptions.forEach(description -> description.setStatus(ServiceStatus.CANCELLED));
@@ -138,7 +103,7 @@ public class ScheduleRequestTracker {
         });
     }
 
-    public List<ActivityLinkInfo> getLinks(Long scheduleRequestId) {
+    public List<ActivityLinkInfo> getLinks(long scheduleRequestId) {
         return requestRepository
                 .findById(scheduleRequestId)
                 .stream()

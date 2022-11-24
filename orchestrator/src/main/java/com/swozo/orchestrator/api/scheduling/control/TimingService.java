@@ -22,11 +22,8 @@ public class TimingService {
     }
 
     public long getDeletionOffset(ScheduleRequestEntity request, int cleanupSeconds) {
-        if (requestTracker.canBeImmediatelyDeleted(request.getId())) {
-            return 0;
-        } else {
-            return offsetTime(request.getEndTime()) + cleanupSeconds;
-        }
+        return requestTracker.canBeImmediatelyDeleted(request.getId()) ? 0 :
+                offsetTime(request.getEndTime()) + cleanupSeconds;
     }
 
     private long offsetTime(LocalDateTime targetTime) {

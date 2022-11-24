@@ -48,7 +48,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/{scheduleRequestId}")
-    public void schedule(@PathVariable long scheduleRequestId) {
+    public void cancel(@PathVariable long scheduleRequestId) {
         logger.info("Serving cancellation request for schedule request [id: {}]", scheduleRequestId);
         service.cancel(scheduleRequestId);
     }
@@ -90,7 +90,6 @@ public class ScheduleController {
         // TODO remove this one day
         requestSender.sendGet(new URI(backendUrl + "/orchestrator-test"), new TypeReference<Void>() {
         }).get();
-        System.out.println(backendRequestSender.getSignedDownloadUrl("1").get());
-        System.out.println("DONE");
+        logger.info("Signed download url: {}", backendRequestSender.getSignedDownloadUrl("1").get());
     }
 }

@@ -28,7 +28,7 @@ import java.util.PrimitiveIterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
-import static com.swozo.utils.LoggingUtils.logIfSuccess;
+import static com.swozo.utils.LoggingUtils.logTemplateIfSuccess;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
         return handleVmNameCollisions(mdaVmSpecs, namePrefix)
                 .thenCompose(this::getVmData)
                 .thenCompose(this::getWrappedVmResourceDetails)
-                .whenComplete(logIfSuccess(logger, "Successfully created resource: {}"));
+                .whenComplete(logTemplateIfSuccess(logger, "Successfully created resource: {}"));
     }
 
     private CompletableFuture<VmAddress> handleVmNameCollisions(MdaVmSpecs mdaVmSpecs, String namePrefix) {
@@ -100,7 +100,7 @@ public class GCloudTimedVmProvider implements TimedVmProvider {
     @Async
     @Override
     public CompletableFuture<VmResourceDetails> getVMResourceDetails(long internalId) {
-        return CompletableFuture.completedFuture(vmRepository.findById(internalId)
+        return CompletableFuture.supplyAsync(() -> vmRepository.findById(internalId)
                 .map(vmUtils::toDto)
                 .map(manager::getInstanceExternalIP)
                 .map(address ->

@@ -6,7 +6,7 @@ import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.model.scheduling.properties.IsolationMode;
 import com.swozo.model.users.OrchestratorUserDto;
 import com.swozo.orchestrator.api.backend.BackendRequestSender;
-import com.swozo.orchestrator.api.scheduling.control.ScheduleRequestTracker;
+import com.swozo.orchestrator.api.scheduling.control.helpers.AbortHandler;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
@@ -49,8 +49,8 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
     private final BucketHandler bucketHandler;
+    private final AbortHandler abortHandler;
     private final BackendRequestSender requestSender;
-    private final ScheduleRequestTracker requestTracker;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -71,7 +71,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return CompletableFuture.runAsync(() -> {
                     logger.info("Started provisioning Jupyter on: {}", resource);
                     runPlaybook(resource);
-                    requestTracker.abortIfNecessary(description.getId());
+                    abortHandler.abortIfNecessary(description.getId());
                 }).thenCompose(x -> handleParameters(description.getDynamicProperties(), resource))
                 .whenComplete(logIfSuccess(logger, provisioningComplete(resource)))
                 .whenComplete(this::wrapExceptions)
@@ -79,7 +79,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     private static String provisioningComplete(VmResourceDetails resource) {
-        return String.format("Successfully provisioned Jupyter on resource: %s", resource);
+        return String.format("Successfully provisioned Jupyter on resource: %s {}", resource);
     }
 
     private void wrapExceptions(Void unused, Throwable throwable) {
@@ -96,9 +96,9 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     ) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
         return requestSender.getUserData(description.getActivityModuleId(), requestEntity.getId())
-                .thenCompose(users -> CompletableFuture.completedFuture(
+                .thenApply(users ->
                         users.stream().map(OrchestratorUserDto::id).map(createLink(formattedLink)).toList()
-                ));
+                );
     }
 
     private Function<Long, ActivityLinkInfo> createLink(String link) {
