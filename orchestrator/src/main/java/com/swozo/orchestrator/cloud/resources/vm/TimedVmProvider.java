@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 public interface TimedVmProvider {
     CompletableFuture<VmResourceDetails> createInstance(MdaVmSpecs mdaVmSpecs, String namePrefix);
 
-    CompletableFuture<VmResourceDetails> getVMResourceDetails(Long internalId);
+    CompletableFuture<VmResourceDetails> getVMResourceDetails(long internalResourceId);
 
     CompletableFuture<Void> deleteInstance(long internalResourceId);
 

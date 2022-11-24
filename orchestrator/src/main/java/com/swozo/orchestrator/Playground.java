@@ -4,6 +4,7 @@ import com.swozo.orchestrator.api.scheduling.persistence.repository.ScheduleRequ
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.GCloudVmLifecycleManager;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmAddress;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.persistence.VmRepository;
 import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
@@ -33,6 +34,7 @@ public class Playground implements Runnable {
     private final AnsibleRunner ansibleRunner;
     private final InternalTaskScheduler internalTaskScheduler;
     private final ScheduleRequestRepository requestRepository;
+    private final VmRepository vmRepository;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void createInstance() {

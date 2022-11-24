@@ -34,8 +34,6 @@ public class ScheduleRequestValidator {
     private void checkTimeBounds(ScheduleRequest request, TimedSoftwareProvisioner provisioner) {
         if (isTooLate(request, provisioner)) {
             throw new IllegalArgumentException("End time is before earliest possible ready time.");
-        } else if (lastsNotLongEnough(request, provisioner)) {
-            throw new IllegalArgumentException("End time is before estimated ready time.");
         }
     }
 
@@ -43,12 +41,5 @@ public class ScheduleRequestValidator {
         var earliestReadyTime = LocalDateTime.now().plusSeconds(provisioner.getProvisioningSeconds());
         return request.serviceLifespan().endTime()
                 .isBefore(earliestReadyTime);
-    }
-
-    private boolean lastsNotLongEnough(ScheduleRequest request, TimedSoftwareProvisioner provisioner) {
-        var estimatedReadyTime =
-                request.serviceLifespan().startTime().plusSeconds(provisioner.getProvisioningSeconds());
-        return request.serviceLifespan().endTime()
-                .isBefore(estimatedReadyTime);
     }
 }

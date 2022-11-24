@@ -36,14 +36,6 @@ public class ServiceDescriptionEntity extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private ServiceStatus status = SUBMITTED;
 
-    public boolean canBeProvisioned() {
-        return ServiceStatus.provisioning().contains(status);
-    }
-
-    public boolean wasInExportingState() {
-        return ServiceStatus.wasExporting().contains(status);
-    }
-
     public ScheduleRequestWithServiceDescription toScheduleRequestWithServiceDescriptions(ScheduleRequestEntity requestEntity) {
         return new ScheduleRequestWithServiceDescription(requestEntity, this);
     }

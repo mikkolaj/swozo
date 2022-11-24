@@ -47,6 +47,12 @@ public class ScheduleController {
         return service.schedule(request);
     }
 
+    @DeleteMapping("/{scheduleRequestId}")
+    public void cancel(@PathVariable long scheduleRequestId) {
+        logger.info("Serving cancellation request for schedule request [id: {}]", scheduleRequestId);
+        service.cancel(scheduleRequestId);
+    }
+
     @GetMapping(CONFIGURATION)
     public List<ServiceConfig> getSupportedServices() {
         logger.info("Serving config request.");
@@ -84,7 +90,6 @@ public class ScheduleController {
         // TODO remove this one day
         requestSender.sendGet(new URI(backendUrl + "/orchestrator-test"), new TypeReference<Void>() {
         }).get();
-        System.out.println(backendRequestSender.getSignedDownloadUrl("1").get());
-        System.out.println("DONE");
+        logger.info("Signed download url: {}", backendRequestSender.getSignedDownloadUrl("1").get());
     }
 }
