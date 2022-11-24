@@ -1,14 +1,16 @@
 package com.swozo.api.web.activity;
 
-import com.swozo.model.files.UploadAccessDto;
-import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.api.web.activity.dto.ActivityDetailsDto;
+import com.swozo.api.web.activity.dto.ActivityFilesDto;
+import com.swozo.api.web.activity.dto.ActivitySummaryDto;
+import com.swozo.api.web.activity.dto.TeacherActivityFilesDto;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.AuthService;
-import com.swozo.api.web.auth.dto.RoleDto;
+import com.swozo.model.files.InitFileUploadRequest;
+import com.swozo.model.files.StorageAccessRequest;
+import com.swozo.model.files.UploadAccessDto;
 import com.swozo.model.links.ActivityLinkInfo;
 import com.swozo.model.users.OrchestratorUserDto;
-import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.swozo.config.Config.*;
@@ -32,8 +35,30 @@ public class ActivityController {
     private final ActivityModuleService activityModuleService;
     private final AuthService authService;
 
+    @GetMapping
+    public List<ActivitySummaryDto> getUserActivities(
+            AccessToken accessToken,
+            @RequestParam(defaultValue = "31") Integer daysInThePast,
+            @RequestParam(defaultValue = "31") Integer daysInTheFuture
+    ) {
+        return activityService.getUserActivitiesBetween(
+                accessToken.getUserId(),
+                LocalDateTime.now().minusDays(daysInThePast),
+                LocalDateTime.now().plusDays(daysInTheFuture)
+        );
+    }
 
-    @PostMapping("/{activityId}/files")
+    @GetMapping("/{activityId}/files/results/student")
+    public ActivityFilesDto getActivityResultFilesForUser(AccessToken accessToken, @PathVariable Long activityId) {
+        return activityService.getUserActivityFiles(accessToken.getUserId(), activityId);
+    }
+
+    @GetMapping("/{activityId}/files/results/teacher")
+    public TeacherActivityFilesDto getActivityResultFilesForAllStudents(AccessToken accessToken, @PathVariable Long activityId) {
+        return activityService.getActivityResultFilesForAllStudents(accessToken.getUserId(), activityId);
+    }
+
+    @PostMapping("/{activityId}/files/public")
     @PreAuthorize("hasRole('TEACHER')")
     public StorageAccessRequest preparePublicActivityFileUpload(
             AccessToken token,
@@ -43,7 +68,7 @@ public class ActivityController {
         return activityService.preparePublicActivityFileUpload(activityId, token.getUserId(), initFileUploadRequest);
     }
 
-    @PutMapping("/{activityId}/files")
+    @PutMapping("/{activityId}/files/public")
     @PreAuthorize("hasRole('TEACHER')")
     public ActivityDetailsDto ackPublicActivityFileUpload(
             AccessToken accessToken,
@@ -53,15 +78,24 @@ public class ActivityController {
         return activityService.ackPublicActivityFileUpload(activityId, accessToken.getUserId(), uploadAccessDto);
     }
 
-    @GetMapping("/{activityId}/files/{fileId}")
+    @GetMapping("/{activityId}/files/public/download/{fileId}")
     @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER')")
     public StorageAccessRequest getPublicActivityFileDownloadRequest(
             AccessToken accessToken,
             @PathVariable Long activityId,
             @PathVariable Long fileId
     ) {
-        var role = authService.oneOf(accessToken, RoleDto.STUDENT, RoleDto.TEACHER);
-        return activityService.getPublicActivityFileDownloadRequest(accessToken.getUserId(), activityId, fileId, role);
+        return activityService.getPublicActivityFileDownloadRequest(accessToken.getUserId(), activityId, fileId);
+    }
+
+    @GetMapping("/{activityId}/files/results/download/{fileId}")
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER')")
+    public StorageAccessRequest getActivityResultFileDownloadRequest(
+            AccessToken accessToken,
+            @PathVariable Long activityId,
+            @PathVariable Long fileId
+    ) {
+        return activityService.getActivityResultFileDownloadRequest(accessToken.getUserId(), activityId, fileId);
     }
 
     @PutMapping("/confirm-link-delivery/{activityModuleId}")

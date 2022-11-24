@@ -8,8 +8,8 @@ public class NeededVmNotFound extends ApiException {
         super(message, ErrorType.POLICY_NOT_MET);
     }
 
-    public static NeededVmNotFound withConditions(Integer vcpu, Integer ram, Integer bandwidth) {
+    public static NeededVmNotFound withConditions(Integer vcpu, Integer ramGB, Integer bandwidthMbps) {
         return new NeededVmNotFound("No Vm in repository which would match these conditions:  vcpu ->" + vcpu
-                + " ram ->" + ram + " bandwidth->" + bandwidth);
+                + " ramGB ->" + ramGB + " bandwidthMbps->" + bandwidthMbps);
     }
 }

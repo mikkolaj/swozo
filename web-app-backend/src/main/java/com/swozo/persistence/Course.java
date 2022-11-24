@@ -7,10 +7,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "Courses", indexes = {
@@ -26,6 +24,7 @@ import java.util.Optional;
 public class Course extends BaseEntity {
     private String name;
     private String subject;
+    @Column(columnDefinition="TEXT")
     private String description;
     private String joinUUID;
     // kept in plaintext
@@ -72,7 +71,7 @@ public class Course extends BaseEntity {
     }
 
     public boolean isParticipant(Long userId) {
-        return getStudents().stream().anyMatch(userCourseData -> userCourseData.getId().getUserId().equals(userId));
+        return getParticipants().stream().anyMatch(user -> user.getId().equals(userId));
     }
 
     public boolean isPublic() {
@@ -85,5 +84,16 @@ public class Course extends BaseEntity {
 
     public boolean isSandbox() {
         return sandboxMode;
+    }
+
+    public List<User> getParticipants() {
+        return Stream.concat(
+                Stream.of(teacher),
+                getStudentsAsUsers().stream()
+        ).toList();
+    }
+
+    public List<User> getStudentsAsUsers() {
+        return getStudents().stream().map(UserCourseData::getUser).toList();
     }
 }

@@ -11,8 +11,9 @@ import javax.persistence.Entity;
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public class SharedServiceModule extends ServiceModule {
+    private final static int MB_MULTIPLIER = 1024;
     private Integer usersPerAdditionalCore;
     private Integer usersPerAdditionalRamGb;
     private Integer usersPerAdditionalDiskGb;
@@ -22,9 +23,9 @@ public class SharedServiceModule extends ServiceModule {
         PimVmInfo translation = new PimVmInfo();
         translation.addModule(this);
         translation.setVcpu(baseVcpu + students / usersPerAdditionalCore);
-        translation.setRam(baseRam + students / usersPerAdditionalRamGb);
-        translation.setDisk(baseDisk + students / usersPerAdditionalDiskGb);
-        translation.setBandwidth(baseBandwidth + students / usersPerAdditionalBandwidthGbps);
+        translation.setRam(baseRamGB + students / usersPerAdditionalRamGb);
+        translation.setDisk(baseDiskGB + students / usersPerAdditionalDiskGb);
+        translation.setBandwidth(baseBandwidthMbps + (students / usersPerAdditionalBandwidthGbps) * MB_MULTIPLIER);
 
         return translation;
     }

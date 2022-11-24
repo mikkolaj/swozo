@@ -7,21 +7,24 @@ import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { TEACHER, WithRole } from 'utils/roles';
+import { useAppSelector } from 'services/store';
+import { hasRole, TEACHER, WithRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { CourseSummaryView } from './components/CourseSummaryView';
 
 export const MyCoursesListView = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling({});
+    const auth = useAppSelector((state) => state.auth.authData);
 
     const { data: courses, isLoading } = useErrorHandledQuery(
         'courses',
         () => getApis().courseApi.getUserCourses(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {
@@ -53,17 +56,21 @@ export const MyCoursesListView = () => {
                         ))}
                     </Stack>
                 ) : (
-                    <Box sx={{ ...stylesColumnCenteredHorizontal, justifyContent: 'center', mt: 8 }}>
-                        <Typography sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }} variant="h4">
-                            {t('myCourses.empty')}
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            sx={{ mt: 4, px: 4, py: 2 }}
-                            onClick={() => navigate(PageRoutes.CREATE_COURSE)}
-                        >
-                            <Typography variant="h5">{t('myCourses.createCourseButton')}</Typography>
-                        </Button>
+                    <Box>
+                        <Box sx={{ ...stylesColumnCenteredHorizontal, justifyContent: 'center', mt: 8 }}>
+                            <Typography sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }} variant="h4">
+                                {t(`myCourses.empty.${hasRole(auth, TEACHER) ? 'teacher' : 'student'}`)}
+                            </Typography>
+                            <WithRole roles={[TEACHER]}>
+                                <Button
+                                    variant="contained"
+                                    sx={{ mt: 4, px: 4, py: 2 }}
+                                    onClick={() => navigate(PageRoutes.CREATE_COURSE)}
+                                >
+                                    <Typography variant="h5">{t('myCourses.createCourseButton')}</Typography>
+                                </Button>
+                            </WithRole>
+                        </Box>
                     </Box>
                 )}
             </Container>

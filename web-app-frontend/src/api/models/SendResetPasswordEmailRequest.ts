@@ -16,22 +16,22 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface AddStudentRequest
+ * @interface SendResetPasswordEmailRequest
  */
-export interface AddStudentRequest {
+export interface SendResetPasswordEmailRequest {
     /**
      * 
      * @type {string}
-     * @memberof AddStudentRequest
+     * @memberof SendResetPasswordEmailRequest
      */
     email: string;
 }
 
-export function AddStudentRequestFromJSON(json: any): AddStudentRequest {
-    return AddStudentRequestFromJSONTyped(json, false);
+export function SendResetPasswordEmailRequestFromJSON(json: any): SendResetPasswordEmailRequest {
+    return SendResetPasswordEmailRequestFromJSONTyped(json, false);
 }
 
-export function AddStudentRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): AddStudentRequest {
+export function SendResetPasswordEmailRequestFromJSONTyped(json: any, ignoreDiscriminator: boolean): SendResetPasswordEmailRequest {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -41,7 +41,7 @@ export function AddStudentRequestFromJSONTyped(json: any, ignoreDiscriminator: b
     };
 }
 
-export function AddStudentRequestToJSON(value?: AddStudentRequest | null): any {
+export function SendResetPasswordEmailRequestToJSON(value?: SendResetPasswordEmailRequest | null): any {
     if (value === undefined) {
         return undefined;
     }

@@ -7,5 +7,7 @@ import java.util.List;
 public record AuthDetailsDto(
         @Schema(required = true) String accessToken,
         @Schema(required = true) long expiresIn,
-        @Schema(required = true) List<RoleDto> roles) {
+        @Schema(required = true) RefreshTokenDto refreshTokenDto,
+        @Schema(required = true) List<RoleDto> roles
+) {
 }

@@ -11,7 +11,6 @@ type Props = {
 
 export const SandboxResultInfo = ({ info }: Props) => {
     const { t } = useTranslation();
-
     return (
         <Box>
             <Typography variant="h5">{t('moduleSandbox.modal.result.success')}</Typography>

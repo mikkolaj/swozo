@@ -21,10 +21,31 @@ import {
     LoginRequest,
     LoginRequestFromJSON,
     LoginRequestToJSON,
+    RefreshTokenDto,
+    RefreshTokenDtoFromJSON,
+    RefreshTokenDtoToJSON,
+    ResetPasswordRequest,
+    ResetPasswordRequestFromJSON,
+    ResetPasswordRequestToJSON,
+    SendResetPasswordEmailRequest,
+    SendResetPasswordEmailRequestFromJSON,
+    SendResetPasswordEmailRequestToJSON,
 } from '../models';
 
 export interface LoginOperationRequest {
     loginRequest: LoginRequest;
+}
+
+export interface RefreshAccessTokenRequest {
+    refreshTokenDto: RefreshTokenDto;
+}
+
+export interface ResetPasswordOperationRequest {
+    resetPasswordRequest: ResetPasswordRequest;
+}
+
+export interface SendResetPasswordEmailOperationRequest {
+    sendResetPasswordEmailRequest: SendResetPasswordEmailRequest;
 }
 
 /**
@@ -33,7 +54,6 @@ export interface LoginOperationRequest {
 export class AuthControllerApi extends runtime.BaseAPI {
 
     /**
-     * Login user
      */
     async loginRaw(requestParameters: LoginOperationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<AuthDetailsDto>> {
         if (requestParameters.loginRequest === null || requestParameters.loginRequest === undefined) {
@@ -58,11 +78,101 @@ export class AuthControllerApi extends runtime.BaseAPI {
     }
 
     /**
-     * Login user
      */
     async login(requestParameters: LoginOperationRequest, initOverrides?: RequestInit): Promise<AuthDetailsDto> {
         const response = await this.loginRaw(requestParameters, initOverrides);
         return await response.value();
+    }
+
+    /**
+     */
+    async refreshAccessTokenRaw(requestParameters: RefreshAccessTokenRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<AuthDetailsDto>> {
+        if (requestParameters.refreshTokenDto === null || requestParameters.refreshTokenDto === undefined) {
+            throw new runtime.RequiredError('refreshTokenDto','Required parameter requestParameters.refreshTokenDto was null or undefined when calling refreshAccessToken.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/auth/refresh`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: RefreshTokenDtoToJSON(requestParameters.refreshTokenDto),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => AuthDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async refreshAccessToken(requestParameters: RefreshAccessTokenRequest, initOverrides?: RequestInit): Promise<AuthDetailsDto> {
+        const response = await this.refreshAccessTokenRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async resetPasswordRaw(requestParameters: ResetPasswordOperationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.resetPasswordRequest === null || requestParameters.resetPasswordRequest === undefined) {
+            throw new runtime.RequiredError('resetPasswordRequest','Required parameter requestParameters.resetPasswordRequest was null or undefined when calling resetPassword.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/auth/reset-password`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ResetPasswordRequestToJSON(requestParameters.resetPasswordRequest),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async resetPassword(requestParameters: ResetPasswordOperationRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.resetPasswordRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     */
+    async sendResetPasswordEmailRaw(requestParameters: SendResetPasswordEmailOperationRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.sendResetPasswordEmailRequest === null || requestParameters.sendResetPasswordEmailRequest === undefined) {
+            throw new runtime.RequiredError('sendResetPasswordEmailRequest','Required parameter requestParameters.sendResetPasswordEmailRequest was null or undefined when calling sendResetPasswordEmail.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/auth/reset-password`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: SendResetPasswordEmailRequestToJSON(requestParameters.sendResetPasswordEmailRequest),
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async sendResetPasswordEmail(requestParameters: SendResetPasswordEmailOperationRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.sendResetPasswordEmailRaw(requestParameters, initOverrides);
     }
 
 }

@@ -2,6 +2,9 @@ package com.swozo.orchestrator.cloud.software;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 public class LinkFormatter {
     private static final String HTTP_PROTOCOL = "http";
@@ -26,5 +29,12 @@ public class LinkFormatter {
 
     public String getLink(String protocol, String ip, String port, String resourcePath) {
         return String.format(LINK_TEMPLATE, protocol, ip, port, resourcePath);
+    }
+
+    public String appendQueryParams(String link, Map<String, String> queryParams) {
+        return link + "?" +
+                queryParams.entrySet().stream()
+                    .map(param -> param.getKey() + "=" + param.getValue())
+                    .collect(Collectors.joining("&"));
     }
 }

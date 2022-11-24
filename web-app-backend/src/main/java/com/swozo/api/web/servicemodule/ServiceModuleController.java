@@ -65,7 +65,7 @@ public class ServiceModuleController {
     }
 
     @GetMapping("/config")
-    @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
+    @PreAuthorize("hasAnyRole('TECHNICAL_TEACHER', 'TEACHER')")
     public List<ServiceConfig> getSupportedServices() {
         return orchestratorService.getSupportedServices();
     }

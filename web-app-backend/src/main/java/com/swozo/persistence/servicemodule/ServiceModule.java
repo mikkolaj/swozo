@@ -22,8 +22,11 @@ import java.util.Map;
 public abstract class ServiceModule extends BaseEntity {
     protected String name;
     protected String subject;
+    @Column(columnDefinition="TEXT")
     protected String description;
+    @Column(columnDefinition="TEXT")
     protected String teacherInstructionHtml;
+    @Column(columnDefinition="TEXT")
     protected String studentInstructionHtml;
     protected String serviceName;
     protected Boolean isPublic;
@@ -41,9 +44,9 @@ public abstract class ServiceModule extends BaseEntity {
     protected User creator;
 
     protected Integer baseVcpu;
-    protected Integer baseRam;
-    protected Integer baseDisk;
-    protected Integer baseBandwidth;
+    protected Integer baseRamGB;
+    protected Integer baseDiskGB;
+    protected Integer baseBandwidthMbps;
 
     public boolean isPublic() {
         return isPublic;
@@ -63,8 +66,17 @@ public abstract class ServiceModule extends BaseEntity {
 
     public void setMdaData(ServiceModuleMdaDto mdaData) {
         baseVcpu = mdaData.baseVcpu();
-        baseRam = mdaData.baseRam();
-        baseBandwidth = mdaData.baseBandwidth();
-        baseDisk = mdaData.baseDisk();
+        baseRamGB = mdaData.baseRamGB();
+        baseBandwidthMbps = mdaData.baseBandwidthMbps();
+        baseDiskGB = mdaData.baseDiskGB();
+    }
+
+    @Override
+    public String toString(){
+        return String.format("ServiceModule(name=%s, subject=%s, description=%s, teacherInstructionHtml=%s," +
+                " studentInstructionHtml=%s, serviceName=%s, isPublic = %s, ready=%s, createdAt=%s, dynamicProperites=%s," +
+                " creatorId=%s, baseVcpu=%s, baseRamGB=%s, baseDiskGB=%s, baseBandwidthMbps=%s)", name, subject,
+                description, teacherInstructionHtml, studentInstructionHtml, serviceName, isPublic, ready, createdAt,
+                dynamicProperties, creator.getId(), baseVcpu, baseRamGB, baseDiskGB, baseBandwidthMbps);
     }
 }

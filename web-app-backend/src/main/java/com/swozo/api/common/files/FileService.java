@@ -51,6 +51,10 @@ public class FileService {
         );
     }
 
+    public Long getTotalStorageUsedByUser(Long userId) {
+        return fileRepository.sumStorageBytesUsedByUser(userId);
+    }
+
     public StorageAccessRequest prepareInternalUpload(
             InitFileUploadRequest initFileUploadRequest,
             FilePathGenerator filePathGenerator

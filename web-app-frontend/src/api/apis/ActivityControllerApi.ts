@@ -18,12 +18,21 @@ import {
     ActivityDetailsDto,
     ActivityDetailsDtoFromJSON,
     ActivityDetailsDtoToJSON,
+    ActivityFilesDto,
+    ActivityFilesDtoFromJSON,
+    ActivityFilesDtoToJSON,
+    ActivitySummaryDto,
+    ActivitySummaryDtoFromJSON,
+    ActivitySummaryDtoToJSON,
     InitFileUploadRequest,
     InitFileUploadRequestFromJSON,
     InitFileUploadRequestToJSON,
     StorageAccessRequest,
     StorageAccessRequestFromJSON,
     StorageAccessRequestToJSON,
+    TeacherActivityFilesDto,
+    TeacherActivityFilesDtoFromJSON,
+    TeacherActivityFilesDtoToJSON,
     UploadAccessDto,
     UploadAccessDtoFromJSON,
     UploadAccessDtoToJSON,
@@ -38,9 +47,27 @@ export interface ConfirmLinkCanBeDeliveredToStudentsRequest {
     activityModuleId: number;
 }
 
+export interface GetActivityResultFileDownloadRequestRequest {
+    activityId: number;
+    fileId: number;
+}
+
+export interface GetActivityResultFilesForAllStudentsRequest {
+    activityId: number;
+}
+
+export interface GetActivityResultFilesForUserRequest {
+    activityId: number;
+}
+
 export interface GetPublicActivityFileDownloadRequestRequest {
     activityId: number;
     fileId: number;
+}
+
+export interface GetUserActivitiesRequest {
+    daysInThePast?: number;
+    daysInTheFuture?: number;
 }
 
 export interface PreparePublicActivityFileUploadRequest {
@@ -79,7 +106,7 @@ export class ActivityControllerApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/activities/{activityId}/files`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))),
+            path: `/activities/{activityId}/files/public`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
@@ -133,6 +160,118 @@ export class ActivityControllerApi extends runtime.BaseAPI {
 
     /**
      */
+    async getActivityResultFileDownloadRequestRaw(requestParameters: GetActivityResultFileDownloadRequestRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<StorageAccessRequest>> {
+        if (requestParameters.activityId === null || requestParameters.activityId === undefined) {
+            throw new runtime.RequiredError('activityId','Required parameter requestParameters.activityId was null or undefined when calling getActivityResultFileDownloadRequest.');
+        }
+
+        if (requestParameters.fileId === null || requestParameters.fileId === undefined) {
+            throw new runtime.RequiredError('fileId','Required parameter requestParameters.fileId was null or undefined when calling getActivityResultFileDownloadRequest.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/activities/{activityId}/files/results/download/{fileId}`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))).replace(`{${"fileId"}}`, encodeURIComponent(String(requestParameters.fileId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => StorageAccessRequestFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getActivityResultFileDownloadRequest(requestParameters: GetActivityResultFileDownloadRequestRequest, initOverrides?: RequestInit): Promise<StorageAccessRequest> {
+        const response = await this.getActivityResultFileDownloadRequestRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getActivityResultFilesForAllStudentsRaw(requestParameters: GetActivityResultFilesForAllStudentsRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<TeacherActivityFilesDto>> {
+        if (requestParameters.activityId === null || requestParameters.activityId === undefined) {
+            throw new runtime.RequiredError('activityId','Required parameter requestParameters.activityId was null or undefined when calling getActivityResultFilesForAllStudents.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/activities/{activityId}/files/results/teacher`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => TeacherActivityFilesDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getActivityResultFilesForAllStudents(requestParameters: GetActivityResultFilesForAllStudentsRequest, initOverrides?: RequestInit): Promise<TeacherActivityFilesDto> {
+        const response = await this.getActivityResultFilesForAllStudentsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getActivityResultFilesForUserRaw(requestParameters: GetActivityResultFilesForUserRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<ActivityFilesDto>> {
+        if (requestParameters.activityId === null || requestParameters.activityId === undefined) {
+            throw new runtime.RequiredError('activityId','Required parameter requestParameters.activityId was null or undefined when calling getActivityResultFilesForUser.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/activities/{activityId}/files/results/student`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ActivityFilesDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async getActivityResultFilesForUser(requestParameters: GetActivityResultFilesForUserRequest, initOverrides?: RequestInit): Promise<ActivityFilesDto> {
+        const response = await this.getActivityResultFilesForUserRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
     async getPublicActivityFileDownloadRequestRaw(requestParameters: GetPublicActivityFileDownloadRequestRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<StorageAccessRequest>> {
         if (requestParameters.activityId === null || requestParameters.activityId === undefined) {
             throw new runtime.RequiredError('activityId','Required parameter requestParameters.activityId was null or undefined when calling getPublicActivityFileDownloadRequest.');
@@ -155,7 +294,7 @@ export class ActivityControllerApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/activities/{activityId}/files/{fileId}`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))).replace(`{${"fileId"}}`, encodeURIComponent(String(requestParameters.fileId))),
+            path: `/activities/{activityId}/files/public/download/{fileId}`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))).replace(`{${"fileId"}}`, encodeURIComponent(String(requestParameters.fileId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -168,6 +307,46 @@ export class ActivityControllerApi extends runtime.BaseAPI {
      */
     async getPublicActivityFileDownloadRequest(requestParameters: GetPublicActivityFileDownloadRequestRequest, initOverrides?: RequestInit): Promise<StorageAccessRequest> {
         const response = await this.getPublicActivityFileDownloadRequestRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async getUserActivitiesRaw(requestParameters: GetUserActivitiesRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<ActivitySummaryDto>>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.daysInThePast !== undefined) {
+            queryParameters['daysInThePast'] = requestParameters.daysInThePast;
+        }
+
+        if (requestParameters.daysInTheFuture !== undefined) {
+            queryParameters['daysInTheFuture'] = requestParameters.daysInTheFuture;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/activities`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(ActivitySummaryDtoFromJSON));
+    }
+
+    /**
+     */
+    async getUserActivities(requestParameters: GetUserActivitiesRequest = {}, initOverrides?: RequestInit): Promise<Array<ActivitySummaryDto>> {
+        const response = await this.getUserActivitiesRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -197,7 +376,7 @@ export class ActivityControllerApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/activities/{activityId}/files`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))),
+            path: `/activities/{activityId}/files/public`.replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,

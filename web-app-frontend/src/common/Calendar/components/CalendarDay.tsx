@@ -4,8 +4,12 @@ import { blue, blueGrey } from '@mui/material/colors';
 import { stylesRow } from 'common/styles';
 import { Dayjs } from 'dayjs';
 import { useState } from 'react';
-import { CalendarActivity } from 'utils/mocks';
 import { NO_SUCH_DAY_IN_MONTH } from '../utils';
+
+export type CalendarActivity = {
+    at: Dayjs;
+    description: string;
+};
 
 type Props = {
     displayedDate: Dayjs;

@@ -11,7 +11,9 @@ public enum ApiError {
     INVALID_CREDENTIALS(HttpStatus.FORBIDDEN),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED),
     ILLEGAL_STATE(HttpStatus.BAD_REQUEST),
-    VALIDATION_FAILED(HttpStatus.CONFLICT);
+    VALIDATION_FAILED(HttpStatus.CONFLICT),
+    THIRD_PARTY_ERROR(HttpStatus.SERVICE_UNAVAILABLE)
+    ;
 
     private final HttpStatus statusCode;
 }

@@ -43,19 +43,19 @@ export interface ServiceModuleMdaDto {
      * @type {number}
      * @memberof ServiceModuleMdaDto
      */
-    baseRam: number;
+    baseRamGB: number;
     /**
      * 
      * @type {number}
      * @memberof ServiceModuleMdaDto
      */
-    baseDisk: number;
+    baseDiskGB: number;
     /**
      * 
      * @type {number}
      * @memberof ServiceModuleMdaDto
      */
-    baseBandwidth: number;
+    baseBandwidthMbps: number;
     /**
      * 
      * @type {SharedServiceModuleMdaDto}
@@ -76,9 +76,9 @@ export function ServiceModuleMdaDtoFromJSONTyped(json: any, ignoreDiscriminator:
         
         'isIsolated': json['isIsolated'],
         'baseVcpu': json['baseVcpu'],
-        'baseRam': json['baseRam'],
-        'baseDisk': json['baseDisk'],
-        'baseBandwidth': json['baseBandwidth'],
+        'baseRamGB': json['baseRamGB'],
+        'baseDiskGB': json['baseDiskGB'],
+        'baseBandwidthMbps': json['baseBandwidthMbps'],
         'sharedServiceModuleMdaDto': !exists(json, 'sharedServiceModuleMdaDto') ? undefined : SharedServiceModuleMdaDtoFromJSON(json['sharedServiceModuleMdaDto']),
     };
 }
@@ -94,9 +94,9 @@ export function ServiceModuleMdaDtoToJSON(value?: ServiceModuleMdaDto | null): a
         
         'isIsolated': value.isIsolated,
         'baseVcpu': value.baseVcpu,
-        'baseRam': value.baseRam,
-        'baseDisk': value.baseDisk,
-        'baseBandwidth': value.baseBandwidth,
+        'baseRamGB': value.baseRamGB,
+        'baseDiskGB': value.baseDiskGB,
+        'baseBandwidthMbps': value.baseBandwidthMbps,
         'sharedServiceModuleMdaDto': SharedServiceModuleMdaDtoToJSON(value.sharedServiceModuleMdaDto),
     };
 }

@@ -28,21 +28,23 @@ export const PublicModulesListView = () => {
     const [filters, setFilters] = useState<Filters>({ service: '' });
     // TODO add pagination
 
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
     const { data: modules, isLoading } = useErrorHandledQuery(
         ['modules', 'summary'],
         () => getApis().serviceModuleApi.getAllPublicServiceModules(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     const { data: supportedServices } = useErrorHandledQuery(
         'services',
         () => getApis().serviceModuleApi.getSupportedServices(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     useEffect(() => {

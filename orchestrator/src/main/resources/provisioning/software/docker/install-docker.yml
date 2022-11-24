@@ -70,8 +70,3 @@
         - docker
       become: yes
 
-    - name: Reboot if needed
-      reboot:
-        reboot_command: shutdown -r now removes=/var/run/reboot-required
-      become: yes
-

@@ -1,3 +1,4 @@
+import { AuthDetailsDtoRolesEnum } from 'api';
 import { PropsWithChildren, useEffect } from 'react';
 import { Location, NavigateOptions, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector } from 'services/store';
@@ -5,7 +6,11 @@ import { AuthRequirement, hasRole } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 
 const defaultRedirectRoute = (req: AuthRequirement): string => {
-    return req.loggedIn ? PageRoutes.LOGIN : PageRoutes.HOME;
+    return req.loggedIn
+        ? PageRoutes.LOGIN
+        : req.roles.includes(AuthDetailsDtoRolesEnum.Admin)
+        ? PageRoutes.ADMIN
+        : PageRoutes.HOME;
 };
 
 type Props = {

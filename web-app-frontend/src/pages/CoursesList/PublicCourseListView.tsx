@@ -16,14 +16,15 @@ export const PublicCourseListView = () => {
     const { t } = useTranslation();
     const [searchPhrase, setSearchPhrase] = useState('');
     const [filteredCourses, setFilteredCourses] = useState<CourseSummaryDto[]>([]);
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, pushApiError, isApiErrorSet, removeApiError } =
         useApiErrorHandling({});
 
     const { data: courseSummaryItems, isLoading } = useErrorHandledQuery(
         ['courses', 'public'],
         () => getApis().courseApi.getPublicCourses(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     useEffect(() => {

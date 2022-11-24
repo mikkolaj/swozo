@@ -2,6 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export enum ModalId {
     MODULE_CREATION_IN_PROGRESS,
+    REMIND_PASSWORD_IN_PROGRESS,
+    REMIND_PASSWORD_EMAIL_SENT,
+    SESSION_EXPIRED,
 }
 
 export type ModalProps = {

@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    RefreshTokenDto,
+    RefreshTokenDtoFromJSON,
+    RefreshTokenDtoFromJSONTyped,
+    RefreshTokenDtoToJSON,
+} from './RefreshTokenDto';
+
 /**
  * 
  * @export
@@ -31,6 +38,12 @@ export interface AuthDetailsDto {
      * @memberof AuthDetailsDto
      */
     expiresIn: number;
+    /**
+     * 
+     * @type {RefreshTokenDto}
+     * @memberof AuthDetailsDto
+     */
+    refreshTokenDto: RefreshTokenDto;
     /**
      * 
      * @type {Array<string>}
@@ -62,6 +75,7 @@ export function AuthDetailsDtoFromJSONTyped(json: any, ignoreDiscriminator: bool
         
         'accessToken': json['accessToken'],
         'expiresIn': json['expiresIn'],
+        'refreshTokenDto': RefreshTokenDtoFromJSON(json['refreshTokenDto']),
         'roles': json['roles'],
     };
 }
@@ -77,6 +91,7 @@ export function AuthDetailsDtoToJSON(value?: AuthDetailsDto | null): any {
         
         'accessToken': value.accessToken,
         'expiresIn': value.expiresIn,
+        'refreshTokenDto': RefreshTokenDtoToJSON(value.refreshTokenDto),
         'roles': value.roles,
     };
 }

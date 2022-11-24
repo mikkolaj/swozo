@@ -7,9 +7,9 @@ import java.util.Optional;
 public record ServiceModuleMdaDto(
         @Schema(required = true) Boolean isIsolated,
         @Schema(required = true) Integer baseVcpu,
-        @Schema(required = true) Integer baseRam,
-        @Schema(required = true) Integer baseDisk,
-        @Schema(required = true) Integer baseBandwidth,
+        @Schema(required = true) Integer baseRamGB,
+        @Schema(required = true) Integer baseDiskGB,
+        @Schema(required = true) Integer baseBandwidthMbps,
         Optional<SharedServiceModuleMdaDto> sharedServiceModuleMdaDto
 ) {
 }

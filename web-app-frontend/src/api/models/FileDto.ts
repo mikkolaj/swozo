@@ -33,6 +33,12 @@ export interface FileDto {
     name: string;
     /**
      * 
+     * @type {number}
+     * @memberof FileDto
+     */
+    sizeBytes: number;
+    /**
+     * 
      * @type {Date}
      * @memberof FileDto
      */
@@ -51,6 +57,7 @@ export function FileDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): F
         
         'id': json['id'],
         'name': json['name'],
+        'sizeBytes': json['sizeBytes'],
         'createdAt': (new Date(json['createdAt'])),
     };
 }
@@ -66,6 +73,7 @@ export function FileDtoToJSON(value?: FileDto | null): any {
         
         'id': value.id,
         'name': value.name,
+        'sizeBytes': value.sizeBytes,
         'createdAt': (value.createdAt.toISOString()),
     };
 }

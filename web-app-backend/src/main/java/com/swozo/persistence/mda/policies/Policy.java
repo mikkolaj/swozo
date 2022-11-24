@@ -32,17 +32,17 @@ public class Policy extends BaseEntity {
                     throw PolicyNotMetException.withBrokenPolicy(policyType, value, pimVmInfo.getVcpu());
                 else
                     break;
-            case MAX_RAM:
+            case MAX_RAM_GB:
                 if (pimVmInfo.getRam() > value)
                     throw PolicyNotMetException.withBrokenPolicy(policyType, value, pimVmInfo.getRam());
                 else
                     break;
-            case MAX_DISK:
+            case MAX_DISK_GB:
                 if (pimVmInfo.getDisk() > value)
                     throw PolicyNotMetException.withBrokenPolicy(policyType, value, pimVmInfo.getDisk());
                 else
                     break;
-            case MAX_BANDWIDTH:
+            case MAX_BANDWIDTH_MBPS:
                 if (pimVmInfo.getBandwidth() > value)
                     throw PolicyNotMetException.withBrokenPolicy(policyType, value, pimVmInfo.getBandwidth());
                 else

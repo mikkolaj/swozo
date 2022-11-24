@@ -6,6 +6,40 @@ servers:
 - url: http://localhost:5000
   description: Generated server url
 paths:
+  /users/roles/{userId}:
+    put:
+      tags:
+      - user-controller
+      operationId: setUserRoles
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                enum:
+                - STUDENT
+                - TEACHER
+                - TECHNICAL_TEACHER
+                - ADMIN
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserAdminDetailsDto'
+      security:
+      - JWT_AUTH: []
   /service-modules:
     put:
       tags:
@@ -228,7 +262,34 @@ paths:
                 $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
-  /activities/{activityId}/files:
+  /auth/reset-password:
+    put:
+      tags:
+      - auth-controller
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+    post:
+      tags:
+      - auth-controller
+      operationId: sendResetPasswordEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendResetPasswordEmailRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+  /activities/{activityId}/files/public:
     put:
       tags:
       - activity-controller
@@ -298,6 +359,104 @@ paths:
           description: OK
       security:
       - JWT_AUTH: []
+  /vms:
+    post:
+      tags:
+      - vm-controller
+      operationId: addVm
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVmRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VmDto'
+      security:
+      - JWT_AUTH: []
+  /users:
+    get:
+      tags:
+      - user-controller
+      operationId: getUsers
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserAdminSummaryDto'
+      security:
+      - JWT_AUTH: []
+    post:
+      tags:
+      - user-controller
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserAdminDetailsDto'
+      security:
+      - JWT_AUTH: []
+  /users/me/logout:
+    post:
+      tags:
+      - user-controller
+      operationId: logout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
+  /users/favourite/{activityId}/files/{remoteFileId}:
+    post:
+      tags:
+      - user-controller
+      operationId: setFileAsFavourite
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: remoteFileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MeDto'
+      security:
+      - JWT_AUTH: []
   /sandbox/{serviceModuleId}:
     post:
       tags:
@@ -323,6 +482,57 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/ServiceModuleSandboxDto'
+      security:
+      - JWT_AUTH: []
+  /policies:
+    post:
+      tags:
+      - policy-controller
+      operationId: addPolicy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePolicyRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyDto'
+      security:
+      - JWT_AUTH: []
+  /policies/{userId}/overwrite:
+    post:
+      tags:
+      - policy-controller
+      operationId: overwriteAllTeacherPolicies
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreatePolicyRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDto'
       security:
       - JWT_AUTH: []
   /courses:
@@ -360,11 +570,28 @@ paths:
                 $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
+  /auth/refresh:
+    post:
+      tags:
+      - auth-controller
+      operationId: refreshAccessToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenDto'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AuthDetailsDto'
   /auth/login:
     post:
       tags:
       - auth-controller
-      summary: Login user
       operationId: login
       requestBody:
         content:
@@ -379,6 +606,92 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AuthDetailsDto'
+  /vms/{id}:
+    delete:
+      tags:
+      - vm-controller
+      operationId: deleteVm
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
+    patch:
+      tags:
+      - vm-controller
+      operationId: editVm
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EdtiVmRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/VmDto'
+      security:
+      - JWT_AUTH: []
+  /policies/{id}:
+    delete:
+      tags:
+      - policy-controller
+      operationId: deletePolicy
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+      security:
+      - JWT_AUTH: []
+    patch:
+      tags:
+      - policy-controller
+      operationId: editPolicy
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EditPolicyRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PolicyDto'
+      security:
+      - JWT_AUTH: []
   /courses/{id}:
     get:
       tags:
@@ -442,6 +755,22 @@ paths:
                 $ref: '#/components/schemas/CourseDetailsDto'
       security:
       - JWT_AUTH: []
+  /vms/all-system-vms:
+    get:
+      tags:
+      - vm-controller
+      operationId: getAllVms
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VmDto'
+      security:
+      - JWT_AUTH: []
   /users/me:
     get:
       tags:
@@ -453,7 +782,85 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: '#/components/schemas/UserDetailsDto'
+                $ref: '#/components/schemas/MeDto'
+      security:
+      - JWT_AUTH: []
+  /users/favourite/{remoteFileId}:
+    get:
+      tags:
+      - user-controller
+      operationId: getFavouriteFileDownloadRequest
+      parameters:
+      - name: remoteFileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StorageAccessRequest'
+      security:
+      - JWT_AUTH: []
+    delete:
+      tags:
+      - user-controller
+      operationId: unsetFileAsFavourite
+      parameters:
+      - name: remoteFileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MeDto'
+      security:
+      - JWT_AUTH: []
+  /users/details/{userId}:
+    get:
+      tags:
+      - user-controller
+      operationId: getUserDetailsForAdmin
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserAdminDetailsDto'
+      security:
+      - JWT_AUTH: []
+  /users/admins:
+    get:
+      tags:
+      - user-controller
+      operationId: getSystemAdmins
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetailsDto'
       security:
       - JWT_AUTH: []
   /service-modules/{serviceModuleId}:
@@ -624,6 +1031,45 @@ paths:
                   $ref: '#/components/schemas/ServiceConfig'
       security:
       - JWT_AUTH: []
+  /policies/all_teacher-policies/{teacherId}:
+    get:
+      tags:
+      - policy-controller
+      operationId: getAllTeacherPolicies
+      parameters:
+      - name: teacherId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDto'
+      security:
+      - JWT_AUTH: []
+  /policies/all-system-policies:
+    get:
+      tags:
+      - policy-controller
+      operationId: getAllPolicies
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PolicyDto'
+      security:
+      - JWT_AUTH: []
   /files/external/download/{remoteFileId}:
     get:
       tags:
@@ -696,7 +1142,107 @@ paths:
                 $ref: '#/components/schemas/CourseSummaryDto'
       security:
       - JWT_AUTH: []
-  /activities/{activityId}/files/{fileId}:
+  /activities:
+    get:
+      tags:
+      - activity-controller
+      operationId: getUserActivities
+      parameters:
+      - name: daysInThePast
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 31
+      - name: daysInTheFuture
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 31
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivitySummaryDto'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/results/teacher:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFilesForAllStudents
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TeacherActivityFilesDto'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/results/student:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFilesForUser
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ActivityFilesDto'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/results/download/{fileId}:
+    get:
+      tags:
+      - activity-controller
+      operationId: getActivityResultFileDownloadRequest
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: fileId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StorageAccessRequest'
+      security:
+      - JWT_AUTH: []
+  /activities/{activityId}/files/public/download/{fileId}:
     get:
       tags:
       - activity-controller
@@ -725,6 +1271,170 @@ paths:
       - JWT_AUTH: []
 components:
   schemas:
+    CourseSummaryDto:
+      required:
+      - creationTime
+      - description
+      - isPasswordProtected
+      - joinUUID
+      - name
+      - subject
+      - teacher
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        subject:
+          type: string
+        creationTime:
+          type: string
+          format: date-time
+        teacher:
+          $ref: '#/components/schemas/UserDetailsDto'
+        isPasswordProtected:
+          type: boolean
+        joinUUID:
+          type: string
+    InstructionDto:
+      required:
+      - untrustedPossiblyDangerousHtml
+      type: object
+      properties:
+        untrustedPossiblyDangerousHtml:
+          type: string
+    PolicyDto:
+      required:
+      - id
+      - policyType
+      - user
+      - value
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        policyType:
+          type: string
+          enum:
+          - MAX_VCPU
+          - MAX_RAM_GB
+          - MAX_DISK_GB
+          - MAX_BANDWIDTH_MBPS
+          - MAX_STUDENTS
+          - MAX_ACTIVITY_DURATION_MINUTES
+          - MAX_PARALLEL_SANDBOXES
+        user:
+          $ref: '#/components/schemas/UserDetailsDto'
+        value:
+          type: integer
+          format: int32
+    ServiceModuleSummaryDto:
+      required:
+      - createdAt
+      - creator
+      - description
+      - id
+      - name
+      - serviceName
+      - studentInstruction
+      - subject
+      - teacherInstruction
+      - usedInActivitiesCount
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        subject:
+          type: string
+        description:
+          type: string
+        serviceName:
+          type: string
+        teacherInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        studentInstruction:
+          $ref: '#/components/schemas/InstructionDto'
+        creator:
+          $ref: '#/components/schemas/UserDetailsDto'
+        createdAt:
+          type: string
+          format: date-time
+        usedInActivitiesCount:
+          type: integer
+          format: int32
+    UserAdminDetailsDto:
+      required:
+      - attendedCourses
+      - createdAt
+      - createdCourses
+      - createdModules
+      - email
+      - id
+      - name
+      - roles
+      - storageUsageBytes
+      - surname
+      - userPolicies
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - STUDENT
+            - TEACHER
+            - TECHNICAL_TEACHER
+            - ADMIN
+        createdAt:
+          type: string
+          format: date-time
+        storageUsageBytes:
+          type: integer
+          format: int64
+        attendedCourses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseSummaryDto'
+        createdCourses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseSummaryDto'
+        createdModules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceModuleSummaryDto'
+        userPolicies:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyDto'
+    UserDetailsDto:
+      required:
+      - email
+      - name
+      - surname
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
     FinishServiceModuleCreationRequest:
       required:
       - echoFieldActions
@@ -758,13 +1468,6 @@ components:
           type: string
         parameterDescription:
           $ref: '#/components/schemas/ParameterDescription'
-    InstructionDto:
-      required:
-      - untrustedPossiblyDangerousHtml
-      type: object
-      properties:
-        untrustedPossiblyDangerousHtml:
-          type: string
     ParameterDescription:
       required:
       - name
@@ -839,9 +1542,9 @@ components:
           $ref: '#/components/schemas/ServiceModuleMdaDto'
     ServiceModuleMdaDto:
       required:
-      - baseBandwidth
-      - baseDisk
-      - baseRam
+      - baseBandwidthMbps
+      - baseDiskGB
+      - baseRamGB
       - baseVcpu
       - isIsolated
       type: object
@@ -851,13 +1554,13 @@ components:
         baseVcpu:
           type: integer
           format: int32
-        baseRam:
+        baseRamGB:
           type: integer
           format: int32
-        baseDisk:
+        baseDiskGB:
           type: integer
           format: int32
-        baseBandwidth:
+        baseBandwidthMbps:
           type: integer
           format: int32
         sharedServiceModuleMdaDto:
@@ -882,19 +1585,6 @@ components:
         usersPerAdditionalBandwidthGbps:
           type: integer
           format: int32
-    UserDetailsDto:
-      required:
-      - email
-      - name
-      - surname
-      type: object
-      properties:
-        name:
-          type: string
-        surname:
-          type: string
-        email:
-          type: string
     ReserveServiceModuleRequest:
       required:
       - description
@@ -1069,6 +1759,7 @@ components:
       - createdAt
       - id
       - name
+      - sizeBytes
       type: object
       properties:
         id:
@@ -1076,6 +1767,9 @@ components:
           format: int64
         name:
           type: string
+        sizeBytes:
+          type: integer
+          format: int64
         createdAt:
           type: string
           format: date-time
@@ -1102,43 +1796,6 @@ components:
             $ref: '#/components/schemas/InstructionDto'
         url:
           type: string
-    ServiceModuleSummaryDto:
-      required:
-      - createdAt
-      - creator
-      - description
-      - id
-      - name
-      - serviceName
-      - studentInstruction
-      - subject
-      - teacherInstruction
-      - usedInActivitiesCount
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-        subject:
-          type: string
-        description:
-          type: string
-        serviceName:
-          type: string
-        teacherInstruction:
-          $ref: '#/components/schemas/InstructionDto'
-        studentInstruction:
-          $ref: '#/components/schemas/InstructionDto'
-        creator:
-          $ref: '#/components/schemas/UserDetailsDto'
-        createdAt:
-          type: string
-          format: date-time
-        usedInActivitiesCount:
-          type: integer
-          format: int32
     ModifyParticipantRequest:
       required:
       - email
@@ -1152,6 +1809,19 @@ components:
       type: object
       properties:
         joinUUID:
+          type: string
+        password:
+          type: string
+    ResetPasswordRequest:
+      required:
+      - email
+      - password
+      - token
+      type: object
+      properties:
+        email:
+          type: string
+        token:
           type: string
         password:
           type: string
@@ -1203,6 +1873,149 @@ components:
           $ref: '#/components/schemas/InitFileUploadRequest'
         storageAccessRequest:
           $ref: '#/components/schemas/StorageAccessRequest'
+    CreateVmRequest:
+      required:
+      - bandwidthMbps
+      - descriptionHtml
+      - name
+      - ramGB
+      - vcpu
+      type: object
+      properties:
+        name:
+          type: string
+        vcpu:
+          type: integer
+          format: int32
+        ramGB:
+          type: integer
+          format: int32
+        bandwidthMbps:
+          type: integer
+          format: int32
+        descriptionHtml:
+          type: string
+    VmDto:
+      required:
+      - bandwidthMbps
+      - descriptionHtml
+      - id
+      - name
+      - ramGB
+      - vcpu
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        vcpu:
+          type: integer
+          format: int32
+        ramGB:
+          type: integer
+          format: int32
+        bandwidthMbps:
+          type: integer
+          format: int32
+        descriptionHtml:
+          type: string
+    CreateUserRequest:
+      required:
+      - email
+      - name
+      - roles
+      - surname
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - STUDENT
+            - TEACHER
+            - TECHNICAL_TEACHER
+            - ADMIN
+    RefreshTokenDto:
+      required:
+      - expiresIn
+      - refreshToken
+      - tokenId
+      type: object
+      properties:
+        tokenId:
+          type: integer
+          format: int64
+        expiresIn:
+          type: integer
+          format: int64
+        refreshToken:
+          type: string
+    ActivitySummaryDto:
+      required:
+      - courseId
+      - courseName
+      - endTime
+      - id
+      - name
+      - startTime
+      - teacher
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        courseId:
+          type: integer
+          format: int64
+        name:
+          type: string
+        courseName:
+          type: string
+        teacher:
+          $ref: '#/components/schemas/UserDetailsDto'
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+    FavouriteFileDto:
+      required:
+      - activitySummaryDto
+      - file
+      type: object
+      properties:
+        file:
+          $ref: '#/components/schemas/FileDto'
+        activitySummaryDto:
+          $ref: '#/components/schemas/ActivitySummaryDto'
+    MeDto:
+      required:
+      - email
+      - favouriteFiles
+      - name
+      - surname
+      type: object
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        favouriteFiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavouriteFileDto'
     ServiceModuleReservationDto:
       required:
       - dynamicFieldAdditionalActions
@@ -1258,6 +2071,29 @@ components:
         validTo:
           type: string
           format: date-time
+    CreatePolicyRequest:
+      required:
+      - policyType
+      - teacherId
+      - value
+      type: object
+      properties:
+        policyType:
+          type: string
+          enum:
+          - MAX_VCPU
+          - MAX_RAM_GB
+          - MAX_DISK_GB
+          - MAX_BANDWIDTH_MBPS
+          - MAX_STUDENTS
+          - MAX_ACTIVITY_DURATION_MINUTES
+          - MAX_PARALLEL_SANDBOXES
+        teacherId:
+          type: integer
+          format: int64
+        value:
+          type: integer
+          format: int32
     CreateCourseRequest:
       required:
       - activities
@@ -1285,6 +2121,37 @@ components:
             $ref: '#/components/schemas/CreateActivityRequest'
         password:
           type: string
+    SendResetPasswordEmailRequest:
+      required:
+      - email
+      type: object
+      properties:
+        email:
+          type: string
+    AuthDetailsDto:
+      required:
+      - accessToken
+      - expiresIn
+      - refreshTokenDto
+      - roles
+      type: object
+      properties:
+        accessToken:
+          type: string
+        expiresIn:
+          type: integer
+          format: int64
+        refreshTokenDto:
+          $ref: '#/components/schemas/RefreshTokenDto'
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - STUDENT
+            - TEACHER
+            - TECHNICAL_TEACHER
+            - ADMIN
     LoginRequest:
       required:
       - email
@@ -1295,27 +2162,39 @@ components:
           type: string
         password:
           type: string
-    AuthDetailsDto:
-      required:
-      - accessToken
-      - expiresIn
-      - roles
+    EdtiVmRequest:
       type: object
       properties:
-        accessToken:
+        name:
           type: string
-        expiresIn:
+        vCpu:
+          type: integer
+          format: int32
+        ramGB:
+          type: integer
+          format: int32
+        bandwidthMbps:
+          type: integer
+          format: int32
+    EditPolicyRequest:
+      type: object
+      properties:
+        policyType:
+          type: string
+          enum:
+          - MAX_VCPU
+          - MAX_RAM_GB
+          - MAX_DISK_GB
+          - MAX_BANDWIDTH_MBPS
+          - MAX_STUDENTS
+          - MAX_ACTIVITY_DURATION_MINUTES
+          - MAX_PARALLEL_SANDBOXES
+        teacherId:
           type: integer
           format: int64
-        roles:
-          type: array
-          items:
-            type: string
-            enum:
-            - STUDENT
-            - TEACHER
-            - TECHNICAL_TEACHER
-            - ADMIN
+        value:
+          type: integer
+          format: int32
     EditCourseRequest:
       type: object
       properties:
@@ -1329,6 +2208,37 @@ components:
           type: string
         isPublic:
           type: boolean
+    UserAdminSummaryDto:
+      required:
+      - createdAt
+      - email
+      - id
+      - name
+      - roles
+      - surname
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - STUDENT
+            - TEACHER
+            - TECHNICAL_TEACHER
+            - ADMIN
+        createdAt:
+          type: string
+          format: date-time
     ServiceModuleUsageDto:
       required:
       - activityName
@@ -1364,38 +2274,38 @@ components:
           items:
             $ref: '#/components/schemas/ParameterDescription'
         isolationModes:
+          uniqueItems: true
           type: array
           items:
             type: string
             enum:
-            - ISOLATED
             - SHARED
-    CourseSummaryDto:
+            - ISOLATED
+    ActivityFilesDto:
       required:
-      - creationTime
-      - description
-      - isPasswordProtected
-      - joinUUID
-      - name
-      - subject
-      - teacher
+      - activityModuleIdToUserFiles
       type: object
       properties:
-        name:
-          type: string
-        description:
-          type: string
-        subject:
-          type: string
-        creationTime:
-          type: string
-          format: date-time
-        teacher:
-          $ref: '#/components/schemas/UserDetailsDto'
-        isPasswordProtected:
-          type: boolean
-        joinUUID:
-          type: string
+        activityModuleIdToUserFiles:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/FileDto'
+    TeacherActivityFilesDto:
+      required:
+      - userIdToUserDetails
+      - userIdToUserFiles
+      type: object
+      properties:
+        userIdToUserFiles:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ActivityFilesDto'
+        userIdToUserDetails:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UserDetailsDto'
   securitySchemes:
     JWT_AUTH:
       type: http

@@ -20,14 +20,15 @@ export const PublicModuleView = () => {
     const [sandboxModalOpen, setSandboxModalOpen] = useState(false);
     const { t } = useTranslation();
 
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
     const { data: serviceModule } = useErrorHandledQuery(
         ['modules', moduleId, 'summary'],
         () => getApis().serviceModuleApi.getServiceModuleSummary({ serviceModuleId: +moduleId }),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     if (isApiError && errorHandler?.shouldTerminateRendering) {
