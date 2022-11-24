@@ -336,7 +336,7 @@ public class ScheduleHandler {
                 .distinct()
                 .map(provisionerFactory::getProvisioner)
                 .map(TimedSoftwareProvisioner::getProvisioningSeconds)
-                .max(Integer::sum)
+                .reduce(Integer::sum)
                 .orElseThrow(this::emptyServiceDescriptionsException);
     }
 

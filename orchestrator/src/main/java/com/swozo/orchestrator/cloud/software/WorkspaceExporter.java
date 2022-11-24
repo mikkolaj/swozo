@@ -55,8 +55,8 @@ public class WorkspaceExporter {
                     );
                 }).whenComplete(log(
                         logger,
-                        String.format("Failure when saving %s on %s", workdirPath, resourceDetails),
                         String.format("Successful export for request [id: %s] from %s", requestEntity.getId(), resourceDetails),
+                        String.format("Failure when saving %s on %s", workdirPath, resourceDetails),
                         CancelledScheduleException.class
                 ))
                 .whenComplete(setCorrectStatus(serviceDescription));

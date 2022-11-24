@@ -17,7 +17,6 @@ public class LoggingUtils {
         };
     }
 
-
     public static <T> Function<Throwable, T> logAndDefault(Logger logger, String template, T fallback) {
         return error -> {
             logger.error(template, error);
