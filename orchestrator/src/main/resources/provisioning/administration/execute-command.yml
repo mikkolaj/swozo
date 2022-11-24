@@ -2,6 +2,7 @@
 
 - name: Handle dynamic command
   hosts: all
+  become: yes
   tasks:
     - name: Execute command
       command: '{{ command }}'

@@ -63,6 +63,7 @@ public abstract class UserMapper {
     protected List<RoleDto> rolesToDto(Collection<Role> roles) {
         return roles.stream().map(this::roleToDto).toList();
     }
+
     public abstract OrchestratorUserDto toOrchestratorDto(User user, ActivityRole role);
 
     public RoleDto roleToDto(Role role) {

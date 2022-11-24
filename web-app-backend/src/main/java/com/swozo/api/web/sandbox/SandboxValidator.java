@@ -16,7 +16,7 @@ import static com.swozo.util.CommonValidators.numberInBounds;
 @Service
 @RequiredArgsConstructor
 public class SandboxValidator {
-    private final static int MIN_SANDBOX_TIME_MINUTES = 10;
+    private final static int MIN_SANDBOX_TIME_MINUTES = 5;
     private final static int MAX_RESULTS_VALID_FOR_MINUTES = 30;
     private final CourseRepository courseRepository;
     private final PolicyRepository policyRepository;

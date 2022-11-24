@@ -29,7 +29,6 @@ export const UserPoliciesView = ({ user, editMode }: Props) => {
             getApis().policyApi.overwriteAllTeacherPolicies({ userId: user.id, createPolicyRequest }),
         {
             onSuccess: (newPolicies) => {
-                console.log(newPolicies);
                 updateUserDetailsCache(
                     {
                         ...user,

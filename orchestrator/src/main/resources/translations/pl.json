@@ -17,6 +17,17 @@
           "label": "Ścieżka do pliku wynikowego"
         }
       }
+    },
+    "quizApp": {
+        "dynamicParams": {
+          "questionsLocation": {
+            "label": "Pytania dla uczniów"
+          },
+          "quizDurationSeconds": {
+            "label": "Czas trwania quizu w sekundach"
+          }
+        },
+      "connectionInstruction": "<ol><li>Otwórz link</li><li>Kliknij 'Start Quiz' i zacznij rozwiązywać, licznik czasu jest pokazany w prawym górym rogu</li><li>Wyniki zostaną zapisane dopiero po dojściu do końca lub automatycznie po skończeniu czasu, nie odświeżaj strony!</li></ol>"
     }
   }
 }

@@ -128,12 +128,19 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         courseRepository.save(course);
 
         //        FILES
-        var mockFile = new RemoteFile();
-        mockFile.setPath("lab_file.ipynb");
-        mockFile.setSizeBytes(2000L);
-        mockFile.setOwner(teacher);
+        var jupyterFile = new RemoteFile();
+        jupyterFile.setPath("lab_file.ipynb");
+        jupyterFile.setSizeBytes(2000L);
+        jupyterFile.setOwner(teacher);
 
-        mockFile = fileRepository.save(mockFile);
+        jupyterFile = fileRepository.save(jupyterFile);
+
+        var quizFile = new RemoteFile();
+        quizFile.setPath("questions.yaml");
+        quizFile.setSizeBytes(463L);
+        quizFile.setOwner(teacher);
+
+        quizFile = fileRepository.save(quizFile);
 
         //        ServiceModule
         ServiceModule serviceModule = new IsolatedServiceModule();
@@ -141,40 +148,19 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setBaseRamGB(1);
         serviceModule.setBaseVcpu(1);
         serviceModule.setBaseDiskGB(1);
-        serviceModule.setName("Klasy w Pythonie");
+        serviceModule.setName("Klasy w Pythonie (JUPYTER TEST)");
         serviceModule.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji o zmiennych");
         serviceModule.setStudentInstructionHtml("Przypomnij sobie wiedze z lekcji o zmiennych");
         serviceModule.setCreator(teacher);
         serviceModule.setDescription("Modul przybliza wiedze o klasach w pythonie");
         serviceModule.setSubject("INFORMATYKA");
         serviceModule.setServiceName(ServiceType.JUPYTER.toString());
-        serviceModule.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
+        serviceModule.setDynamicProperties(Map.of("notebookLocation", jupyterFile.getId().toString()));
         serviceModule.setPublic(true);
         serviceModule.setReady(true);
         serviceModule.setCreatedAt(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule);
-
-        System.out.println("service module:  " + serviceModule);
-
-        ServiceModule serviceModule2 = new IsolatedServiceModule();
-        serviceModule2.setBaseBandwidthMbps(1024);
-        serviceModule2.setBaseRamGB(1);
-        serviceModule2.setBaseVcpu(1);
-        serviceModule2.setBaseDiskGB(1);
-        serviceModule2.setName("Funkcje w Pythonie 1");
-        serviceModule2.setTeacherInstructionHtml("teach");
-        serviceModule2.setStudentInstructionHtml("stud");
-        serviceModule2.setCreator(teacher);
-        serviceModule2.setDescription("opis2");
-        serviceModule2.setSubject("INFORMATYKA");
-        serviceModule2.setServiceName(ServiceType.JUPYTER.toString());
-        serviceModule2.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
-        serviceModule2.setPublic(true);
-        serviceModule2.setReady(true);
-        serviceModule2.setCreatedAt(LocalDateTime.of(2022,
-                Month.MAY, 29, 21, 30, 40));
-        serviceModuleRepository.save(serviceModule2);
 
         SharedServiceModule serviceModule3 = new SharedServiceModule();
         serviceModule3.setBaseBandwidthMbps(1024);
@@ -185,14 +171,17 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule3.setUsersPerAdditionalRamGb(15);
         serviceModule3.setUsersPerAdditionalCore(15);
         serviceModule3.setUsersPerAdditionalDiskGb(2);
-        serviceModule3.setName("Funkcje w Pythonie2");
+        serviceModule3.setName("TestQuiz (QuizApp)");
         serviceModule3.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji: Funkcje w Pythonie 1");
         serviceModule3.setStudentInstructionHtml("Przypomnij sobie wiedze z poprzednich zajec o funckjach");
         serviceModule3.setCreator(teacher);
         serviceModule3.setDescription("Modul ma na celu poszerzyc wiedze o funkcjach w Pythonie");
         serviceModule3.setSubject("INFORMATYKA");
-        serviceModule3.setServiceName(ServiceType.JUPYTER.toString());
-        serviceModule3.setDynamicProperties(Map.of("notebookLocation", mockFile.getId().toString()));
+        serviceModule3.setServiceName(ServiceType.QUIZAPP.toString());
+        serviceModule3.setDynamicProperties(Map.of(
+                "questionsLocation", quizFile.getId().toString(),
+                "quizDurationSeconds", "120")
+        );
         serviceModule3.setPublic(true);
         serviceModule3.setReady(true);
         serviceModule3.setCreatedAt(LocalDateTime.of(2022,
