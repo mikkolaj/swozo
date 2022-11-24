@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Entity
 @Table(name = "ScheduleRequests")
@@ -28,5 +29,11 @@ public class ScheduleRequestEntity extends BaseEntity {
 
     public Optional<Long> getVmResourceId() {
         return Optional.ofNullable(vmResourceId);
+    }
+
+    public List<ServiceDescriptionEntity> getServicesWithStatusesIn(Set<ServiceStatus> statuses) {
+        return getServiceDescriptions().stream()
+                .filter(serviceDescription -> statuses.contains(serviceDescription.getStatus()))
+                .toList();
     }
 }

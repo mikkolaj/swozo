@@ -1,14 +1,17 @@
 package com.swozo.orchestrator.api.scheduling.control;
 
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ScheduleRequestEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
+@RequiredArgsConstructor
 public class TimingService {
     public static final int MANUAL_CLEANUP_SECONDS = 2 * 60 * 60;
+    private final ScheduleRequestTracker requestTracker;
 
     public long getSchedulingOffset(ScheduleRequestEntity request, int schedulingSeconds) {
         return offsetTime(request.getStartTime()) - schedulingSeconds;
@@ -19,7 +22,8 @@ public class TimingService {
     }
 
     public long getDeletionOffset(ScheduleRequestEntity request, int cleanupSeconds) {
-        return offsetTime(request.getEndTime()) + cleanupSeconds;
+        return requestTracker.canBeImmediatelyDeleted(request.getId()) ? 0 :
+                offsetTime(request.getEndTime()) + cleanupSeconds;
     }
 
     private long offsetTime(LocalDateTime targetTime) {
