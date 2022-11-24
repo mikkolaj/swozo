@@ -15,6 +15,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 public class ScheduleRequestEntity extends BaseEntity {
     private LocalDateTime startTime;
     private LocalDateTime endTime;

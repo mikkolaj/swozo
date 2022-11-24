@@ -11,24 +11,18 @@ import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescripti
 import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
 import com.swozo.orchestrator.cloud.resources.vm.VmResourceDetails;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
-import com.swozo.orchestrator.cloud.software.LinkFormatter;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisioner;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.Playbook;
-import com.swozo.orchestrator.configuration.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 import static com.swozo.utils.LoggingUtils.logIfSuccess;
 
@@ -38,16 +32,12 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.SOZISEL;
     private static final int PROVISIONING_SECONDS = 600;
     private static final int SOZISEL_SETUP_MILLISECONDS = 180000;
-    private static final String MAIN_LINK_DESCRIPTION = "Very cool Jitsi link";
+    private static final String MAIN_LINK_DESCRIPTION = "Use the provided link to join the Jitsi session";
     private static final int MINUTES = 5;
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
-    private final LinkFormatter linkFormatter;
-    private final ApplicationProperties properties;
     private final BackendRequestSender requestSender;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private boolean wereLinksGenerated = false;
-    private String link;
 
 
     @Override
@@ -73,20 +63,21 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
             ServiceDescriptionEntity description,
             VmResourceDetails vmResourceDetails
     ) {
-        if(!wereLinksGenerated) {
-            waitForSoziselSetup();
-            link = new SoziselLinksProvider(vmResourceDetails.publicIpAddress()).createLinks();
-        }
+        waitForSoziselSetup();
+
         return requestSender.getUserData(description.getActivityModuleId(), requestEntity.getId())
-                .thenCompose(users -> CompletableFuture.completedFuture(
-                        users.stream().map(OrchestratorUserDto::id).map(createLink(link)).toList()
-                ));
+                .thenApply(users -> users.stream()
+                        .sorted(Comparator.comparing(OrchestratorUserDto::role).reversed()) // teacher first
+                        .map(user -> createLink(user, vmResourceDetails)).toList()
+                );
     }
 
-    private Function<Long, ActivityLinkInfo> createLink(String link) {
-        return userId -> new ActivityLinkInfo(userId, link, translationsProvider.t(
-                "services.jupyter.connectionInstruction",
-                Map.of("password", MAIN_LINK_DESCRIPTION)
+    private ActivityLinkInfo createLink(OrchestratorUserDto user, VmResourceDetails vmResourceDetails) {
+        var link = new SoziselLinksProvider(vmResourceDetails.publicIpAddress())
+                .createLinks(user.name(), user.surname());
+        return new ActivityLinkInfo(user.id(), link, translationsProvider.t(
+                "services.sozisel.connectionInstruction",
+                Map.of("instruction", MAIN_LINK_DESCRIPTION)
         ));
     }
 
@@ -126,6 +117,5 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
     @SneakyThrows
     private void waitForSoziselSetup() {
         Thread.sleep(SOZISEL_SETUP_MILLISECONDS);
-        wereLinksGenerated = true;
     }
 }

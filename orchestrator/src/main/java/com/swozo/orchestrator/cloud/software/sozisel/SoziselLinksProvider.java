@@ -11,6 +11,9 @@ import java.io.IOException;
 class SoziselLinksProvider {
     private static final String SOZISEL_PORT = "4000";
     private static final String JITSI_PORT = "8443";
+    private static final String DEFAULT_MAIL = "test@test.pl";
+    private static final String DEFAULT_NAME = "Imie";
+    private static final String DEFAULT_SURNAME = "Nazwisko";
     private final String uri;
     private final String jitsiHost;
     private String bearerToken = "";
@@ -20,17 +23,18 @@ class SoziselLinksProvider {
         this.uri = "http://" +  hostAddress + ":" + SOZISEL_PORT + "/api/graphql";
     }
 
-    String createLinks() {
-        String mail = "test@test.pl";
-        String name = "Imie";
-        String surname = "Nazwisko";
+    String defaultCreateNames() {
+        return createLinks(DEFAULT_NAME, DEFAULT_SURNAME);
+    }
+
+    String createLinks(String name, String surname) {
         Integer estimatedTime = 90;
-        sendRegister(mail, name, surname);
-        sendLogin(mail);
+        sendRegister(DEFAULT_MAIL, name, surname);
+        sendLogin(DEFAULT_MAIL);
         String sessionTemplateId = sendCreateSessionTemplate(estimatedTime);
         String roomId = sendPlanSession(sessionTemplateId);
         sendStartSession(roomId);
-        String jitsiToken = sendGenerateJitsiToken(mail, name, surname, roomId);
+        String jitsiToken = sendGenerateJitsiToken(DEFAULT_MAIL, name + surname, roomId);
 
         return jitsiHost +
                 "/" +
@@ -73,9 +77,9 @@ class SoziselLinksProvider {
         sendRequest(query, variables);
     }
 
-    private String sendGenerateJitsiToken(String mail, String name, String surname, String roomId) {
+    private String sendGenerateJitsiToken(String mail, String fullName, String roomId) {
         String query = SoziselRequestTemplate.GENERATE_JITSI_TOKEN_QUERY;
-        String variables = String.format(SoziselRequestTemplate.GENERATE_JITSI_TOKEN_VARIABLES, name + surname, mail, roomId);
+        String variables = String.format(SoziselRequestTemplate.GENERATE_JITSI_TOKEN_VARIABLES, fullName, mail, roomId);
         JSONObject res = sendRequest(query, variables);
         return retrieveValueFromResponse(res, "generateJitsiToken", "token");
     }
