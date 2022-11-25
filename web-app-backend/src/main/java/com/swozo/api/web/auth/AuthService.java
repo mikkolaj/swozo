@@ -129,6 +129,7 @@ public class AuthService {
 
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
+        logger.info("Serving change password request for {}", request.email());
         var user = findByEmail(request.email());
         validateChangePasswordRequest(user, request.token(), request.password());
 

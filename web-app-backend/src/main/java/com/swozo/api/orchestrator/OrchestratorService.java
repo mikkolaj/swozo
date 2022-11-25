@@ -4,6 +4,8 @@ import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
 import com.swozo.model.scheduling.ServiceConfig;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.util.function.Supplier;
 @Service
 @RequiredArgsConstructor
 public class OrchestratorService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final OrchestratorRequestSender requestSender;
     private final OrchestratorCache cache;
 
@@ -23,6 +26,7 @@ public class OrchestratorService {
     }
 
     public Collection<ScheduleResponse> sendScheduleRequests(Collection<ScheduleRequest> scheduleRequests) {
+        logger.debug("Sending schedule requests: {}", scheduleRequests);
         return requestSender.sendScheduleRequests(scheduleRequests).join();
     }
 
@@ -35,12 +39,14 @@ public class OrchestratorService {
     }
 
     public void cancelScheduleRequests(Collection<Long> scheduleRequestIds) {
+        logger.info("Cancelling schedule requests: {}", scheduleRequestIds);
         CompletableFuture.allOf(
                 scheduleRequestIds.stream()
                     .map(requestSender::cancelScheduleRequest)
                     .toArray(CompletableFuture[]::new)
                 )
                 .join();
+        logger.debug("Requests: {} cancelled successfully", scheduleRequestIds);
     }
 
     public LocalDateTime getEstimatedAsapServiceAvailability(String serviceName) {

@@ -97,6 +97,7 @@ public class CourseService {
         if (!sandboxMode) {
             courseValidator.validateNewCourse(createCourseRequest, teacherId);
         }
+        logger.info("Creating course {}", createCourseRequest);
 
         var teacher = userService.getUserById(teacherId);
         var course = courseMapper.toPersistence(createCourseRequest, teacher);
@@ -117,6 +118,7 @@ public class CourseService {
 
     @Transactional
     public void deleteCourse(Long id) {
+        logger.info("Deleting course {}", id);
         var course = courseRepository.getById(id);
         course.getActivities().forEach(activityService::removeAllActivityFiles);
         courseRepository.delete(course);
@@ -164,6 +166,7 @@ public class CourseService {
 
     @Transactional
     public CourseDetailsDto addSingleActivity(Long userId, Long courseId, CreateActivityRequest request) {
+        logger.info("Adding activity {} to course {}", request, courseId);
         var course = getById(courseId);
         courseValidator.validateAddActivityRequest(course, request, userId);
         var activity = activityMapper.toPersistence(request);

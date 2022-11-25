@@ -11,8 +11,6 @@ import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,14 +25,12 @@ import static com.swozo.config.SwaggerConfig.ACCESS_TOKEN;
 @SecurityRequirement(name = ACCESS_TOKEN)
 @RequiredArgsConstructor
 public class ServiceModuleController {
-    private final Logger logger = LoggerFactory.getLogger(ServiceModuleController.class);
     private final ServiceModuleService service;
     private final OrchestratorService orchestratorService;
 
     @GetMapping("/all-system-modules")
     @PreAuthorize("hasRole('ADMIN')")
     public Collection<ServiceModuleSummaryDto> getModuleList(AccessToken token) {
-        logger.info("serviceModule list");
         return service.getServiceModuleList();
     }
 
@@ -53,14 +49,12 @@ public class ServiceModuleController {
     @GetMapping("/{serviceModuleId}")
     @PreAuthorize("hasRole('TECHNICAL_TEACHER')")
     public ServiceModuleDetailsDto getServiceModule(AccessToken token, @PathVariable Long serviceModuleId) {
-        logger.info("service serviceModule  info getter");
         return service.getServiceModuleInfo(serviceModuleId);
     }
 
     @GetMapping("/{serviceModuleId}/summary")
     @PreAuthorize("hasRole('TEACHER')")
     public ServiceModuleSummaryDto getServiceModuleSummary(@PathVariable Long serviceModuleId) {
-        logger.info("service serviceModule  info getter");
         return service.getServiceModuleSummary(serviceModuleId);
     }
 
@@ -144,12 +138,4 @@ public class ServiceModuleController {
         service.cleanupOldDataOutsideTxn(txnData);
         return txnData.serviceModule();
     }
-
-
-//    @PutMapping("/{moduleId}")
-//    @PreAuthorize("hasRole('TACHER')")
-//    public ServiceModuleDetailsResp updateServiceModule(AccessToken token, @PathVariable Long moduleId, @RequestBody ServiceModule newServiceModule) {
-//        System.out.println("updating serviceModule with id: " + moduleId);
-//        return new ServiceModule();
-//    }
 }

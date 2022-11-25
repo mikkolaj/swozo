@@ -10,6 +10,7 @@ import com.swozo.model.scheduling.properties.MdaVmSpecs;
 import com.swozo.model.scheduling.properties.ServiceDescription;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
 import com.swozo.model.scheduling.properties.ServiceType;
+import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityModule;
@@ -46,6 +47,7 @@ public class ScheduleService {
     private final ActivityScheduleInfoRepository activityScheduleInfoRepository;
 
     public void scheduleActivities(Collection<Activity> activities) {
+        logger.info("Scheduling activities: {}", activities.stream().map(BaseEntity::getId).toList());
         var scheduleRequestsWithInfos= activities.stream()
                 .filter(activity -> !activity.getModules().isEmpty())
                 .flatMap(this::buildScheduleRequestsForActivity)
@@ -59,6 +61,7 @@ public class ScheduleService {
 
         iterateSimultaneously(scheduleRequestsWithInfos, responses, this::assignScheduleResponse);
         activityRepository.saveAll(activities);
+        logger.info("Successfully scheduled activities: {}", activities);
     }
 
     public void addStudentToAlreadyScheduledActivities(Course course, User student) {
@@ -90,6 +93,7 @@ public class ScheduleService {
                 activity.getModules().stream()
                         .flatMap(activityModule -> activityModule.getSchedules().stream())
                         .map(ActivityModuleScheduleInfo::getScheduleRequestId)
+                        .distinct()
                         .toList()
         );
     }

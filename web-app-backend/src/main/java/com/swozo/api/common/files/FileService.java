@@ -40,6 +40,7 @@ public class FileService {
             UploadValidationStrategy validationStrategy
     ) {
         validationStrategy.validate();
+        logger.info("Preparing external upload for {}", initFileUploadRequest);
         filePathProvider.validateFilename(initFileUploadRequest.filename());
         var filePath = filePathGenerator.generate(initFileUploadRequest.filename());
 
@@ -59,6 +60,7 @@ public class FileService {
             InitFileUploadRequest initFileUploadRequest,
             FilePathGenerator filePathGenerator
     ) {
+        logger.info("Preparing internal upload for {}", initFileUploadRequest);
         return storageProvider.createAuthorizedUploadRequest(
                 storageProperties.webBucket().name(),
                 filePathGenerator.generate(initFileUploadRequest.filename()),
@@ -84,8 +86,9 @@ public class FileService {
     ) {
         var storageAccessRequest = uploadAccessDto.storageAccessRequest();
         validateStorageAccessRequest(storageAccessRequest);
-
+        logger.info("Acking external upload {}", uploadAccessDto);
         if (fileRepository.existsByPath(storageAccessRequest.filePath())) {
+            logger.warn("File already present {}", storageAccessRequest.filePath());
             return initialResourceSupplier.get();
         }
 
@@ -100,6 +103,7 @@ public class FileService {
     }
 
     public RemoteFile acknowledgeExternalUploadWithoutTxn(User owner, UploadAccessDto uploadAccessDto) {
+        logger.info("Acking upload {}", uploadAccessDto);
         validateStorageAccessRequest(uploadAccessDto.storageAccessRequest());
         return fileRepository.save(fileMapper.toPersistence(uploadAccessDto, owner));
     }
@@ -117,6 +121,7 @@ public class FileService {
     }
 
     public StorageAccessRequest createExternalDownloadRequest(Long remoteFileId, Long downloaderId) {
+        logger.info("Creating external download request for user {}, file {}", downloaderId, remoteFileId);
         var file = fileRepository.findById(remoteFileId).orElseThrow(() -> FileNotFoundException.globally(remoteFileId));
         if (!file.getOwner().getId().equals(downloaderId)) {
             throw new UnauthorizedException("You are unauthorized to download this file.");
@@ -125,6 +130,7 @@ public class FileService {
     }
 
     public StorageAccessRequest createInternalDownloadRequest(String encodedFileIdentifier) {
+        logger.debug("Creating internal download request for file {}", encodedFileIdentifier);
         var file = decodeUniqueIdentifier(encodedFileIdentifier);
         return storageProvider.createAuthorizedDownloadRequest(
                 storageProperties.webBucket().name(),

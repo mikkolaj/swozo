@@ -69,6 +69,8 @@ export const setLinkDeliveryConfirmed = (
 
 export const findClosestActivity = (course: CourseDetailsDto): ActivityDetailsDto | undefined =>
     _.minBy(
-        course.activities.filter((activity) => dayjs().isBefore(activity.endTime)),
+        course.activities
+            .filter(({ cancelled }) => !cancelled)
+            .filter((activity) => dayjs().isBefore(activity.endTime)),
         (activity) => activity.endTime.getTime()
     );

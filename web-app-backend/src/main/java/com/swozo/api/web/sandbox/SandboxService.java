@@ -51,6 +51,7 @@ public class SandboxService {
             CreateSandboxEnvironmentRequest request
     ) {
         sandboxValidator.validateCreateSandboxRequest(creatorId, request);
+        logger.info("Creating sandbox {} for user {} with module {}", request, creatorId, serviceModuleId);
         var serviceModule = serviceModuleService.getById(serviceModuleId);
         var startTime = scheduleService.getAsapScheduleAvailability(serviceModule.getServiceName());
         var validTo = startTime.plusMinutes(request.validForMinutes());
@@ -63,6 +64,7 @@ public class SandboxService {
         sandboxUsers.forEach(sandboxUser -> courseService.addStudentToCourse(course, sandboxUser.user));
 
         scheduleSandboxCleanup(startTime, request, sandboxCourseDetails, sandboxUsers);
+        logger.info("Created sandbox {}", course);
 
         return sandboxMapper.toDto(sandboxCourseDetails, sandboxUsers, validTo);
     }

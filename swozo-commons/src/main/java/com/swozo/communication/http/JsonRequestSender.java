@@ -96,7 +96,8 @@ public class JsonRequestSender implements RequestSender {
                 request,
                 responseInfo -> HttpResponse.BodySubscribers.mapping(
                         HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8),
-                        json -> type.getType().equals(Void.class) ? null : mapper.fromJson(json, type)
+                        json -> is2xxSuccessful(responseInfo) ?
+                                (type.getType().equals(Void.class) ? null : mapper.fromJson(json, type)) : null
                 )
         );
     }
@@ -106,5 +107,9 @@ public class JsonRequestSender implements RequestSender {
                 .uri(uri)
                 .headers(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .headers(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    private boolean is2xxSuccessful(HttpResponse.ResponseInfo responseInfo) {
+        return responseInfo.statusCode() >= 200 && responseInfo.statusCode() < 300;
     }
 }

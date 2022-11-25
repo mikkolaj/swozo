@@ -24,6 +24,8 @@ import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.UserActivityModuleInfo;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ActivityService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ActivityRepository activityRepository;
     private final ActivityValidator activityValidator;
     private final CourseValidator courseValidator;
@@ -86,6 +89,7 @@ public class ActivityService {
     }
 
     public ActivityDetailsDto cancelActivity(Long teacherId, Long activityId) {
+        logger.info("Cancelling activity {}", activityId);
         var activity = activityRepository.findById(activityId).orElseThrow();
         if (!authService.isAdmin(teacherId)) {
             activityValidator.validateIsTeacher(teacherId, activity);
@@ -101,6 +105,7 @@ public class ActivityService {
 
     @Transactional
     public Activity deleteActivity(Long teacherId, Long activityId) {
+        logger.info("Deleting activity {}", activityId);
         var activity = activityRepository.findById(activityId).orElseThrow();
         activityValidator.validateIsTeacher(teacherId, activity);
         if (LocalDateTime.now().isBefore(activity.getEndTime()) && !activity.getCancelled()) {
@@ -118,6 +123,7 @@ public class ActivityService {
         Long teacherId,
         InitFileUploadRequest initFileUploadRequest
     ) {
+        logger.info("Preparing activity {} file upload: {} for user {}", activityId, initFileUploadRequest, teacherId);
         var activity = activityRepository.findById(activityId).orElseThrow();
 
         return fileService.prepareExternalUpload(
@@ -135,6 +141,7 @@ public class ActivityService {
             Long uploaderId,
             UploadAccessDto uploadAccessDto
     ) {
+        logger.info("Acking activity file upload for user {}", uploaderId);
         var user = userService.getUserById(uploaderId);
         return activityMapper.toDto(
                 fileService.acknowledgeExternalUpload(
@@ -178,6 +185,7 @@ public class ActivityService {
 
     public void removeAllActivityFiles(Activity activity) {
         // TODO consider bulk remove
+        logger.info("Removing all files for activity {}", activity.getId());
         activity.getPublicFiles().forEach(fileService::removeFileInternally);
         activity.getModules().stream()
                 .flatMap(activityModule -> activityModule.getSchedules().stream())

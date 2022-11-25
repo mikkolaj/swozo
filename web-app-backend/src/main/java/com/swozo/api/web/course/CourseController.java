@@ -42,14 +42,12 @@ public class CourseController {
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public Collection<CourseDetailsDto> getUserCourses(AccessToken token) {
         var userId = token.getUserId();
-        logger.info("course list for user with id: {}", userId);
         return courseService.getUserCoursesDetails(userId, authService.oneOf(token, RoleDto.TEACHER, RoleDto.STUDENT));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public CourseDetailsDto getCourse(AccessToken token, @PathVariable Long id) {
-        logger.info("course info getter for id: {}", id);
         return courseService.getCourseDetails(id, token.getUserId());
     }
 
