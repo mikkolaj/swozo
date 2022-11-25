@@ -14,14 +14,15 @@ import { ModuleSummaryView } from './components/MyModuleSummaryView';
 export const MyModulesListView = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
     const { data: modules, isLoading } = useErrorHandledQuery(
         ['modules', 'summary', 'me'],
         () => getApis().serviceModuleApi.getUserModulesSummary(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     const { serviceModuleDeleteMutation } = useDeleteServiceModule(pushApiError);

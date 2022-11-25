@@ -5,12 +5,13 @@ import com.google.cloud.compute.v1.DeleteInstanceRequest;
 import com.google.cloud.compute.v1.InsertInstanceRequest;
 import com.google.cloud.compute.v1.Instance;
 import com.google.cloud.compute.v1.InstancesClient;
-import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VMSpecs;
+import com.swozo.orchestrator.cloud.resources.gcloud.compute.model.VmAddress;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.instance.InstanceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.networking.NetworkInterfaceProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.compute.providers.storage.DiskProvider;
 import com.swozo.orchestrator.cloud.resources.gcloud.configuration.GCloudProperties;
+import com.swozo.orchestrator.cloud.resources.vm.ResourceNoLongerExists;
 import com.swozo.orchestrator.cloud.resources.vm.VmOperationFailed;
 import com.swozo.orchestrator.configuration.conditions.GCloudCondition;
 import com.swozo.utils.CheckedExceptionConverter;
@@ -89,9 +90,6 @@ public class GCloudVmLifecycleManager {
         }
     }
 
-    private boolean resourceDoesntExist(ExecutionException ex) {
-        return ex.getCause() instanceof NotFoundException;
-    }
 
     public String getInstanceExternalIP(VmAddress vmAddress) throws VmOperationFailed {
         try (var instancesClient = InstancesClient.create()) {
@@ -101,7 +99,13 @@ public class GCloudVmLifecycleManager {
                     .getNatIP();
         } catch (IOException e) {
             throw new VmOperationFailed(e);
+        } catch (NotFoundException e) {
+            throw new ResourceNoLongerExists(e);
         }
+    }
+
+    private boolean resourceDoesntExist(Exception ex) {
+        return ex.getCause() instanceof NotFoundException;
     }
 
     private DeleteInstanceRequest createDeleteInstanceRequest(VmAddress vmAddress) {

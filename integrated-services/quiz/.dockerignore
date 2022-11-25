@@ -1,0 +1,5 @@
+quiz-app/node_modules
+quiz-app-server/node_modules
+quiz-app-server/params/params.json
+quiz-app-server/questions/questions.yaml
+quiz-app-server/answers/answers.yaml

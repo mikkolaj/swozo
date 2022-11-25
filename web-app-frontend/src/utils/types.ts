@@ -5,3 +5,5 @@ export type RedirectState = {
 };
 
 export type ValidationSchema<T> = Partial<Record<keyof T, Yup.AnySchema>>;
+
+export type ANY_OPTION = 'any';

@@ -3,10 +3,7 @@ package com.swozo.persistence;
 import com.swozo.persistence.user.User;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class RemoteFile extends BaseEntity {
+    @Column(columnDefinition="TEXT")
     private String path;
     private Long sizeBytes;
     private LocalDateTime registeredAt = LocalDateTime.now();

@@ -8,10 +8,16 @@ import { GCloudFileHandler } from './GCloudFileHandler';
 
 type FileStateKey = string;
 
-type UploadState = {
+export type UploadState = {
     filename: string;
     uploadContext: string;
     isUploading: boolean;
+    startTimestamp: number;
+};
+
+export type DownloadState = {
+    fileId: number;
+    filename: string;
     startTimestamp: number;
 };
 
@@ -31,9 +37,10 @@ export type DownloadRequest = {
 
 export type FileHandlerState = {
     uploads: Record<FileStateKey, UploadState>;
+    downloads: DownloadState[];
 };
 
-const buildInitialState = (): FileHandlerState => ({ uploads: {} });
+const buildInitialState = (): FileHandlerState => ({ uploads: {}, downloads: [] });
 
 export const buildFileStateKey = (context: string, filename: string): FileStateKey =>
     `${context}/${filename}`;
@@ -82,6 +89,16 @@ export const fileSlice = createSlice({
     name: 'files',
     initialState: buildInitialState(),
     reducers: {
+        receiveStartDownload: (state: FileHandlerState, action: PayloadAction<{ file: FileDto }>) => {
+            state.downloads.push({
+                filename: action.payload.file.name,
+                fileId: action.payload.file.id,
+                startTimestamp: new Date().getTime(),
+            });
+        },
+        receiveFinishDownload: (state: FileHandlerState, action: PayloadAction<{ fileId: number }>) => {
+            state.downloads = state.downloads.filter(({ fileId }) => fileId !== action.payload.fileId);
+        },
         receiveStartUpload: (
             state: FileHandlerState,
             action: PayloadAction<{ filename: string; uploadContext: string }>
@@ -104,5 +121,7 @@ export const fileSlice = createSlice({
 });
 
 const { receiveStartUpload, receiveFinishUpload } = fileSlice.actions;
+
+export const { receiveStartDownload, receiveFinishDownload } = fileSlice.actions;
 
 export default fileSlice.reducer;

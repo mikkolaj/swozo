@@ -52,9 +52,9 @@ public class AuthConstrainsConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         var roleHierarchy = new RoleHierarchyImpl();
-
-        // TODO not sure about relation between teacher and technical teacher roles
         var admin = AuthUtils.toSpringRole(RoleDto.ADMIN);
+        var teacher = AuthUtils.toSpringRole(RoleDto.TEACHER);
+        var technicalTeacher = AuthUtils.toSpringRole(RoleDto.TECHNICAL_TEACHER);
 
         var hierarchy = Arrays.stream(RoleDto.values())
                 .filter(role -> role != RoleDto.ADMIN)
@@ -62,7 +62,7 @@ public class AuthConstrainsConfig {
                 .map(role -> admin + " > " + role)
                 .collect(Collectors.joining("\n"));
 
-        // hierarchy += "\n ROLE_TECHNICAL_TEACHER > ROLE_TEACHER";
+        hierarchy += String.format("\n%s > %s", technicalTeacher, teacher);
 
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;

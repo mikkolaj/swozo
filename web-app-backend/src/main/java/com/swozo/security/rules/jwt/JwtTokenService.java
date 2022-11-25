@@ -3,6 +3,7 @@ package com.swozo.security.rules.jwt;
 import com.swozo.config.EnvNames;
 import com.swozo.persistence.user.Role;
 import com.swozo.persistence.user.User;
+import com.swozo.security.AccessToken;
 import com.swozo.security.TokenService;
 import com.swozo.security.keys.KeyProvider;
 import com.swozo.security.util.AuthUtils;
@@ -10,17 +11,19 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class JwtTokenService implements TokenService {
     private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
 
@@ -32,32 +35,31 @@ public class JwtTokenService implements TokenService {
     private final KeyProvider keyProvider;
 
     @Value("${" + EnvNames.JWT_DEFAULT_EXPIRATION_SECONDS + "}")
-    private long jwtExpirationTimeSeconds;
+    private final long jwtExpirationTimeSeconds;
+    @Value("${" + EnvNames.REFRESH_TOKEN_EXPIRATION_SECONDS + "}")
+    private final long refreshTokenExpirationTimeSeconds;
 
-    @Autowired
-    public JwtTokenService(KeyProvider keyProvider) {
-        this.keyProvider = keyProvider;
-    }
-
+    @Override
     public JwtAccessToken createAccessToken(User user) {
-        var now = new Date();
-
-        var expirationDate = Date.from(
-                Instant.ofEpochSecond(
-                        now.toInstant().getEpochSecond() + jwtExpirationTimeSeconds
-                )
-        );
-
+        var expirationTime = getExpirationTime(jwtExpirationTimeSeconds);
         var roles = user.getRoles().stream().map(Role::getName).toList();
-        var token = createToken(String.valueOf(user.getId()), expirationDate, roles);
+        var token = createToken(String.valueOf(user.getId()), expirationTime, roles);
 
         return new JwtAccessToken(
                 token,
                 user.getId(),
-                expirationDate.toInstant().getEpochSecond(),
+                expirationTime.toInstant().getEpochSecond(),
                 AuthUtils.getUsersAuthorities(user));
     }
 
+    @Override
+    public AccessToken createRefreshToken(User user) {
+        var expirationTime = getExpirationTime(refreshTokenExpirationTimeSeconds);
+        var token = createToken(String.valueOf(user.getId()), expirationTime, List.of());
+        return new JwtAccessToken(token, user.getId(), expirationTime.toInstant().getEpochSecond(), List.of());
+    }
+
+    @Override
     @SuppressWarnings("unchecked") // suppress List to List<String> cast warning
     public JwtAccessToken parseAccessToken(String token) {
         var claims = parseClaims(token);
@@ -68,6 +70,11 @@ public class JwtTokenService implements TokenService {
                 claims.get(EXPIRY_DATE_FIELD, Date.class).toInstant().getEpochSecond(),
                 AuthUtils.getUsersAuthorities((List<String>) claims.get(ROLES_FIELD, List.class))
         );
+    }
+
+    @Override
+    public Duration getRefreshTokenExpirationTime() {
+        return Duration.ofSeconds(refreshTokenExpirationTimeSeconds);
     }
 
     private String createToken(String uuid, Date expirationDate, List<String> roles) {
@@ -94,5 +101,13 @@ public class JwtTokenService implements TokenService {
                 .build();
 
         return parser.parseClaimsJws(token).getBody();
+    }
+
+    private Date getExpirationTime(long afterSeconds) {
+        return Date.from(
+                Instant.ofEpochSecond(
+                        new Date().toInstant().getEpochSecond() + afterSeconds
+                )
+        );
     }
 }

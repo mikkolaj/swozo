@@ -1,18 +1,24 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Button, Card, Grid, Paper, Typography } from '@mui/material';
+import { ActivitySummaryDto } from 'api';
 import { stylesRowCenteredVertical } from 'common/styles';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { useState } from 'react';
-import { mockCalendarActivities } from 'utils/mocks';
+import { useTranslation } from 'react-i18next';
+import { formatTime } from 'utils/util';
 import { CalendarDay } from './components/CalendarDay';
 import { buildWeeks, DAYS_IN_WEEK, getWeeksInMonthCount } from './utils';
 
-export const Calendar = () => {
+type Props = {
+    activities: ActivitySummaryDto[];
+};
+
+export const Calendar = ({ activities }: Props) => {
     const [displayedDate, setDisplayedDate] = useState(dayjs());
     const [daysInMonth, setDaysInMonth] = useState(buildWeeks(displayedDate));
-    const [activities] = useState(mockCalendarActivities);
+    const { t } = useTranslation();
 
     return (
         <Card sx={{ p: 2 }}>
@@ -80,7 +86,13 @@ export const Calendar = () => {
                                 key={day}
                                 displayedDate={displayedDate}
                                 day={daysInMonth[week * DAYS_IN_WEEK + day]}
-                                activities={activities}
+                                activities={activities.map(({ name, startTime }) => ({
+                                    at: dayjs(startTime),
+                                    description: t('home.calendarDescription', {
+                                        name,
+                                        time: formatTime(startTime),
+                                    }),
+                                }))}
                             />
                         ))}
                     </Grid>

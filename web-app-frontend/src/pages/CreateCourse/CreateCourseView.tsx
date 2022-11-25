@@ -47,14 +47,15 @@ export const CreateCourseView = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [formattedApiErrors, setFormattedApiErrors] = useState<FormikErrors<FormValues>>();
 
-    const { pushApiError, removeApiError } = useApiErrorHandling({});
+    const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({});
 
     const formRef = useRef<FormikProps<FormValues>>(null);
     const { data: availableLessonModules } = useErrorHandledQuery(
         ['modules', 'summary', 'public'],
         () => getApis().serviceModuleApi.getAllPublicServiceModules(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     // TODO: call api

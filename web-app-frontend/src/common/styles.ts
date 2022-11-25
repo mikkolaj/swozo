@@ -2,7 +2,8 @@ import { SxProps, Theme } from '@mui/material';
 
 type MaterialStyle = SxProps<Theme>;
 
-export const FORM_INPUT_WIDTH = '230px';
+export const FORM_INPUT_WIDTH_NUM = 230;
+export const FORM_INPUT_WIDTH = `${FORM_INPUT_WIDTH_NUM}px`;
 
 export const stylesRow: MaterialStyle = {
     display: 'flex',

@@ -33,6 +33,7 @@ public class UserActivityModuleInfo extends BaseEntity {
     @JoinColumn(name = "remote_file_id")
     private RemoteFile userFile;
 
+    @Column(columnDefinition="TEXT")
     private String url;
 
     @OneToMany(mappedBy = "userActivityModuleInfo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

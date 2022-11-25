@@ -47,14 +47,16 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public List<CourseDetailsDto> getUserCourses(Long userId, RoleDto userRole) {
-        var courses = userRole.equals(RoleDto.STUDENT) ?
-                courseRepository.getCoursesByStudentsId(userId) :
-                courseRepository.getCoursesByTeacherId(userId);
+    public List<CourseDetailsDto> getUserCoursesDetails(Long userId, RoleDto userRole) {
         var user = userService.getUserById(userId);
-
-        return courses.stream()
+        return getUserCourses(userId, userRole).stream()
                 .map(course -> courseMapper.toDto(course, user, course.isCreator(userId)))
+                .toList();
+    }
+
+    public List<CourseSummaryDto> getUserCourseSummaries(Long userId, RoleDto userRole) {
+        return getUserCourses(userId, userRole).stream()
+                .map(courseMapper::toDto)
                 .toList();
     }
 
@@ -86,7 +88,7 @@ public class CourseService {
     @Transactional
     public CourseDetailsDto createCourse(CreateCourseRequest createCourseRequest, Long teacherId, boolean sandboxMode) {
         if (!sandboxMode) {
-            courseValidator.validateNewCourse(createCourseRequest);
+            courseValidator.validateNewCourse(createCourseRequest, teacherId);
         }
 
         var teacher = userService.getUserById(teacherId);
@@ -125,11 +127,15 @@ public class CourseService {
             throw new InvalidCoursePasswordException();
         }
 
+        addStudentToCourse(course, student);
+        return courseMapper.toDto(course, student, false);
+    }
+
+    public void addStudentToCourse(Course course, User student) {
         course.addStudent(student);
         scheduleService.addStudentToAlreadyScheduledActivities(course, student);
 
         courseRepository.save(course);
-        return courseMapper.toDto(course, student, false);
     }
 
     @Transactional
@@ -176,6 +182,12 @@ public class CourseService {
             courseValidator.validateCreatorAndNotSandbox(course, teacherId);
             course.deleteStudent(student);
         });
+    }
+
+    private List<Course> getUserCourses(Long userId, RoleDto userRole) {
+        return userRole.equals(RoleDto.STUDENT) ?
+                courseRepository.getCoursesByStudentsId(userId) :
+                courseRepository.getCoursesByTeacherId(userId);
     }
 
     private CourseDetailsDto modifyCourseParticipant(Long courseId, String studentEmail, BiConsumer<User, Course> modifier) {

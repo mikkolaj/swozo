@@ -61,7 +61,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
     const dynamicFormRef = useRef<FormikProps<DynamicFormFields>>(null);
     const dynamicFormValueRegistryRef = useRef<DynamicFormValueRegistry>({});
 
-    const { isApiError, errorHandler, consumeErrorAction, pushApiError, removeApiError } =
+    const { isApiError, errorHandler, consumeErrorAction, isApiErrorSet, pushApiError, removeApiError } =
         useApiErrorHandling({});
 
     const { data: editModeInitialValues } = useErrorHandledQuery(
@@ -69,6 +69,7 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
         () => getApis().serviceModuleApi.getFormDataForEdit({ serviceModuleId: +(moduleId ?? -1) }),
         pushApiError,
         removeApiError,
+        isApiErrorSet,
         editMode && moduleId !== undefined
     );
 
@@ -76,7 +77,8 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
         'services',
         () => getApis().serviceModuleApi.getSupportedServices(),
         pushApiError,
-        removeApiError
+        removeApiError,
+        isApiErrorSet
     );
 
     const createServiceModuleMutation = useMutation(
@@ -119,8 +121,8 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
     );
 
     useEffect(() => {
-        if (supportedServices && supportedServices.length > 0) {
-            initialValues[MODULE_INFO_SLIDE].service = supportedServices[0].serviceName;
+        if (supportedServices && supportedServices.length > 0 && formRef.current) {
+            formRef.current.setFieldValue(`${MODULE_INFO_SLIDE}.service`, supportedServices[0].serviceName);
         }
     }, [supportedServices]);
 
@@ -158,6 +160,11 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                 (slideProps, { values, handleChange, setFieldValue }) => (
                     <ModuleInfoForm
                         {...slideProps}
+                        onServiceChanged={(newServiceConfig) => {
+                            if (![...newServiceConfig.isolationModes].includes(values[1].isolationMode)) {
+                                values[1].isolationMode = [...newServiceConfig.isolationModes][0];
+                            }
+                        }}
                         supportedServices={preprocessSupportedServices(supportedServices, editMode, values)}
                         values={values[MODULE_INFO_SLIDE]}
                         handleChange={handleChange}

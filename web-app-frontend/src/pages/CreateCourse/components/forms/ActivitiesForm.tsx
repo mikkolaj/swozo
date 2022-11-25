@@ -21,6 +21,7 @@ type Props = SlideProps & {
     availableLessonModules: ServiceModuleSummaryDto[];
     availableGeneralModules: ServiceModuleSummaryDto[];
     createMode?: boolean;
+    editMode?: boolean;
 };
 
 export const activityValidationSchema: ValidationSchema<ActivityValues> = {

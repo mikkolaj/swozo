@@ -11,6 +11,8 @@ type Props<T> = {
     optionToString: (option: T) => string;
     setFieldValue: (fieldName: string, value: T[]) => void;
     required?: boolean;
+    fullWidthChips?: boolean;
+    componentToRenderRightToFieldInput?: JSX.Element; // TODO refactor this xD
     optionEquals?: (first: T, second: T) => boolean;
     customChipRenderer?: (chips: JSX.Element[]) => JSX.Element;
 };
@@ -22,9 +24,11 @@ export function AutocompleteWithChips<T>({
     chosenOptions,
     optionToString,
     setFieldValue,
+    componentToRenderRightToFieldInput,
     customChipRenderer,
     optionEquals = (a, b) => a === b,
     required = true,
+    fullWidthChips = false,
 }: Props<T>) {
     const optionsMap = useMemo<Record<string, T>>(
         () => Object.fromEntries(options.map((option) => [optionToString(option), option])),
@@ -71,19 +75,22 @@ export function AutocompleteWithChips<T>({
                     }
                 }}
                 renderInput={({ InputProps, ...params }) => (
-                    <FormInputField
-                        name={'_' + name}
-                        i18nLabel={labelPath}
-                        textFieldProps={{
-                            required,
-                            sx: { width: FORM_INPUT_WIDTH },
-                            InputProps: {
-                                ...InputProps,
-                                type: 'search',
-                            },
-                            ...params,
-                        }}
-                    />
+                    <Box sx={{ ...stylesRow }}>
+                        <FormInputField
+                            name={'_' + name}
+                            i18nLabel={labelPath}
+                            textFieldProps={{
+                                required,
+                                sx: { width: FORM_INPUT_WIDTH },
+                                InputProps: {
+                                    ...InputProps,
+                                    type: 'search',
+                                },
+                                ...params,
+                            }}
+                        />
+                        {componentToRenderRightToFieldInput}
+                    </Box>
                 )}
             />
             {customChipRenderer ? (
@@ -94,7 +101,7 @@ export function AutocompleteWithChips<T>({
                         ...stylesRow,
                         mt: 1,
                         ml: 2,
-                        width: '50%',
+                        width: fullWidthChips ? '100%' : '50%',
                         flexWrap: 'wrap',
                     }}
                 >

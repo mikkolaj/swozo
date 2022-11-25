@@ -25,7 +25,7 @@ public class VmController {
 
     @GetMapping("/all-system-vms")
     @PreAuthorize("hasRole('ADMIN')")
-    public Collection<VmDto> allSystemVms(AccessToken token) {
+    public Collection<VmDto> getAllVms(AccessToken token) {
         logger.info("getting all vms");
         return vmService.getAllSystemVmsDto();
     }

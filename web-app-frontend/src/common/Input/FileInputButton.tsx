@@ -30,7 +30,7 @@ export const FileInputButton = ({
                 type="file"
                 hidden
                 multiple={!!onFilesSelected}
-                accept={allowedExtensions?.map((ext) => `.${ext}`).join(' ')}
+                accept={allowedExtensions?.map((ext) => `.${ext}`).join(',')}
                 onChange={({ target }) => {
                     if (target.files && target.files.length > 0) {
                         if (onFilesSelected) {

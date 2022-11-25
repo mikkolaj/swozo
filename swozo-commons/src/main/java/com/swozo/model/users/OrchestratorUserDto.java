@@ -4,6 +4,7 @@ public record OrchestratorUserDto(
         Long id,
         String name,
         String surname,
+        String email,
         ActivityRole role
 ){
 }

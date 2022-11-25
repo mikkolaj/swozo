@@ -21,6 +21,7 @@ type Props = SlideProps & {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleChange: (e: ChangeEvent<any>) => void;
     setFieldValue: (name: string, value: unknown) => void;
+    onServiceChanged: (newServiceConfig: ServiceConfig) => void;
 };
 
 export const ModuleInfoForm = ({
@@ -32,6 +33,7 @@ export const ModuleInfoForm = ({
     dynamicFormRef,
     dynamicFormValueRegistryRef,
     dynamicFormErrors,
+    onServiceChanged,
 }: Props) => {
     const { t } = useTranslation();
     const serviceConfig = useMemo(() => {
@@ -41,6 +43,12 @@ export const ModuleInfoForm = ({
     useEffect(() => {
         dynamicFormValueRegistryRef.current = {};
     }, [serviceConfig, dynamicFormValueRegistryRef]);
+
+    useEffect(() => {
+        if (serviceConfig) {
+            onServiceChanged(serviceConfig);
+        }
+    }, [serviceConfig, onServiceChanged]);
 
     return (
         <>

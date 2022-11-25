@@ -3,25 +3,68 @@
         "header": "Logowanie",
         "email": "Adres Email",
         "password": "Hasło",
-        "button": "Zaloguj się"
+        "loginButton": "Zaloguj się",
+        "forgotPassword": "Nie pamiętasz hasła?",
+        "invalidCredentials": "Niepoprawny email lub hasło",
+        "forgot": {
+            "header": "Resetowanie hasła",
+            "backToLogin": "Wróć do logowania",
+            "sendButton": "Zresetuj hasło",
+            "modal": "Trwa resetowanie hasła, poczekaj...",
+            "emailSent": "Email umożliwiający zresetowanie hasła został wysłany na podany adres. Skopiuj załączony w wiadomości token do formularza na tej stronie.",
+            "userNotFound": "Użytkownik o tym adresie email nie istenieje",
+            "failedToSendEmail": "Nie udało się wysłać maila, spróbuj ponownie później"
+        },
+        "reset": {
+            "header": "Resetowanie hasła",
+            "sendButton": "Zresetuj hasło",
+            "token": "Token wysłany na adres email",
+            "password": "Nowe hasło",
+            "repeatPassword": "Powtórz hasło",
+            "error": {
+                "passwordsDontMatch": "Hasła muszą być takie same",
+                "validationErrors": {
+                    "INVALID_PASSWORD_TOKEN": "Niepoprawny token zmiany hasła",
+                    "INVALID_PASSWORD": "Hasło nie spełnia wymagań bezpieczeństwa, upewnij się że zawiera ono minimum {{passwordMinDigits}} cyfry, minimum {{passwordMinLowercase}} małych liter, minimum {{passwordMinUppercase}} wielkich liter oraz minimum {{passwordMinSpecial}} znaków specjalnych({{passwordAllowedSpecials}})"
+                }
+            }
+        },
+        "sessionExpired": {
+            "info": "Sesja wygasła, zaloguj się ponownie."
+        }
     },
     "navbar": {
         "logo": "SWOZO",
+        "adminLogo": "SWOZO ADMIN",
         "myCourses": "moje kursy",
         "myModules": "moje moduły",
         "publicCourses": "wszystkie kursy",
         "publicModules": "wszystkie moduły",
         "myFiles": "pliki",
+        "virtualMachines": "repozytorium maszyn wirtualnych",
+        "userManagement": "zarządzanie użytkownikami",
         "menu": {
+            "help": "Pomoc",
             "logout": "wyloguj",
             "switchToTechnical": "Widok nauczyciela technicznego",
             "switchToTeacher": "Widok nauczyciela"
         }
     },
+    "home": {
+        "upcomingActivities": "Nadchodzące aktywności",
+        "noneUpcoming": "Brak aktywności w najbliższym czasie",
+        "activeCourses": "Ostatnio aktywne kursy",
+        "noneActive": "Brak aktywności w ostatnim miesiącu",
+        "seeAll": "Zobacz wszystkie kursy",
+        "calendarDescription": "Zajęcia: {{name}} o {{time}}"
+    },
     "myCourses": {
         "header": "Moje kursy",
         "createCourseButton": "Utwórz kurs",
-        "empty": "Nie utworzyłeś jeszcze żadnego kursu",
+        "empty": {
+            "teacher": "Nie utworzyłeś jeszcze żadnego kursu",
+            "student": "Nie dołączyłeś jeszcze do żadnego kursu"
+        },
         "course": {
             "lastActivity": "Ostatnia aktywność:",
             "teacher": "Prowadzący: {{firstName}} {{lastName}}",
@@ -79,6 +122,19 @@
                         "label": "Dodaj aktywność",
                         "button": "Utwórz aktywność",
                         "secondaryButton": "Wyczyść formularz"
+                    },
+                    "editActivity": {
+                        "label": "Edytuj aktywność"
+                    },
+                    "deleteActivity": {
+                        "label": "Usuń aktywność",
+                        "selectLabel": "Wybierz aktywność",
+                        "deleteWithAllData": "Usuń wraz z wszystkimi danymi",
+                        "justCancel": "Odwołaj uruchamianie modułów",
+                        "confirmDeletion": "Czy na pewno chcesz usunąć tę aktywność? Cofnięcie tej akcji nie będzie możliwe.",
+                        "confirmCancel": "Czy na pewno chcesz odwołać uruchamianie modułów? Cofnięcie tej akcji nie będzie możliwe.",
+                        "no": "Nie usuwaj",
+                        "yes": "Tak"
                     }
                 }
             }
@@ -275,14 +331,14 @@
                         "vcpu": "Liczba wirtualnych procesorów",
                         "ram": "Pamięć RAM [GB]",
                         "disk": "Pamięć nieulotna [GB]",
-                        "bandwidth": "Wymagana szerokość pasma [Gb/s]"
+                        "bandwidth": "Wymagana szerokość pasma [Mb/s]"
                     },
                     "scaled": {
                         "label": "Skalowanie wymagań ze względu na liczbę użytkowników",
                         "vcpu": "Liczba użytkowników potrzebna by zwiększyć liczbę rdzeni o 1",
                         "ram": "Liczba użytkowników potrzebna by zwiększyć pamięć RAM o 1 GB",
                         "disk": "Liczba użytkowników potrzebna by zwiększyć pamięć nieulotną o 1 GB",
-                        "bandwidth": "Liczba użytkowników potrzebna by zwiększyć szerokość pasma o 1 GB/s"
+                        "bandwidth": "Liczba użytkowników potrzebna by zwiększyć szerokość pasma o 1 Gb/s"
                     }
                 }
             },
@@ -292,7 +348,7 @@
                 "accessibility": {
                     "public": {
                         "label": "Moduł jest ustawiony jako publiczny.",
-                        "info": "Wszyscy będą mogli z niego skorzystać zaraz po utworzeniu"
+                        "info": "Wszyscy nauczyciele będą mogli z niego skorzystać zaraz po utworzeniu."
                     },
                     "private": {
                         "label": "Moduł jest ustawiony jako prywatny.",
@@ -302,11 +358,11 @@
                 "isolation": {
                     "ISOLATED": {
                         "label": "Wybrano środowisko izolowane.",
-                        "info": "Tylko 1 użytkownik otrzyma dostęp do pojedynczej maszyny wirtualnej z uruchomionym modułem"
+                        "info": "Tylko 1 użytkownik otrzyma dostęp do pojedynczej maszyny wirtualnej z uruchomionym modułem."
                     },
                     "SHARED": {
                         "label": "Wybrano środowisko współdzielone.",
-                        "info": "Wielu użytkowników otrzyma dostęp do tej samej maszyny wirtualnej z uruchomionym modułem"
+                        "info": "Wielu użytkowników otrzyma dostęp do tej samej maszyny wirtualnej z uruchomionym modułem."
                     }
                 },
                 "disclaimer": {
@@ -365,13 +421,41 @@
     "activityFiles": {
         "header": "Pliki dla: {{courseName}} - {{activityName}}",
         "goBackBtn": "Wróć do kursu",
+        "addToFavourite": "Dodaj do ulubionych",
+        "removeFromFavourite": "Usuń z ulubionych",
         "tabs": {
             "public": {
                 "label": "Publiczne pliki",
-                "uploadBtn": "Prześlij plik"
+                "uploadBtn": "Prześlij plik",
+                "headers": {
+                    "name": "Nazwa pliku",
+                    "uploadDate": "Data przesłania",
+                    "size": "Rozmiar pliku"
+                },
+                "empty": "Nie przesłałeś jeszcze żadnego pliku"
             },
             "users": {
-                "label": "Moje pliki"
+                "label": "Moje pliki",
+                "download": "Pobierz",
+                "module": "{{name}} ({{serviceName}})",
+                "my": {
+                    "headers": {
+                        "name": "Nazwa pliku",
+                        "size": "Rozmiar pliku",
+                        "serviceModule": "Moduł"
+                    },
+                    "teacherLabel": "Wyniki przypisane do konta nauczyciela",
+                    "emptyStudent": "Brak wyników z zajęć. Poczekaj parę minut po planowanym końcu zajęć. Skontaktuj się z nauczycielem jeśli uważasz, że pliki powinny się tu znaleźć.",
+                    "emptyTeacher": "Brak wyników z zajęć. Poczekaj parę minut po planowanym końcu zajęć. Skontaktuj się z administratorem jeśli uważasz, że pliki powinny się tu znaleźć."
+                },
+                "allStudents": {
+                    "headers": {
+                        "studentName": "Imię i nazwisku studenta",
+                        "studentEmail": "Adres Email studenta",
+                        "fileSize": "Rozmiar pliku"
+                    },
+                    "empty": "Brak wyników z zajęć dla tej aktywności. Upewnij się, że powinny one się tu znaleźć, poczekaj kilka minut po planowanym zakończeniu zajęć i skontaktuj się z administratorem."
+                }
             }
         },
         "error": {
@@ -392,12 +476,19 @@
                 "instruction": "Instrukcja",
                 "mainInfo": "Zostanie utworzony testowy, prywatny kurs z wybraną liczbą testowych studentów ({{studentCount}}). Dostaniesz dane logowania do ich kont oraz link do kursu. Zaraz po uruchomieniu modułu zostaną dostarczone linki umożliwiające wykonanie testu.",
                 "moreInfo": "Po upływie {{validForMinutes}}min (od czasu uruchomienia) moduł zostanie wyłączony, jeśli serwis wspiera zbieranie wyników prac uczniów zostaną one dostarczone i będą dostępne przez kolejne {{resultsValidForMinutes}}min w zakładce 'Pliki' kursu. Po upływie tego czasu kurs, konta studentów i wszystkie pliki zostaną usunięte automatycznie. Nie będziesz mógł ręcznie edytować tego kursu.",
-                "limit": "Pamiętaj że jednocześnie możesz mieć dostęp do tylko jednego środowiska testowego, nie będziesz mógł wcześniej go usunąć.",
+                "limit": "Pamiętaj, że jednocześnie możesz mieć dostęp do ograniczonej administracyjnie liczby środowisk testowych, nie będziesz mógł wcześniej usunąć żadnego z nich.",
                 "form": {
                     "createButton": "Utwórz środowisko testowe",
                     "studentCount": "Liczba studentów",
                     "validForMinutes": "Czas dostępu do modułu (min)",
-                    "resultsValidForMinutes": "Czas dostępu do wyników (min)"
+                    "resultsValidForMinutes": "Czas dostępu do wyników (min)",
+                    "error": {
+                        "SANDBOXES_COUNT_EXCEEDED": "Nie możesz utworzyć więcej środowisk testowych",
+                        "POLICY_NOT_MET": "Nie masz możliwości wykorzystania ilości zasobów potrzebnej do uruchomienia tego środowiska, skontaktuj się z administratorem.",
+                        "validationErrors": {
+                            "NOT_IN_BOUNDS": "Liczba musi być w zakresie {{min}} - {{max}}"
+                        }
+                    }
                 }
             },
             "result": {
@@ -409,10 +500,147 @@
             }
         }
     },
+    "admin": {
+        "users": {
+            "header": "Zarządzanie użytkownikami",
+            "searchBoxPlaceholder": "nazwisko, email...",
+            "filters": {
+                "button": "Więcej filtrów",
+                "any": "Wszystkie",
+                "roles": "Role",
+                "minCreationYear": "Minimalny rok utworzenia konta",
+                "maxCreationYear": "Maksymalny rok utworzenia konta"
+            },
+            "list": {
+                "button": "Lista użytkowników",
+                "headers": {
+                    "name": "Imię i nazwisko",
+                    "email": "Adres Email",
+                    "roles": "Role"
+                },
+                "details": "szczegóły",
+                "empty": "Nie znaleziono użytkowników spełniających podane kryteria"
+            },
+            "create": {
+                "button": "Kreator użytkowników",
+                "form": {
+                    "info": "Utwórz pojedyncze konto użytkownika",
+                    "name": "imię",
+                    "surname": "nazwisko",
+                    "email": "Adres Email",
+                    "roles": "Role",
+                    "createButton": "Utwórz konto",
+                    "error": {
+                        "validationErrors": {
+                            "MISSING": "Pole jest wymagane",
+                            "NOT_UNIQUE": "Pole o takiej wartości już istenieje"
+                        }
+                    }
+                },
+                "import": {
+                    "info": "Możesz również utworzyć konta użytkowników poprzez wczytanie pliku .csv",
+                    "format": "Format: imię, nazwisko,email,rola1;rola2",
+                    "availableRoles": "Możliwe role to: STUDENT, ADMIN, TEACHER, TECHNICAL_TEACHER",
+                    "exampleInfo": "Na przykład:",
+                    "example1": "Jan,Kowalski,jkowalski@mail.com,TEACHER;TECHNICAL_TEACHER",
+                    "example2": "Dominik,Nowak,dnowak@mail.com,STUDENT",
+                    "button": "Wczytaj użytkowników z pliku csv"
+                }
+            }
+        },
+        "userDetails": {
+            "header": "Szczegółowe dane użytkownika",
+            "name": "Imię i nazwisko",
+            "email": "Adres Email",
+            "createdAt": "Data utworzenia konta",
+            "creator": "Email założyciela konta",
+            "roles": "Role użytkownika",
+            "storage": "Wykorzystywane miejsce na dysku",
+            "edit": {
+                "turnOn": "Włącz tryb edycji",
+                "turnOff": "Wyłącz tryb edycji"
+            },
+            "saveRoles": "Zapisz zmiany",
+            "policies": {
+                "label": "Polityki",
+                "empty": "Użytkownik nie ma przypisanej żadnej polityki",
+                "MAX_VCPU": "Maksymalna liczba wirtualnych procesorów wykorzystywanych w 1 aktywności",
+                "MAX_RAM_GB": "Maksymalna rozmiar pamięci RAM wykorzystywanej w 1 aktywności [GB]",
+                "MAX_DISK_GB": "Maksymalna rozmiar pamięci nieulotnej wykorzystywanej w 1 aktywności [GB]",
+                "MAX_BANDWIDTH_MBPS": "Maksymalna szerokość pasma wykorzystywana w 1 aktywności [Mb/s]",
+                "MAX_STUDENTS": "Maksymalna liczba studentów w kursie",
+                "MAX_ACTIVITY_DURATION_MINUTES": "Maksymalna długość pojedynczej aktywności [min]",
+                "MAX_PARALLEL_SANDBOXES": "Maksymalna liczba jednocześnie uruchomionych środowisk testowych",
+                "save": "Zaaktualizuj polityki"
+            },
+            "createdCourses": {
+                "label": "Utworzone kursy",
+                "name": "Nazwa kursu",
+                "subject": "Tematyka",
+                "createdAt": "Data utworzenia",
+                "empty": "Użytkownik nie utworzył jeszcze żadnego kursu"
+            },
+            "attendedCourses": {
+                "label": "Uczęszczane kursy",
+                "name": "Nazwa kursu",
+                "teacher": "Autor kursu",
+                "createdAt": "Data utworzenia",
+                "empty": "Użytkownik nie dołączył jeszcze do żadnego kursu"
+            },
+            "createdModules": {
+                "label": "Utworzone moduły",
+                "name": "Nazwa modułu",
+                "service": "Wykorzystywany serwis",
+                "usedBy": "Liczba korzystających aktywności",
+                "createdAt": "Data utworzenia",
+                "empty": "Użytkownik nie utworzył jeszcze żadnego modułu"
+            }
+        },
+        "vms": {
+            "header": "Zarządzanie maszynami wirtualnymi",
+            "list": {
+                "button": "Repozytorium",
+                "empty": "Nie utworzyłeś jeszcze żadnej maszyny wirtualnej, uruchamianie modułów nie będzie możliwe",
+                "emptyButton": "Utwórz maszynę wirtualną",
+                "headers": {
+                    "name": "Nazwa",
+                    "vcpu": "Liczba vCpu",
+                    "ram": "Pamięć RAM [GB]",
+                    "bandwidth": "Szerokość pasma [Mb/s]"
+                },
+                "delete": {
+                    "modal": {
+                        "question": "Czy na pewno chcesz usunąć tę maszynę?",
+                        "yes": "Tak",
+                        "no": "Nie"
+                    }
+                },
+                "details": {
+                    "label": "Opis maszyny",
+                    "close": "Zamknij"
+                }
+            },
+            "create": {
+                "button": "Kreator",
+                "form": {
+                    "name": "Nazwa maszyny w systemie dostawcy usług chmurowych",
+                    "vcpu": "Liczba wirtualnych procesorów",
+                    "ramGb": "Liczba pamięci RAM [GB]",
+                    "bandwidthMbps": "Szerokość pasma [Mb/s]",
+                    "description": "Opis maszyny",
+                    "submit": "Zapisz metadane maszyny"
+                }
+            }
+        }
+    },
+    "help": {
+        "header": "Dane kontaktowe do administratorów systemu"
+    },
     "error": {
         "defaultMessage": "Coś poszło nie tak...",
         "defaultNavigationBtn": "Wróć do strony głównej",
         "refresh": "Odśwież",
+        "connectionError": "Wystąpił problem z połączeniem, spróbuj ponownie później",
         "tryAgain": "Coś poszło nie tak, spróbuj ponownie..."
     },
     "toast": {
@@ -423,12 +651,23 @@
         "serviceModuleUpdated": "Moduł został zaaktualizowany!",
         "serviceModuleDeleted": "Moduł został usunięty!",
         "fileUploaded": "Plik został przesłany!",
-        "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!"
+        "userCreated": "Użytkownik został utworzony!",
+        "passwordChanged": "Hasło zostało zmienione!",
+        "rolesUpdated": "Role zostały zaaktualizowane!",
+        "policiesUpdated": "Polityki użytkownika zostały zaaktualizowane",
+        "linkDeliveryConfirmed": "Dostarczenie linków zostało potwierdzone!",
+        "vmDeleted": "Maszyna wirtualna została usunięta",
+        "vmCreated": "Maszyna wirtualna została utworzona",
+        "addedToFavourite": "Plik został oznaczony jako ulubiony",
+        "removedFromFavourite": "Plik został usunięty z ulubionych"
     },
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",
         "DUPLICATE_FILE": "Plik już istnieje",
         "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie"
+    },
+    "commonModals": {
+        "upOrDownloading": "Przesyłam pliki"
     },
     "dynamicForm": {
         "file": {
@@ -439,5 +678,11 @@
         "file": {
             "button": "Pobierz plik"
         }
+    },
+    "role": {
+        "ADMIN": "Administrator",
+        "STUDENT": "Student",
+        "TEACHER": "Nauczyciel",
+        "TECHNICAL_TEACHER": "Techniczny"
     }
 }

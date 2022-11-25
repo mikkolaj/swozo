@@ -49,7 +49,7 @@ export const inputFieldFactory = (): InputFieldFactory => {
         TEXT: (
             { name, required, translatedLabel }: ParameterDescription,
             i18n,
-            { setFieldValue, errorMessage }
+            { setFieldValue, errorMessage, setAssociatedValue }
         ) => (
             <FormInputField
                 wrapperSx={{ mt: 0, width: '50%' }}
@@ -58,6 +58,7 @@ export const inputFieldFactory = (): InputFieldFactory => {
                     required,
                     onChange: (e) => {
                         setFieldValue(e.target.value, ParameterDescriptionTypeEnum.Text);
+                        setAssociatedValue?.(e.target.value);
                     },
                     error: !!errorMessage,
                     helperText: errorMessage,

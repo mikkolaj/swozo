@@ -1,4 +1,5 @@
 import { Logout, SwitchAccount } from '@mui/icons-material';
+import HelpIcon from '@mui/icons-material/Help';
 import { Avatar, Divider, IconButton, ListItemIcon, MenuItem } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -8,9 +9,18 @@ import { stylesRowFullyCentered } from 'common/styles';
 import { useMeQuery } from 'hooks/query/useMeQuery';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
-import { STUDENT, TEACHER, TECHNICAL_TEACHER, WithPreference, WithRole } from 'utils/roles';
+import {
+    ADMIN,
+    ANY_BUT_NOT_ADMIN,
+    STUDENT,
+    TEACHER,
+    TECHNICAL_TEACHER,
+    WithPreference,
+    WithRole,
+} from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 import { formatName } from 'utils/util';
 import { Logo } from './components/Logo';
@@ -22,6 +32,7 @@ export const HEIGHT = 64;
 export const Navbar = () => {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { me } = useMeQuery();
 
@@ -43,9 +54,17 @@ export const Navbar = () => {
                         <WithRole roles={[STUDENT]}>
                             <NavbarItem textI18n="navbar.publicCourses" route={PageRoutes.PUBLIC_COURSES} />
                         </WithRole>
-                        <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
-
-                        <NotificationBell notifications={[]} />
+                        <WithRole roles={ANY_BUT_NOT_ADMIN}>
+                            <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
+                            <NotificationBell notifications={[]} />
+                        </WithRole>
+                        <WithRole roles={[ADMIN]}>
+                            <NavbarItem
+                                textI18n="navbar.virtualMachines"
+                                route={PageRoutes.VIRTUAL_MACHINES}
+                            />
+                            <NavbarItem textI18n="navbar.userManagement" route={PageRoutes.HOME} />
+                        </WithRole>
 
                         <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
                             <Avatar sx={{ width: AVATAR_WIDTH, height: AVATAR_HEIGHT }}>
@@ -85,6 +104,12 @@ export const Navbar = () => {
                     </WithPreference>
                 </WithRole>
 
+                <MenuItem onClick={() => navigate(PageRoutes.HELP)}>
+                    <ListItemIcon>
+                        <HelpIcon />
+                    </ListItemIcon>
+                    {t('navbar.menu.help')}
+                </MenuItem>
                 <MenuItem onClick={() => dispatch(logout())} sx={{ textTransform: 'capitalize' }}>
                     <ListItemIcon>
                         <Logout fontSize="small" />

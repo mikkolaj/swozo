@@ -5,10 +5,12 @@ import {
     CourseControllerApi,
     FileControllerApi,
     Middleware,
+    PolicyControllerApi,
     ResponseContext,
     SandboxControllerApi,
     ServiceModuleControllerApi,
     UserControllerApi,
+    VmControllerApi,
 } from 'api';
 import { appConfig } from 'index';
 import { getAccessToken } from 'services/features/auth/auth';
@@ -23,6 +25,8 @@ type Apis = {
     serviceModuleApi: ServiceModuleControllerApi;
     fileApi: FileControllerApi;
     sandboxApi: SandboxControllerApi;
+    vmApi: VmControllerApi;
+    policyApi: PolicyControllerApi;
 };
 
 const is4xxFailure = (response: Response) => response.status >= 400 && response.status < 500;
@@ -36,7 +40,7 @@ class ErrorPreprocessorMiddleware implements Middleware {
                 errorType: ErrorType.INTERNAL_SERVER_ERROR,
             };
 
-            if (is4xxFailure(response)) {
+            if (is4xxFailure(response) || response.status === 503) {
                 let errorBody;
                 try {
                     // TODO check Content-Type if correct body might not be json
@@ -78,6 +82,8 @@ export const initializeApis = (): Apis => {
         serviceModuleApi: new ServiceModuleControllerApi(configuration),
         fileApi: new FileControllerApi(configuration),
         sandboxApi: new SandboxControllerApi(configuration),
+        vmApi: new VmControllerApi(configuration),
+        policyApi: new PolicyControllerApi(configuration),
     };
 };
 

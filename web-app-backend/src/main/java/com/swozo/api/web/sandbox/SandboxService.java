@@ -12,7 +12,6 @@ import com.swozo.api.web.sandbox.dto.ServiceModuleSandboxDto;
 import com.swozo.api.web.sandbox.request.CreateSandboxEnvironmentRequest;
 import com.swozo.api.web.servicemodule.ServiceModuleService;
 import com.swozo.api.web.user.UserService;
-import com.swozo.api.web.user.request.CreateUserRequest;
 import com.swozo.mapper.SandboxMapper;
 import com.swozo.model.utils.InstructionDto;
 import com.swozo.persistence.servicemodule.ServiceModule;
@@ -61,7 +60,7 @@ public class SandboxService {
 
         var sandboxUsers = createSandboxUsers(request.studentCount());
         var course = courseRepository.getById(sandboxCourseDetails.id());
-        sandboxUsers.forEach(sandboxUser -> course.addStudent(sandboxUser.user));
+        sandboxUsers.forEach(sandboxUser -> courseService.addStudentToCourse(course, sandboxUser.user));
 
         scheduleSandboxCleanup(startTime, request, sandboxCourseDetails, sandboxUsers);
 
@@ -128,15 +127,15 @@ public class SandboxService {
     private List<SandboxUser> createSandboxUsers(int count) {
         return IntStream.rangeClosed(1, count)
                 .mapToObj(userNum -> {
-                    var password = UUID.randomUUID().toString();
-                    var user = new CreateUserRequest(
+                    var plaintextPassword = UUID.randomUUID().toString();
+                    var user = userService.createUserInternally(
                             "Sandbox",
                             "Sandbox",
-                            password,
                             String.format("%s@swozo.sandbox.pl", UUID.randomUUID()),
+                            plaintextPassword,
                             List.of(RoleDto.STUDENT)
                     );
-                    return new SandboxUser(userService.createUser(user), password);
+                    return new SandboxUser(user, plaintextPassword);
                 })
                 .toList();
     }

@@ -32,6 +32,10 @@ public class ScheduleService {
         }
     }
 
+    public void cancel(long scheduleRequestId) {
+        scheduleHandler.cancel(scheduleRequestId);
+    }
+
     public List<ServiceConfig> getSupportedServices() {
         return provisionerFactory.getAllProvisioners()
                 .stream()

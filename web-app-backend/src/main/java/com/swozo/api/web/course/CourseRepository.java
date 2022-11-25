@@ -19,5 +19,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     Optional<Course> findBySandboxModeIsTrueAndTeacherId(Long teacherId);
 
+    Integer countBySandboxModeIsTrueAndTeacherId(Long teacherId);
+
     List<Course> getCoursesByIsPublicTrue();
 }
