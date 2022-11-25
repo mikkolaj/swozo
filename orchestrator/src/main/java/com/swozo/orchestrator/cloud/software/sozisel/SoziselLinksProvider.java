@@ -1,5 +1,6 @@
 package com.swozo.orchestrator.cloud.software.sozisel;
 
+import com.swozo.model.users.ActivityRole;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -11,37 +12,32 @@ import java.io.IOException;
 class SoziselLinksProvider {
     private static final String SOZISEL_PORT = "4000";
     private static final String JITSI_PORT = "8443";
-    private static final String DEFAULT_MAIL = "test@test.pl";
-    private static final String DEFAULT_NAME = "Imie";
-    private static final String DEFAULT_SURNAME = "Nazwisko";
+    private static final String DEFAULT_MAIL = "awesome_mail@mock.com";
+    private static final Integer MEETING_ESTIMATED_MINUTES = 90;
     private final String uri;
     private final String jitsiHost;
-    private String bearerToken = "";
+    private String bearerToken;
+    private String roomId;
 
     SoziselLinksProvider(String hostAddress) {
         this.jitsiHost = "https://" + hostAddress + ":" + JITSI_PORT;
-        this.uri = "http://" +  hostAddress + ":" + SOZISEL_PORT + "/api/graphql";
+        this.uri = "http://" + hostAddress + ":" + SOZISEL_PORT + "/api/graphql";
     }
 
-    String defaultCreateNames() {
-        return createLinks(DEFAULT_NAME, DEFAULT_SURNAME);
-    }
-
-    String createLinks(String name, String surname) {
-        Integer estimatedTime = 90;
+    String createLinks(String name, String surname, ActivityRole userRole) {
+        bearerToken = "";
         sendRegister(DEFAULT_MAIL, name, surname);
         sendLogin(DEFAULT_MAIL);
-        String sessionTemplateId = sendCreateSessionTemplate(estimatedTime);
-        String roomId = sendPlanSession(sessionTemplateId);
-        sendStartSession(roomId);
+        if (userRole == ActivityRole.TEACHER) {
+            String sessionTemplateId = sendCreateSessionTemplate(MEETING_ESTIMATED_MINUTES);
+            roomId = sendPlanSession(sessionTemplateId);
+            sendStartSession(roomId);
+        }
         String jitsiToken = sendGenerateJitsiToken(DEFAULT_MAIL, name + surname, roomId);
 
-        return jitsiHost +
-                "/" +
-                roomId +
-                "?jwt=" +
-                jitsiToken +
-                SoziselRequestTemplate.JITSI_LINK_PARAMETERS;
+        return userRole == ActivityRole.TEACHER ?
+                buildJitsiLink(roomId, jitsiToken, SoziselRequestTemplate.JITSI_TEACHER_LINK_PARAMETERS) :
+                buildJitsiLink(roomId, jitsiToken, SoziselRequestTemplate.JITSI_STUDENT_LINK_PARAMETERS);
     }
 
     private void sendRegister(String mail, String name, String surname) {
@@ -100,5 +96,14 @@ class SoziselLinksProvider {
 
     private String retrieveValueFromResponse(JSONObject response, String operationName, String fieldName) {
         return response.getJSONObject("data").getJSONObject(operationName).getString(fieldName);
+    }
+
+    private String buildJitsiLink(String roomId, String jitsiToken, String parameters) {
+        return jitsiHost +
+                "/" +
+                roomId +
+                "?jwt=" +
+                jitsiToken +
+                parameters;
     }
 }

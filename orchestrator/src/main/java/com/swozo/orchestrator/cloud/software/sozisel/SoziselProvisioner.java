@@ -65,16 +65,16 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
     ) {
         waitForSoziselSetup();
 
+        SoziselLinksProvider linksProvider = new SoziselLinksProvider(vmResourceDetails.publicIpAddress());
         return requestSender.getUserData(description.getActivityModuleId(), requestEntity.getId())
                 .thenApply(users -> users.stream()
                         .sorted(Comparator.comparing(OrchestratorUserDto::role).reversed()) // teacher first
-                        .map(user -> createLink(user, vmResourceDetails)).toList()
+                        .map(user -> createLink(user, linksProvider)).toList()
                 );
     }
 
-    private ActivityLinkInfo createLink(OrchestratorUserDto user, VmResourceDetails vmResourceDetails) {
-        var link = new SoziselLinksProvider(vmResourceDetails.publicIpAddress())
-                .createLinks(user.name(), user.surname());
+    private ActivityLinkInfo createLink(OrchestratorUserDto user, SoziselLinksProvider linksProvider) {
+        var link = linksProvider.createLinks(user.name(), user.surname(), user.role());
         return new ActivityLinkInfo(user.id(), link, translationsProvider.t(
                 "services.sozisel.connectionInstruction",
                 Map.of("instruction", MAIN_LINK_DESCRIPTION)
@@ -116,6 +116,7 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
 
     @SneakyThrows
     private void waitForSoziselSetup() {
+        logger.info("Waiting for Sozisel to setup");
         Thread.sleep(SOZISEL_SETUP_MILLISECONDS);
     }
 }
