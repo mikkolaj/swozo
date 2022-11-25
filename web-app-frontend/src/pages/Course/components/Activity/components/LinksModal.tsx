@@ -69,7 +69,7 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
             closeBtn={t('course.activity.linksInfo.closeButton')}
         >
             <Grid container sx={{ p: 2 }}>
-                <Grid item xs={12}>
+                <Grid item xs={12} sx={{ width: '100%' }}>
                     {activity.activityModules.map((activityModule) => (
                         <Accordion sx={{ mb: 2, boxShadow: 3 }} key={activityModule.id}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -116,9 +116,14 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                                         </Box>
                                     )}
                                     {activityModule.connectionDetails.map(({ url }) => (
-                                        <Box key={url} sx={stylesColumnCenteredVertical}>
+                                        <Box
+                                            key={url}
+                                            sx={{
+                                                ...stylesColumnCenteredVertical,
+                                            }}
+                                        >
                                             <Link target="_blank" rel="noopener" href={url}>
-                                                {url}
+                                                {`${url.slice(0, 90)}${url.length > 90 ? '...' : ''}`}
                                             </Link>
                                         </Box>
                                     ))}
