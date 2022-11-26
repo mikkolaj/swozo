@@ -12,7 +12,7 @@ import java.util.Optional;
 public record DockerParameters(
         String publicImageName,
         int expectedServiceStartupSeconds,
-        long imageSizeBytes,
+        long imageSizeMb,
         int portToExpose,
         Optional<String> resultsPathInContainer,
         Optional<String> startEndpoint,
@@ -20,7 +20,7 @@ public record DockerParameters(
 ) {
     private static final String PUBLIC_IMAGE_NAME = "publicImageName";
     private static final String EXPECTED_SERVICE_STARTUP_SECONDS = "expectedServiceStartupSeconds";
-    private static final String IMAGE_SIZE_BYTES = "imageSizeBytes";
+    private static final String IMAGE_SIZE_BYTES = "imageSizeMb";
     private static final String PORT_TO_EXPOSE = "portToExpose";
     private static final String RESULTS_PATH_IN_CONTAINER = "resultsPathInContainer";
     private static final String START_ENDPOINT = "startEndpoint";
@@ -63,7 +63,7 @@ public record DockerParameters(
                         .build(),
                 ParameterDescription.builder(IMAGE_SIZE_BYTES)
                         .withTranslatedLabel(
-                                translationsProvider.t("services.docker.dynamicParams.imageSizeBytes.label")
+                                translationsProvider.t("services.docker.dynamicParams.imageSizeMb.label")
                         )
                         .ofText()
                         .build(),

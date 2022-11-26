@@ -188,7 +188,7 @@ public class DockerProvisioner implements TimedSoftwareProvisioner {
     private int getEstimatedImageDownloadSeconds(DockerParameters dockerParameters) {
         // TODO use machine bandwidth and/or some other approximations
         final var ESTIMATED_MBPS = 10;
-        return (int)(dockerParameters.imageSizeBytes() / (ESTIMATED_MBPS * 1024 * 1024));
+        return (int)(dockerParameters.imageSizeMb() / ESTIMATED_MBPS);
     }
 
     private String extractDirectoryFromPath(String path) {
