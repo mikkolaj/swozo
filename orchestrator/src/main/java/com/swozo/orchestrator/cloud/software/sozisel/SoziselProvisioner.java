@@ -33,7 +33,7 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
     private static final int PROVISIONING_SECONDS = 600;
     private static final int SOZISEL_SETUP_MILLISECONDS = 180000;
     private static final String MAIN_LINK_DESCRIPTION = "Use the provided link to join the Jitsi session";
-    private static final int MINUTES = 5;
+    private static final int PLAYBOOK_TIMEOUT_MINUTES = 5;
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
     private final BackendRequestSender requestSender;
@@ -83,17 +83,17 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
 
     @Override
     public void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException {
-
+        // service does not require any additional parameters
     }
 
     @Override
-    public ServiceTypeEntity getScheduleType() {
+    public ServiceTypeEntity getServiceType() {
         return SUPPORTED_SCHEDULE;
     }
 
     @Override
     public ServiceConfig getServiceConfig() {
-        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), null, Set.of(IsolationMode.SHARED));
+        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), List.of(), Set.of(IsolationMode.SHARED));
     }
 
     @Override
@@ -110,12 +110,13 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
         ansibleRunner.runPlaybook(
                 AnsibleConnectionDetails.from(resource),
                 Playbook.PROVISION_SOZISEL,
-                MINUTES
+                PLAYBOOK_TIMEOUT_MINUTES
         );
     }
 
     @SneakyThrows
     private void waitForSoziselSetup() {
+        //TODO do this more properly
         logger.info("Waiting for Sozisel to setup");
         Thread.sleep(SOZISEL_SETUP_MILLISECONDS);
     }

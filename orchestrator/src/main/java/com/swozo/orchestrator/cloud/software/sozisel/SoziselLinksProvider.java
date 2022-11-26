@@ -1,6 +1,7 @@
 package com.swozo.orchestrator.cloud.software.sozisel;
 
 import com.swozo.model.users.ActivityRole;
+import lombok.SneakyThrows;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -14,17 +15,34 @@ class SoziselLinksProvider {
     private static final String JITSI_PORT = "8443";
     private static final String DEFAULT_MAIL = "awesome_mail@mock.com";
     private static final Integer MEETING_ESTIMATED_MINUTES = 90;
+    private static final int RETRY_WAITING_MILLISECONDS = 5000;
+    private static final int MAX_RETRIES = 3;
     private final String uri;
     private final String jitsiHost;
     private String bearerToken;
     private String roomId;
+    private int retries = 0;
 
     SoziselLinksProvider(String hostAddress) {
         this.jitsiHost = "https://" + hostAddress + ":" + JITSI_PORT;
         this.uri = "http://" + hostAddress + ":" + SOZISEL_PORT + "/api/graphql";
     }
 
+    @SneakyThrows
     String createLinks(String name, String surname, ActivityRole userRole) {
+        try {
+            return sendRequestsAndBuildLink(name, surname, userRole);
+        } catch (IOException err) {
+            if (retries > MAX_RETRIES) {
+                throw err;
+            }
+            retries++;
+            Thread.sleep(RETRY_WAITING_MILLISECONDS);
+            return createLinks(name, surname, userRole);
+        }
+    }
+
+    private String sendRequestsAndBuildLink(String name, String surname, ActivityRole userRole) throws IOException {
         bearerToken = "";
         sendRegister(DEFAULT_MAIL, name, surname);
         sendLogin(DEFAULT_MAIL);
@@ -33,60 +51,56 @@ class SoziselLinksProvider {
             roomId = sendPlanSession(sessionTemplateId);
             sendStartSession(roomId);
         }
-        String jitsiToken = sendGenerateJitsiToken(DEFAULT_MAIL, name + surname, roomId);
+        String jitsiToken = sendGenerateJitsiToken(DEFAULT_MAIL, name + " " + surname, roomId);
 
-        return userRole == ActivityRole.TEACHER ?
-                buildJitsiLink(roomId, jitsiToken, SoziselRequestTemplate.JITSI_TEACHER_LINK_PARAMETERS) :
-                buildJitsiLink(roomId, jitsiToken, SoziselRequestTemplate.JITSI_STUDENT_LINK_PARAMETERS);
+        return buildJitsiLink(roomId, jitsiToken, userRole == ActivityRole.TEACHER ?
+                SoziselRequestTemplate.PARAMETERS.TEACHER_LINK :
+                SoziselRequestTemplate.PARAMETERS.STUDENT_LINK);
     }
 
-    private void sendRegister(String mail, String name, String surname) {
-        String query = SoziselRequestTemplate.REGISTER_QUERY;
-        String variables = String.format(SoziselRequestTemplate.REGISTER_VARIABLES, mail, name, surname);
+    private void sendRegister(String mail, String name, String surname) throws IOException {
+        String query = SoziselRequestTemplate.QUERY.REGISTER;
+        String variables = String.format(SoziselRequestTemplate.VARIABLES.REGISTER, mail, name, surname);
         sendRequest(query, variables);
     }
 
-    private void sendLogin(String mail) {
-        String query = SoziselRequestTemplate.LOGIN_QUERY;
-        String variables = String.format(SoziselRequestTemplate.LOGIN_VARIABLES, mail);
+    private void sendLogin(String mail) throws IOException {
+        String query = SoziselRequestTemplate.QUERY.LOGIN;
+        String variables = String.format(SoziselRequestTemplate.VARIABLES.LOGIN, mail);
         JSONObject res = sendRequest(query, variables);
         bearerToken = retrieveValueFromResponse(res, "login", "token");
     }
 
-    private String sendCreateSessionTemplate(Integer estimatedTime) {
-        String query = SoziselRequestTemplate.CREATE_SESSION_TEMPLATE_QUERY;
-        String variables = String.format(SoziselRequestTemplate.CREATE_SESSION_TEMPLATE_VARIABLES, estimatedTime);
+    private String sendCreateSessionTemplate(Integer estimatedTime) throws IOException {
+        String query = SoziselRequestTemplate.QUERY.CREATE_SESSION_TEMPLATE;
+        String variables = String.format(SoziselRequestTemplate.VARIABLES.CREATE_SESSION_TEMPLATE, estimatedTime);
         JSONObject res = sendRequest(query, variables);
         return retrieveValueFromResponse(res, "createSessionTemplate", "id");
     }
 
-    private String sendPlanSession(String sessionTemplateId) {
-        String query = SoziselRequestTemplate.PLAN_SESSION_QUERY;
-        String variables = String.format(SoziselRequestTemplate.PLAN_SESSION_VARIABLES, sessionTemplateId);
+    private String sendPlanSession(String sessionTemplateId) throws IOException {
+        String query = SoziselRequestTemplate.QUERY.PLAN_SESSION;
+        String variables = String.format(SoziselRequestTemplate.VARIABLES.PLAN_SESSION, sessionTemplateId);
         JSONObject res = sendRequest(query, variables);
         return retrieveValueFromResponse(res, "createSession", "id");
     }
 
-    private void sendStartSession(String roomId) {
-        String query = SoziselRequestTemplate.START_SESSION_QUERY;
-        String variables = String.format(SoziselRequestTemplate.START_SESSION_VARIABLES, roomId);
+    private void sendStartSession(String roomId) throws IOException {
+        String query = SoziselRequestTemplate.QUERY.START_SESSION;
+        String variables = String.format(SoziselRequestTemplate.VARIABLES.START_SESSION, roomId);
         sendRequest(query, variables);
     }
 
-    private String sendGenerateJitsiToken(String mail, String fullName, String roomId) {
-        String query = SoziselRequestTemplate.GENERATE_JITSI_TOKEN_QUERY;
-        String variables = String.format(SoziselRequestTemplate.GENERATE_JITSI_TOKEN_VARIABLES, fullName, mail, roomId);
+    private String sendGenerateJitsiToken(String mail, String fullName, String roomId) throws IOException {
+        String query = SoziselRequestTemplate.QUERY.GENERATE_JITSI_TOKEN;
+        String variables = String.format(SoziselRequestTemplate.VARIABLES.GENERATE_JITSI_TOKEN, fullName, mail, roomId);
         JSONObject res = sendRequest(query, variables);
         return retrieveValueFromResponse(res, "generateJitsiToken", "token");
     }
 
-    private JSONObject sendRequest(String query, String variables) {
-        try {
-            HttpResponse response = SoziselRequestSender.sendRequest(uri, query, variables, bearerToken);
-            return parseResponseToJSON(response);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private JSONObject sendRequest(String query, String variables) throws IOException {
+        HttpResponse response = SoziselRequestSender.sendRequest(uri, query, variables, bearerToken);
+        return parseResponseToJSON(response);
     }
 
     private JSONObject parseResponseToJSON(HttpResponse response) throws IOException {

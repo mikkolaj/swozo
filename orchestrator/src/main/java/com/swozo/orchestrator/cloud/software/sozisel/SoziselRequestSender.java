@@ -13,9 +13,7 @@ import java.util.Map;
 
 @Service
 class SoziselRequestSender {
-
-    static HttpResponse sendRequest(String uri, String query, String variables, String bearerToken) {
-        try {
+    static HttpResponse sendRequest(String uri, String query, String variables, String bearerToken) throws IOException {
             Map<String, Object> requestPayload = Map.of("query", query, "variables", variables);
             StringEntity entity = new StringEntity(new JSONObject(requestPayload).toString());
             HttpClient httpClient = HttpClientBuilder.create().build();
@@ -26,8 +24,5 @@ class SoziselRequestSender {
                 request.addHeader("Authorization", "Bearer " + bearerToken);
             request.setEntity(entity);
             return httpClient.execute(request);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
