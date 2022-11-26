@@ -30,15 +30,18 @@ public enum ServiceStatus {
 
     private Set<ServiceStatus> getValidFollowingStatuses() {
         var notReadyTransitions = Set.of(FAILED, CANCELLED);
-        var readyTransitions = Set.of(DELETED, CANCELLED);
+        var withVmTransitions = Set.of(DELETED, CANCELLED);
         return switch (this) {
             case SUBMITTED, VM_CREATION_FAILED -> addElements(notReadyTransitions, VM_CREATING);
             case VM_CREATING -> addElements(notReadyTransitions, VM_CREATION_FAILED, PROVISIONING);
-            case PROVISIONING -> addElements(notReadyTransitions, PROVISIONING_FAILED, READY);
-            case PROVISIONING_FAILED -> addElements(notReadyTransitions, PROVISIONING);
-            case READY -> addElements(readyTransitions, WAITING_FOR_EXPORT);
-            case WAITING_FOR_EXPORT, EXPORT_FAILED -> addElements(readyTransitions, EXPORTING);
-            case EXPORTING -> addElements(readyTransitions, EXPORT_FAILED, EXPORT_COMPLETE);
+            case PROVISIONING ->
+                    addElements(combineSets(notReadyTransitions, withVmTransitions), PROVISIONING_FAILED, READY, DELETED);
+            case PROVISIONING_FAILED ->
+                    addElements(combineSets(notReadyTransitions, withVmTransitions), PROVISIONING, DELETED);
+            case READY -> addElements(withVmTransitions, WAITING_FOR_EXPORT);
+            case WAITING_FOR_EXPORT -> addElements(withVmTransitions, EXPORT_FAILED, EXPORTING);
+            case EXPORT_FAILED -> addElements(withVmTransitions, WAITING_FOR_EXPORT, EXPORTING);
+            case EXPORTING -> addElements(withVmTransitions, EXPORT_FAILED, EXPORT_COMPLETE);
             case EXPORT_COMPLETE, FAILED, CANCELLED -> Set.of(DELETED);
             case DELETED -> Collections.emptySet();
         };

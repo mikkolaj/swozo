@@ -49,6 +49,7 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
     private static final String USER_KEY_QUERY_PARAM = "ukey";
     private static final String WORKDIR = PROVISIONER_PATH_PREFIX + "/answers";
     private static final String QUESTIONS_PATH = PROVISIONER_PATH_PREFIX + "/questions/questions.yaml";
+    private static final String SWOZO_USER = "swozo";
     private final TranslationsProvider translationsProvider;
     private final ObjectMapper mapper;
     private final AnsibleRunner ansibleRunner;
@@ -62,7 +63,8 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
         return new ServiceConfig(
                 SUPPORTED_SCHEDULE.toString(),
                 QuizAppParameters.getParameterDescriptions(translationsProvider),
-                Set.of(IsolationMode.SHARED)
+                Set.of(IsolationMode.SHARED),
+                getProvisioningSeconds()
         );
     }
 
@@ -89,16 +91,6 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
         if (throwable instanceof InvalidParametersException || throwable instanceof PlaybookFailed) {
             throw new ProvisioningFailed(throwable);
         }
-    }
-
-    @Override
-    public CompletableFuture<List<ActivityLinkInfo>> createLinks(
-            ScheduleRequestEntity requestEntity,
-            ServiceDescriptionEntity description,
-            VmResourceDetails vmResourceDetails
-    ) {
-        // unsupported, can't do this without that mapping
-        return CompletableFuture.completedFuture(List.of());
     }
 
     public List<ActivityLinkInfo> createLinks(
@@ -187,7 +179,7 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
 
     private CompletableFuture<Void> downloadQuestions(QuizAppParameters quizAppParameters, VmResourceDetails resource) {
         logger.info("Downloading quiz questions to {}", resource);
-        return bucketHandler.downloadToHost(resource, quizAppParameters.questionsLocation(), QUESTIONS_PATH)
+        return bucketHandler.downloadToHost(resource, quizAppParameters.questionsLocation(), QUESTIONS_PATH, SWOZO_USER)
                 .whenComplete(LoggingUtils.log(
                         logger,
                         String.format("Done downloading file for %s", resource),
@@ -197,10 +189,10 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
 
     private Map<Long, String> createUserIdToRandomUuidMapping(List<OrchestratorUserDto> userData) {
         return userData.stream()
-                    .collect(Collectors.toMap(
-                            OrchestratorUserDto::id,
-                            x -> UUID.randomUUID().toString()
-                    )
+                .collect(Collectors.toMap(
+                                OrchestratorUserDto::id,
+                                x -> UUID.randomUUID().toString()
+                        )
                 );
     }
 
@@ -240,6 +232,7 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
         return String.format("%s %s (%s)", userDto.name(), userDto.surname(), userDto.email());
     }
 
-    private record Params(int timeS, Map<String, String> userMapping) {}
+    private record Params(int timeS, Map<String, String> userMapping) {
+    }
 }
 

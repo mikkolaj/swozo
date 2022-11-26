@@ -1,3 +1,4 @@
+from notebook.auth import passwd
 # Configuration file for jupyter-notebook.
 
 #------------------------------------------------------------------------------
@@ -464,7 +465,7 @@
 #                        The string should be of the form type:salt:hashed-
 #  password.
 #  Default: ''
-c.NotebookApp.password = 'argon2:$argon2id$v=19$m=10240,t=10,p=8$4147z0on4oxi+nvK5KEz0g$LUNSkiNpP/0A4S9xeECeIlMacOUeWFWKeUj79c/DHiw'
+c.NotebookApp.password = passwd('{{ notebook_password }}')
 
 ## Forces users to use a password for the Notebook server.
 #                        This is useful in a multi user environment, for instance when

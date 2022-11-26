@@ -19,13 +19,6 @@ public interface TimedSoftwareProvisioner {
             VmResourceDetails resourceDetails
     );
 
-
-    CompletableFuture<List<ActivityLinkInfo>> createLinks(
-            ScheduleRequestEntity requestEntity,
-            ServiceDescriptionEntity description,
-            VmResourceDetails vmResourceDetails
-    );
-
     void validateParameters(Map<String, String> dynamicParameters) throws InvalidParametersException;
 
     ServiceTypeEntity getServiceType();

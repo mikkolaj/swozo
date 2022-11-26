@@ -9,6 +9,9 @@ import com.swozo.orchestrator.cloud.software.curl.CurlCommandBuilder;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleConnectionDetails;
 import com.swozo.orchestrator.cloud.software.runner.AnsibleRunner;
 import com.swozo.orchestrator.cloud.software.runner.Playbook;
+import com.swozo.orchestrator.cloud.software.ssh.SshAuth;
+import com.swozo.orchestrator.cloud.software.ssh.SshService;
+import com.swozo.orchestrator.cloud.software.ssh.SshTarget;
 import com.swozo.orchestrator.cloud.storage.BucketHandler;
 import com.swozo.orchestrator.configuration.conditions.GCloudCondition;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +30,10 @@ public class CloudStorageHandler implements BucketHandler {
     // TODO: read the filesize
     private static final int PRETTY_BIG_SIZE = 100000000;
     private static final String WORKDIR_SNAPSHOT_FILENAME = "workdirSnapshot.zip";
+    private static final String SNAPSHOT_PATH_TEMPLATE = "/tmp/%s";
     private final BackendRequestSender requestSender;
     private final AnsibleRunner ansibleRunner;
+    private final SshService sshService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -39,27 +44,44 @@ public class CloudStorageHandler implements BucketHandler {
             long scheduleRequestId,
             long userId
     ) {
-        var initRequest = new InitFileUploadRequest(WORKDIR_SNAPSHOT_FILENAME, PRETTY_BIG_SIZE);
+        var fileToUpload = String.format(SNAPSHOT_PATH_TEMPLATE, WORKDIR_SNAPSHOT_FILENAME);
+        createWorkdirArchive(remoteHost, workdirPath);
+        var initRequest = createInitRequest(remoteHost, fileToUpload);
         return requestSender.initUserFileUpload(initRequest, activityModuleId, userId).thenCompose(accessRequest -> {
-            var fileToUpload = String.format("%s/%s", workdirPath, WORKDIR_SNAPSHOT_FILENAME);
-
-            var curlCommand = prepareUploadCurlCommand(accessRequest, fileToUpload);
-
-            ansibleRunner.runPlaybook(
-                    AnsibleConnectionDetails.from(remoteHost),
-                    Playbook.UPLOAD_TO_BUCKET,
-                    List.of(
-                            ansibleRunner.createUserVar("command", curlCommand),
-                            ansibleRunner.createUserVar("source_directory", workdirPath),
-                            ansibleRunner.createUserVar("target_filename", WORKDIR_SNAPSHOT_FILENAME)
-                    ),
-                    getUploadTimeoutMinutes(5)
-            );
+            uploadFileToBucket(remoteHost, fileToUpload, accessRequest);
 
             var uploadAccessDto = new UploadAccessDto(initRequest, accessRequest);
-
             return requestSender.ackUserFileUpload(uploadAccessDto, activityModuleId, scheduleRequestId, userId);
         });
+    }
+
+    private void createWorkdirArchive(VmResourceDetails remoteHost, String workdirPath) {
+        ansibleRunner.runPlaybook(
+                AnsibleConnectionDetails.from(remoteHost),
+                Playbook.CREATE_ARCHIVE,
+                List.of(
+                        ansibleRunner.createUserVar("source_directory", workdirPath),
+                        ansibleRunner.createUserVar("target_filename", WORKDIR_SNAPSHOT_FILENAME)
+                ),
+                getUploadTimeoutMinutes(5)
+        );
+    }
+
+    private InitFileUploadRequest createInitRequest(VmResourceDetails remoteHost, String fileToUpload) {
+        var fileSize = sshService.getFileSize(SshTarget.from(remoteHost), SshAuth.from(remoteHost), fileToUpload);
+        logger.info("Size of the file to export from {} is: {}", remoteHost, fileSize);
+        return new InitFileUploadRequest(WORKDIR_SNAPSHOT_FILENAME, fileSize);
+    }
+
+    private void uploadFileToBucket(VmResourceDetails remoteHost, String fileToUpload, StorageAccessRequest accessRequest) {
+        var curlCommand = prepareUploadCurlCommand(accessRequest, fileToUpload);
+
+        ansibleRunner.runPlaybook(
+                AnsibleConnectionDetails.from(remoteHost),
+                Playbook.EXECUTE_COMMAND,
+                List.of(ansibleRunner.createUserVar("command", curlCommand)),
+                getUploadTimeoutMinutes(5)
+        );
     }
 
     private String prepareUploadCurlCommand(StorageAccessRequest accessRequest, String fileToUpload) {
@@ -75,7 +97,7 @@ public class CloudStorageHandler implements BucketHandler {
     }
 
     @Override
-    public CompletableFuture<Void> downloadToHost(VmResourceDetails remoteHost, String remoteFileId, String destinationPath) {
+    public CompletableFuture<Void> downloadToHost(VmResourceDetails remoteHost, String remoteFileId, String destinationPath, String fileOwner) {
         return requestSender.getSignedDownloadUrl(remoteFileId).thenAccept(accessRequest -> {
             logger.info("Got resp for {}: {}", remoteHost, accessRequest);
             var commandParameter = new CurlCommandBuilder()
@@ -84,7 +106,10 @@ public class CloudStorageHandler implements BucketHandler {
             ansibleRunner.runPlaybook(
                     AnsibleConnectionDetails.from(remoteHost),
                     Playbook.EXECUTE_COMMAND,
-                    List.of(ansibleRunner.createUserVar("command", commandParameter)),
+                    List.of(
+                            ansibleRunner.createUserVar("command", commandParameter),
+                            ansibleRunner.createUserVar("user", fileOwner)
+                    ),
                     getDownloadTimeoutMinutes(PRETTY_BIG_SIZE)
             );
         });

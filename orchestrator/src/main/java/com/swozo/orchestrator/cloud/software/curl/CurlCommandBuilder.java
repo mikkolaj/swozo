@@ -11,6 +11,7 @@ public class CurlCommandBuilder {
     private String httpMethod;
     private String url;
     private String outputLocation;
+    private String binarySource;
     private final List<String> headers = new ArrayList<>();
     private final List<String> formEntries = new ArrayList<>();
 
@@ -25,7 +26,8 @@ public class CurlCommandBuilder {
     }
 
     public CurlCommandBuilder addFileSource(String path) {
-        return addFormParam("data", String.format("@%s", path));
+        this.binarySource = path;
+        return this;
     }
 
     public CurlCommandBuilder addFormParam(String key, String value) {
@@ -55,6 +57,7 @@ public class CurlCommandBuilder {
                 Optional.ofNullable(httpMethod).map(method -> String.format("-X %s", method)).stream(),
                 headerParams,
                 formParams,
+                Optional.ofNullable(binarySource).map(path -> String.format("--data-binary @%s", path)).stream(),
                 Stream.of(url),
                 Optional.ofNullable(outputLocation).map(output -> String.format("--output '%s'", output)).stream()
         ).flatMap(Function.identity()).collect(Collectors.joining(" "));

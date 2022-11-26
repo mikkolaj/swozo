@@ -98,7 +98,7 @@ public class ScheduleHandler {
     private BiConsumer<VmResourceDetails, Throwable> handleMissingResourceDetails(ScheduleRequestEntity requestEntity) {
         return (msg, ex) -> {
             if (ex != null && ex.getCause() instanceof ResourceNoLongerExists) {
-                logger.error("Vm has already been deleted [id: {}]", requestEntity.getId(), ex.getCause());
+                logger.warn("Vm has already been deleted [id: {}]", requestEntity.getId(), ex.getCause());
                 scheduleRequestTracker.updateStatus(requestEntity, DELETED);
             }
         };
@@ -142,7 +142,6 @@ public class ScheduleHandler {
         return resourceDetails -> {
             scheduleRequestTracker.fillVmResourceId(request.getId(), resourceDetails.internalResourceId());
             abortHandler.abortRequestIfNecessary(request.getId());
-            scheduleRequestTracker.updateStatus(request, PROVISIONING);
             return resourceDetails;
         };
     }
@@ -180,8 +179,8 @@ public class ScheduleHandler {
             VmResourceDetails resourceDetails
     ) {
         return services.stream()
-                .filter(description -> scheduleRequestTracker.canBeProvisioned(description.getId()))
                 .map(description -> {
+                    scheduleRequestTracker.updateStatus(description, PROVISIONING);
                     var provisioner = getProvisioner(description.getServiceType());
                     var futureStatus = provisionSingleService(request, resourceDetails, description, provisioner);
                     return new DescriptionWithStatus(description, waitForStatus(futureStatus));
@@ -247,8 +246,7 @@ public class ScheduleHandler {
         )), exportOffset);
     }
 
-    private List<ServiceDescriptionEntity> cancelInvalidServicesAndGetValid(ScheduleRequestEntity
-            requestEntity, HashSet<ServiceDescriptionEntity> all) {
+    private List<ServiceDescriptionEntity> cancelInvalidServicesAndGetValid(ScheduleRequestEntity requestEntity, HashSet<ServiceDescriptionEntity> all) {
         var invalid = all.stream()
                 .map(description -> description.toScheduleRequestWithServiceDescriptions(requestEntity))
                 .filter(requestFilter::endsBeforeAvailability)
@@ -315,7 +313,7 @@ public class ScheduleHandler {
     private long processServicesWithFailedExport(ScheduleRequestEntity request, long internalResourceId) {
         return request.getServiceDescriptions()
                 .stream()
-                .filter(scheduleRequestTracker::wasNotExported)
+                .filter(scheduleRequestTracker::shouldBeExported)
                 .map(failedService -> {
                     logger.warn("Failed to export {} from instance with id: {}", failedService.getServiceType(), internalResourceId);
                     return failedService;

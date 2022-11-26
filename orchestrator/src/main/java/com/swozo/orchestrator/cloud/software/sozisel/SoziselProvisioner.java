@@ -57,7 +57,6 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
         return String.format("Successfully provisioned Sozisel on resource: %s", resource);
     }
 
-    @Override
     public CompletableFuture<List<ActivityLinkInfo>> createLinks(
             ScheduleRequestEntity requestEntity,
             ServiceDescriptionEntity description,
@@ -93,7 +92,7 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
 
     @Override
     public ServiceConfig getServiceConfig() {
-        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), List.of(), Set.of(IsolationMode.SHARED));
+        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), List.of(), Set.of(IsolationMode.SHARED), getProvisioningSeconds());
     }
 
     @Override
