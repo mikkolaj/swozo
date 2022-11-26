@@ -87,7 +87,7 @@ export const ModuleInfoForm = ({
                 )}
             </Box>
 
-            {serviceConfig && serviceConfig.parameterDescriptions && (
+            {serviceConfig && serviceConfig.parameterDescriptions.length > 0 && (
                 <>
                     <Divider sx={{ width: '75%', mt: 2 }} />
                     <Typography sx={{ mt: 0 }} variant="subtitle1">

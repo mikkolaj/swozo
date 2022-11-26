@@ -23,6 +23,7 @@ import com.swozo.model.files.UploadAccessDto;
 import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.UserActivityModuleInfo;
+import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +95,9 @@ public class ActivityService {
         if (!authService.isAdmin(teacherId)) {
             activityValidator.validateIsTeacher(teacherId, activity);
         }
+        if (activity.getCourse().isSandbox()) {
+            throw new UnauthorizedException("Cant cancel sandbox");
+        }
         if (!activity.getCancelled() && LocalDateTime.now().isBefore(activity.getEndTime())) {
              scheduleService.cancelAllActivitySchedules(activity);
         }
@@ -107,6 +111,10 @@ public class ActivityService {
     public Activity deleteActivity(Long teacherId, Long activityId) {
         logger.info("Deleting activity {}", activityId);
         var activity = activityRepository.findById(activityId).orElseThrow();
+        if (activity.getCourse().isSandbox()) {
+            throw new UnauthorizedException("Cant cancel sandbox");
+        }
+
         activityValidator.validateIsTeacher(teacherId, activity);
         if (LocalDateTime.now().isBefore(activity.getEndTime()) && !activity.getCancelled()) {
             scheduleService.cancelAllActivitySchedules(activity);

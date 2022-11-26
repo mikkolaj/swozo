@@ -41,7 +41,7 @@ export const initialModuleValues = (): ModuleValues => ({
 });
 
 export const initialMdaValues = (isIsolated: boolean): MdaValues => ({
-    baseBandwidthMbps: 1,
+    baseBandwidthMbps: 128,
     baseDiskGB: 1,
     baseRamGB: 1,
     baseVcpu: 1,
