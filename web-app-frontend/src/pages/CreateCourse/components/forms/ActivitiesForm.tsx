@@ -108,7 +108,7 @@ export const ActivitiesForm = ({
                                     listExtractor={(v) => v.lessonModules}
                                 />
 
-                                <ServiceModuleInput
+                                {/* <ServiceModuleInput
                                     slideIndependantName={`activities.${idx}.generalModules`}
                                     availableModules={availableGeneralModules}
                                     labelI18n="createCourse.slides.1.form.generalModules"
@@ -117,7 +117,7 @@ export const ActivitiesForm = ({
                                     nameBuilder={nameBuilder}
                                     value={value}
                                     listExtractor={(v) => v.generalModules}
-                                />
+                                /> */}
 
                                 <Typography sx={{ mt: 1 }} variant="subtitle1">
                                     {t('createCourse.slides.1.form.instructions')}

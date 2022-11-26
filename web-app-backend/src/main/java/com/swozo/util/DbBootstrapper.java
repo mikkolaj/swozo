@@ -210,6 +210,10 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule4.setBaseRamGB(1);
         serviceModule4.setBaseVcpu(1);
         serviceModule4.setBaseDiskGB(1);
+        serviceModule4.setUsersPerAdditionalBandwidthGbps(20);
+        serviceModule4.setUsersPerAdditionalRamGb(50);
+        serviceModule4.setUsersPerAdditionalCore(20);
+        serviceModule4.setUsersPerAdditionalDiskGb(100);
         serviceModule4.setName("Jitsi wideokonferencja");
         serviceModule4.setTeacherInstructionHtml("<p>Widekonferencja ogólnego przeznaczenia, należy mieć mikrofon i opcjonalnie kamerke.</p>");
         serviceModule4.setStudentInstructionHtml("<p>Widekonferencja ogólnego przeznaczenia, należy mieć mikrofon i opcjonalnie kamerke.</p>");
