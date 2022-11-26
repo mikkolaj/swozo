@@ -6,11 +6,12 @@ import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthL
 import { NextSlideButton } from 'common/SlideForm/buttons/NextSlideButton';
 import { PreviousSlideButton } from 'common/SlideForm/buttons/PreviousSlideButton';
 import { SlideForm } from 'common/SlideForm/SlideForm';
-import { getSortedSlidesWithErrors } from 'common/SlideForm/util';
+import { clearErrorsForSlide, getSortedSlidesWithErrors } from 'common/SlideForm/util';
 import { stylesRowWithItemsAtTheEnd } from 'common/styles';
 import { FormikErrors, FormikProps } from 'formik';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
@@ -19,7 +20,8 @@ import { toast } from 'react-toastify';
 import { closeModal, ModalId, openModal } from 'services/features/modal/modalSlice';
 import { useAppDispatch } from 'services/store';
 import { PageRoutes } from 'utils/routes';
-import { ModuleInfoForm } from './components/ModuleInfoForm';
+import * as Yup from 'yup';
+import { ModuleInfoForm, moduleInfoValidationSchema } from './components/ModuleInfoForm';
 import { ModuleSpecsForm } from './components/ModuleSpecsForm';
 import { Summary } from './components/Summary';
 import { createServiceModule, updateCacheAfterServiceModuleChange, updateServiceModule } from './util/api';
@@ -156,6 +158,11 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             innerRef={formRef as any}
             slidesWithErrors={getSortedSlidesWithErrors(formattedApiErrors ?? {})}
+            validateOnChange={false}
+            validateOnBlur={_.isEmpty(formattedApiErrors)}
+            validationSchema={Yup.object({
+                [MODULE_INFO_SLIDE]: Yup.object(moduleInfoValidationSchema(t)),
+            })}
             slideConstructors={[
                 (slideProps, { values, handleChange, setFieldValue }) => (
                     <ModuleInfoForm
@@ -220,7 +227,15 @@ export const CreateModuleView = ({ editMode = false }: Props) => {
                             lastSlideLabel={t(
                                 editMode ? 'createModule.finishEditMode' : 'createModule.finish'
                             )}
-                            onNext={(slideNum) => setCurrentSlide(slideNum)}
+                            slideValidator={formRef.current ?? undefined}
+                            onNext={(slideNum) => {
+                                if (formattedApiErrors) {
+                                    setFormattedApiErrors(
+                                        clearErrorsForSlide(formattedApiErrors, currentSlide)
+                                    );
+                                }
+                                setCurrentSlide(slideNum);
+                            }}
                             onFinish={() => {
                                 dispatch(
                                     openModal({

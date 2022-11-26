@@ -705,7 +705,13 @@
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",
         "DUPLICATE_FILE": "Plik już istnieje",
-        "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie"
+        "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie",
+        "validation": {
+            "required": "Pole jest wymagane",
+            "tooLong": "Pole musi być krótsze",
+            "notNegative": "Wartość nie może być ujemna",
+            "future": "Data nie może być w przeszłości"
+        }
     },
     "commonModals": {
         "upOrDownloading": "Przesyłam pliki",

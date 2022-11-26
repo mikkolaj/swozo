@@ -7,7 +7,9 @@ import { RichTextEditor } from 'common/Input/RichTextEditor';
 import { SlideProps } from 'common/SlideForm/util';
 import { Bar } from 'common/Styled/Bar';
 import { stylesRowWithSpaceBetweenItems } from 'common/styles';
+import dayjs from 'dayjs';
 import { FieldArray } from 'formik';
+import { TFunction } from 'i18next';
 import { ActivityValues } from 'pages/CreateCourse/util';
 import { useTranslation } from 'react-i18next';
 import { ValidationSchema } from 'utils/types';
@@ -24,16 +26,21 @@ type Props = SlideProps & {
     editMode?: boolean;
 };
 
-export const activityValidationSchema: ValidationSchema<ActivityValues> = {
-    name: Yup.string().max(1000, 'e1').required('e2'),
-};
+export const activityValidationSchema = (t: TFunction): ValidationSchema<ActivityValues> => ({
+    name: Yup.string()
+        .max(255, t('commonErrors.validation.tooLong'))
+        .required(t('commonErrors.validation.required')),
+    description: Yup.string().max(255, t('commonErrors.validation.tooLong')),
+    date: Yup.date()
+        .min(dayjs().startOf('day').toDate(), t('commonErrors.validation.future'))
+        .required(t('commonErrors.validation.required')),
+});
 
 export const ActivitiesForm = ({
     values,
     setFieldValue,
     nameBuilder,
     availableLessonModules,
-    availableGeneralModules,
     createMode = true,
 }: Props) => {
     const { t } = useTranslation();

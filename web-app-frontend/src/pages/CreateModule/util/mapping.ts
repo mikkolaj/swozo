@@ -31,9 +31,9 @@ const MDA_INFO_SLIDE_NAME = 'mdaValues';
 const DYNAMIC_FIELDS_NAME = '__dynamicFields__';
 
 export const initialModuleValues = (): ModuleValues => ({
-    name: 'nowy moduł',
-    subject: 'informatyka',
-    description: 'opis',
+    name: '',
+    subject: '',
+    description: '',
     service: '',
     teacherInstruction: '',
     studentInstruction: '',

@@ -115,9 +115,9 @@ export const CreateCourseView = () => {
             validateOnChange={false}
             validateOnBlur={_.isEmpty(formattedApiErrors)}
             validationSchema={Yup.object({
-                [COURSE_SLIDE]: Yup.object(courseValidationSchema),
+                [COURSE_SLIDE]: Yup.object(courseValidationSchema(t)),
                 [ACTIVITIES_SLIDE]: Yup.object().shape({
-                    activities: Yup.array().of(Yup.object(activityValidationSchema)),
+                    activities: Yup.array().of(Yup.object(activityValidationSchema(t))),
                 }),
             })}
             slideConstructors={[

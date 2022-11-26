@@ -9,8 +9,8 @@ import { useEditCourse } from 'hooks/query/useEditCourse';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { buildMessagePopupErrorHandler, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { toEditCourseRequest } from 'pages/Course/utils';
-import { ActivitiesForm } from 'pages/CreateCourse/components/forms/ActivitiesForm';
-import { CourseInfoForm } from 'pages/CreateCourse/components/forms/CourseInfoForm';
+import { ActivitiesForm, activityValidationSchema } from 'pages/CreateCourse/components/forms/ActivitiesForm';
+import { CourseInfoForm, courseValidationSchema } from 'pages/CreateCourse/components/forms/CourseInfoForm';
 import {
     ActivityValues,
     buildCreateActivityRequest,
@@ -21,6 +21,7 @@ import {
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch } from 'services/store';
+import * as Yup from 'yup';
 import { DeleteActivityTab } from './DeleteActivityTab';
 
 type Props = {
@@ -92,6 +93,7 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
                             onSubmit={(values) =>
                                 editCourseMutation.mutate(toEditCourseRequest(course, values))
                             }
+                            validationSchema={Yup.object(courseValidationSchema(t))}
                         >
                             {({ handleChange, values }) => (
                                 <Form>
@@ -122,6 +124,9 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
                                 addActivityMutation.mutate(buildCreateActivityRequest(values.activities[0]))
                             }
                             innerRef={activityFormRef}
+                            validationSchema={Yup.object().shape({
+                                activities: Yup.array().of(Yup.object(activityValidationSchema(t))),
+                            })}
                         >
                             {({ setFieldValue, setValues, values }) => (
                                 <Form>

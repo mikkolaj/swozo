@@ -7,7 +7,9 @@ import { SlideProps } from 'common/SlideForm/util';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { FormikErrors, FormikProps } from 'formik';
 import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
+import { ValidationSchema } from 'utils/types';
+import * as Yup from 'yup';
 import { DynamicFormFields, DynamicFormValueRegistry, ModuleValues } from '../util/types';
 import { DynamicModuleInfoForm } from './DynamicModuleInfoForm';
 import { ServiceConfigurationHelp } from './ServiceConfigurationHelp';
@@ -23,6 +25,17 @@ type Props = SlideProps & {
     setFieldValue: (name: string, value: unknown) => void;
     onServiceChanged: (newServiceConfig: ServiceConfig) => void;
 };
+
+export const moduleInfoValidationSchema = (t: TFunction): ValidationSchema<ModuleValues> => ({
+    name: Yup.string()
+        .max(255, t('commonErrors.validation.tooLong'))
+        .required(t('commonErrors.validation.required')),
+    subject: Yup.string()
+        .max(255, t('commonErrors.validation.tooLong'))
+        .required(t('commonErrors.validation.required')),
+    description: Yup.string().max(255, t('commonErrors.validation.tooLong')),
+    service: Yup.string().required(t('commonErrors.validation.required')),
+});
 
 export const ModuleInfoForm = ({
     nameBuilder,
