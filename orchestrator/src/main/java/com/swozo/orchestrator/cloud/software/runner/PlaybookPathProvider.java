@@ -14,6 +14,7 @@ public class PlaybookPathProvider {
     private static final String SOFTWARE = "/software";
     private static final String JUPYTER = "/jupyter";
     private static final String QUIZ_APP = "/quiz-app";
+    private static final String SOZISEL = "/sozisel";
 
     private final Map<Playbook, String> paths;
 
@@ -24,7 +25,8 @@ public class PlaybookPathProvider {
                 Playbook.UPLOAD_TO_BUCKET, properties.ansibleHome() + ADMINISTRATION + "/upload-to-bucket.yml",
                 Playbook.PROVISION_JUPYTER, properties.ansibleHome() + SOFTWARE + JUPYTER + "/prepare-and-run-jupyter.yml",
                 Playbook.PREPARE_QUIZ_APP, properties.ansibleHome() + SOFTWARE + QUIZ_APP + "/prepare-quiz-app.yml",
-                Playbook.RUN_QUIZ_APP, properties.ansibleHome() + SOFTWARE + QUIZ_APP + "/run-quiz-app.yml"
+                Playbook.RUN_QUIZ_APP, properties.ansibleHome() + SOFTWARE + QUIZ_APP + "/run-quiz-app.yml",
+                Playbook.PROVISION_SOZISEL, properties.ansibleHome() + SOFTWARE + SOZISEL + "/prepare-and-run-sozisel.yml"
         );
     }
 

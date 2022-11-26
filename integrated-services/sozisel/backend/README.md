@@ -89,7 +89,7 @@ mix phx.server
 
 In `backend` directory:
 ```bash
-docker-compose -f jitsi-compose.yml --env-file .jitsi_env up
+docker-compose -f jitsi-compose.yml --env-file .env up
 ```
 
 Jitsy by default will be available on port `8443`.

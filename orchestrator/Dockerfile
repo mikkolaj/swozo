@@ -14,6 +14,7 @@ ENV GOOGLE_APPLICATION_CREDENTIALS /auth/orchestrator-key.json
 
 ENV ANSIBLE_HOME=/provisioning
 ENV JUPYTER_PLAYBOOK_PATH=/provisioning/software/jupyter/prepare-and-run-jupyter.yml
+ENV SOZISEL_PLAYBOOK_PATH=/provisioning/software/sozisel/prepare-and-run-sozisel.yml
 ENV LOG_LEVEL=INFO
 COPY ./src/main/resources/provisioning/administration /provisioning/administration
 COPY ./src/main/resources/provisioning/software /provisioning/software

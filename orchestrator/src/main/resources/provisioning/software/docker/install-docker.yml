@@ -68,5 +68,5 @@
         - setuptools
         - virtualenv
         - docker
+        - docker-compose
       become: yes
-
