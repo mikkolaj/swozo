@@ -2,7 +2,6 @@ package com.swozo.util;
 
 import com.swozo.api.common.files.FileRepository;
 import com.swozo.api.web.activity.ActivityRepository;
-import com.swozo.api.web.activitymodule.ActivityModuleService;
 import com.swozo.api.web.auth.AuthService;
 import com.swozo.api.web.auth.dto.RoleDto;
 import com.swozo.api.web.course.CourseRepository;
@@ -11,8 +10,10 @@ import com.swozo.api.web.mda.policy.PolicyService;
 import com.swozo.api.web.mda.vm.VmRepository;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
 import com.swozo.api.web.user.RoleRepository;
+import com.swozo.api.web.user.UserAdminService;
 import com.swozo.api.web.user.UserRepository;
-import com.swozo.mda.MdaEngine;
+import com.swozo.api.web.user.request.CreateUserRequest;
+import com.swozo.config.properties.ApplicationProperties;
 import com.swozo.model.scheduling.properties.ServiceType;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.RemoteFile;
@@ -54,6 +55,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final UserAdminService userAdminService;
     private final CourseRepository courseRepository;
     private final ActivityRepository activityRepository;
     private final AuthService authService;
@@ -62,10 +64,9 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
     private final PolicyRepository policyRepository;
     private final VmRepository vmRepository;
     private final PolicyService policyService;
-    private final ActivityModuleService activityModuleService;
-    private final MdaEngine mdaEngine;
     @Value("${database.enable-bootstrapping}")
     private final boolean enableBootstrapping;
+    private final ApplicationProperties applicationProperties;
     private boolean alreadySetup = false;
 
     @Override
@@ -77,6 +78,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         logger.info("preparing database...");
 
         prepareRoles();
+        prepareAdminAccount();
 
         if (enableBootstrapping) {
             setupTestData();
@@ -91,6 +93,19 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
                 .map(RoleDto::toString)
                 .filter(name -> roleRepository.findByName(name) == null)
                 .forEach(name -> roleRepository.save(new Role(name)));
+    }
+
+    private void prepareAdminAccount() {
+        if (userRepository.findAll().isEmpty()) {
+            var admin = applicationProperties.initialAdmin();
+            logger.info("Creating admin account for {}", admin);
+            userAdminService.createUser(new CreateUserRequest(
+                    admin.name(),
+                    admin.surname(),
+                    admin.email(),
+                    List.of(RoleDto.ADMIN)
+            ));
+        }
     }
 
     private void setupTestData() {
@@ -189,6 +204,23 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule3.setCreatedAt(LocalDateTime.of(2022,
                 Month.MAY, 29, 21, 30, 40));
         serviceModuleRepository.save(serviceModule3);
+
+        SharedServiceModule serviceModule4 = new SharedServiceModule();
+        serviceModule4.setBaseBandwidthMbps(1024);
+        serviceModule4.setBaseRamGB(1);
+        serviceModule4.setBaseVcpu(1);
+        serviceModule4.setBaseDiskGB(1);
+        serviceModule4.setName("Jitsi wideokonferencja");
+        serviceModule4.setTeacherInstructionHtml("<p>Widekonferencja ogólnego przeznaczenia, należy mieć mikrofon i opcjonalnie kamerke.</p>");
+        serviceModule4.setStudentInstructionHtml("<p>Widekonferencja ogólnego przeznaczenia, należy mieć mikrofon i opcjonalnie kamerke.</p>");
+        serviceModule4.setCreator(teacher);
+        serviceModule4.setDescription("Wideokonferencja ogólnego przeznaczenia.");
+        serviceModule4.setSubject("Dowolny");
+        serviceModule4.setServiceName(ServiceType.SOZISEL.toString());
+        serviceModule4.setServiceDisplayName("Jitsi Meet");
+        serviceModule4.setPublic(true);
+        serviceModule4.setReady(true);
+        serviceModuleRepository.save(serviceModule4);
 
         System.out.println("service module 3:  " + serviceModule3);
 
