@@ -70,7 +70,10 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
         >
             <Grid container sx={{ p: 2 }}>
                 <Grid item xs={12} sx={{ width: '100%' }}>
-                    {activity.activityModules.map((activityModule) => (
+                    {_.sortBy(
+                        activity.activityModules,
+                        (activityModule) => activityModule.serviceModule.serviceName
+                    ).map((activityModule) => (
                         <Accordion sx={{ mb: 2, boxShadow: 3 }} key={activityModule.id}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <Box sx={{ cursor: 'default', pr: 4 }} onClick={(e) => e.stopPropagation()}>

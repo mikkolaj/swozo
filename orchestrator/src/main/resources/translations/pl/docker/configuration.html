@@ -1,0 +1,38 @@
+<div class="params">
+    <h2>Parametry:</h2>
+    <ul>
+        <li>
+            <p><strong>Nazwa publicznego obrazu</strong>: Nazwa obrazu, opcjonalnie z tagiem. Przykład: <strong>nginx:1.23.2</strong>.</p>
+        </li>
+        <li>
+            <p><strong>Oczekiwany czas uruchomienia serwisu</strong>: Szacowana liczba sekund potrzebnych do przejścia kontenera w stan umożliwiający operowanie na nim przez użytkowników (nie licząc czasu pobierania obrazu).<p>
+        </li>
+        <li>
+            <p><strong>Szacowany rozmiar obrazu</strong>: Przybliżony rozmiar obrazu w bajtach. Przed konfiguracją zaleca się lokalne uruchomienie kontenera i sprawdzenie jego rozmiaru komendą <strong>docker images</strong>.</p>
+        </li>
+        <li>
+            <p><strong>Port do serwisu</strong>: Port, za pośrednictwem którego kontener udostępnia funkcjonalność.</p>
+        </li>
+        <li>
+            <p><strong>Ścieżka do wyników</strong>: Ścieżka do folderu z wynikami, które powinny być zapisane i udostępnione po zakończeniu zajęć. W przypadku trybu izolowanego każdy uczestnik dostanie wyniki, w przypadku współdzielonego jedynie nauczyciel. Format ścieżki: POSIX.</p>
+        </li>
+        <li>
+            <p><strong>Endpoint, do którego ma prowadzić link</strong>: Podana wartośc zostanie doklejona do linku wysyłanego uczestnikom, przykładowo dla pola <strong>test</strong> link może mieć postać <strong>http://ip-hosta:port/test</strong>.</p>
+        </li>
+        <li>
+            <p><strong>Plik do wykorzystania w kontenerze</strong>: Plik będzie dostępny w kontenerze z pełnymi prawami operowania na nim, usługa musi wiedzieć jak obsłużyć dany plik. W przypadku konieczności użycia folderu należy przygotować archiwum (np. zip) i zmodyfikować obraz tak, aby je rozpakował. Plik będzie dostępny przed uruchomieniem serwisu.</p>
+        </li>
+        <li>
+            <p><strong>Ścieżka do pliku wejściowego</strong>: Przesłany plik będzie dostępny w tym miejscu w kontenerze. Format ścieżki: POSIX.</p>
+        </li>
+    </ul>
+</div>
+<div class="specs">
+    <h2>Minimalne wymagania techniczne:</h2>
+    <ul>
+        <li>vCpu: 1</li>
+        <li>Pamięć RAM [GB]: 1</li>
+        <li>Rozmiar dysku [GB]: 2</li>
+    </ul>
+    <p>Wymagania są w pełni zależne od technologii użytej w kontenerze!</p>
+</div>

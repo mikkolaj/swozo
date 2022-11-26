@@ -1,6 +1,6 @@
 package com.swozo.orchestrator.api.scheduling.control.helpers;
 
-import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceTypeEntity;
+import com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceDescriptionEntity;
 import com.swozo.orchestrator.cloud.software.TimedSoftwareProvisionerFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,16 +14,19 @@ public class ScheduleRequestFilter {
 
     public boolean endsBeforeAvailability(ScheduleRequestWithServiceDescription scheduleData) {
         return scheduleData.request().getEndTime()
-                .isBefore(getTargetAvailability(scheduleData.description().getServiceType()));
+                .isBefore(getTargetAvailability(scheduleData.description()));
     }
 
     public boolean endsAfterAvailability(ScheduleRequestWithServiceDescription scheduleData) {
         return scheduleData.request().getEndTime()
-                .isAfter(getTargetAvailability(scheduleData.description().getServiceType()));
+                .isAfter(getTargetAvailability(scheduleData.description()));
     }
 
-    private LocalDateTime getTargetAvailability(ServiceTypeEntity serviceType) {
-        var provisioningSeconds = provisionerFactory.getProvisioner(serviceType).getProvisioningSeconds();
+    private LocalDateTime getTargetAvailability(ServiceDescriptionEntity serviceDescription) {
+        var provisioningSeconds = provisionerFactory
+                .getProvisioner(serviceDescription.getServiceType())
+                .getProvisioningSeconds(serviceDescription.getDynamicProperties());
+
         return LocalDateTime.now().plusSeconds(provisioningSeconds);
     }
 

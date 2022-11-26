@@ -1,0 +1,14 @@
+---
+
+- name: Run custom Docker container
+  hosts: all
+  tasks:
+    - name: Run Docker container
+      community.docker.docker_container:
+        name: "{{ containerName }}"
+        image: "{{ imageName }}"
+        auto_remove: yes
+        ports:
+          - "{{ servicePort }}:{{ portToExpose }}"
+        mounts: "{{ mounts }}"
+      become: yes

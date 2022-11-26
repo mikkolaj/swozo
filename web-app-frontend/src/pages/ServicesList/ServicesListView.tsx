@@ -5,6 +5,7 @@ import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { getTranslated } from 'utils/util';
 import { ServiceInfoView } from './ServiceInfoView';
@@ -37,13 +38,15 @@ export const ServicesListView = () => {
         >
             <Container>
                 <Stack spacing={2} px={2}>
-                    {supportedServices?.map(({ serviceName, displayName, usageInstructionHtml }) => (
-                        <ServiceInfoView
-                            key={serviceName}
-                            serviceName={displayName}
-                            usageInfo={getTranslated(i18n, usageInstructionHtml)}
-                        />
-                    ))}
+                    {_.sortBy(supportedServices, (service) => service.displayName).map(
+                        ({ serviceName, displayName, usageInstructionHtml }) => (
+                            <ServiceInfoView
+                                key={serviceName}
+                                serviceName={displayName}
+                                usageInfo={getTranslated(i18n, usageInstructionHtml)}
+                            />
+                        )
+                    )}
                 </Stack>
             </Container>
         </PageContainer>

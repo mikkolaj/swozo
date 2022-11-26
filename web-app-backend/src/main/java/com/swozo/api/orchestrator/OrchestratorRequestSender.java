@@ -59,6 +59,6 @@ public class OrchestratorRequestSender {
     }
 
     public CompletableFuture<LocalDateTime> getEstimatedAsapServiceAvailability(String serviceName) {
-        return CompletableFuture.completedFuture(LocalDateTime.now().plusMinutes(10));
+        return CompletableFuture.completedFuture(LocalDateTime.now().plusMinutes(5));
     }
 }

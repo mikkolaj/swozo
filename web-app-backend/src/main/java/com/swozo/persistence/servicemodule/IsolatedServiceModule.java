@@ -6,10 +6,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 @Entity
-@Table(name = "IsolatedServiceModules")
 @Getter
 @Setter
 @ToString(callSuper = true)

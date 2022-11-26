@@ -14,12 +14,35 @@
     },
     "docker": {
       "dynamicParams": {
-        "dockerImageUrl": {
-          "label": "Link do publicznego obrazu"
+        "publicImageName": {
+          "label": "Nazwa publicznego obrazu"
         },
-        "resultFilePath": {
-          "label": "Ścieżka do pliku wynikowego"
+        "expectedServiceStartupSeconds": {
+          "label": "Oczekiwany czas uruchomienia serwisu [s]"
+        },
+        "imageSizeBytes": {
+          "label": "Szacowany rozmiar obrazu [B]"
+        },
+        "portToExpose": {
+          "label": "Port do serwisu (wewnątrz kontenera)"
+        },
+        "resultPathInContainer": {
+          "label": "Ścieżka do wyników (wewnątrz kontenera)"
+        },
+        "startEndpoint": {
+          "label": "Endpoint, do którego ma prowadzić link"
+        },
+        "inputFileLocation": {
+          "label": "Plik do wykorzystania w kontenerze"
+        },
+        "containerInputFilePath": {
+          "label": "Ścieżka do pliku wejściowego (wewnątrz kontenera)"
         }
+      },
+      "instructions": {
+        "configuration": "<div class=\"params\">\n    <h2>Parametry:</h2>\n    <ul>\n        <li>\n            <p><strong>Nazwa publicznego obrazu</strong>: Nazwa obrazu, opcjonalnie z tagiem. Przykład: <strong>nginx:1.23.2</strong>.</p>\n        </li>\n        <li>\n            <p><strong>Oczekiwany czas uruchomienia serwisu</strong>: Szacowana liczba sekund potrzebnych do przejścia kontenera w stan umożliwiający operowanie na nim przez użytkowników (nie licząc czasu pobierania obrazu).<p>\n        </li>\n        <li>\n            <p><strong>Szacowany rozmiar obrazu</strong>: Przybliżony rozmiar obrazu w bajtach. Przed konfiguracją zaleca się lokalne uruchomienie kontenera i sprawdzenie jego rozmiaru komendą <strong>docker images</strong>.</p>\n        </li>\n        <li>\n            <p><strong>Port do serwisu</strong>: Port, za pośrednictwem którego kontener udostępnia funkcjonalność.</p>\n        </li>\n        <li>\n            <p><strong>Ścieżka do wyników</strong>: Ścieżka do folderu z wynikami, które powinny być zapisane i udostępnione po zakończeniu zajęć. W przypadku trybu izolowanego każdy uczestnik dostanie wyniki, w przypadku współdzielonego jedynie nauczyciel. Format ścieżki: POSIX.</p>\n        </li>\n        <li>\n            <p><strong>Endpoint, do którego ma prowadzić link</strong>: Podana wartośc zostanie doklejona do linku wysyłanego uczestnikom, przykładowo dla pola <strong>test</strong> link może mieć postać <strong>http://ip-hosta:port/test</strong>.</p>\n        </li>\n        <li>\n            <p><strong>Plik do wykorzystania w kontenerze</strong>: Plik będzie dostępny w kontenerze z pełnymi prawami operowania na nim, usługa musi wiedzieć jak obsłużyć dany plik. W przypadku konieczności użycia folderu należy przygotować archiwum (np. zip) i zmodyfikować obraz tak, aby je rozpakował. Plik będzie dostępny przed uruchomieniem serwisu.</p>\n        </li>\n        <li>\n            <p><strong>Ścieżka do pliku wejściowego</strong>: Przesłany plik będzie dostępny w tym miejscu w kontenerze. Format ścieżki: POSIX.</p>\n        </li>\n    </ul>\n</div>\n<div class=\"specs\">\n    <h2>Minimalne wymagania techniczne:</h2>\n    <ul>\n        <li>vCpu: 1</li>\n        <li>Pamięć RAM [GB]: 1</li>\n        <li>Rozmiar dysku [GB]: 2</li>\n    </ul>\n    <p>Wymagania są w pełni zależne od technologii użytej w kontenerze!</p>\n</div>\n",
+        "connection": "<div class=\"steps\">\n    <ol>\n        <li>Otwórz link</li>\n        <li>Przeczytaj instrukcje w zakładce \"Instrukcje -> Informacje o używanych modułach\"</li>\n    </ol>\n</div>\n",
+        "usage": "<div class=\"summary\">\n    <p>Serwis umożliwia uruchamianie kontenerów Dockera na podstawie publicznych obrazów dostarczających dowolną funkcjonalność. Więcej informacji można znaleźć na <a href=\"https://www.docker.com/\">oficjalnej stronie</a>.</p>\n</div>\n<div class=\"usage-list\">\n    <h2>Główne zastosowania:</h2>\n    <ul>\n        <li>Uruchamianie dowolnego oprogramowania, dostarczającego funkcjonalność za pośrednictwem przeglądarki.</li>\n    </ul>\n</div>\n<div class=\"results-info\">\n    <p>W przypadku trybu izolowanego wyniki mogą być dostępne dla wszystkich uczestników zajęć, w przypadku współdzielonego tylko dla nauczyciela. Instrukcja wykorzystania powinna zawierać informacje o sposobie użycia wyników, zależną od wykorzystanego oprogramowania.</p>\n</div>\n"
       }
     },
     "quizApp": {
