@@ -41,7 +41,7 @@ import static com.swozo.utils.LoggingUtils.logIfSuccess;
 public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.JUPYTER;
     private static final String WORKDIR = "/home/swozo/jupyter";
-    private static final int PROVISIONING_SECONDS = 300;
+    private static final int PROVISIONING_SECONDS = 500;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
     private static final String NOTEBOOK_PASSWORD_VARIABLE = "notebook_password";
