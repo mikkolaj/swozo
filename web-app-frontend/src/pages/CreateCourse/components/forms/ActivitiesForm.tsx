@@ -106,7 +106,14 @@ export const ActivitiesForm = ({
 
                                 <ServiceModuleInput
                                     slideIndependantName={`activities.${idx}.lessonModules`}
-                                    availableModules={availableLessonModules}
+                                    availableModules={availableLessonModules.filter(
+                                        (lessonModule) =>
+                                            !value.lessonModules.find(
+                                                (selectedModule) =>
+                                                    selectedModule.module.serviceName ===
+                                                    lessonModule.serviceName
+                                            )
+                                    )}
                                     labelI18n="createCourse.slides.1.form.lessonModules"
                                     selectBoxLabelI18n="createCourse.slides.1.form.linkConfirmationRequiredLabel"
                                     setFieldValue={setFieldValue}
