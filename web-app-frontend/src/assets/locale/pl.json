@@ -251,7 +251,7 @@
     "myModules": {
         "header": "Moje moduły",
         "createModuleButton": "Utwórz moduł",
-        "empty": "Nie utworzyłeś jeszcze żadnego modułu",
+        "empty": "Moduły to skonfigurowane serwisy możliwe do użycia podczas zajęć przez nauczycieli. Nie utworzyłeś jeszcze żadnego modułu.",
         "module": {
             "creationDate": "Data utworzenia:",
             "usedBy": "Liczba korzystających aktywności: {{activitiesCount}}",
