@@ -30,6 +30,7 @@ dependencies {
     implementation 'org.jetbrains:annotations:20.1.0'
     implementation 'org.postgresql:postgresql:42.3.4'
     implementation 'org.apache.sshd:sshd-core:2.9.1'
+    implementation 'org.json:json:20220924'
     implementation project(":swozo-commons")
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
