@@ -81,7 +81,7 @@ public class ScheduleRequestTracker {
     }
 
     public boolean shouldBeExported(ServiceDescriptionEntity description) {
-        var pathToExport = provisionerFactory.getProvisioner(description.getServiceType()).getWorkdirToSave();
+        var pathToExport = provisionerFactory.getProvisioner(description.getServiceType()).getWorkdirToSave(description.getDynamicProperties());
         return pathToExport.isPresent() && ServiceStatus.toBeCheckedForExport()
                 .contains(getServiceStatus(description.getId()));
     }

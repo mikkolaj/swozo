@@ -64,7 +64,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
                 Set.of(IsolationMode.ISOLATED),
                 JupyterParameters.getConfigurationInstruction(translationsProvider),
                 JupyterParameters.getUsageInstruction(translationsProvider),
-                getProvisioningSeconds()
+                PROVISIONING_SECONDS
         );
     }
 
@@ -127,12 +127,12 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
-    public int getProvisioningSeconds() {
+    public int getProvisioningSeconds(Map<String, String> dynamicParameters) {
         return PROVISIONING_SECONDS;
     }
 
     @Override
-    public Optional<String> getWorkdirToSave() {
+    public Optional<String> getWorkdirToSave(Map<String, String> dynamicParameters) {
         return Optional.of(WORKDIR);
     }
 

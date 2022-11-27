@@ -25,8 +25,8 @@ public interface TimedSoftwareProvisioner {
 
     ServiceConfig getServiceConfig();
 
-    int getProvisioningSeconds();
+    int getProvisioningSeconds(Map<String, String> dynamicParameters);
 
-    Optional<String> getWorkdirToSave();
+    Optional<String> getWorkdirToSave(Map<String, String> dynamicParameters);
 
 }

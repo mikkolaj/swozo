@@ -1,0 +1,26 @@
+---
+
+- name: Setup SWOZO user
+  import_playbook: ../../administration/setup-user.yml
+  vars:
+    new_user: swozo
+
+- name: Install docker
+  import_playbook: ../docker/install-docker.yml
+
+- name: Prepare file system
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create required directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0777'
+      with_items:
+        - "/home/{{ user }}/docker-service/workdir"
+        - "/home/{{ user }}/docker-service/input"
+  vars:
+    user: swozo

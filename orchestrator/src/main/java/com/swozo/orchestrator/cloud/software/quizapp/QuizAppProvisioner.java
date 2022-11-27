@@ -67,7 +67,7 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
                 Set.of(IsolationMode.SHARED),
                 QuizAppParameters.getConfigurationInstruction(translationsProvider),
                 QuizAppParameters.getUsageInstruction(translationsProvider),
-                getProvisioningSeconds()
+                PREPARATION_SECONDS + RUNNING_SECONDS
         );
     }
 
@@ -122,12 +122,12 @@ public class QuizAppProvisioner implements TimedSoftwareProvisioner {
     }
 
     @Override
-    public int getProvisioningSeconds() {
+    public int getProvisioningSeconds(Map<String, String> dynamicParameters) {
         return PREPARATION_SECONDS + RUNNING_SECONDS;
     }
 
     @Override
-    public Optional<String> getWorkdirToSave() {
+    public Optional<String> getWorkdirToSave(Map<String, String> dynamicParameters) {
         return Optional.of(WORKDIR);
     }
 

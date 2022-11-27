@@ -159,7 +159,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         //        ServiceModule
         ServiceModule serviceModule = new IsolatedServiceModule();
-        serviceModule.setBaseBandwidthMbps(2048);
+        serviceModule.setBaseBandwidthMbps(512);
         serviceModule.setBaseRamGB(1);
         serviceModule.setBaseVcpu(1);
         serviceModule.setBaseDiskGB(1);
@@ -179,7 +179,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModuleRepository.save(serviceModule);
 
         SharedServiceModule serviceModule3 = new SharedServiceModule();
-        serviceModule3.setBaseBandwidthMbps(1024);
+        serviceModule3.setBaseBandwidthMbps(128);
         serviceModule3.setBaseRamGB(1);
         serviceModule3.setBaseVcpu(1);
         serviceModule3.setBaseDiskGB(1);
@@ -226,7 +226,28 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule4.setReady(true);
         serviceModuleRepository.save(serviceModule4);
 
-        System.out.println("service module 3:  " + serviceModule3);
+        IsolatedServiceModule serviceModule5 = new IsolatedServiceModule();
+        serviceModule5.setBaseBandwidthMbps(128);
+        serviceModule5.setBaseRamGB(1);
+        serviceModule5.setBaseVcpu(1);
+        serviceModule5.setBaseDiskGB(1);
+        serviceModule5.setName("Juice Shop Bezpieczenstwo");
+        serviceModule5.setTeacherInstructionHtml("<p>Modul z bezpieczenstwa aplikacji internetowych</p>");
+        serviceModule5.setStudentInstructionHtml("<p>Nalezy znac podstawy bezpieczenstwa aplikacji internetowych.</p>");
+        serviceModule5.setCreator(teacher);
+        serviceModule5.setDescription("Modul z bezpieczenstwa aplikacji internetowych.");
+        serviceModule5.setSubject("Bezpieczenstwo");
+        serviceModule5.setServiceName(ServiceType.DOCKER.toString());
+        serviceModule5.setServiceDisplayName("Docker");
+        serviceModule5.setPublic(true);
+        serviceModule5.setReady(true);
+        serviceModule5.setDynamicProperties(Map.of(
+                "publicImageName", "bkimminich/juice-shop",
+                "expectedServiceStartupSeconds", "30",
+                "imageSizeMb", "180",
+                "portToExpose", "3000"
+        ));
+        serviceModuleRepository.save(serviceModule5);
 
         //        ACTIVITIES:
 

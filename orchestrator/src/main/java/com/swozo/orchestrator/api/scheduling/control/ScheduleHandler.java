@@ -235,7 +235,7 @@ public class ScheduleHandler {
     ) {
         return resourceDetails -> {
             services.forEach(description -> provisionerFactory.getProvisioner(description.getServiceType())
-                    .getWorkdirToSave()
+                    .getWorkdirToSave(description.getDynamicProperties())
                     .ifPresent(workdir ->
                             scheduleWorkspaceExport(workdir, requestEntity, description, resourceDetails)
                     )
@@ -345,10 +345,9 @@ public class ScheduleHandler {
 
     private int getTotalProvisioningTime(ScheduleRequestEntity requestEntity) {
         return requestEntity.getServiceDescriptions().stream()
-                .map(ServiceDescriptionEntity::getServiceType)
-                .distinct()
-                .map(provisionerFactory::getProvisioner)
-                .map(TimedSoftwareProvisioner::getProvisioningSeconds)
+                .map(serviceDescription -> provisionerFactory.getProvisioner(serviceDescription.getServiceType())
+                        .getProvisioningSeconds(serviceDescription.getDynamicProperties())
+                )
                 .reduce(Integer::sum)
                 .orElseThrow(this::emptyServiceDescriptionsException);
     }

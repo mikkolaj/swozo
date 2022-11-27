@@ -18,14 +18,15 @@ export const inputFieldFactory = (): InputFieldFactory => {
             i18n,
             { setFieldValue, setAssociatedValue, errorMessage }
         ) => (
-            <Box sx={stylesRowCenteredVertical}>
+            <Box sx={{ ...stylesRowCenteredVertical, width: '50%' }}>
                 <FormInputField
                     name={name}
-                    wrapperSx={{ mt: 0 }}
+                    wrapperSx={{ mt: 0, width: '100%' }}
                     type="text"
                     labelText={getTranslated(i18n, translatedLabel)}
                     textFieldProps={{
                         inputProps: { readOnly: true },
+                        sx: { width: '100%' },
                         required,
                         error: !!errorMessage,
                         helperText: errorMessage,
@@ -33,6 +34,7 @@ export const inputFieldFactory = (): InputFieldFactory => {
                 />
                 <FileInputButton
                     text={i18n.t('dynamicForm.file.button')}
+                    sx={{ minWidth: '160px' }}
                     allowedExtensions={clientValidationHelpers?.['allowedExtensions'] as string[]}
                     onFilesSelected={(files) => {
                         if (files && files.length > 0) {

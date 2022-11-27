@@ -95,17 +95,17 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
                 Set.of(IsolationMode.SHARED),
                 translationsProvider.t("services.sozisel.instructions.configuration"),
                 translationsProvider.t("services.sozisel.instructions.usage"),
-                getProvisioningSeconds()
+                PROVISIONING_SECONDS
         );
     }
 
     @Override
-    public int getProvisioningSeconds() {
+    public int getProvisioningSeconds(Map<String, String> dynamicParameters) {
         return PROVISIONING_SECONDS;
     }
 
     @Override
-    public Optional<String> getWorkdirToSave() {
+    public Optional<String> getWorkdirToSave(Map<String, String> dynamicParameters) {
         return Optional.empty();
     }
 
