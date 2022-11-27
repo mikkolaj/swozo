@@ -30,7 +30,6 @@ export const activityValidationSchema = (t: TFunction): ValidationSchema<Activit
     name: Yup.string()
         .max(255, t('commonErrors.validation.tooLong'))
         .required(t('commonErrors.validation.required')),
-    description: Yup.string().max(255, t('commonErrors.validation.tooLong')),
     date: Yup.date()
         .min(dayjs().startOf('day').toDate(), t('commonErrors.validation.future'))
         .required(t('commonErrors.validation.required')),
@@ -45,7 +44,7 @@ export const ActivitiesForm = ({
 }: Props) => {
     const { t } = useTranslation();
     const width = createMode ? '50%' : '55%';
-    console.log(values.activities[0].lessonModules);
+
     return (
         <>
             <FieldArray

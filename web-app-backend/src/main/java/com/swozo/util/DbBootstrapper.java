@@ -23,8 +23,6 @@ import com.swozo.persistence.activity.ActivityModuleScheduleInfo;
 import com.swozo.persistence.activity.UserActivityModuleInfo;
 import com.swozo.persistence.activity.utils.TranslatableActivityLink;
 import com.swozo.persistence.mda.VirtualMachine;
-import com.swozo.persistence.mda.policies.Policy;
-import com.swozo.persistence.mda.policies.PolicyType;
 import com.swozo.persistence.servicemodule.IsolatedServiceModule;
 import com.swozo.persistence.servicemodule.ServiceModule;
 import com.swozo.persistence.servicemodule.SharedServiceModule;
@@ -110,29 +108,29 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
     private void setupTestData() {
         var adminRole = roleRepository.findByName(RoleDto.ADMIN.toString());
-        userRepository.save(new User("Bolek", "Kowalski", "admin@gmail.com", authService.hashPassword("admin"), List.of(adminRole)));
+        userRepository.save(new User("Włodzimierz", "Biały", "wbialy@gmail.com", authService.hashPassword("admin"), List.of(adminRole)));
 
         var teacherRole = roleRepository.findByName(RoleDto.TEACHER.toString());
         var technicalTeacherRole = roleRepository.findByName(RoleDto.TECHNICAL_TEACHER.toString());
-        User teacher = new User("Lolek", "Kowalski", "teacher@gmail.com", authService.hashPassword("t"), List.of(teacherRole, technicalTeacherRole));
-        User teacher2 = new User("Bolek", "Kowalski", "teacher2@gmail.com", authService.hashPassword("t"), List.of(teacherRole, technicalTeacherRole));
+        User teacher = new User("Lolek", "Kowalski", "lkowalski@gmail.com", authService.hashPassword("teacher"), List.of(teacherRole, technicalTeacherRole));
+        User teacher2 = new User("Bolek", "Zagórski", "bzagorski@gmail.com", authService.hashPassword("teacher"), List.of(teacherRole, technicalTeacherRole));
         userRepository.save(teacher);
         userRepository.save(teacher2);
 
         var studentRole = roleRepository.findByName(RoleDto.STUDENT.toString());
-        User student1 = new User("Antoni", "Zabrzydowski", "student1@gmail.com", authService.hashPassword("s"), List.of(studentRole));
+        User student1 = new User("Antoni", "Zabrzydowski", "azabrzydowski@gmail.com", authService.hashPassword("student"), List.of(studentRole));
         student1.setChangePasswordToken("test");
         userRepository.save(student1);
-        User student2 = new User("Mela", "Zabrzydowska", "student2@gmail.com", authService.hashPassword("s"), List.of(studentRole));
+        User student2 = new User("Mela", "Nowak", "mnowak@gmail.com", authService.hashPassword("student"), List.of(studentRole));
         userRepository.save(student2);
-        User student3 = new User("Rafał", "Zabrzydowski", "student3@gmail.com", authService.hashPassword("s"), List.of(studentRole));
+        User student3 = new User("Rafał", "Przepióra", "rprzepiora@gmail.com", authService.hashPassword("student"), List.of(studentRole));
         userRepository.save(student3);
 
         //        COURSES:
         Course course = new Course();
         course.setName("Programowanie w języku Python");
-        course.setSubject("INFORMATYKA");
-        course.setDescription("kurs o pythonie");
+        course.setSubject("Informatyka");
+        course.setDescription("Kurs uczy od podstaw programowania w jęzuku Python.");
         course.setTeacher(teacher);
         course.setPassword("haslo");
         course.setExpectedStudentCount(2);
@@ -152,7 +150,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
 
         var quizFile = new RemoteFile();
         quizFile.setPath("questions.yaml");
-        quizFile.setSizeBytes(463L);
+        quizFile.setSizeBytes(673L);
         quizFile.setOwner(teacher);
 
         quizFile = fileRepository.save(quizFile);
@@ -160,15 +158,15 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         //        ServiceModule
         ServiceModule serviceModule = new IsolatedServiceModule();
         serviceModule.setBaseBandwidthMbps(512);
-        serviceModule.setBaseRamGB(1);
+        serviceModule.setBaseRamGB(2);
         serviceModule.setBaseVcpu(1);
-        serviceModule.setBaseDiskGB(1);
+        serviceModule.setBaseDiskGB(8);
         serviceModule.setName("Klasy w Pythonie");
-        serviceModule.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji o zmiennych");
-        serviceModule.setStudentInstructionHtml("Przypomnij sobie wiedze z lekcji o zmiennych");
+        serviceModule.setTeacherInstructionHtml("<h3>Upewnij się, że przed tym modułem uczniowie znają pojęcia takie jak:</h3><ul><li>zmienna</li><li>pętle</li><li>konstrukcje warunkowe</li></ul><p><br></p><p>i potrafią się&nbsp;nimi biegle posługiwać w języku Python.</p>");
+        serviceModule.setStudentInstructionHtml("<p>Przypomnij sobie wiedzę o zmiennych, pętlach i konstrukcjach warunkowy. Zapoznaj się z wykładem omawiającym najważniejsze pojęcia związane z programowaniem obiektowym.</p>");
         serviceModule.setCreator(teacher);
-        serviceModule.setDescription("Modul przybliza wiedze o klasach w pythonie");
-        serviceModule.setSubject("INFORMATYKA");
+        serviceModule.setDescription("Moduł uczy podstaw programowania obiektowego w języku Python.");
+        serviceModule.setSubject("Informatyka");
         serviceModule.setServiceName(ServiceType.JUPYTER.toString());
         serviceModule.setDynamicProperties(Map.of("notebookLocation", jupyterFile.getId().toString()));
         serviceModule.setServiceDisplayName("Jupyter Notebook");
@@ -182,22 +180,22 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule3.setBaseBandwidthMbps(128);
         serviceModule3.setBaseRamGB(1);
         serviceModule3.setBaseVcpu(1);
-        serviceModule3.setBaseDiskGB(1);
-        serviceModule3.setUsersPerAdditionalBandwidthGbps(2);
-        serviceModule3.setUsersPerAdditionalRamGb(15);
-        serviceModule3.setUsersPerAdditionalCore(15);
-        serviceModule3.setUsersPerAdditionalDiskGb(2);
-        serviceModule3.setName("TestQuiz");
-        serviceModule3.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji: Funkcje w Pythonie 1");
-        serviceModule3.setStudentInstructionHtml("Przypomnij sobie wiedze z poprzednich zajec o funckjach");
-        serviceModule3.setCreator(teacher);
-        serviceModule3.setDescription("Modul ma na celu poszerzyc wiedze o funkcjach w Pythonie");
-        serviceModule3.setSubject("INFORMATYKA");
+        serviceModule3.setBaseDiskGB(4);
+        serviceModule3.setUsersPerAdditionalBandwidthGbps(50);
+        serviceModule3.setUsersPerAdditionalRamGb(50);
+        serviceModule3.setUsersPerAdditionalCore(50);
+        serviceModule3.setUsersPerAdditionalDiskGb(200);
+        serviceModule3.setName("Quiz z podstaw kryptografii");
+        serviceModule3.setTeacherInstructionHtml("<p>Uczniowie powinni znać szyfr <strong>cezara</strong> i mieć ogólną wiedzę dotyczącą <strong>szyfrów monoalfabetycznych</strong>.</p><p>Konieczna jest ponadto znajomość pojęć takich jak:</p><ul><li>szyfrogram</li><li>tekst jawny</li></ul>");
+        serviceModule3.setStudentInstructionHtml("<p>Quiz składa się&nbsp;z 3 pytań jednokrotnego wyboru, na odpowiedź będziesz miał<strong> 90 sekund</strong>. Warto wcześniej zapoznać się&nbsp;z wykładem.</p>");
+        serviceModule3.setCreator(teacher2);
+        serviceModule3.setDescription("Moduł ma na celu sprawdzenie wiedzy z podstawowych metod szyfrowania.");
+        serviceModule3.setSubject("Informatyka");
         serviceModule3.setServiceName(ServiceType.QUIZAPP.toString());
         serviceModule3.setServiceDisplayName("QuizApp");
         serviceModule3.setDynamicProperties(Map.of(
                 "questionsLocation", quizFile.getId().toString(),
-                "quizDurationSeconds", "120")
+                "quizDurationSeconds", "90")
         );
         serviceModule3.setPublic(true);
         serviceModule3.setReady(true);
@@ -214,8 +212,8 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule4.setUsersPerAdditionalRamGb(50);
         serviceModule4.setUsersPerAdditionalCore(20);
         serviceModule4.setUsersPerAdditionalDiskGb(100);
-        serviceModule4.setName("Jitsi wideokonferencja");
-        serviceModule4.setTeacherInstructionHtml("<p>Widekonferencja ogólnego przeznaczenia, należy mieć mikrofon i opcjonalnie kamerke.</p>");
+        serviceModule4.setName("Wideokonferencja");
+        serviceModule4.setTeacherInstructionHtml("<p>Widekonferencja ogólnego przeznaczenia, należy mieć mikrofon i opcjonalnie kamerke. Jako nauczyciel masz dodatkowo możliwość wyciszania innych uczestników.</p>");
         serviceModule4.setStudentInstructionHtml("<p>Widekonferencja ogólnego przeznaczenia, należy mieć mikrofon i opcjonalnie kamerke.</p>");
         serviceModule4.setCreator(teacher);
         serviceModule4.setDescription("Wideokonferencja ogólnego przeznaczenia.");
@@ -231,12 +229,12 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule5.setBaseRamGB(1);
         serviceModule5.setBaseVcpu(1);
         serviceModule5.setBaseDiskGB(1);
-        serviceModule5.setName("Juice Shop Bezpieczenstwo");
-        serviceModule5.setTeacherInstructionHtml("<p>Modul z bezpieczenstwa aplikacji internetowych</p>");
-        serviceModule5.setStudentInstructionHtml("<p>Nalezy znac podstawy bezpieczenstwa aplikacji internetowych.</p>");
+        serviceModule5.setName("Podstawy bezpieczeństwa aplikacji webowych");
+        serviceModule5.setTeacherInstructionHtml("<p>Moduł z bezpieczeństwa aplikacji webowych. Uczniowie powinni mieć dobre podstawy z programowania w języku <strong>JavaScript</strong> oraz znać podstawy języka <strong>PHP</strong>. Należy również biegle operować językiem <strong>SQL</strong>.</p><p><br></p><p>Warto również wcześniej omówić pojęcia takie jak:</p><ul><li>SQL injection</li><li>CSRF</li><li>XSS</li></ul>");
+        serviceModule5.setStudentInstructionHtml("<p>Dostaniesz link do strony&nbsp;webową z celowo zaprojektowanymi błędami. Twoim zadaniem będzie znalezienie jak najwięcej podatności i wykorzystanie ich na szkodę strony. Będzie ci potrzebna znajomość języka JavaScript, SQL oraz podstaw PHP. Poczytaj wcześniej o podstawowych podatnościach stron typu SQL injection, CSRF oraz XSS.</p>");
         serviceModule5.setCreator(teacher);
-        serviceModule5.setDescription("Modul z bezpieczenstwa aplikacji internetowych.");
-        serviceModule5.setSubject("Bezpieczenstwo");
+        serviceModule5.setDescription("Moduł praktycznie ilustruje najpopularniejsze zagrożenia związane z działaniem aplikacji webowych.");
+        serviceModule5.setSubject("Bezpieczeństwo");
         serviceModule5.setServiceName(ServiceType.DOCKER.toString());
         serviceModule5.setServiceDisplayName("Docker");
         serviceModule5.setPublic(true);
@@ -310,13 +308,6 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activityRepository.save(activity2);
 
 //        POLICIES:
-        var teacher1 = userRepository.getByEmail("teacher@gmail.com");
-        Policy policy = new Policy();
-        policy.setPolicyType(PolicyType.MAX_RAM_GB);
-        policy.setTeacher(teacher1);
-        policy.setValue(20);
-
-        policyRepository.save(policy);
 
         VirtualMachine vm1 = new VirtualMachine("e2-medium", 2, 4, 2048, 10, "");
         vmRepository.save(vm1);
@@ -325,7 +316,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         VirtualMachine vm3 = new VirtualMachine("e2-standard-8", 8, 32, 16384, 10, "");
         vmRepository.save(vm3);
 
-        policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher1));
+        policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher));
         policyRepository.saveAll(policyService.createDefaultTeacherPolicies(teacher2));
     }
 }

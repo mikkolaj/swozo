@@ -28,8 +28,8 @@ public class ScheduleRequestValidator {
                 .map(totalProvisioningTimeSeconds -> LocalDateTime.now().plusSeconds(totalProvisioningTimeSeconds))
                 .orElseThrow(() -> new IllegalArgumentException("Can't schedule a request with no service descriptions"));
 
-        if (request.serviceLifespan().endTime().isBefore(earliestReadyTime)) {
-            throw new IllegalArgumentException("End time is before earliest possible ready time.");
-        }
+//        if (request.serviceLifespan().endTime().isBefore(earliestReadyTime)) {
+//            throw new IllegalArgumentException("End time is before earliest possible ready time.");
+//        }
     }
 }

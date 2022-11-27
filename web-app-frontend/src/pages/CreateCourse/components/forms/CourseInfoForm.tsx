@@ -16,7 +16,6 @@ export const courseValidationSchema = (t: TFunction): ValidationSchema<CourseVal
     subject: Yup.string()
         .max(255, t('commonErrors.validation.tooLong'))
         .required(t('commonErrors.validation.required')),
-    description: Yup.string().max(255, t('commonErrors.validation.tooLong')),
     numberOfActivities: Yup.number()
         .min(0, t('commonErrors.validation.notNegative'))
         .required(t('commonErrors.validation.required')),

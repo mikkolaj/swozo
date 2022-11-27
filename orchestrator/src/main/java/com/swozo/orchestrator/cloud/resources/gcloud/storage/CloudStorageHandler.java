@@ -30,7 +30,7 @@ public class CloudStorageHandler implements BucketHandler {
     // TODO: read the filesize
     private static final int PRETTY_BIG_SIZE = 100000000;
     private static final String WORKDIR_SNAPSHOT_FILENAME = "workdirSnapshot.zip";
-    private static final String SNAPSHOT_PATH_TEMPLATE = "/tmp/%s_%s_%s_%s";
+    private static final String SNAPSHOT_PATH_TEMPLATE = "/tmp/%s";
     private final BackendRequestSender requestSender;
     private final AnsibleRunner ansibleRunner;
     private final SshService sshService;
@@ -44,8 +44,9 @@ public class CloudStorageHandler implements BucketHandler {
             long scheduleRequestId,
             long userId
     ) {
-        var fileToUpload = String.format(SNAPSHOT_PATH_TEMPLATE, activityModuleId, scheduleRequestId, userId, WORKDIR_SNAPSHOT_FILENAME);
-        createWorkdirArchive(remoteHost, workdirPath);
+        var archiveTargetFileName = createWorkdirSnapshotFilename(scheduleRequestId, activityModuleId, userId);
+        var fileToUpload = String.format(SNAPSHOT_PATH_TEMPLATE, archiveTargetFileName);
+        createWorkdirArchive(remoteHost, workdirPath, archiveTargetFileName);
         var initRequest = createInitRequest(remoteHost, fileToUpload);
         return requestSender.initUserFileUpload(initRequest, activityModuleId, userId).thenCompose(accessRequest -> {
             uploadFileToBucket(remoteHost, fileToUpload, accessRequest);
@@ -55,13 +56,13 @@ public class CloudStorageHandler implements BucketHandler {
         });
     }
 
-    private void createWorkdirArchive(VmResourceDetails remoteHost, String workdirPath) {
+    private void createWorkdirArchive(VmResourceDetails remoteHost, String workdirPath, String targetPath) {
         ansibleRunner.runPlaybook(
                 AnsibleConnectionDetails.from(remoteHost),
                 Playbook.CREATE_ARCHIVE,
                 List.of(
                         ansibleRunner.createUserVar("source_directory", workdirPath),
-                        ansibleRunner.createUserVar("target_filename", WORKDIR_SNAPSHOT_FILENAME)
+                        ansibleRunner.createUserVar("target_filename", targetPath)
                 ),
                 getUploadTimeoutMinutes(5)
         );
@@ -117,11 +118,15 @@ public class CloudStorageHandler implements BucketHandler {
 
     public int getUploadTimeoutMinutes(int fileSizeBytes) {
         // TODO after we implement reading size
-        return 5;
+        return 10;
     }
 
     public int getDownloadTimeoutMinutes(int fileSizeBytes) {
         // TODO after orchestrator receives size of file to download
-        return 5;
+        return 10;
+    }
+
+    private String createWorkdirSnapshotFilename(long scheduleRequestId, long activityModuleId, long userId) {
+       return String.format("%s_%s_%s_%s", activityModuleId, scheduleRequestId, userId, WORKDIR_SNAPSHOT_FILENAME);
     }
 }
