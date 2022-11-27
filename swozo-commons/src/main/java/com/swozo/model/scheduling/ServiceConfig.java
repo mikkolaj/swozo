@@ -14,6 +14,7 @@ public record ServiceConfig(
         @Schema(required = true) List<ParameterDescription> parameterDescriptions,
         @Schema(required = true) Set<IsolationMode> isolationModes,
         @Schema(required = true) Map<SupportedLanguage, String> configurationInstructionHtml,
-        @Schema(required = true) Map<SupportedLanguage, String> usageInstructionHtml
+        @Schema(required = true) Map<SupportedLanguage, String> usageInstructionHtml,
+        @Schema(required = true) Integer provisioningSeconds
 ) {
 }

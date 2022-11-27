@@ -13,5 +13,10 @@ public interface BucketHandler {
             long userId
     );
 
-    CompletableFuture<Void> downloadToHost(VmResourceDetails remoteHost, String remoteFileId, String destinationPath) throws BucketOperationFailed;
+    CompletableFuture<Void> downloadToHost(
+            VmResourceDetails remoteHost,
+            String remoteFileId,
+            String destinationPath,
+            String fileOwner
+    ) throws BucketOperationFailed;
 }
