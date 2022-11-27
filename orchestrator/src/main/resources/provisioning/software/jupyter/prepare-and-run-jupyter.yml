@@ -8,19 +8,26 @@
 - name: Install docker
   import_playbook: ../docker/install-docker.yml
 
-- name: Copy Jupyter config file
-  import_playbook: ../../administration/copy-files.yml
+- name: Create directory for Jupyter config
+  import_playbook: ../../administration/create-directory.yml
   vars:
-    path_from: ../software/jupyter/jupyter_notebook_config.py
-    path_to: /home/swozo/.jupyter
+    path: /home/swozo/.jupyter
     user: swozo
 
-- name: Copy notebooks
-  import_playbook: ../../administration/copy-files.yml
+- name: Create directory for user's files
+  import_playbook: ../../administration/create-directory.yml
   vars:
-    path_from: ../software/jupyter/notebooks
-    path_to: /home/swozo/jupyter
+    path: /home/swozo/jupyter
     user: swozo
+
+- name: Copy Jupyter config file
+  hosts: all
+  tasks:
+    - name: Copy template and set password
+      template:
+        src: ./jupyter_notebook_config.j2
+        dest: /home/swozo/.jupyter/jupyter_notebook_config.py
+        owner: swozo
 
 - name: Run jupyter
   import_playbook: run-jupyter.yml

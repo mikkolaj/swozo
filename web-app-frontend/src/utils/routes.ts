@@ -65,8 +65,22 @@ export class PageRoutes {
         return RouteBuilder.of(this.ADMIN_USER_DETAILS).withReplaced('userId', userId).build();
     }
 
+    static Service(serviceName: string): string {
+        return this.withQueryParams(this.SERVICES, { serviceName });
+    }
+
     static withOrigin(route: string): string {
         return `${window.location.origin}${route}`;
+    }
+
+    static withQueryParams(route: string, params: Record<string, string>) {
+        return (
+            route +
+            '?' +
+            Object.entries(params)
+                .map(([k, v]) => `${k}=${v}`)
+                .join('&')
+        );
     }
 }
 

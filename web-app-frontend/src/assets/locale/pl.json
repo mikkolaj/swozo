@@ -136,7 +136,7 @@
                     "deleteActivity": {
                         "label": "Usuń aktywność",
                         "selectLabel": "Wybierz aktywność",
-                        "deleteWithAllData": "Usuń wraz z wszystkimi danymi",
+                        "deleteWithAllData": "Usuń wraz ze wszystkimi danymi",
                         "justCancel": "Odwołaj Aktywność",
                         "confirmDeletion": "Czy na pewno chcesz usunąć tę aktywność? Cofnięcie tej akcji nie będzie możliwe.",
                         "confirmCancel": "Czy na pewno chcesz odwołać aktywność i anulować uruchamianie modułów? Cofnięcie tej akcji nie będzie możliwe.",
@@ -251,7 +251,7 @@
     "myModules": {
         "header": "Moje moduły",
         "createModuleButton": "Utwórz moduł",
-        "empty": "Moduły to skonfigurowane serwisy możliwe do użycia podczas zajęć przez nauczycieli. Nie utworzyłeś jeszcze żadnego modułu.",
+        "empty": "Moduły to skonfigurowane serwisy możliwe do użycia podczas zajęć, możesz utworzyć własne moduły lub skorzystać z publicznych utworzonych przez innych nauczycieli.",
         "module": {
             "creationDate": "Data utworzenia:",
             "usedBy": "Liczba korzystających aktywności: {{activitiesCount}}",
@@ -274,6 +274,7 @@
         "serviceName": "Wykorzystywany serwis",
         "teacherInstruction": "Instrukcje dla nauczyciela",
         "studentInstruction": "Instrukcje dla ucznia",
+        "seeService": "Zobacz informacje o serwisie",
         "usedBy": {
             "label": "Informacje o wykorzystaniu",
             "unused": "Moduł nie jest jeszcze wykorzystywany",
@@ -426,7 +427,6 @@
             },
             "modules": {
                 "label": "Informacje o używanych modułach",
-                "serviceModuleTitle": "{{serviceModuleName}} ({{serviceName}})",
                 "teacherInstructionLabel": "Instrukcje dla nauczyciela",
                 "studentInstructionLabel": "Instrukcje dla studenta"
             }

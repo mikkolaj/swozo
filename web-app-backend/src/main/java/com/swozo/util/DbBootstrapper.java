@@ -163,7 +163,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule.setBaseRamGB(1);
         serviceModule.setBaseVcpu(1);
         serviceModule.setBaseDiskGB(1);
-        serviceModule.setName("Klasy w Pythonie (JUPYTER TEST)");
+        serviceModule.setName("Klasy w Pythonie");
         serviceModule.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji o zmiennych");
         serviceModule.setStudentInstructionHtml("Przypomnij sobie wiedze z lekcji o zmiennych");
         serviceModule.setCreator(teacher);
@@ -187,7 +187,7 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         serviceModule3.setUsersPerAdditionalRamGb(15);
         serviceModule3.setUsersPerAdditionalCore(15);
         serviceModule3.setUsersPerAdditionalDiskGb(2);
-        serviceModule3.setName("TestQuiz (QuizApp)");
+        serviceModule3.setName("TestQuiz");
         serviceModule3.setTeacherInstructionHtml("Wybierz ta lekcje po lekcji: Funkcje w Pythonie 1");
         serviceModule3.setStudentInstructionHtml("Przypomnij sobie wiedze z poprzednich zajec o funckjach");
         serviceModule3.setCreator(teacher);

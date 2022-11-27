@@ -22,6 +22,7 @@ import com.swozo.orchestrator.cloud.software.runner.PlaybookFailed;
 import com.swozo.orchestrator.cloud.storage.BucketHandler;
 import com.swozo.utils.LoggingUtils;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.utility.RandomString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,11 +41,12 @@ import static com.swozo.utils.LoggingUtils.logIfSuccess;
 public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.JUPYTER;
     private static final String WORKDIR = "/home/swozo/jupyter";
-    private static final int PROVISIONING_SECONDS = 600;
+    private static final int PROVISIONING_SECONDS = 500;
     private static final int MINUTES_FACTOR = 60;
     private static final String JUPYTER_PORT = "80";
-    private static final String MAIN_LINK_DESCRIPTION = "swozo123"; // TODO
+    private static final String NOTEBOOK_PASSWORD_VARIABLE = "notebook_password";
     private static final String LAB_FILE_PATH = "/home/swozo/jupyter/lab_file.ipynb";
+    private static final String SWOZO_USER = "swozo";
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
     private final LinkFormatter linkFormatter;
@@ -61,7 +63,8 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
                 JupyterParameters.getParameterDescriptions(translationsProvider),
                 Set.of(IsolationMode.ISOLATED),
                 JupyterParameters.getConfigurationInstruction(translationsProvider),
-                JupyterParameters.getUsageInstruction(translationsProvider)
+                JupyterParameters.getUsageInstruction(translationsProvider),
+                PROVISIONING_SECONDS
         );
     }
 
@@ -71,14 +74,16 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
             ServiceDescriptionEntity description,
             VmResourceDetails resource
     ) {
+        var password = RandomString.make(5);
+        logger.info("Password for request [id: {}]: {}", requestEntity.getId(), password);
         return CompletableFuture.runAsync(() -> {
                     logger.info("Started provisioning Jupyter on: {}", resource);
-                    runPlaybook(resource);
+                    runPlaybook(resource, password);
                     abortHandler.abortIfNecessary(description.getId());
                 }).thenCompose(x -> handleParameters(description.getDynamicProperties(), resource))
                 .whenComplete(logIfSuccess(logger, provisioningComplete(resource)))
                 .whenComplete(this::wrapExceptions)
-                .thenCompose(x -> createLinks(requestEntity, description, resource));
+                .thenCompose(x -> createLinks(requestEntity, description, resource, password));
     }
 
     private static String provisioningComplete(VmResourceDetails resource) {
@@ -91,23 +96,23 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         }
     }
 
-    @Override
     public CompletableFuture<List<ActivityLinkInfo>> createLinks(
             ScheduleRequestEntity requestEntity,
             ServiceDescriptionEntity description,
-            VmResourceDetails vmResourceDetails
+            VmResourceDetails vmResourceDetails,
+            String password
     ) {
         var formattedLink = linkFormatter.getHttpLink(vmResourceDetails.publicIpAddress(), JUPYTER_PORT);
         return requestSender.getUserData(description.getActivityModuleId(), requestEntity.getId())
                 .thenApply(users ->
-                        users.stream().map(OrchestratorUserDto::id).map(createLink(formattedLink)).toList()
+                        users.stream().map(OrchestratorUserDto::id).map(createLink(formattedLink, password)).toList()
                 );
     }
 
-    private Function<Long, ActivityLinkInfo> createLink(String link) {
+    private Function<Long, ActivityLinkInfo> createLink(String link, String password) {
         return userId -> new ActivityLinkInfo(userId, link, translationsProvider.t(
                 "services.jupyter.instructions.connection",
-                Map.of("password", MAIN_LINK_DESCRIPTION)
+                Map.of("password", password)
         ));
     }
 
@@ -131,10 +136,11 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
         return Optional.of(WORKDIR);
     }
 
-    private void runPlaybook(VmResourceDetails resource) {
+    private void runPlaybook(VmResourceDetails resource, String password) {
         ansibleRunner.runPlaybook(
                 AnsibleConnectionDetails.from(resource),
                 Playbook.PROVISION_JUPYTER,
+                List.of(ansibleRunner.createUserVar(NOTEBOOK_PASSWORD_VARIABLE, password)),
                 PROVISIONING_SECONDS / MINUTES_FACTOR
         );
     }
@@ -142,11 +148,22 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     private CompletableFuture<Void> handleParameters(Map<String, String> dynamicParameters, VmResourceDetails resource) {
         logger.info("Start handling parameters for {}", resource);
         var jupyterParameters = JupyterParameters.from(dynamicParameters);
-        return bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), LAB_FILE_PATH)
+        return bucketHandler.downloadToHost(resource, jupyterParameters.notebookLocation(), LAB_FILE_PATH, SWOZO_USER)
                 .whenComplete(LoggingUtils.log(
                         logger,
                         String.format("Done downloading file for %s", resource),
                         String.format("Failed to download file for %s", resource)
-                ));
+                )).thenApply((x) -> {
+                    // TODO file permissions as param
+                    try {
+                        ansibleRunner.runPlaybook(
+                                AnsibleConnectionDetails.from(resource),
+                                Playbook.EXECUTE_COMMAND,
+                                List.of(ansibleRunner.createUserVar("command", "chmod 0666 " + LAB_FILE_PATH)),
+                                1
+                        );
+                    } catch (Exception ignored) {}
+                    return x;
+                });
     }
 }

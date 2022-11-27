@@ -40,10 +40,10 @@ public class ScheduleController {
         return service.getSupportedServices();
     }
 
-    @GetMapping(CONFIGURATION + "/{scheduleType}")
-    public ServiceConfig getServiceConfig(@PathVariable String scheduleType) {
-        logger.info("Serving config request for {}", scheduleType);
-        return service.getServiceConfig(ServiceType.valueOf(scheduleType));
+    @GetMapping(CONFIGURATION + "/{serviceType}")
+    public ServiceConfig getServiceConfig(@PathVariable String serviceType) {
+        logger.info("Serving config request for {}", serviceType);
+        return service.getServiceConfig(ServiceType.valueOf(serviceType));
     }
 
     @PostMapping(AGGREGATED)

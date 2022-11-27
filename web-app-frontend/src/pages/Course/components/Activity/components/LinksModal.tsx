@@ -10,6 +10,7 @@ import {
     Link,
     Typography,
 } from '@mui/material';
+import blue from '@mui/material/colors/blue';
 import { ActivityDetailsDto, ActivityModuleDetailsDto } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { ScrollableCenteredModal } from 'common/Styled/ScrollableCenteredModal';
@@ -22,9 +23,11 @@ import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
 import { useDispatch } from 'react-redux';
+import { Link as RouterLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { triggerError } from 'services/features/error/errorSlice';
 import { isSame } from 'utils/roles';
+import { PageRoutes } from 'utils/routes';
 import { getTranslated } from 'utils/util';
 import './connectionInstructions.css';
 
@@ -77,15 +80,17 @@ export const LinksModal = ({ activity, open, onClose }: Props) => {
                         <Accordion sx={{ mb: 2, boxShadow: 3 }} key={activityModule.id}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <Box sx={{ cursor: 'default', pr: 4 }} onClick={(e) => e.stopPropagation()}>
-                                    <Typography
-                                        sx={{ textTransform: 'capitalize' }}
-                                        component="h3"
-                                        variant="h6"
-                                    >
-                                        {t('course.activity.linksInfo.title', {
-                                            serviceName: activityModule.serviceModule.serviceName,
-                                            serviceModuleName: activityModule.serviceModule.name,
-                                        })}
+                                    <Typography variant="h6">
+                                        {activityModule.serviceModule.name + ' ('}
+                                        <RouterLink
+                                            target="_blank"
+                                            rel="noopener"
+                                            to={PageRoutes.Service(activityModule.serviceModule.serviceName)}
+                                            style={{ textDecoration: 'none', color: blue[700] }}
+                                        >
+                                            {activityModule.serviceModule.serviceName}
+                                        </RouterLink>
+                                        {' )'}
                                     </Typography>
                                     {activityModule.connectionDetails.length === 0 && (
                                         <Typography>

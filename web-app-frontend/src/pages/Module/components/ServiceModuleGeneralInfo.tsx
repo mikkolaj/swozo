@@ -1,10 +1,13 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { ServiceModuleSummaryDto } from 'api';
 import { ReadonlyField } from 'common/Input/Readonly/ReadonlyField';
 import { InstructionView } from 'common/Styled/InstructionView';
+import { stylesRow } from 'common/styles';
 import _ from 'lodash';
 import { ComponentProps, PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { PageRoutes } from 'utils/routes';
 
 type Props = {
     serviceModule: ServiceModuleSummaryDto;
@@ -27,7 +30,19 @@ export const ServiceModuleGeneralInfo = ({
                 i18nLabel="myModule.description"
             />
             <StyledReadonlyField value={_.capitalize(serviceModule.subject)} i18nLabel="myModule.subject" />
-            <StyledReadonlyField value={serviceModule.serviceName} i18nLabel="myModule.serviceName" />
+            <Box sx={{ ...stylesRow }}>
+                <StyledReadonlyField value={serviceModule.serviceName} i18nLabel="myModule.serviceName" />
+                <Button variant="text">
+                    <Link
+                        target="_blank"
+                        rel="noopener"
+                        to={PageRoutes.Service(serviceModule.serviceName)}
+                        style={{ textDecoration: 'none', color: 'inherit' }}
+                    >
+                        {t('myModule.seeService')}
+                    </Link>
+                </Button>
+            </Box>
             {children}
             <Box sx={{ m: 1 }}>
                 <Typography>{t('myModule.teacherInstruction')}</Typography>

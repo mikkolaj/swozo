@@ -34,6 +34,7 @@ import static com.swozo.utils.LoggingUtils.logIfSuccess;
 @RequiredArgsConstructor
 public class DockerProvisioner implements TimedSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.DOCKER;
+    private static final String SWOZO_USER = "swozo";
     private static final String PROVISIONER_PATH_PREFIX = "/home/swozo/docker-service";
     private static final String RESULTS_DIR = PROVISIONER_PATH_PREFIX + "/workdir";
     private static final String INPUT_FILE_DIR = PROVISIONER_PATH_PREFIX + "/input";
@@ -58,7 +59,8 @@ public class DockerProvisioner implements TimedSoftwareProvisioner {
                 DockerParameters.getParameterDescriptions(translationsProvider),
                 Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED),
                 DockerParameters.getConfigurationInstruction(translationsProvider),
-                DockerParameters.getUsageInstruction(translationsProvider)
+                DockerParameters.getUsageInstruction(translationsProvider),
+                10 * MINUTES_FACTOR
         );
     }
 
@@ -87,8 +89,7 @@ public class DockerProvisioner implements TimedSoftwareProvisioner {
         }
     }
 
-    @Override
-    public CompletableFuture<List<ActivityLinkInfo>> createLinks(
+    private CompletableFuture<List<ActivityLinkInfo>> createLinks(
             ScheduleRequestEntity scheduleRequest,
             ServiceDescriptionEntity description,
             VmResourceDetails vmResourceDetails
@@ -167,7 +168,7 @@ public class DockerProvisioner implements TimedSoftwareProvisioner {
         params.inputFile().ifPresent(inputFile -> {
             var fileName = extractFileNameFromPath(inputFile.containerFileLocationPath());
             var fileDir = extractDirectoryFromPath(inputFile.containerFileLocationPath());
-            bucketHandler.downloadToHost(resource, inputFile.fileLocation(), INPUT_FILE_DIR + "/" + fileName);
+            bucketHandler.downloadToHost(resource, inputFile.fileLocation(), INPUT_FILE_DIR + "/" + fileName, SWOZO_USER);
             mounts.add(Mount.bind(INPUT_FILE_DIR, fileDir));
         });
 
