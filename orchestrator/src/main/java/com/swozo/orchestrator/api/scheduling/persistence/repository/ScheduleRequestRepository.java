@@ -9,8 +9,13 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface ScheduleRequestRepository extends JpaRepository<ScheduleRequestEntity, Long> {
+    default List<ScheduleRequestEntity> findScheduleRequestsWithAllServiceDescriptionsInStatus(String status) {
+        return findScheduleRequestsWithAllServiceDescriptionsInStatus(Set.of(status));
+    }
+
     @Query(
             nativeQuery = true, value = """
             select sr.* from schedule_requests sr

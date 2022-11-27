@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -44,8 +45,8 @@ public class UnfulfilledSchedulesFinder {
     }
 
     public List<ScheduleRequestEntity> getSchedulesWithVmBeforeExport() {
-        var provisioned = requestRepository
-                .findByServiceDescriptions_StatusIn(ServiceStatus.withVmBeforeExport());
+        var provisioned = new HashSet<>(requestRepository
+                .findByServiceDescriptions_StatusIn(ServiceStatus.withVmBeforeExport())).stream().toList();
 
         return initializer.initializeParameters(provisioned);
     }

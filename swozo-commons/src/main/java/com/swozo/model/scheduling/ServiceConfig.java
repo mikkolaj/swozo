@@ -9,6 +9,7 @@ import java.util.Set;
 public record ServiceConfig(
         @Schema(required = true) String serviceName,
         @Schema(required = true) List<ParameterDescription> parameterDescriptions,
-        @Schema(required = true) Set<IsolationMode> isolationModes
+        @Schema(required = true) Set<IsolationMode> isolationModes,
+        @Schema(required = true) Integer provisioningSeconds
 ) {
 }

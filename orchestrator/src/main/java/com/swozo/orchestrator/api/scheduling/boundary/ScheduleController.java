@@ -68,15 +68,15 @@ public class ScheduleController {
                                 .withTranslatedLabel(translationsProvider.t("services.docker.dynamicParams.resultFilePath.label"))
                                 .ofText().build()
                 ),
-                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED))
+                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED), 100)
         );
         return s;
     }
 
-    @GetMapping(CONFIGURATION + "/{scheduleType}")
-    public ServiceConfig getServiceConfig(@PathVariable String scheduleType) {
-        logger.info("Serving config request for {}", scheduleType);
-        return service.getServiceConfig(ServiceType.valueOf(scheduleType));
+    @GetMapping(CONFIGURATION + "/{serviceType}")
+    public ServiceConfig getServiceConfig(@PathVariable String serviceType) {
+        logger.info("Serving config request for {}", serviceType);
+        return service.getServiceConfig(ServiceType.valueOf(serviceType));
     }
 
     @PostMapping(AGGREGATED)
