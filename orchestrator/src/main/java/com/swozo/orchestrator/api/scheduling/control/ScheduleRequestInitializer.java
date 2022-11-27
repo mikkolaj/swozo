@@ -27,6 +27,11 @@ public class ScheduleRequestInitializer {
         return entity;
     }
 
+    public ServiceDescriptionEntity initializeServiceDescription(ServiceDescriptionEntity serviceDescription) {
+        initializeDescriptions(Stream.of(serviceDescription));
+        return serviceDescription;
+    }
+
     private void initializeDescriptions(Stream<ServiceDescriptionEntity> serviceDescriptions) {
         serviceDescriptions.forEach(description -> {
             Hibernate.initialize(description);

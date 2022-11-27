@@ -36,6 +36,10 @@ public class ServiceDescriptionEntity extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private ServiceStatus status = SUBMITTED;
 
+    @ManyToOne
+    @ToString.Exclude
+    private ScheduleRequestEntity scheduleRequest;
+
     public ScheduleRequestWithServiceDescription toScheduleRequestWithServiceDescriptions(ScheduleRequestEntity requestEntity) {
         return new ScheduleRequestWithServiceDescription(requestEntity, this);
     }

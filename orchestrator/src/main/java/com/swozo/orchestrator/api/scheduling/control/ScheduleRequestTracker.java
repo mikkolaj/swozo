@@ -43,7 +43,6 @@ public class ScheduleRequestTracker {
     }
 
     public void updateStatus(ServiceDescriptionEntity descriptionEntity, ServiceStatus status) {
-
         var description = descriptionRepository.getById(descriptionEntity.getId());
         setStatusIfTransitionIsValid(description, status);
         descriptionRepository.save(description);
@@ -70,6 +69,11 @@ public class ScheduleRequestTracker {
     public boolean serviceWasCancelled(long serviceDescriptionId) {
         return descriptionRepository.getById(serviceDescriptionId)
                 .getStatus() == ServiceStatus.CANCELLED;
+    }
+
+    public boolean serviceWasDeleted(long serviceDescriptionId) {
+        return descriptionRepository.getById(serviceDescriptionId)
+                .getStatus() == ServiceStatus.DELETED;
     }
 
     public boolean canBeProvisioned(long serviceDescriptionId) {

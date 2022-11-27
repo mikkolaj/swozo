@@ -79,16 +79,26 @@ public class ScheduleHandler {
         );
     }
 
-    private CompletableFuture<Void> continueProvisioningWithPresentVm(ScheduleRequestEntity requestEntity, long id) {
+    private CompletableFuture<Void> continueProvisioningWithPresentVm(ScheduleRequestEntity requestEntity, long vmId) {
         var inProvisioning = requestEntity.getServicesWithStatusesIn(ServiceStatus.provisioning());
         var toBeCheckedForExport = requestEntity.getServicesWithStatusesIn(ServiceStatus.toBeCheckedForExport());
-        return timedVmProvider.getVMResourceDetails(id)
+        return continueProvisioningWithPresentVm(requestEntity, inProvisioning, toBeCheckedForExport, vmId);
+    }
+
+    public CompletableFuture<Void> continueProvisioningWithPresentVm(
+            ScheduleRequestEntity requestEntity,
+            List<ServiceDescriptionEntity> servicesToReprovision,
+            List<ServiceDescriptionEntity> servicesToExport,
+            long vmId
+    ) {
+        return timedVmProvider.getVMResourceDetails(vmId)
                 .whenComplete(handleMissingResourceDetails(requestEntity))
                 .thenApply(resourceDetails -> {
-                    var validServices = cancelInvalidServicesAndGetValid(requestEntity, new HashSet<>(inProvisioning));
+                    var validServices =
+                            cancelInvalidServicesAndGetValid(requestEntity, new HashSet<>(servicesToReprovision));
                     CompletableFuture.runAsync(() -> startFromProvisioning(requestEntity, validServices).apply(resourceDetails))
                             .whenComplete(logIfError(logger, "Failure during provisioning retry"));
-                    CompletableFuture.runAsync(() -> startFromExport(requestEntity, toBeCheckedForExport).apply(resourceDetails))
+                    CompletableFuture.runAsync(() -> startFromExport(requestEntity, servicesToExport).apply(resourceDetails))
                             .whenComplete(logIfError(logger, "Failure during export retry"));
                     return resourceDetails;
                 })
@@ -322,10 +332,15 @@ public class ScheduleHandler {
 
     private Void delete(ScheduleRequestEntity request, long internalResourceId) {
         timedVmProvider.deleteInstance(internalResourceId)
-                .thenRun(() -> request.getServiceDescriptions().forEach(description ->
-                        scheduleRequestTracker.updateStatus(description, DELETED))
-                ).whenComplete(logIfError(logger, "Error during deleting instance"));
+                .thenRun(() -> request.getServiceDescriptions().forEach(this::updateStatusIfNecessary))
+                .whenComplete(logIfError(logger, "Error during deleting instance"));
         return null;
+    }
+
+    private void updateStatusIfNecessary(ServiceDescriptionEntity description) {
+        if (scheduleRequestTracker.serviceWasDeleted(description.getId())) {
+            scheduleRequestTracker.updateStatus(description, DELETED);
+        }
     }
 
     private int getTotalProvisioningTime(ScheduleRequestEntity requestEntity) {

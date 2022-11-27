@@ -97,4 +97,8 @@ public enum ServiceStatus {
     public static Collection<String> asStrings(Collection<ServiceStatus> statuses) {
         return statuses.stream().map(Objects::toString).toList();
     }
+
+    public String asString() {
+        return this.toString();
+    }
 }
