@@ -25,5 +25,6 @@ ENTRYPOINT [ \
     "--enable-preview", \
     "-jar", \
     '-Duser.timezone=UTC', \
+    '-Djava.util.concurrent.ForkJoinPool.common.parallelism=20', \
     "/app/orchestrator.jar" \
 ]
