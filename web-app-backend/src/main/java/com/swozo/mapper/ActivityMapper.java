@@ -6,6 +6,7 @@ import com.swozo.api.web.activity.dto.SelectedServiceModuleDto;
 import com.swozo.api.web.activity.request.CreateActivityRequest;
 import com.swozo.api.web.activitymodule.dto.ActivityModuleDetailsDto;
 import com.swozo.api.web.servicemodule.ServiceModuleRepository;
+import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityModule;
 import com.swozo.persistence.user.User;
@@ -15,8 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.swozo.util.CollectionUtils.iterateSimultaneously;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class ActivityMapper {
@@ -37,13 +39,16 @@ public abstract class ActivityMapper {
                 .map(SelectedServiceModuleDto::serviceModuleId)
                 .toList();
 
-        iterateSimultaneously(
-                moduleRepository.findAllById(selectedModuleIds),
-                createActivityRequest.selectedModules(),
-                (serviceModule, selectedServiceModuleDto) -> mappedActivityModules.push(
-                        activityModuleMapper.fromServiceModule(serviceModule, selectedServiceModuleDto.linkConfirmationRequired())
-                )
-        );
+        var serviceModulesById = moduleRepository.findAllById(selectedModuleIds).stream()
+                .collect(Collectors.toMap(
+                        BaseEntity::getId,
+                        Function.identity()
+                ));
+
+        createActivityRequest.selectedModules().forEach(selectedModule -> {
+            var serviceModule = Optional.ofNullable(serviceModulesById.get(selectedModule.serviceModuleId())).orElseThrow();
+            mappedActivityModules.push(activityModuleMapper.fromServiceModule(serviceModule, selectedModule.linkConfirmationRequired()));
+        });
 
         return mappedActivityModules;
     }

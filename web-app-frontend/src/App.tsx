@@ -120,10 +120,7 @@ function App() {
                     path={PageRoutes.UPCOMING_ACTIVITIES}
                     element={guarded(<UpcomingActivitiesList />, withRole(ADMIN))}
                 />
-                <Route
-                    path={PageRoutes.SERVICES}
-                    element={guarded(<ServicesListView />, withRole(TEACHER, TECHNICAL_TEACHER))}
-                />
+                <Route path={PageRoutes.SERVICES} element={guarded(<ServicesListView />, ANY_LOGGED_IN)} />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
             </Routes>
 

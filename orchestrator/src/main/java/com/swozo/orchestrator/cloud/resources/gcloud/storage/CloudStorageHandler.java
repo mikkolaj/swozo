@@ -30,7 +30,7 @@ public class CloudStorageHandler implements BucketHandler {
     // TODO: read the filesize
     private static final int PRETTY_BIG_SIZE = 100000000;
     private static final String WORKDIR_SNAPSHOT_FILENAME = "workdirSnapshot.zip";
-    private static final String SNAPSHOT_PATH_TEMPLATE = "/tmp/%s";
+    private static final String SNAPSHOT_PATH_TEMPLATE = "/tmp/%s_%s_%s_%s";
     private final BackendRequestSender requestSender;
     private final AnsibleRunner ansibleRunner;
     private final SshService sshService;
@@ -44,7 +44,7 @@ public class CloudStorageHandler implements BucketHandler {
             long scheduleRequestId,
             long userId
     ) {
-        var fileToUpload = String.format(SNAPSHOT_PATH_TEMPLATE, WORKDIR_SNAPSHOT_FILENAME);
+        var fileToUpload = String.format(SNAPSHOT_PATH_TEMPLATE, activityModuleId, scheduleRequestId, userId, WORKDIR_SNAPSHOT_FILENAME);
         createWorkdirArchive(remoteHost, workdirPath);
         var initRequest = createInitRequest(remoteHost, fileToUpload);
         return requestSender.initUserFileUpload(initRequest, activityModuleId, userId).thenCompose(accessRequest -> {

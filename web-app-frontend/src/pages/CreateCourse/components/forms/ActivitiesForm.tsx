@@ -45,7 +45,7 @@ export const ActivitiesForm = ({
 }: Props) => {
     const { t } = useTranslation();
     const width = createMode ? '50%' : '55%';
-
+    console.log(values.activities[0].lessonModules);
     return (
         <>
             <FieldArray
