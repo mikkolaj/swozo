@@ -6,6 +6,7 @@
         "loginButton": "Zaloguj się",
         "forgotPassword": "Nie pamiętasz hasła?",
         "invalidCredentials": "Niepoprawny email lub hasło",
+        "tip": "Wskazówka: Jeśli pierwszy raz korzystasz z serwisu, zresetuj hasło podając adres e-mail, który dostałeś od administratora systemu, bądź nauczyciela. Jeśli nie znasz adresu e-mail skontaktuj się z nauczycielem.",
         "forgot": {
             "header": "Resetowanie hasła",
             "backToLogin": "Wróć do logowania",
@@ -38,11 +39,13 @@
         "adminLogo": "SWOZO ADMIN",
         "myCourses": "moje kursy",
         "myModules": "moje moduły",
-        "publicCourses": "wszystkie kursy",
-        "publicModules": "wszystkie moduły",
+        "publicCourses": "publiczne kursy",
+        "publicModules": "publiczne moduły",
         "myFiles": "pliki",
         "virtualMachines": "repozytorium maszyn wirtualnych",
         "userManagement": "zarządzanie użytkownikami",
+        "upcomingActivities": "Nadchodzące aktywności",
+        "services": "Serwisy",
         "menu": {
             "help": "Pomoc",
             "logout": "wyloguj",
@@ -84,7 +87,8 @@
             "activities": {
                 "button": "Aktywności",
                 "empty": "Nie utworzyłeś jeszcze żadnej aktywności w tym kursie",
-                "emptyButton": "Dodaj aktywności"
+                "emptyButton": "Dodaj aktywności",
+                "scrollToClosest": "Przewiń do najbliższej aktywności ({{date}})"
             },
             "participants": {
                 "button": "Uczestnicy",
@@ -121,7 +125,10 @@
                     "addActivity": {
                         "label": "Dodaj aktywność",
                         "button": "Utwórz aktywność",
-                        "secondaryButton": "Wyczyść formularz"
+                        "secondaryButton": "Wyczyść formularz",
+                        "error": {
+                            "POLICY_NOT_MET": "Nie masz możliwości wykorzystania ilości zasobów sprzętowych potrzebnej do uruchomienia środowiska w tej aktywności. Skontaktuj się z administratorem lub wybierz inne moduły."
+                        }
                     },
                     "editActivity": {
                         "label": "Edytuj aktywność"
@@ -129,11 +136,11 @@
                     "deleteActivity": {
                         "label": "Usuń aktywność",
                         "selectLabel": "Wybierz aktywność",
-                        "deleteWithAllData": "Usuń wraz z wszystkimi danymi",
-                        "justCancel": "Odwołaj uruchamianie modułów",
+                        "deleteWithAllData": "Usuń wraz ze wszystkimi danymi",
+                        "justCancel": "Odwołaj Aktywność",
                         "confirmDeletion": "Czy na pewno chcesz usunąć tę aktywność? Cofnięcie tej akcji nie będzie możliwe.",
-                        "confirmCancel": "Czy na pewno chcesz odwołać uruchamianie modułów? Cofnięcie tej akcji nie będzie możliwe.",
-                        "no": "Nie usuwaj",
+                        "confirmCancel": "Czy na pewno chcesz odwołać aktywność i anulować uruchamianie modułów? Cofnięcie tej akcji nie będzie możliwe.",
+                        "no": "Nie",
                         "yes": "Tak"
                     }
                 }
@@ -144,6 +151,9 @@
             "files": "pliki",
             "instructions": "instrukcje",
             "timeRange": "{{startTime}} - {{endTime}}",
+            "cancelled": "Zajęcia zostały odwołane",
+            "finished": "Zajęcia już się odbyły",
+            "notStarted": "Zajęcia odbędą się zgodnie z planem",
             "linksInfo": {
                 "info": "Linki dla: {{courseName}} - {{activityName}}",
                 "title": "{{serviceModuleName}} ({{serviceName}})",
@@ -233,12 +243,15 @@
             "TOO_SOON": "Minimalny czas rozpoczęcia aktywności to {{minStartTime}}",
             "TOO_SHORT_PERIOD_BETWEEN": "Minimalny czas między aktywnościami to {{minTimeBetween}} minut",
             "NOT_IN_BOUNDS": "Liczba musi być w zakresie {{min}} - {{max}}"
+        },
+        "error": {
+            "POLICY_NOT_MET": "Nie masz możliwości wykorzystania ilości zasobów sprzętowych potrzebnej do uruchomienia środowiska w aktywności \"{{activityName}}\". Skontaktuj się z administratorem lub wybierz inne moduły."
         }
     },
     "myModules": {
         "header": "Moje moduły",
         "createModuleButton": "Utwórz moduł",
-        "empty": "Nie utworzyłeś jeszcze żadnego modułu",
+        "empty": "Moduły to skonfigurowane serwisy możliwe do użycia podczas zajęć, możesz utworzyć własne moduły lub skorzystać z publicznych utworzonych przez innych nauczycieli.",
         "module": {
             "creationDate": "Data utworzenia:",
             "usedBy": "Liczba korzystających aktywności: {{activitiesCount}}",
@@ -261,6 +274,7 @@
         "serviceName": "Wykorzystywany serwis",
         "teacherInstruction": "Instrukcje dla nauczyciela",
         "studentInstruction": "Instrukcje dla ucznia",
+        "seeService": "Zobacz informacje o serwisie",
         "usedBy": {
             "label": "Informacje o wykorzystaniu",
             "unused": "Moduł nie jest jeszcze wykorzystywany",
@@ -315,7 +329,12 @@
                         "teacher": "Instrukcja dla nauczyciela",
                         "student": "Instrukcja dla studenta"
                     },
-                    "public": "Moduł publiczny"
+                    "public": "Moduł publiczny",
+                    "help": {
+                        "openBtn": "Pokaż pomoc w konfiguracji",
+                        "header": "Pomoc w konfiguracji serwisu: {{name}}",
+                        "closeBtn": "Zamknij"
+                    }
                 }
             },
             "1": {
@@ -408,7 +427,6 @@
             },
             "modules": {
                 "label": "Informacje o używanych modułach",
-                "serviceModuleTitle": "{{serviceModuleName}} ({{serviceName}})",
                 "teacherInstructionLabel": "Instrukcje dla nauczyciela",
                 "studentInstructionLabel": "Instrukcje dla studenta"
             }
@@ -432,7 +450,10 @@
                     "uploadDate": "Data przesłania",
                     "size": "Rozmiar pliku"
                 },
-                "empty": "Nie przesłałeś jeszcze żadnego pliku"
+                "empty": {
+                    "teacher": "Nie przesłałeś jeszcze żadnego pliku",
+                    "student": "Nauczyciel nie przesłał żadnego pliku"
+                }
             },
             "users": {
                 "label": "Moje pliki",
@@ -631,7 +652,25 @@
                     "submit": "Zapisz metadane maszyny"
                 }
             }
+        },
+        "activities": {
+            "header": "Nadchodzące aktywności",
+            "list": {
+                "headers": {
+                    "name": "Nazwa",
+                    "teacher": "Nauczyciel",
+                    "date": "Data zajęć"
+                },
+                "empty": "Brak nadchodzących aktywności",
+                "cancel": "Odwołaj aktywność",
+                "areYouSure": "Czy na pewno chcesz odwołać tą aktywność? Cofnięcie tej akcji nie będzie możliwe. Pamiętaj o powiadomieniu nauczyciela!",
+                "timeRange": "{{start}} - {{end}} {{date}}",
+                "teacher": "{{firstName}} {{lastName}} ({{email}})"
+            }
         }
+    },
+    "services": {
+        "header": "Dostępne serwisy"
     },
     "help": {
         "header": "Dane kontaktowe do administratorów systemu"
@@ -647,6 +686,8 @@
         "courseCreated": "Kurs został utworzony!",
         "courseUpdated": "Dane kursu zostały zaaktualizowane!",
         "activityAdded": "Aktywność została utworzona!",
+        "activityDeleted": "Aktywność została usunięta!",
+        "activityCancelled": "Aktywność została odwołana!",
         "serviceModuleCreated": "Moduł został utworzony!",
         "serviceModuleUpdated": "Moduł został zaaktualizowany!",
         "serviceModuleDeleted": "Moduł został usunięty!",
@@ -664,10 +705,18 @@
     "commonErrors": {
         "FILE_NOT_FOUND": "Plik nie istnieje, spróbuj odświeżyć stronę",
         "DUPLICATE_FILE": "Plik już istnieje",
-        "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie"
+        "THIRD_PARTY_ERROR": "Coś poszło nie tak, poczekaj chwilę i spróbuj ponownie",
+        "validation": {
+            "required": "Pole jest wymagane",
+            "tooLong": "Pole musi być krótsze",
+            "notNegative": "Wartość nie może być ujemna",
+            "future": "Data nie może być w przeszłości"
+        }
     },
     "commonModals": {
-        "upOrDownloading": "Przesyłam pliki"
+        "upOrDownloading": "Przesyłam pliki",
+        "yes": "Tak",
+        "no": "Nie"
     },
     "dynamicForm": {
         "file": {

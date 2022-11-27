@@ -34,7 +34,6 @@ public class UserController {
     @GetMapping("/me")
     public MeDto getUserInfo(AccessToken token) {
         var userId = token.getUserId();
-        logger.info("user info for user with id: {}", userId);
         return userService.getUserInfo(userId);
     }
 
@@ -75,7 +74,6 @@ public class UserController {
     @GetMapping("/details/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public UserAdminDetailsDto getUserDetailsForAdmin(@PathVariable Long userId) {
-        logger.info("user details for user with id: {}", userId);
         return userAdminService.getUserDetailsForAdmin(userId);
     }
 

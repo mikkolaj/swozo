@@ -17,6 +17,8 @@ import com.swozo.model.scheduling.ServiceConfig;
 import com.swozo.persistence.servicemodule.ServiceModule;
 import com.swozo.security.exceptions.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ServiceModuleService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ServiceModuleRepository serviceModuleRepository;
     private final UserRepository userRepository;
     private final ServiceModuleMapper serviceModuleMapper;
@@ -87,22 +90,25 @@ public class ServiceModuleService {
 
     @Transactional
     public ServiceModuleReservationDto initServiceModuleCreation(Long creatorId, ReserveServiceModuleRequest request) {
+        logger.info("Creating service module reservation {} for user {}", request, creatorId);
         var serviceConfig = orchestratorService.getServiceConfig(request.serviceName());
         var creator = userRepository.findById(creatorId).orElseThrow();
         serviceModuleValidator.validateReservation(creator, serviceConfig, request, false);
 
         var serviceModuleReservation = serviceModuleRepository.save(
-                serviceModuleMapper.toPersistenceReservation(request, creator)
+                serviceModuleMapper.toPersistenceReservation(request, creator, serviceConfig)
         );
 
         var additionalFieldActions = handleDynamicFieldTypesForReservation(
                 serviceModuleReservation, request, serviceConfig);
 
+        logger.debug("Reservation {} created", serviceModuleReservation);
         return serviceModuleMapper.toReservationDto(serviceModuleReservation, additionalFieldActions);
     }
 
     @Transactional
     public ServiceModuleDetailsDto finishServiceModuleCreation(Long creatorId, FinishServiceModuleCreationRequest request) {
+        logger.info("Finishing service module creation {} for user {}", request, creatorId);
         var reservation = serviceModuleRepository.findById(request.reservationId())
                 .orElseThrow(() -> ServiceModuleNotFoundException.ofReservation(request.reservationId()));
         var serviceConfig = orchestratorService.getServiceConfig(reservation.getServiceName());
@@ -110,7 +116,6 @@ public class ServiceModuleService {
             throw new UnauthorizedException("you are not a creator");
         }
         if (reservation.getReady()) {
-            // TODO: compare action results, if different throw
             return serviceModuleMapper.toDto(reservation, serviceConfig);
         }
 
@@ -120,6 +125,7 @@ public class ServiceModuleService {
         reservation.setReady(true);
         serviceModuleRepository.save(reservation);
 
+        logger.debug("Service module {} created successfully", reservation.getId());
         return serviceModuleMapper.toDto(reservation, serviceConfig);
     }
 
@@ -145,6 +151,7 @@ public class ServiceModuleService {
 
     @Transactional
     public ServiceModuleUpdateTxnPingPong finishServiceConfigUpdate(Long userId, Long serviceModuleId, FinishServiceModuleCreationRequest request) {
+        logger.info("Updating service module {}", serviceModuleId);
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
         var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
         var changed = handleDynamicFieldTypesForCreation(serviceModule, request, serviceConfig);
@@ -155,17 +162,21 @@ public class ServiceModuleService {
 
         changed.forEach((fieldName, value) -> serviceModule.getDynamicProperties().put(fieldName, value));
         serviceModuleRepository.save(serviceModule);
+        logger.debug("Service module {} updated successfully", serviceModuleId);
 
         // We can't clean up old data unless we are certain that txn is successfully committed, that's probably the easiest workaround
         return new ServiceModuleUpdateTxnPingPong(serviceModuleMapper.toDto(serviceModule, serviceConfig), oldValues, serviceConfig);
     }
 
     public void cleanupOldDataOutsideTxn(ServiceModuleUpdateTxnPingPong pingPong) {
+        logger.debug("Cleaning up old service module data {}", pingPong);
         dynamicPropertiesHelper.handleCleanup(pingPong.oldValues, getParamsByNameMap(pingPong.serviceConfig));
+        logger.debug("Old service module data cleaned up {}", pingPong);
     }
 
     @Transactional
     public ServiceModuleUpdateTxnPingPong deleteServiceModule(Long userId, Long serviceModuleId) {
+        logger.info("Deleting service module {}", serviceModuleId);
         var serviceModule = getByIdWithCreatorValidation(serviceModuleId, userId);
         var serviceConfig = orchestratorService.getServiceConfig(serviceModule.getServiceName());
 

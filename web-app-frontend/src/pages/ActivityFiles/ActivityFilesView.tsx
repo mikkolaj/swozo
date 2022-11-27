@@ -187,7 +187,11 @@ export const ActivityFilesView = () => {
                                     emptyItemsComponent={
                                         <Box sx={{ ...stylesColumn, pt: 1, alignItems: 'center' }}>
                                             <Typography variant="h6">
-                                                {t('activityFiles.tabs.public.empty')}
+                                                {t(
+                                                    `activityFiles.tabs.public.empty.${
+                                                        isSame(me, course.teacher) ? 'teacher' : 'student'
+                                                    }`
+                                                )}
                                             </Typography>
                                         </Box>
                                     }

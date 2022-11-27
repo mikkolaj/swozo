@@ -27,6 +27,7 @@ public class Activity extends BaseEntity {
     @Column(columnDefinition="TEXT")
     private String instructionFromTeacherHtml;
     private LocalDateTime createdAt = LocalDateTime.now();
+    private Boolean cancelled = false;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "activity")
     @ToString.Exclude
@@ -41,7 +42,7 @@ public class Activity extends BaseEntity {
     @ToString.Exclude
     private Collection<RemoteFile> publicFiles = new LinkedList<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     @ToString.Exclude
     private Course course;

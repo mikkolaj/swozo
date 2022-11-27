@@ -13,6 +13,8 @@ Requirements:
 2. `gcp.storage.zone` must contain desired zone to create resources in
 3. `storage.web-bucket.name` must contain name of the bucket used for storage (it must be globally unique, max 64 chars long)
 4. `orchestrator.secret` must contain secret key used for orchestrator authentication, same one must be configured on orchestrator
+5. `initial-admin.email` must contain email of first system admin, who should then reset his password using web-app
+
 ## Local development
 
 For now running server via Intellij is recommended. Server should be available at `localhost:5000`.

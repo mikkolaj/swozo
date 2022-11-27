@@ -12,6 +12,7 @@ public record ActivitySummaryDto(
         @Schema(required = true) String courseName,
         @Schema(required = true) UserDetailsDto teacher,
         @Schema(required = true) LocalDateTime startTime,
-        @Schema(required = true) LocalDateTime endTime
+        @Schema(required = true) LocalDateTime endTime,
+        @Schema(required = true) boolean cancelled
 ){
 }

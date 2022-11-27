@@ -1,15 +1,16 @@
 import { Box, Button, Tab, Tabs } from '@mui/material';
 import { CourseDetailsDto } from 'api';
+import { ErrorType } from 'api/errors';
 import { getApis } from 'api/initialize-apis';
 import { stylesColumnCenteredVertical, stylesRow } from 'common/styles';
 import { Form, Formik, FormikProps } from 'formik';
 import { useAddSingleActivity } from 'hooks/query/useAddSingleActivity';
 import { useEditCourse } from 'hooks/query/useEditCourse';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
-import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import { buildMessagePopupErrorHandler, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { toEditCourseRequest } from 'pages/Course/utils';
-import { ActivitiesForm } from 'pages/CreateCourse/components/forms/ActivitiesForm';
-import { CourseInfoForm } from 'pages/CreateCourse/components/forms/CourseInfoForm';
+import { ActivitiesForm, activityValidationSchema } from 'pages/CreateCourse/components/forms/ActivitiesForm';
+import { CourseInfoForm, courseValidationSchema } from 'pages/CreateCourse/components/forms/CourseInfoForm';
 import {
     ActivityValues,
     buildCreateActivityRequest,
@@ -19,6 +20,8 @@ import {
 } from 'pages/CreateCourse/util';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch } from 'services/store';
+import * as Yup from 'yup';
 import { DeleteActivityTab } from './DeleteActivityTab';
 
 type Props = {
@@ -30,7 +33,13 @@ type Options = 'course' | 'addActivity' | 'editActivity' | 'deleteActivity';
 
 export const Editor = ({ course, initialTab = 'course' }: Props) => {
     const { t } = useTranslation();
-    const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({});
+    const dispatch = useAppDispatch();
+    const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({
+        [ErrorType.POLICY_NOT_MET]: buildMessagePopupErrorHandler(
+            dispatch,
+            t('course.options.editor.tabs.addActivity.error.POLICY_NOT_MET')
+        ),
+    });
     const [option, setOption] = useState<Options>(initialTab);
     const courseFormRef = useRef<FormikProps<CourseValues>>(null);
     const activityFormRef = useRef<FormikProps<{ activities: ActivityValues[] }>>(null);
@@ -84,6 +93,7 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
                             onSubmit={(values) =>
                                 editCourseMutation.mutate(toEditCourseRequest(course, values))
                             }
+                            validationSchema={Yup.object(courseValidationSchema(t))}
                         >
                             {({ handleChange, values }) => (
                                 <Form>
@@ -114,6 +124,9 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
                                 addActivityMutation.mutate(buildCreateActivityRequest(values.activities[0]))
                             }
                             innerRef={activityFormRef}
+                            validationSchema={Yup.object().shape({
+                                activities: Yup.array().of(Yup.object(activityValidationSchema(t))),
+                            })}
                         >
                             {({ setFieldValue, setValues, values }) => (
                                 <Form>
@@ -152,7 +165,9 @@ export const Editor = ({ course, initialTab = 'course' }: Props) => {
                             )}
                         </Formik>
                     )}
-                    {option === 'deleteActivity' && <DeleteActivityTab course={course} />}
+                    {option === 'deleteActivity' && (
+                        <DeleteActivityTab onLastDeleted={() => setOption('addActivity')} course={course} />
+                    )}
                 </Box>
             </Box>
         </Box>

@@ -6,7 +6,6 @@ import { StackedListHeader } from 'common/StackedList/StackedListHeader';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
 import { NoOverflowTypography } from 'common/Styled/NoOverflowTypography';
 import { stylesColumn, stylesRow } from 'common/styles';
-import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { PageRoutes } from 'utils/routes';
 import { formatDate } from 'utils/util';
@@ -49,9 +48,7 @@ export const CreatedServiceModulesList = ({ user }: Props) => {
                                 text={name}
                                 decorated
                             />,
-                            <NoOverflowTypography variant="body1">
-                                {_.capitalize(serviceName)}
-                            </NoOverflowTypography>,
+                            <NoOverflowTypography variant="body1">{serviceName}</NoOverflowTypography>,
                             <NoOverflowTypography variant="body1">
                                 {formatDate(createdAt)}
                             </NoOverflowTypography>,

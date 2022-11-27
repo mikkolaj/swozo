@@ -7,8 +7,10 @@ import _ from 'lodash';
 import { TFunction } from 'react-i18next';
 import { formatDateTime, prepareErrorForDisplay, prepareFormikValidationErrors, withDate } from 'utils/util';
 
-export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 30;
-export const DEFAULT_MIN_TIME_OFFSET = 5;
+export const DEFAULT_ACTIVITY_LENGTH_MINUTES = 90;
+export const DEFAULT_MIN_TIME_OFFSET = 30;
+
+export const MAX_HOUR_TO_TRY_HANDLING_MIDNIGHT_OVERLAP = 3;
 
 export type FormValues = SlideValues2<CourseValues, ActivitesFormValues>;
 
@@ -49,11 +51,11 @@ export type ActivitesFormValues = {
 };
 
 export const initialCourseValues = (): CourseValues => ({
-    name: 'Wprowadzenie do Pythona',
-    subject: 'Informatyka',
+    name: '',
+    subject: '',
     description: '',
     numberOfActivities: 1,
-    expectedStudentCount: 2,
+    expectedStudentCount: 1,
     password: undefined,
     isPublic: true,
 });
@@ -69,8 +71,8 @@ export const toCourseValues = (courseDetails: CourseDetailsDto): CourseValues =>
 });
 
 export const initialActivityValues = (): ActivityValues => ({
-    name: 'Konstrukcje warunkowe',
-    description: 'nauczymy się pisać if else',
+    name: '',
+    description: '',
     lessonModules: [],
     generalModules: [],
     instructions: '',
@@ -92,12 +94,21 @@ export const resizeActivityValuesList = (
     return currentValues.slice(0, targetSize);
 };
 
+const handleMidnightOverlap = (startTime: Dayjs, endTime: Dayjs) => {
+    if (endTime.isBefore(startTime) && endTime.hour() < MAX_HOUR_TO_TRY_HANDLING_MIDNIGHT_OVERLAP)
+        return endTime.add(1, 'day');
+    return endTime;
+};
+
 export const buildCreateActivityRequest = (activity: ActivityValues): CreateActivityRequest => {
+    const startTime = withDate(activity.startTime, activity.date);
+    const endTime = handleMidnightOverlap(startTime, withDate(activity.endTime, activity.date));
+
     return {
         name: activity.name,
         description: activity.description,
-        startTime: withDate(activity.startTime, activity.date).toDate(),
-        endTime: withDate(activity.endTime, activity.date).toDate(),
+        startTime: startTime.toDate(),
+        endTime: endTime.toDate(),
         instructionFromTeacher: {
             untrustedPossiblyDangerousHtml: activity.instructions,
         },

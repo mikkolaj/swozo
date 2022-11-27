@@ -1,16 +1,14 @@
 import DownloadIcon from '@mui/icons-material/Download';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Divider, IconButton, Typography } from '@mui/material';
 import { ActivityDetailsDto } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
-import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { useDownload } from 'hooks/query/useDownload';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
-import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatName } from 'utils/util';
@@ -61,7 +59,7 @@ export const AggregatedActivityResultsView = ({ activity }: Props) => {
                     <Typography variant="h5" gutterBottom sx={{ my: 2 }}>
                         {t('activityFiles.tabs.users.module', {
                             name: activityModule.serviceModule.name,
-                            serviceName: _.capitalize(activityModule.serviceModule.serviceName),
+                            serviceName: activityModule.serviceModule.serviceName,
                         })}
                     </Typography>
                     <StackedList
@@ -84,13 +82,13 @@ export const AggregatedActivityResultsView = ({ activity }: Props) => {
                                 itemRenderer={({ file, student }) => [
                                     <Typography>{formatName(student.name, student.surname)}</Typography>,
                                     <Typography>{student.email}</Typography>,
-                                    <ButtonWithIconAndText
+                                    <IconButton
                                         sx={{ ml: 'auto' }}
                                         color="primary"
                                         onClick={() => download(file)}
-                                        textI18n={'activityFiles.tabs.users.download'}
-                                        Icon={DownloadIcon}
-                                    />,
+                                    >
+                                        <DownloadIcon />
+                                    </IconButton>,
                                     /* eslint-enable react/jsx-key */
                                 ]}
                                 emptyItemsComponent={

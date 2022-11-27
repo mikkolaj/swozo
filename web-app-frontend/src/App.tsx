@@ -4,6 +4,7 @@ import { PageGuard } from 'common/PageGuard/PageGuard';
 import { Toaster } from 'common/Styled/Toaster';
 import { ActivityFilesView } from 'pages/ActivityFiles/ActivityFilesView';
 import { ActivityInstructionsView } from 'pages/ActivityInstructions/ActivityInstructionView';
+import { UpcomingActivitiesList } from 'pages/Admin/UpcomingActivities/UpcominActivitiesList';
 import { UserDetailsView } from 'pages/Admin/Users/UserDetailsView';
 import { VirtualMachinesPanel } from 'pages/Admin/VirtualMachines/VirtualMachinesPanel';
 import { CourseView } from 'pages/Course/CourseView';
@@ -20,6 +21,7 @@ import { MyModuleView } from 'pages/Module/MyModuleView';
 import { PublicModuleView } from 'pages/Module/PublicModuleView';
 import { MyModulesListView } from 'pages/ModulesList/MyModulesListView';
 import { PublicModulesListView } from 'pages/ModulesList/PublicModulesListView';
+import { ServicesListView } from 'pages/ServicesList/ServicesListView';
 import { Route, Routes } from 'react-router-dom';
 import { PopupError } from 'services/features/error/PopupError';
 import { ModalContainer } from 'services/features/modal/ModalContainer';
@@ -113,6 +115,14 @@ function App() {
                 <Route
                     path={PageRoutes.ADMIN_USER_DETAILS}
                     element={guarded(<UserDetailsView />, withRole(ADMIN))}
+                />
+                <Route
+                    path={PageRoutes.UPCOMING_ACTIVITIES}
+                    element={guarded(<UpcomingActivitiesList />, withRole(ADMIN))}
+                />
+                <Route
+                    path={PageRoutes.SERVICES}
+                    element={guarded(<ServicesListView />, withRole(TEACHER, TECHNICAL_TEACHER))}
                 />
                 <Route path="*" element={guarded(<Home />, ANY_LOGGED_IN)} />
             </Routes>

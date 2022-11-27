@@ -41,7 +41,7 @@ public class JsonMapperFacade {
         return objectMapper.readValue(json, type);
     }
 
-    public <T> Optional<T> optFromJson(String json, Class<T> type) {
+    public <T> Optional<T> optFromJson(String json, TypeReference<T> type) {
         try {
             return Optional.of(objectMapper.readValue(json, type));
         } catch (JsonProcessingException e) {

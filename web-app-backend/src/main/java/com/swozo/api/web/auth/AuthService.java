@@ -129,6 +129,7 @@ public class AuthService {
 
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
+        logger.info("Serving change password request for {}", request.email());
         var user = findByEmail(request.email());
         validateChangePasswordRequest(user, request.token(), request.password());
 
@@ -161,6 +162,11 @@ public class AuthService {
 
     public boolean hasRole(User user, RoleDto role) {
         return getUserRoles(getUsersAuthorities(user)).contains(role);
+    }
+
+    public boolean isAdmin(Long userId) {
+        // TODO ensure proper caching of admins (+ invalidate on user data update)
+        return userRepository.findById(userId).map(user -> hasRole(user, RoleDto.ADMIN)).orElse(false);
     }
 
     /**

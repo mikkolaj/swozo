@@ -1,4 +1,5 @@
 import { Box, Button, Divider, Grid, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { blue } from '@mui/material/colors';
 import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { InstructionView } from 'common/Styled/InstructionView';
@@ -9,10 +10,9 @@ import { HandlerConfig, useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useNoCourseOrNoActivityErrorHandlers } from 'hooks/useCommonErrorHandlers';
 import { useCourseWithActivity } from 'hooks/useCourseActivity';
 import { useRequiredParams } from 'hooks/useRequiredParams';
-import _ from 'lodash';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { isSame } from 'utils/roles';
 import { PageRoutes } from 'utils/routes';
 
@@ -95,10 +95,16 @@ export const ActivityInstructionsView = () => {
                             <Grid key={id} item xs={12} sx={{ mb: 2 }}>
                                 <Paper sx={{ width: '100%', p: 2, boxShadow: 3 }}>
                                     <Typography variant="h5" component="div" gutterBottom>
-                                        {t('activityInstructions.tabs.modules.serviceModuleTitle', {
-                                            serviceName: _.capitalize(serviceModule.serviceName),
-                                            serviceModuleName: serviceModule.name,
-                                        })}
+                                        {serviceModule.name + ' ('}
+                                        <Link
+                                            target="_blank"
+                                            rel="noopener"
+                                            to={PageRoutes.Service(serviceModule.serviceName)}
+                                            style={{ textDecoration: 'none', color: blue[700] }}
+                                        >
+                                            {serviceModule.serviceName}
+                                        </Link>
+                                        {' )'}
                                     </Typography>
                                     <Divider sx={{ mb: 2 }} />
                                     {isSame(me, course.teacher) && (

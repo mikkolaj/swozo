@@ -81,11 +81,7 @@ public class UserService {
     @Transactional
     public MeDto unsetFileAsFavourite(Long userId, Long fileId) {
         var user = getUserById(userId);
-        var favFile = user.getUserFavouriteFile(fileId).orElseThrow();
-        user.removeFavouriteFile(favFile);
-        userFavouriteFileRepository.delete(favFile);
-
-        userRepository.save(user);
+        removeFileFromUserFavourite(user, fileId);
         return toMeDto(user);
     }
 
@@ -111,6 +107,15 @@ public class UserService {
     public void removeUsers(List<Long> userIds) {
         // TODO: remove all files
         userRepository.deleteAllById(userIds);
+    }
+
+    private void removeFileFromUserFavourite(User user, Long fileId) {
+        user.getUserFavouriteFile(fileId).ifPresent(favFile -> {
+            user.removeFavouriteFile(favFile);
+            userFavouriteFileRepository.delete(favFile);
+
+            userRepository.save(user);
+        });
     }
 
     private MeDto toMeDto(User user) {

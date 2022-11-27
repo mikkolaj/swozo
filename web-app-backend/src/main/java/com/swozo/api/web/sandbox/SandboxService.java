@@ -51,10 +51,11 @@ public class SandboxService {
             CreateSandboxEnvironmentRequest request
     ) {
         sandboxValidator.validateCreateSandboxRequest(creatorId, request);
-        var startTime = scheduleService.getAsapScheduleAvailability();
+        logger.info("Creating sandbox {} for user {} with module {}", request, creatorId, serviceModuleId);
+        var serviceModule = serviceModuleService.getById(serviceModuleId);
+        var startTime = scheduleService.getAsapScheduleAvailability(serviceModule.getServiceName());
         var validTo = startTime.plusMinutes(request.validForMinutes());
 
-        var serviceModule = serviceModuleService.getById(serviceModuleId);
         var sandboxRequest = buildCourseSandboxRequest(creatorId, request.studentCount(), serviceModule, startTime, validTo);
         var sandboxCourseDetails = courseService.createCourse(sandboxRequest, creatorId, true);
 
@@ -63,6 +64,7 @@ public class SandboxService {
         sandboxUsers.forEach(sandboxUser -> courseService.addStudentToCourse(course, sandboxUser.user));
 
         scheduleSandboxCleanup(startTime, request, sandboxCourseDetails, sandboxUsers);
+        logger.info("Created sandbox {}", course);
 
         return sandboxMapper.toDto(sandboxCourseDetails, sandboxUsers, validTo);
     }
@@ -115,9 +117,9 @@ public class SandboxService {
                         logger.info("Cleaning up sandbox course: " + courseDetailsDto.id());
                         courseService.deleteCourse(courseDetailsDto.id());
                         userService.removeUsers(users.stream().map(sandboxUser -> sandboxUser.user.getId()).toList());
-                        logger.info("Sanbox course: " + courseDetailsDto.id() + " cleaned up successfully");
-                    } catch (Exception exception) {
-                        logger.error("Failed to cleanup sandbox course: " + courseDetailsDto.id(), exception);
+                        logger.info("Sandbox course: " + courseDetailsDto.id() + " cleaned up successfully");
+                    } catch (Throwable ex) {
+                        logger.error("Failed to cleanup sandbox course: " + courseDetailsDto.id(), ex);
                     }
                 },
                 courseCleanupTime

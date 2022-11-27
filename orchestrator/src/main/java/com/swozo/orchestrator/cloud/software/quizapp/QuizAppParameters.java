@@ -3,6 +3,7 @@ package com.swozo.orchestrator.cloud.software.quizapp;
 import com.swozo.i18n.TranslationsProvider;
 import com.swozo.model.scheduling.ParameterDescription;
 import com.swozo.orchestrator.cloud.software.InvalidParametersException;
+import com.swozo.utils.SupportedLanguage;
 
 import java.util.List;
 import java.util.Map;
@@ -39,5 +40,13 @@ public record QuizAppParameters(int quizDurationSeconds, String questionsLocatio
     private static String getRequiredParam(Map<String, String> dynamicParameters, String name) {
         return Optional.ofNullable(dynamicParameters.get(name))
                 .orElseThrow(() -> new InvalidParametersException("Parameter " + name + " must be present"));
+    }
+
+    public static Map<SupportedLanguage, String> getConfigurationInstruction(TranslationsProvider translationsProvider) {
+        return translationsProvider.t("services.quizApp.instructions.configuration");
+    }
+
+    public static Map<SupportedLanguage, String> getUsageInstruction(TranslationsProvider translationsProvider) {
+        return translationsProvider.t("services.quizApp.instructions.usage");
     }
 }

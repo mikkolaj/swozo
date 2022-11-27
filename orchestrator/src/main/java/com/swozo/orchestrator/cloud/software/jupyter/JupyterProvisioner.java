@@ -58,9 +58,12 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
     @Override
     public ServiceConfig getServiceConfig() {
         return new ServiceConfig(
+                "Jupyter Notebook",
                 SUPPORTED_SCHEDULE.toString(),
                 JupyterParameters.getParameterDescriptions(translationsProvider),
-                Set.of(IsolationMode.ISOLATED, IsolationMode.SHARED),
+                Set.of(IsolationMode.ISOLATED),
+                JupyterParameters.getConfigurationInstruction(translationsProvider),
+                JupyterParameters.getUsageInstruction(translationsProvider),
                 getProvisioningSeconds()
         );
     }
@@ -108,7 +111,7 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
 
     private Function<Long, ActivityLinkInfo> createLink(String link, String password) {
         return userId -> new ActivityLinkInfo(userId, link, translationsProvider.t(
-                "services.jupyter.connectionInstruction",
+                "services.jupyter.instructions.connection",
                 Map.of("password", password)
         ));
     }
@@ -150,6 +153,17 @@ public class JupyterProvisioner implements TimedSoftwareProvisioner {
                         logger,
                         String.format("Done downloading file for %s", resource),
                         String.format("Failed to download file for %s", resource)
-                ));
+                )).thenApply((x) -> {
+                    // TODO file permissions as param
+                    try {
+                        ansibleRunner.runPlaybook(
+                                AnsibleConnectionDetails.from(resource),
+                                Playbook.EXECUTE_COMMAND,
+                                List.of(ansibleRunner.createUserVar("command", "chmod 0666 " + LAB_FILE_PATH)),
+                                1
+                        );
+                    } catch (Exception ignored) {}
+                    return x;
+                });
     }
 }

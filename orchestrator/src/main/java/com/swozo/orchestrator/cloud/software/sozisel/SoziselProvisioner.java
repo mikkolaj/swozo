@@ -32,7 +32,6 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
     private static final ServiceTypeEntity SUPPORTED_SCHEDULE = ServiceTypeEntity.SOZISEL;
     private static final int PROVISIONING_SECONDS = 600;
     private static final int SOZISEL_SETUP_MILLISECONDS = 180000;
-    private static final String MAIN_LINK_DESCRIPTION = "Use the provided link to join the Jitsi session";
     private static final int PLAYBOOK_TIMEOUT_MINUTES = 5;
     private final TranslationsProvider translationsProvider;
     private final AnsibleRunner ansibleRunner;
@@ -74,10 +73,7 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
 
     private ActivityLinkInfo createLink(OrchestratorUserDto user, SoziselLinksProvider linksProvider) {
         var link = linksProvider.createLinks(user.name(), user.surname(), user.role());
-        return new ActivityLinkInfo(user.id(), link, translationsProvider.t(
-                "services.sozisel.connectionInstruction",
-                Map.of("instruction", MAIN_LINK_DESCRIPTION)
-        ));
+        return new ActivityLinkInfo(user.id(), link, translationsProvider.t("services.sozisel.instructions.connection"));
     }
 
     @Override
@@ -92,7 +88,15 @@ public class SoziselProvisioner implements TimedSoftwareProvisioner {
 
     @Override
     public ServiceConfig getServiceConfig() {
-        return new ServiceConfig(SUPPORTED_SCHEDULE.toString(), List.of(), Set.of(IsolationMode.SHARED), getProvisioningSeconds());
+        return new ServiceConfig(
+                "Jitsi Meet",
+                SUPPORTED_SCHEDULE.toString(),
+                List.of(),
+                Set.of(IsolationMode.SHARED),
+                translationsProvider.t("services.sozisel.instructions.configuration"),
+                translationsProvider.t("services.sozisel.instructions.usage"),
+                getProvisioningSeconds()
+        );
     }
 
     @Override

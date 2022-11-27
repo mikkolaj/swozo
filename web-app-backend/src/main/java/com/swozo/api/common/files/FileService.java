@@ -1,7 +1,5 @@
 package com.swozo.api.common.files;
 
-import com.swozo.model.files.UploadAccessDto;
-import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.api.common.files.storage.FilePathProvider;
 import com.swozo.api.common.files.storage.StorageProvider;
 import com.swozo.api.common.files.util.FilePathGenerator;
@@ -9,7 +7,9 @@ import com.swozo.api.common.files.util.UploadValidationStrategy;
 import com.swozo.api.web.exceptions.types.files.FileNotFoundException;
 import com.swozo.config.properties.StorageProperties;
 import com.swozo.mapper.FileMapper;
+import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.model.files.StorageAccessRequest;
+import com.swozo.model.files.UploadAccessDto;
 import com.swozo.persistence.RemoteFile;
 import com.swozo.persistence.user.User;
 import com.swozo.security.exceptions.UnauthorizedException;
@@ -40,6 +40,7 @@ public class FileService {
             UploadValidationStrategy validationStrategy
     ) {
         validationStrategy.validate();
+        logger.info("Preparing external upload for {}", initFileUploadRequest);
         filePathProvider.validateFilename(initFileUploadRequest.filename());
         var filePath = filePathGenerator.generate(initFileUploadRequest.filename());
 
@@ -59,6 +60,7 @@ public class FileService {
             InitFileUploadRequest initFileUploadRequest,
             FilePathGenerator filePathGenerator
     ) {
+        logger.info("Preparing internal upload for {}", initFileUploadRequest);
         return storageProvider.createAuthorizedUploadRequest(
                 storageProperties.webBucket().name(),
                 filePathGenerator.generate(initFileUploadRequest.filename()),
@@ -84,8 +86,9 @@ public class FileService {
     ) {
         var storageAccessRequest = uploadAccessDto.storageAccessRequest();
         validateStorageAccessRequest(storageAccessRequest);
-
+        logger.info("Acking external upload {}", uploadAccessDto);
         if (fileRepository.existsByPath(storageAccessRequest.filePath())) {
+            logger.warn("File already present {}", storageAccessRequest.filePath());
             return initialResourceSupplier.get();
         }
 
@@ -100,6 +103,7 @@ public class FileService {
     }
 
     public RemoteFile acknowledgeExternalUploadWithoutTxn(User owner, UploadAccessDto uploadAccessDto) {
+        logger.info("Acking upload {}", uploadAccessDto);
         validateStorageAccessRequest(uploadAccessDto.storageAccessRequest());
         return fileRepository.save(fileMapper.toPersistence(uploadAccessDto, owner));
     }
@@ -117,6 +121,7 @@ public class FileService {
     }
 
     public StorageAccessRequest createExternalDownloadRequest(Long remoteFileId, Long downloaderId) {
+        logger.info("Creating external download request for user {}, file {}", downloaderId, remoteFileId);
         var file = fileRepository.findById(remoteFileId).orElseThrow(() -> FileNotFoundException.globally(remoteFileId));
         if (!file.getOwner().getId().equals(downloaderId)) {
             throw new UnauthorizedException("You are unauthorized to download this file.");
@@ -125,6 +130,7 @@ public class FileService {
     }
 
     public StorageAccessRequest createInternalDownloadRequest(String encodedFileIdentifier) {
+        logger.debug("Creating internal download request for file {}", encodedFileIdentifier);
         var file = decodeUniqueIdentifier(encodedFileIdentifier);
         return storageProvider.createAuthorizedDownloadRequest(
                 storageProperties.webBucket().name(),
@@ -156,7 +162,7 @@ public class FileService {
      * from both local and remote storage but logs are guaranteed to be maintained for later retry.
      */
     public void removeFileInternally(RemoteFile file) {
-        // TODO assert proper logging
+        logger.info("Removing file {}", file);
         fileRepository.delete(file);
         storageProvider.cleanup(storageProperties.webBucket().name(), file.getPath());
     }

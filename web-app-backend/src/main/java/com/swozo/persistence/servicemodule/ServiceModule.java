@@ -29,6 +29,7 @@ public abstract class ServiceModule extends BaseEntity {
     @Column(columnDefinition="TEXT")
     protected String studentInstructionHtml;
     protected String serviceName;
+    protected String serviceDisplayName;
     protected Boolean isPublic;
     protected Boolean ready;
 

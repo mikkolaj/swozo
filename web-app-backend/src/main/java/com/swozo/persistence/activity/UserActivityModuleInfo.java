@@ -20,16 +20,16 @@ import java.util.Optional;
 @Setter
 @ToString
 public class UserActivityModuleInfo extends BaseEntity {
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinColumn(name = "activity_module_schedule_info_id")
     @ToString.Exclude
     private ActivityModuleScheduleInfo activityModuleScheduleInfo;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @JoinColumn(name = "remote_file_id")
     private RemoteFile userFile;
 

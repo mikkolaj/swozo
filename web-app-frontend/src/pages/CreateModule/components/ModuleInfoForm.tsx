@@ -1,4 +1,4 @@
-import { Box, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Divider, FormControlLabel, MenuItem, Typography } from '@mui/material';
 import { ServiceConfig } from 'api';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormSelectField } from 'common/Input/FormSelectField';
@@ -6,11 +6,13 @@ import { RichTextEditor } from 'common/Input/RichTextEditor';
 import { SlideProps } from 'common/SlideForm/util';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { FormikErrors, FormikProps } from 'formik';
-import _ from 'lodash';
-import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { ChangeEvent, MutableRefObject, RefObject, useEffect, useMemo, useState } from 'react';
+import { TFunction, useTranslation } from 'react-i18next';
+import { ValidationSchema } from 'utils/types';
+import * as Yup from 'yup';
 import { DynamicFormFields, DynamicFormValueRegistry, ModuleValues } from '../util/types';
 import { DynamicModuleInfoForm } from './DynamicModuleInfoForm';
+import { ServiceConfigurationHelp } from './ServiceConfigurationHelp';
 
 type Props = SlideProps & {
     values: ModuleValues;
@@ -24,6 +26,17 @@ type Props = SlideProps & {
     onServiceChanged: (newServiceConfig: ServiceConfig) => void;
 };
 
+export const moduleInfoValidationSchema = (t: TFunction): ValidationSchema<ModuleValues> => ({
+    name: Yup.string()
+        .max(255, t('commonErrors.validation.tooLong'))
+        .required(t('commonErrors.validation.required')),
+    subject: Yup.string()
+        .max(255, t('commonErrors.validation.tooLong'))
+        .required(t('commonErrors.validation.required')),
+    description: Yup.string().max(255, t('commonErrors.validation.tooLong')),
+    service: Yup.string().required(t('commonErrors.validation.required')),
+});
+
 export const ModuleInfoForm = ({
     nameBuilder,
     values,
@@ -36,6 +49,7 @@ export const ModuleInfoForm = ({
     onServiceChanged,
 }: Props) => {
     const { t } = useTranslation();
+    const [helpOpen, setHelpOpen] = useState(false);
     const serviceConfig = useMemo(() => {
         return supportedServices.find((cfg) => cfg.serviceName === values.service);
     }, [supportedServices, values.service]);
@@ -71,15 +85,22 @@ export const ModuleInfoForm = ({
                 textFieldProps={{ multiline: true, fullWidth: true, required: false }}
                 i18nLabel="createModule.slides.0.form.description"
             />
-            <FormSelectField name={nameBuilder('service')} i18nLabel="createModule.slides.0.form.service">
-                {supportedServices.map(({ serviceName }) => (
-                    <MenuItem key={serviceName} value={serviceName}>
-                        {_.capitalize(serviceName)}
-                    </MenuItem>
-                ))}
-            </FormSelectField>
+            <Box sx={{ ...stylesRowCenteredVertical }}>
+                <FormSelectField name={nameBuilder('service')} i18nLabel="createModule.slides.0.form.service">
+                    {supportedServices.map(({ serviceName, displayName }) => (
+                        <MenuItem key={serviceName} value={serviceName}>
+                            {displayName}
+                        </MenuItem>
+                    ))}
+                </FormSelectField>
+                {serviceConfig && (
+                    <Button sx={{ mt: 2, ml: 4 }} onClick={() => setHelpOpen(true)}>
+                        {t('createModule.slides.0.form.help.openBtn')}
+                    </Button>
+                )}
+            </Box>
 
-            {serviceConfig && serviceConfig.parameterDescriptions && (
+            {serviceConfig && serviceConfig.parameterDescriptions.length > 0 && (
                 <>
                     <Divider sx={{ width: '75%', mt: 2 }} />
                     <Typography sx={{ mt: 0 }} variant="subtitle1">
@@ -131,6 +152,13 @@ export const ModuleInfoForm = ({
                 name={nameBuilder('isPublic')}
                 onChange={handleChange}
             />
+            {serviceConfig && (
+                <ServiceConfigurationHelp
+                    open={helpOpen}
+                    onClose={() => setHelpOpen(false)}
+                    serviceConfig={serviceConfig}
+                />
+            )}
         </>
     );
 };

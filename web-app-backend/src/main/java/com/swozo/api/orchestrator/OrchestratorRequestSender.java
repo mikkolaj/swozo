@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.net.http.HttpRequest;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -48,5 +50,15 @@ public class OrchestratorRequestSender {
     public CompletableFuture<ServiceConfig> getServiceConfig(String serviceName) {
         var uri = uriFactory.createServiceConfigurationUri(serviceName);
         return unwrap(requestSender.sendGet(uri, new TypeReference<>(){}));
+    }
+
+    public CompletableFuture<Void> cancelScheduleRequest(Long scheduleRequestId) {
+        var uri = uriFactory.createCancelScheduleRequestUri(scheduleRequestId);
+        // TODO implement DELETE
+        return unwrap(requestSender.sendGet(uri, new TypeReference<>() {}, HttpRequest.Builder::DELETE));
+    }
+
+    public CompletableFuture<LocalDateTime> getEstimatedAsapServiceAvailability(String serviceName) {
+        return CompletableFuture.completedFuture(LocalDateTime.now().plusMinutes(10));
     }
 }

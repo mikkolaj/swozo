@@ -12,6 +12,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,7 +37,9 @@ public abstract class ActivityModuleMapper {
     }
 
     protected List<ServiceConnectionDetailsDto> connectionDetailsToDto(ActivityModule activityModule, User user) {
-        if (!activityModule.getTeacher().equals(user) && !activityModule.canStudentReceiveLink()) {
+        if ((!activityModule.getTeacher().equals(user) && !activityModule.canStudentReceiveLink()) ||
+                LocalDateTime.now().isBefore(activityModule.getActivity().getStartTime())
+        ) {
             return List.of();
         }
 

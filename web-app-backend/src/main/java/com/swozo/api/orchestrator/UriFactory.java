@@ -46,6 +46,11 @@ public class UriFactory {
                 Config.SCHEDULES + Config.CONFIGURATION + SEPARATOR + scheduleType);
     }
 
+    public URI createCancelScheduleRequestUri(Long scheduleRequestId) {
+        return createURI(orchestratorServerUrl +
+                Config.SCHEDULES + SEPARATOR + scheduleRequestId);
+    }
+
     @SneakyThrows(URISyntaxException.class)
     private URI createURI(String uri) {
         return new URI(uri);

@@ -2,15 +2,28 @@ import { Checkbox, FormControlLabel } from '@mui/material';
 import { FormInputField } from 'common/Input/FormInputField';
 import { FormPasswordField } from 'common/Input/FormPasswordField';
 import { SlideProps } from 'common/SlideForm/util';
+import { TFunction } from 'i18next';
 import { CourseValues } from 'pages/CreateCourse/util';
 import { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ValidationSchema } from 'utils/types';
 import * as Yup from 'yup';
 
-export const courseValidationSchema: ValidationSchema<CourseValues> = {
-    name: Yup.string().max(1000, 'e1').required('e2'),
-};
+export const courseValidationSchema = (t: TFunction): ValidationSchema<CourseValues> => ({
+    name: Yup.string()
+        .max(255, t('commonErrors.validation.tooLong'))
+        .required(t('commonErrors.validation.required')),
+    subject: Yup.string()
+        .max(255, t('commonErrors.validation.tooLong'))
+        .required(t('commonErrors.validation.required')),
+    description: Yup.string().max(255, t('commonErrors.validation.tooLong')),
+    numberOfActivities: Yup.number()
+        .min(0, t('commonErrors.validation.notNegative'))
+        .required(t('commonErrors.validation.required')),
+    expectedStudentCount: Yup.number()
+        .min(0, t('commonErrors.validation.notNegative'))
+        .required(t('commonErrors.validation.required')),
+});
 
 type Props = SlideProps & {
     values: CourseValues;

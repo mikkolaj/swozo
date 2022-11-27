@@ -23,10 +23,12 @@ export const UserHomePanel = () => {
     const { data: userActivities } = useErrorHandledQuery(
         ['activities', 'summary'],
         () =>
-            getApis().activitiesApi.getUserActivities({
-                daysInThePast: 62,
-                daysInTheFuture: 62,
-            }),
+            getApis()
+                .activitiesApi.getUserActivities({
+                    daysInThePast: 62,
+                    daysInTheFuture: 62,
+                })
+                .then((activities) => activities.filter((activity) => !activity.cancelled)),
         pushApiError,
         removeApiError,
         isApiErrorSet

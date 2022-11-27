@@ -42,14 +42,12 @@ public class CourseController {
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public Collection<CourseDetailsDto> getUserCourses(AccessToken token) {
         var userId = token.getUserId();
-        logger.info("course list for user with id: {}", userId);
         return courseService.getUserCoursesDetails(userId, authService.oneOf(token, RoleDto.TEACHER, RoleDto.STUDENT));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('TEACHER', 'STUDENT')")
     public CourseDetailsDto getCourse(AccessToken token, @PathVariable Long id) {
-        logger.info("course info getter for id: {}", id);
         return courseService.getCourseDetails(id, token.getUserId());
     }
 
@@ -100,6 +98,13 @@ public class CourseController {
     public CourseDetailsDto addSingleActivity(AccessToken token, @PathVariable Long id, @RequestBody CreateActivityRequest createActivityRequest) {
         logger.info("editing course with id: {}", id);
         return courseService.addSingleActivity(token.getUserId(), id, createActivityRequest);
+    }
+
+    @DeleteMapping("/{courseId}/activities/{activityId}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public CourseDetailsDto deleteActivity(AccessToken accessToken, @PathVariable Long courseId, @PathVariable Long activityId) {
+        logger.info("deleting activity with id: {}", activityId);
+        return courseService.deleteActivity(accessToken.getUserId(), courseId, activityId);
     }
 
     @PutMapping("/{courseId}/students")

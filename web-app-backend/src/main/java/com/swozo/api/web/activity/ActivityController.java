@@ -5,7 +5,6 @@ import com.swozo.api.web.activity.dto.ActivityFilesDto;
 import com.swozo.api.web.activity.dto.ActivitySummaryDto;
 import com.swozo.api.web.activity.dto.TeacherActivityFilesDto;
 import com.swozo.api.web.activitymodule.ActivityModuleService;
-import com.swozo.api.web.auth.AuthService;
 import com.swozo.model.files.InitFileUploadRequest;
 import com.swozo.model.files.StorageAccessRequest;
 import com.swozo.model.files.UploadAccessDto;
@@ -33,7 +32,6 @@ public class ActivityController {
     private final Logger logger = LoggerFactory.getLogger(ActivityController.class);
     private final ActivityService activityService;
     private final ActivityModuleService activityModuleService;
-    private final AuthService authService;
 
     @GetMapping
     public List<ActivitySummaryDto> getUserActivities(
@@ -48,14 +46,32 @@ public class ActivityController {
         );
     }
 
+    @GetMapping("/not-cancelled")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<ActivitySummaryDto> getAllNotCancelledFutureActivitiesInRange(
+            @RequestParam(defaultValue = "31") Integer daysInTheFuture
+    ) {
+        return activityService.getAllNotCancelledActivitiesBetween(
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(daysInTheFuture)
+        );
+    }
+
     @GetMapping("/{activityId}/files/results/student")
     public ActivityFilesDto getActivityResultFilesForUser(AccessToken accessToken, @PathVariable Long activityId) {
         return activityService.getUserActivityFiles(accessToken.getUserId(), activityId);
     }
 
     @GetMapping("/{activityId}/files/results/teacher")
+    @PreAuthorize("hasRole('TEACHER')")
     public TeacherActivityFilesDto getActivityResultFilesForAllStudents(AccessToken accessToken, @PathVariable Long activityId) {
         return activityService.getActivityResultFilesForAllStudents(accessToken.getUserId(), activityId);
+    }
+
+    @PostMapping("/{activityId}/cancel")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ActivityDetailsDto cancelActivity(AccessToken accessToken, @PathVariable Long activityId) {
+        return activityService.cancelActivity(accessToken.getUserId(), activityId);
     }
 
     @PostMapping("/{activityId}/files/public")

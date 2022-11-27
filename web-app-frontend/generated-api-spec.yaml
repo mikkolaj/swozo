@@ -606,6 +606,27 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/AuthDetailsDto'
+  /activities/{activityId}/cancel:
+    post:
+      tags:
+      - activity-controller
+      operationId: cancelActivity
+      parameters:
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ActivityDetailsDto'
+      security:
+      - JWT_AUTH: []
   /vms/{id}:
     delete:
       tags:
@@ -1269,6 +1290,57 @@ paths:
                 $ref: '#/components/schemas/StorageAccessRequest'
       security:
       - JWT_AUTH: []
+  /activities/not-cancelled:
+    get:
+      tags:
+      - activity-controller
+      operationId: getAllNotCancelledFutureActivitiesInRange
+      parameters:
+      - name: daysInTheFuture
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 31
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivitySummaryDto'
+      security:
+      - JWT_AUTH: []
+  /courses/{courseId}/activities/{activityId}:
+    delete:
+      tags:
+      - course-controller
+      operationId: deleteActivity
+      parameters:
+      - name: courseId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: activityId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CourseDetailsDto'
+      security:
+      - JWT_AUTH: []
 components:
   schemas:
     CourseSummaryDto:
@@ -1658,6 +1730,7 @@ components:
     ActivityDetailsDto:
       required:
       - activityModules
+      - cancelled
       - description
       - endTime
       - id
@@ -1690,6 +1763,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FileDto'
+        cancelled:
+          type: boolean
     ActivityModuleDetailsDto:
       required:
       - connectionDetails
@@ -1961,6 +2036,7 @@ components:
           type: string
     ActivitySummaryDto:
       required:
+      - cancelled
       - courseId
       - courseName
       - endTime
@@ -1988,6 +2064,8 @@ components:
         endTime:
           type: string
           format: date-time
+        cancelled:
+          type: boolean
     FavouriteFileDto:
       required:
       - activitySummaryDto
@@ -2262,11 +2340,16 @@ components:
           format: date-time
     ServiceConfig:
       required:
+      - configurationInstructionHtml
+      - displayName
       - isolationModes
       - parameterDescriptions
       - serviceName
+      - usageInstructionHtml
       type: object
       properties:
+        displayName:
+          type: string
         serviceName:
           type: string
         parameterDescriptions:
@@ -2281,6 +2364,14 @@ components:
             enum:
             - SHARED
             - ISOLATED
+        configurationInstructionHtml:
+          type: object
+          additionalProperties:
+            type: string
+        usageInstructionHtml:
+          type: object
+          additionalProperties:
+            type: string
     ActivityFilesDto:
       required:
       - activityModuleIdToUserFiles

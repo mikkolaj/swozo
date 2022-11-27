@@ -24,7 +24,7 @@ import { opposite, SortDirection, sorted, SortKey, withSortDirection } from './u
 export const FilesListView = () => {
     const { t } = useTranslation();
     const { me } = useMeQuery();
-    const { pushApiError, removeApiError, isApiErrorSet } = useApiErrorHandling({});
+    const { pushApiError } = useApiErrorHandling({});
     const [sortDirection, setSortDirection] = useState<SortDirection>('DESC');
     const [sortKey, setSortKey] = useState<SortKey>('createdAt');
     const sortedFiles = useMemo(() => sorted(me?.favouriteFiles, sortKey), [me, sortKey]);

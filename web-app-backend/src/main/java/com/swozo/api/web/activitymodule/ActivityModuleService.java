@@ -40,6 +40,7 @@ public class ActivityModuleService {
 
     @Transactional
     public void addActivityLinks(Long activityModuleId, Long scheduleRequestId, List<ActivityLinkInfo> links) {
+        logger.info("Adding links to module {} with scheduleRequestId {}", activityModuleId, scheduleRequestId);
         var activityModule = activityModuleRepository.findById(activityModuleId).orElseThrow();
         var scheduleInfos = activityModule.getSchedules().stream()
                 .filter(scheduleInfo -> scheduleInfo.getScheduleRequestId().equals(scheduleRequestId))
@@ -91,6 +92,7 @@ public class ActivityModuleService {
     }
 
     public void confirmLinkCanBeDeliveredToStudents(Long teacherId, Long activityModuleId) {
+        logger.info("Confirming link delivery for {}", activityModuleId);
         var activityModule = activityModuleRepository.findById(activityModuleId).orElseThrow();
         if (!activityModule.getTeacher().getId().equals(teacherId)) {
             throw new UnauthorizedException("You are not authorized to confirm link delivery");

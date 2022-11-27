@@ -2,6 +2,7 @@ package com.swozo.api.orchestrator;
 
 import com.swozo.api.web.activity.ActivityRepository;
 import com.swozo.api.web.activitymodule.ActivityScheduleInfoRepository;
+import com.swozo.api.web.exceptions.types.mda.PolicyNotMetException;
 import com.swozo.mda.MdaEngine;
 import com.swozo.model.scheduling.ScheduleRequest;
 import com.swozo.model.scheduling.ScheduleResponse;
@@ -9,6 +10,7 @@ import com.swozo.model.scheduling.properties.MdaVmSpecs;
 import com.swozo.model.scheduling.properties.ServiceDescription;
 import com.swozo.model.scheduling.properties.ServiceLifespan;
 import com.swozo.model.scheduling.properties.ServiceType;
+import com.swozo.persistence.BaseEntity;
 import com.swozo.persistence.Course;
 import com.swozo.persistence.activity.Activity;
 import com.swozo.persistence.activity.ActivityModule;
@@ -45,7 +47,9 @@ public class ScheduleService {
     private final ActivityScheduleInfoRepository activityScheduleInfoRepository;
 
     public void scheduleActivities(Collection<Activity> activities) {
+        logger.info("Scheduling activities: {}", activities.stream().map(BaseEntity::getId).toList());
         var scheduleRequestsWithInfos= activities.stream()
+                .filter(activity -> !activity.getModules().isEmpty())
                 .flatMap(this::buildScheduleRequestsForActivity)
                 .toList();
 
@@ -57,6 +61,7 @@ public class ScheduleService {
 
         iterateSimultaneously(scheduleRequestsWithInfos, responses, this::assignScheduleResponse);
         activityRepository.saveAll(activities);
+        logger.info("Successfully scheduled activities: {}", activities);
     }
 
     public void addStudentToAlreadyScheduledActivities(Course course, User student) {
@@ -79,17 +84,30 @@ public class ScheduleService {
         activityScheduleInfoRepository.saveAll(scheduleInfos);
     }
 
-    public LocalDateTime getAsapScheduleAvailability() {
-        // TODO don't hardcode this
-        return LocalDateTime.now().plusMinutes(5);
+    public LocalDateTime getAsapScheduleAvailability(String serviceName) {
+        return orchestratorService.getEstimatedAsapServiceAvailability(serviceName);
+    }
+
+    public void cancelAllActivitySchedules(Activity activity) {
+        orchestratorService.cancelScheduleRequests(
+                activity.getModules().stream()
+                        .flatMap(activityModule -> activityModule.getSchedules().stream())
+                        .map(ActivityModuleScheduleInfo::getScheduleRequestId)
+                        .distinct()
+                        .toList()
+        );
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> buildScheduleRequestsForActivity(Activity activity) {
-        var psm = engine.processCim(activity.getCourse(), activity);
-        return Stream.concat(
-                handleTeacherScheduling(psm, activity),
-                handleStudentScheduling(psm, activity)
+        try {
+            var psm = engine.processCim(activity.getCourse(), activity);
+            return Stream.concat(
+                    handleTeacherScheduling(psm, activity),
+                    handleStudentScheduling(psm, activity)
             );
+        } catch (PolicyNotMetException policyNotMetException) {
+            throw policyNotMetException.withAdditionalInfoAbout(activity);
+        }
     }
 
     private Stream<ScheduleRequestWithScheduleInfos> handleTeacherScheduling(Psm psm, Activity activity) {
@@ -162,7 +180,6 @@ public class ScheduleService {
         scheduleRequestData.scheduleInfos()
                 .forEach(scheduleInfo -> scheduleInfo.setScheduleRequestId(scheduleRequestId));
     }
-
 
     private boolean canAcceptNewStudent(ActivityModuleScheduleInfo scheduleInfo) {
         return scheduleInfo.getUserActivityModuleData().isEmpty() ||

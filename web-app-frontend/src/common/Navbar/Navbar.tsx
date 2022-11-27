@@ -14,7 +14,7 @@ import { logout, setRolePreference } from 'services/features/auth/authSlice';
 import { useAppDispatch } from 'services/store';
 import {
     ADMIN,
-    ANY_BUT_NOT_ADMIN,
+    ANY_EXCEPT_ADMIN,
     STUDENT,
     TEACHER,
     TECHNICAL_TEACHER,
@@ -45,6 +45,9 @@ export const Navbar = () => {
                         <WithRole roles={[STUDENT]}>
                             <NavbarItem textI18n="navbar.myFiles" route={PageRoutes.FILES} />
                         </WithRole>
+                        <WithRole roles={ANY_EXCEPT_ADMIN}>
+                            <NavbarItem textI18n="navbar.services" route={PageRoutes.SERVICES} />
+                        </WithRole>
                         <WithRole roles={[TEACHER]}>
                             <NavbarItem textI18n="navbar.publicModules" route={PageRoutes.PUBLIC_MODULES} />
                         </WithRole>
@@ -54,18 +57,23 @@ export const Navbar = () => {
                         <WithRole roles={[STUDENT]}>
                             <NavbarItem textI18n="navbar.publicCourses" route={PageRoutes.PUBLIC_COURSES} />
                         </WithRole>
-                        <WithRole roles={ANY_BUT_NOT_ADMIN}>
+                        <WithRole roles={ANY_EXCEPT_ADMIN}>
                             <NavbarItem textI18n="navbar.myCourses" route={PageRoutes.MY_COURSES} />
+                        </WithRole>
+                        <WithRole roles={ANY_EXCEPT_ADMIN}>
                             <NotificationBell notifications={[]} />
                         </WithRole>
                         <WithRole roles={[ADMIN]}>
+                            <NavbarItem
+                                textI18n="navbar.upcomingActivities"
+                                route={PageRoutes.UPCOMING_ACTIVITIES}
+                            />
                             <NavbarItem
                                 textI18n="navbar.virtualMachines"
                                 route={PageRoutes.VIRTUAL_MACHINES}
                             />
                             <NavbarItem textI18n="navbar.userManagement" route={PageRoutes.HOME} />
                         </WithRole>
-
                         <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
                             <Avatar sx={{ width: AVATAR_WIDTH, height: AVATAR_HEIGHT }}>
                                 {me?.name[0]?.toUpperCase() ?? '?'}

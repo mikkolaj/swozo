@@ -7,7 +7,7 @@ import { StackedList } from 'common/StackedList/StackedList';
 import { StackedListContent } from 'common/StackedList/StackedListContent';
 import { StackedListHeader } from 'common/StackedList/StackedListHeader';
 import { InstructionView } from 'common/Styled/InstructionView';
-import { stylesColumnCenteredHorizontal, stylesRow } from 'common/styles';
+import { stylesColumnCenteredHorizontal } from 'common/styles';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from 'react-query';
@@ -141,9 +141,6 @@ export const VirtualMachinesList = ({ vms, onSwitchToCreator }: Props) => {
                             instruction={{ untrustedPossiblyDangerousHtml: describedVm.descriptionHtml }}
                         />
                     )}
-                    <Box sx={{ ...stylesRow, justifyContent: 'flex-end' }}>
-                        <Button>{t('admin.vms.list.details.close')}</Button>
-                    </Box>
                 </Box>
             </CenteredModal>
         </Box>

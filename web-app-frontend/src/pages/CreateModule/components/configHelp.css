@@ -1,0 +1,17 @@
+.params {
+    margin-bottom: 20px;
+}
+
+.params ul {
+    margin-left: 32px;
+}
+
+.params pre {
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+.specs ul {
+    margin-left: 32px;
+    margin-bottom: 10px;
+}

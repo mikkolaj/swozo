@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum PolicyType {
-    MAX_VCPU(2, true),
+    MAX_VCPU(4, true),
     MAX_RAM_GB(4, true),
     MAX_DISK_GB(32, true),
     MAX_BANDWIDTH_MBPS(8192, true),

@@ -20,6 +20,8 @@ export class PageRoutes {
     static readonly ADMIN = '/admin';
     static readonly ADMIN_USER_DETAILS = `${this.ADMIN}/users/:userId`;
     static readonly VIRTUAL_MACHINES = `${this.ADMIN}/virtual-machines`;
+    static readonly UPCOMING_ACTIVITIES = `${this.ADMIN}/upcoming-activities`;
+    static readonly SERVICES = '/services';
     static readonly HELP = '/help';
 
     static Course(courseId: string | number): string {
@@ -63,8 +65,22 @@ export class PageRoutes {
         return RouteBuilder.of(this.ADMIN_USER_DETAILS).withReplaced('userId', userId).build();
     }
 
+    static Service(serviceName: string): string {
+        return this.withQueryParams(this.SERVICES, { serviceName });
+    }
+
     static withOrigin(route: string): string {
         return `${window.location.origin}${route}`;
+    }
+
+    static withQueryParams(route: string, params: Record<string, string>) {
+        return (
+            route +
+            '?' +
+            Object.entries(params)
+                .map(([k, v]) => `${k}=${v}`)
+                .join('&')
+        );
     }
 }
 

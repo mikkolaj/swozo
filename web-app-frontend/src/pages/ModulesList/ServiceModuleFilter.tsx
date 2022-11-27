@@ -2,7 +2,6 @@ import { Box, MenuItem } from '@mui/material';
 import { ServiceConfig } from 'api';
 import { FormSelectField } from 'common/Input/FormSelectField';
 import { Form, Formik, useFormikContext } from 'formik';
-import _ from 'lodash';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -38,9 +37,9 @@ export const ServiceModuleFilter = ({ initialValues, supportedServices, onModifi
                             i18nLabel="createModule.slides.0.form.service"
                         >
                             <MenuItem value={''}>{t('publicModules.any')}</MenuItem>
-                            {supportedServices.map(({ serviceName }) => (
-                                <MenuItem key={serviceName} value={serviceName}>
-                                    {_.capitalize(serviceName)}
+                            {supportedServices.map(({ displayName }) => (
+                                <MenuItem key={displayName} value={displayName}>
+                                    {displayName}
                                 </MenuItem>
                             ))}
                         </FormSelectField>

@@ -68,6 +68,12 @@ export interface ActivitySummaryDto {
      * @memberof ActivitySummaryDto
      */
     endTime: Date;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ActivitySummaryDto
+     */
+    cancelled: boolean;
 }
 
 export function ActivitySummaryDtoFromJSON(json: any): ActivitySummaryDto {
@@ -87,6 +93,7 @@ export function ActivitySummaryDtoFromJSONTyped(json: any, ignoreDiscriminator: 
         'teacher': UserDetailsDtoFromJSON(json['teacher']),
         'startTime': (new Date(json['startTime'])),
         'endTime': (new Date(json['endTime'])),
+        'cancelled': json['cancelled'],
     };
 }
 
@@ -106,6 +113,7 @@ export function ActivitySummaryDtoToJSON(value?: ActivitySummaryDto | null): any
         'teacher': UserDetailsDtoToJSON(value.teacher),
         'startTime': (value.startTime.toISOString()),
         'endTime': (value.endTime.toISOString()),
+        'cancelled': value.cancelled,
     };
 }
 

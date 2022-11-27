@@ -5,7 +5,12 @@ import { PageContainer } from 'common/PageContainer/PageContainer';
 import { PageContainerWithLoader } from 'common/PageContainer/PageContainerWIthLoader';
 import { ButtonWithIconAndText } from 'common/Styled/ButtonWithIconAndText';
 import { PageHeaderText } from 'common/Styled/PageHeaderText';
-import { stylesColumnCenteredVertical, stylesRow, stylesRowWithItemsAtTheEnd } from 'common/styles';
+import {
+    FORM_INPUT_WIDTH_NUM,
+    stylesColumnCenteredVertical,
+    stylesRow,
+    stylesRowWithItemsAtTheEnd,
+} from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
 import { useRequiredParams } from 'hooks/useRequiredParams';
@@ -83,7 +88,10 @@ export const PublicModuleView = () => {
                                 i18nLabel="publicModule.usedBy"
                             />
                         </Box>
-                        <ServiceModuleGeneralInfo serviceModule={serviceModule} />
+                        <ServiceModuleGeneralInfo
+                            descriptionWidth={`${2 * FORM_INPUT_WIDTH_NUM + 17}px`}
+                            serviceModule={serviceModule}
+                        />
                     </Box>
                 </Grid>
             </Grid>

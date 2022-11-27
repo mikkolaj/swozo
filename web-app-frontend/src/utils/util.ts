@@ -26,8 +26,7 @@ export const formatDateTime = (date: Date): string => {
 export const withDate = (time: Dayjs, date: Dayjs): Dayjs =>
     time.set('year', date.get('year')).set('month', date.get('month')).set('date', date.get('date'));
 
-export const formatName = (firstName?: string, lastName?: string) =>
-    _.capitalize(`${firstName ?? ''} ${lastName ?? ''}`).trim();
+export const formatName = (firstName?: string, lastName?: string) => `${firstName ?? ''} ${lastName ?? ''}`;
 
 export const formatBytes = (size: number): string => humanFileSize(size, true);
 

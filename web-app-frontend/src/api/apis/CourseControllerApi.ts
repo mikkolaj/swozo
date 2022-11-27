@@ -52,6 +52,11 @@ export interface AddStudentToCourseRequest {
     modifyParticipantRequest: ModifyParticipantRequest;
 }
 
+export interface DeleteActivityRequest {
+    courseId: number;
+    activityId: number;
+}
+
 export interface DeleteCourseRequest {
     id: number;
 }
@@ -210,6 +215,46 @@ export class CourseControllerApi extends runtime.BaseAPI {
      */
     async addStudentToCourse(requestParameters: AddStudentToCourseRequest, initOverrides?: RequestInit): Promise<CourseDetailsDto> {
         const response = await this.addStudentToCourseRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async deleteActivityRaw(requestParameters: DeleteActivityRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CourseDetailsDto>> {
+        if (requestParameters.courseId === null || requestParameters.courseId === undefined) {
+            throw new runtime.RequiredError('courseId','Required parameter requestParameters.courseId was null or undefined when calling deleteActivity.');
+        }
+
+        if (requestParameters.activityId === null || requestParameters.activityId === undefined) {
+            throw new runtime.RequiredError('activityId','Required parameter requestParameters.activityId was null or undefined when calling deleteActivity.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("JWT_AUTH", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/courses/{courseId}/activities/{activityId}`.replace(`{${"courseId"}}`, encodeURIComponent(String(requestParameters.courseId))).replace(`{${"activityId"}}`, encodeURIComponent(String(requestParameters.activityId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CourseDetailsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async deleteActivity(requestParameters: DeleteActivityRequest, initOverrides?: RequestInit): Promise<CourseDetailsDto> {
+        const response = await this.deleteActivityRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

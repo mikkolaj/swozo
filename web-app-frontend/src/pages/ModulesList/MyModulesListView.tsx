@@ -59,7 +59,10 @@ export const MyModulesListView = () => {
                     </Stack>
                 ) : (
                     <Box sx={{ ...stylesColumnCenteredHorizontal, justifyContent: 'center', mt: 8 }}>
-                        <Typography sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }} variant="h4">
+                        <Typography
+                            sx={{ overflowX: 'hidden', textOverflow: 'ellipsis', textAlign: 'center' }}
+                            variant="h4"
+                        >
                             {t('myModules.empty')}
                         </Typography>
                         <Button
