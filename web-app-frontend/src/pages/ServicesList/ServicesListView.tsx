@@ -5,6 +5,7 @@ import { PageHeaderText } from 'common/Styled/PageHeaderText';
 import { stylesRowCenteredVertical } from 'common/styles';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
+import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
@@ -47,23 +48,25 @@ export const ServicesListView = () => {
         >
             <Container>
                 <Stack spacing={2} px={2}>
-                    {supportedServices?.map(({ serviceName, displayName, usageInstructionHtml }) => (
-                        <Box key={serviceName} sx={{ position: 'relative' }}>
-                            <div
-                                style={{ position: 'absolute', top: '-200px' }}
-                                ref={(el) => {
-                                    if (displayName === searchParams.get('serviceName')) {
-                                        setSearchedServiceRef(el);
-                                    }
-                                }}
-                            />
-                            <ServiceInfoView
-                                key={serviceName}
-                                serviceName={displayName}
-                                usageInfo={getTranslated(i18n, usageInstructionHtml)}
-                            />
-                        </Box>
-                    ))}
+                    {_.sortBy(supportedServices, (service) => service.displayName).map(
+                        ({ serviceName, displayName, usageInstructionHtml }) => (
+                            <Box key={serviceName} sx={{ position: 'relative' }}>
+                                <div
+                                    style={{ position: 'absolute', top: '-200px' }}
+                                    ref={(el) => {
+                                        if (displayName === searchParams.get('serviceName')) {
+                                            setSearchedServiceRef(el);
+                                        }
+                                    }}
+                                />
+                                <ServiceInfoView
+                                    key={serviceName}
+                                    serviceName={displayName}
+                                    usageInfo={getTranslated(i18n, usageInstructionHtml)}
+                                />
+                            </Box>
+                        )
+                    )}
                 </Stack>
             </Container>
         </PageContainer>
