@@ -36,8 +36,9 @@ function canHaveRolePreference(authData?: AuthDetailsDto, pref?: AuthDetailsDtoR
 }
 
 function getDefaultRolePreference(authData: AuthDetailsDto): AuthDetailsDtoRolesEnum | undefined {
-    if (hasRole(authData, AuthDetailsDtoRolesEnum.Teacher, AuthDetailsDtoRolesEnum.TechnicalTeacher))
-        return AuthDetailsDtoRolesEnum.Teacher;
+    if (hasRole(authData, AuthDetailsDtoRolesEnum.TechnicalTeacher))
+        return AuthDetailsDtoRolesEnum.TechnicalTeacher;
+    if (hasRole(authData, AuthDetailsDtoRolesEnum.Teacher)) return AuthDetailsDtoRolesEnum.Teacher;
 }
 
 function buildInitialState(): AuthState {
@@ -79,6 +80,9 @@ const handleAuthResponse = createAsyncThunk<
         let rolePreference = loadFromLocalStorage<AuthDetailsDtoRolesEnum>(LOCAL_STORAGE_ROLE_PREF_KEY);
         if (!rolePreference || !canHaveRolePreference(authDetails, rolePreference)) {
             rolePreference = getDefaultRolePreference(authDetails);
+            if (rolePreference) {
+                persistWithLocalStorage(LOCAL_STORAGE_ROLE_PREF_KEY, rolePreference);
+            }
         }
 
         if (rolePreference) {

@@ -19,7 +19,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { triggerError } from 'services/features/error/errorSlice';
 import { useAppDispatch } from 'services/store';
-import { mockGeneralModuleSummaryList } from 'utils/mocks';
 import { PageRoutes } from 'utils/routes';
 import * as Yup from 'yup';
 import { ActivitiesForm, activityValidationSchema } from './components/forms/ActivitiesForm';
@@ -65,9 +64,6 @@ export const CreateCourseView = () => {
         removeApiError,
         isApiErrorSet
     );
-
-    // TODO: call api
-    const [availableGeneralModules] = useState(mockGeneralModuleSummaryList);
 
     const createCourseMutation = useMutation(
         (createCourseRequest: CreateCourseRequest) => getApis().courseApi.addCourse({ createCourseRequest }),
@@ -134,7 +130,7 @@ export const CreateCourseView = () => {
                         values={values[ACTIVITIES_SLIDE]}
                         setFieldValue={setFieldValue}
                         availableLessonModules={availableLessonModules ?? []}
-                        availableGeneralModules={availableGeneralModules}
+                        availableGeneralModules={[]}
                     />
                 ),
                 (_, { values }) => (

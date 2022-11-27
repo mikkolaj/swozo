@@ -136,7 +136,7 @@
                     "deleteActivity": {
                         "label": "Usuń aktywność",
                         "selectLabel": "Wybierz aktywność",
-                        "deleteWithAllData": "Usuń wraz z wszystkimi danymi",
+                        "deleteWithAllData": "Usuń wraz ze wszystkimi danymi",
                         "justCancel": "Odwołaj Aktywność",
                         "confirmDeletion": "Czy na pewno chcesz usunąć tę aktywność? Cofnięcie tej akcji nie będzie możliwe.",
                         "confirmCancel": "Czy na pewno chcesz odwołać aktywność i anulować uruchamianie modułów? Cofnięcie tej akcji nie będzie możliwe.",

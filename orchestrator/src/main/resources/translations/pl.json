@@ -41,7 +41,7 @@
       "instructions": {
         "configuration": "<div class=\"specs\">\n    <h2>Minimalne wymagania techniczne:</h2>\n    <ul>\n        <li>vCpu: 1</li>\n        <li>Pamięć RAM [GB]: 1</li>\n        <li>Rozmiar dysku [GB]: 4</li>\n        <li>Skalowanie wymagań: 20 w każdym polu</li>\n    </ul>\n</div>\n",
         "connection": "<div class=\"steps\">\n    <ol>\n        <li>Otwórz link</li>\n        <li>Natychmiast podłączysz się do wideokonferencji, automatycznie mikrofon będzie wyciszony, a kamera wyłączona.</li>\n    </ol>\n</div>\n",
-        "usage": "<div class=\"summary\">\n    <p>Serwis pozwala na przeprowadzenie wideokonferencji. Więcej informacji można znaleźć na <a href=\"https://jitsi.org/jitsi-meet/\">oficjalnej stronie</a>.</p>\n</div>\n<div class=\"usage-list\">\n    <h2>Główne zastosowania:</h2>\n    <ul>\n        <li>Wideokonferencja z możliwym: użyciem mikrofonu, kamerki, czatu i udostępnianiem ekranu.</li>\n    </ul>\n</div>\n"
+        "usage": "<div class=\"summary\">\n    <p>Serwis pozwala na przeprowadzenie wideokonferencji. Więcej informacji można znaleźć na <a href=\"https://jitsi.org/jitsi-meet/\">oficjalnej stronie</a>.</p>\n</div>\n<div class=\"usage-list\">\n    <h2>Główne zastosowania:</h2>\n    <ul>\n        <li>Wideokonferencja z możliwym użyciem mikrofonu, kamerki, czatu i udostępnianiem ekranu.</li>\n    </ul>\n</div>\n"
       }
     }
   }
