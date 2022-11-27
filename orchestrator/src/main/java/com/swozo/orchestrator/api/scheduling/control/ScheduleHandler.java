@@ -338,7 +338,7 @@ public class ScheduleHandler {
     }
 
     private void updateStatusIfNecessary(ServiceDescriptionEntity description) {
-        if (scheduleRequestTracker.serviceWasDeleted(description.getId())) {
+        if (!scheduleRequestTracker.serviceWasDeleted(description.getId())) {
             scheduleRequestTracker.updateStatus(description, DELETED);
         }
     }
