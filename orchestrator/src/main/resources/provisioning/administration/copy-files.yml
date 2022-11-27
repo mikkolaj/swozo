@@ -1,8 +1,7 @@
 ---
 
 - name: Create a directory if it does not exist
-  hosts: all
-  import_playbook: ./create-directory.yaml
+  import_playbook: ./create-directory.yml
   vars:
     path: '{{ path_to }}'
 

@@ -25,6 +25,8 @@ import static com.swozo.orchestrator.api.scheduling.persistence.entity.ServiceSt
 @ToString
 public class ServiceDescriptionEntity extends BaseEntity {
     private Long activityModuleId;
+
+    @Enumerated(value = EnumType.STRING)
     private ServiceTypeEntity serviceType;
 
     @ElementCollection
