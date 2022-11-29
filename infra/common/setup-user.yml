@@ -1,0 +1,13 @@
+---
+- name: Setup user
+  hosts: all
+  become: yes
+  tasks:
+    - name: Setup user
+      user:
+        create_home: yes
+        home: "/home/{{ new_user }}"
+        name: "{{ new_user }}"
+        append: yes
+        groups:
+          - "sudo"

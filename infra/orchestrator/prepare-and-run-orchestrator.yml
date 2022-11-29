@@ -1,0 +1,71 @@
+---
+- name: Setup swozo user
+  import_playbook: ../common/setup-user.yml
+  vars:
+    new_user: swozo
+
+- name: Install docker
+  import_playbook: ../common/install-docker.yml
+
+- name: Setup networking
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create swozo network
+      community.docker.docker_network:
+        name: swozo
+
+- name: Setup orchestrator database
+  import_playbook: ../db/setup-orchestrator-postgres.yml
+
+- name: Setup orchestrator
+  hosts: orchestrators
+  become: yes
+  vars:
+    user: swozo
+  vars_files:
+    - ../secrets.yml
+  tasks:
+    - name: Create config directory
+      ansible.builtin.file:
+        path: /home/swozo/orchestrator/
+        state: directory
+        mode: "0664"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: Copy configs
+      copy:
+        src: "./{{ item }}"
+        dest: "/home/{{ user }}/orchestrator/{{ item }}"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0664"
+      with_items:
+        - orchestrator-key.json
+        - orchestrator_id_rsa
+
+    - name: Run orchestrator container
+      community.docker.docker_container:
+        name: orchestrator
+        image: flok3n/swozo-orchestrator:latest
+        pull: true
+        ports:
+          - "8080:8080"
+        mounts:
+          - source: "/home/{{ user }}/orchestrator"
+            target: /auth
+            type: bind
+        env:
+          BACKEND_URL: http://10.0.0.195:80
+          DATABASE_HOST: swozo-db
+          DATABASE_PORT: "5432"
+          DATABASE_NAME: swozo-orchestrator-db
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: "{{ orchestrator_db_passwd }}"
+          GCP_PROJECT: swozo-362919
+          GCP_ZONE: europe-central2-a
+          ORCHESTRATOR_SECRET_KEY: "{{ orchestrator_api_key }}"
+          LOG_LEVEL: INFO
+        networks:
+          - name: swozo

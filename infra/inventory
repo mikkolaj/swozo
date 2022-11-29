@@ -1,0 +1,15 @@
+[web-app-backends]
+3.75.191.72
+
+[web-app-backend-dbs]
+3.75.191.72
+
+[orchestrators]
+3.66.86.246
+
+[orchestrator-dbs]
+3.66.86.246
+
+[all:vars]
+ansible_ssh_user=ubuntu
+ansible_ssh_private_key_file=./swozo-web.pem

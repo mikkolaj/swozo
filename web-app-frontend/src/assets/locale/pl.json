@@ -6,7 +6,7 @@
         "loginButton": "Zaloguj się",
         "forgotPassword": "Nie pamiętasz hasła?",
         "invalidCredentials": "Niepoprawny email lub hasło",
-        "tip": "Wskazówka: Jeśli pierwszy raz korzystasz z serwisu, zresetuj hasło podając adres e-mail, który dostałeś od administratora systemu, bądź nauczyciela. Jeśli nie znasz adresu e-mail skontaktuj się z nauczycielem.",
+        "tip": "Wskazówka: Jeśli pierwszy raz korzystasz z serwisu, zresetuj hasło podając adres e-mail, który dostałeś od administratora systemu, bądź nauczyciela.",
         "forgot": {
             "header": "Resetowanie hasła",
             "backToLogin": "Wróć do logowania",
