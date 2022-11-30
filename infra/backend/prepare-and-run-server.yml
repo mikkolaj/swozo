@@ -72,5 +72,6 @@
           INITIAL_ADMIN_EMAIL: flok3n@gmail.com
           INITIAL_ADMIN_NAME: Wojciech
           INITIAL_ADMIN_SURNAME: Admin
+          ENABLE_BOOTSTRAPPING: "true"
         networks:
           - name: swozo

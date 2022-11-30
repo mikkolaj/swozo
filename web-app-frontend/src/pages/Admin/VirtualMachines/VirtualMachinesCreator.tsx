@@ -60,6 +60,12 @@ export const VirtualMachinesCreator = () => {
                                 textFieldProps={{ fullWidth: true }}
                                 labelText={t('admin.vms.create.form.bandwidthMbps')}
                             />
+                            <FormInputField
+                                name={'imageDiskSizeGB'}
+                                type="number"
+                                textFieldProps={{ fullWidth: true }}
+                                labelText={t('admin.vms.create.form.imageDiskSizeGB')}
+                            />
                             <Typography sx={{ mt: 2 }} variant="subtitle1">
                                 {t('admin.vms.create.form.description')}
                             </Typography>

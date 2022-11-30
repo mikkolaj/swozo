@@ -5,5 +5,6 @@ export const initialVmValues = (): CreateVmRequest => ({
     bandwidthMbps: 1024,
     ramGB: 8,
     vcpu: 4,
+    imageDiskSizeGB: 10,
     descriptionHtml: '',
 });

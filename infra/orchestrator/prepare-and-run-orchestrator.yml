@@ -65,7 +65,9 @@
           DATABASE_PASSWORD: "{{ orchestrator_db_passwd }}"
           GCP_PROJECT: swozo-362919
           GCP_ZONE: europe-central2-a
+          GCP_SSH_USER: swozo
           ORCHESTRATOR_SECRET_KEY: "{{ orchestrator_api_key }}"
+          ANSIBLE_PLAYBOOK_EXECUTABLE_PATH: /root/.local/bin/ansible-playbook
           LOG_LEVEL: INFO
         networks:
           - name: swozo

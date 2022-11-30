@@ -646,7 +646,8 @@
                 "form": {
                     "name": "Nazwa maszyny w systemie dostawcy usług chmurowych",
                     "vcpu": "Liczba wirtualnych procesorów",
-                    "ramGb": "Liczba pamięci RAM [GB]",
+                    "ramGB": "Liczba pamięci RAM [GB]",
+                    "imageDiskSizeGB": "Rozmiar dysku potrzebny do działania systemu operacyjnego [GB]",
                     "bandwidthMbps": "Szerokość pasma [Mb/s]",
                     "description": "Opis maszyny",
                     "submit": "Zapisz metadane maszyny"
