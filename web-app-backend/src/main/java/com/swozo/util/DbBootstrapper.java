@@ -140,6 +140,20 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         course.setPublic(false);
         courseRepository.save(course);
 
+        Course course2 = new Course();
+        course2.setName("Systemy rekomendacyjne");
+        course2.setSubject("Informatyka");
+        course2.setDescription("Kurs omawia zagadnienia związane z budową systemów rekomendacyjnych");
+        course2.setTeacher(teacher);
+        course2.setPassword("haslo");
+        course2.setExpectedStudentCount(2);
+        course2.setJoinUUID(UUID.randomUUID().toString());
+        course2.setStudents(List.of(new UserCourseData(student1, course2), new UserCourseData(student2, course2)));
+        course2.setSandboxMode(false);
+        course2.setPublic(false);
+        courseRepository.save(course2);
+
+
         //        FILES
         var jupyterFile = new RemoteFile();
         jupyterFile.setPath("lab_file.ipynb");
@@ -284,28 +298,137 @@ public class DbBootstrapper implements ApplicationListener<ContextRefreshedEvent
         activityModule3.addScheduleInfo(activityModuleScheduleInfo2);
 
         Activity activity = new Activity();
-        activity.setName("Pętle, konstrukcje warunkowe");
+        activity.setName("Podstawy języka Python. Typy modyfikowalne i niemodyfikowalne.");
         activity.setDescription("podstawy");
         activity.setStartTime(LocalDateTime.of(2022,
-                Month.JULY, 29, 17, 30, 40));
+                Month.DECEMBER, 1, 17, 30, 40));
         activity.setEndTime(LocalDateTime.of(2022,
-                Month.JULY, 29, 19, 30, 40));
+                Month.DECEMBER, 1, 19, 30, 40));
         activity.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
         activity.addActivityModule(activityModule1);
         course.addActivity(activity);
         activityRepository.save(activity);
 
         Activity activity2 = new Activity();
-        activity2.setName("Machine Learning");
+        activity2.setName("Łańcuchy, listy, krotki, zbiory i słowniki. Funkcje i lambdy.");
         activity2.setDescription("podstawy");
         activity2.setStartTime(LocalDateTime.of(2022,
-                Month.JULY, 30, 15, 30, 40));
+                Month.DECEMBER, 5, 17, 30, 40));
         activity2.setEndTime(LocalDateTime.of(2022,
-                Month.JULY, 30, 17, 0, 40));
+                Month.DECEMBER, 5, 19, 30, 40));
         activity2.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
         activity2.addActivityModule(activityModule2);
         course.addActivity(activity2);
         activityRepository.save(activity2);
+
+        Activity activity13 = new Activity();
+        activity13.setName("Obiektowość w Pythonie. Dziedziczenie.");
+        activity13.setDescription("podstawy");
+        activity13.setStartTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 8, 17, 30, 40));
+        activity13.setEndTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 8, 19, 30, 40));
+        activity13.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity13.addActivityModule(activityModule2);
+        course.addActivity(activity13);
+        activityRepository.save(activity13);
+
+        Activity activity14 = new Activity();
+        activity14.setName("Wyjątki. Generatory. Context manager.");
+        activity14.setDescription("podstawy");
+        activity14.setStartTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 12, 17, 30, 40));
+        activity14.setEndTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 12, 19, 30, 40));
+        activity14.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity14.addActivityModule(activityModule2);
+        course.addActivity(activity14);
+        activityRepository.save(activity14);
+
+        Activity activity15 = new Activity();
+        activity15.setName("Obsługa plików. Dekoratory. Programowanie funkcyjne.");
+        activity15.setDescription("podstawy");
+        activity15.setStartTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 15, 17, 30, 40));
+        activity15.setEndTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 15, 19, 30, 40));
+        activity15.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity15.addActivityModule(activityModule2);
+        course.addActivity(activity15);
+        activityRepository.save(activity15);
+
+        Activity activity16 = new Activity();
+        activity16.setName("Algorytmy oparte na treści - wykład");
+        activity16.setDescription("podstawy");
+        activity16.setStartTime(LocalDateTime.of(2022,
+                Month.NOVEMBER, 28, 9, 40, 40));
+        activity16.setEndTime(LocalDateTime.of(2022,
+                Month.NOVEMBER, 28, 11, 10, 40));
+        activity16.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity16.addActivityModule(activityModule2);
+        course2.addActivity(activity16);
+        activityRepository.save(activity16);
+
+        Activity activity3 = new Activity();
+        activity3.setName("Algorytmy oparte na treści - ćwiczenia");
+        activity3.setDescription("podstawy");
+        activity3.setStartTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 2, 14, 40, 40));
+        activity3.setEndTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 2, 16, 10, 40));
+        activity3.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity3.addActivityModule(activityModule1);
+        course2.addActivity(activity3);
+        activityRepository.save(activity3);
+
+        Activity activity4 = new Activity();
+        activity4.setName("Algorytmy wielorękich bandytów - wykład");
+        activity4.setDescription("podstawy");
+        activity4.setStartTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 5, 9, 40, 40));
+        activity4.setEndTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 5, 11, 10, 40));
+        activity4.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity4.addActivityModule(activityModule2);
+        course2.addActivity(activity4);
+        activityRepository.save(activity4);
+
+        Activity activity5 = new Activity();
+        activity5.setName("Algorytmy wielorękich bandytów - ćwiczenia");
+        activity5.setDescription("podstawy");
+        activity5.setStartTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 9, 14, 40, 40));
+        activity5.setEndTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 9, 16, 10, 40));
+        activity5.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity5.addActivityModule(activityModule2);
+        course2.addActivity(activity5);
+        activityRepository.save(activity5);
+
+        Activity activity6 = new Activity();
+        activity6.setName("Podział użytkowników na grupy według zainteresowań - wykład");
+        activity6.setDescription("podstawy");
+        activity6.setStartTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 12, 9, 40, 40));
+        activity6.setEndTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 12, 11, 10, 40));
+        activity6.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity6.addActivityModule(activityModule2);
+        course2.addActivity(activity6);
+        activityRepository.save(activity6);
+
+        Activity activity7 = new Activity();
+        activity7.setName("Podział użytkowników na grupy według zainteresowań - ćwiczenia");
+        activity7.setDescription("podstawy");
+        activity7.setStartTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 16, 14, 40, 40));
+        activity7.setEndTime(LocalDateTime.of(2022,
+                Month.DECEMBER, 16, 16, 10, 40));
+        activity7.setInstructionFromTeacherHtml("Przed zajęciami należy przeczytać dokumentacje Pythona");
+        activity7.addActivityModule(activityModule2);
+        course2.addActivity(activity7);
+        activityRepository.save(activity7);
+
 
 //        POLICIES:
 
