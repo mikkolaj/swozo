@@ -62,6 +62,12 @@ export interface ServiceConfig {
      * @memberof ServiceConfig
      */
     usageInstructionHtml: { [key: string]: string; };
+    /**
+     * 
+     * @type {number}
+     * @memberof ServiceConfig
+     */
+    provisioningSeconds: number;
 }
 
 /**
@@ -89,6 +95,7 @@ export function ServiceConfigFromJSONTyped(json: any, ignoreDiscriminator: boole
         'isolationModes': json['isolationModes'],
         'configurationInstructionHtml': json['configurationInstructionHtml'],
         'usageInstructionHtml': json['usageInstructionHtml'],
+        'provisioningSeconds': json['provisioningSeconds'],
     };
 }
 
@@ -107,6 +114,7 @@ export function ServiceConfigToJSON(value?: ServiceConfig | null): any {
         'isolationModes': value.isolationModes,
         'configurationInstructionHtml': value.configurationInstructionHtml,
         'usageInstructionHtml': value.usageInstructionHtml,
+        'provisioningSeconds': value.provisioningSeconds,
     };
 }
 

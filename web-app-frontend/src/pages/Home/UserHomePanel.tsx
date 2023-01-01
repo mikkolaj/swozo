@@ -3,7 +3,7 @@ import { ActivitySummaryDto } from 'api';
 import { getApis } from 'api/initialize-apis';
 import { Calendar } from 'common/Calendar/Calendar';
 import { LinkedTypography } from 'common/Styled/LinkedTypography';
-import { stylesRowWithSpaceBetweenItems } from 'common/styles';
+import { NoOverflowTypography } from 'common/Styled/NoOverflowTypography';
 import dayjs from 'dayjs';
 import { useErrorHandledQuery } from 'hooks/query/useErrorHandledQuery';
 import { useApiErrorHandling } from 'hooks/useApiErrorHandling';
@@ -92,25 +92,32 @@ export const UserHomePanel = () => {
                                 {t('home.activeCourses')}
                             </Typography>
                             <Divider />
-                            {past.slice(0, 10).map(({ id, courseId, courseName, name }) => (
-                                <Paper
-                                    key={`${courseId}_${id}`}
-                                    sx={{
-                                        p: 1,
-                                        m: 2,
-                                        boxShadow: 2,
-                                        ...stylesRowWithSpaceBetweenItems,
-                                    }}
-                                >
-                                    <LinkedTypography
-                                        decorated
-                                        sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}
-                                        to={PageRoutes.Course(courseId)}
-                                        text={courseName}
-                                    />
-                                    <Typography>{name}</Typography>
-                                </Paper>
-                            ))}
+                            {_.reverse(past)
+                                .slice(0, 10)
+                                .map(({ id, courseId, courseName, name }) => (
+                                    <Paper
+                                        key={`${courseId}_${id}`}
+                                        sx={{
+                                            p: 1,
+                                            m: 2,
+                                            boxShadow: 2,
+                                        }}
+                                    >
+                                        <Grid container>
+                                            <Grid item xs={5}>
+                                                <LinkedTypography
+                                                    decorated
+                                                    sx={{ overflowX: 'hidden', textOverflow: 'ellipsis' }}
+                                                    to={PageRoutes.Course(courseId)}
+                                                    text={courseName}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={7}>
+                                                <NoOverflowTypography>{name}</NoOverflowTypography>
+                                            </Grid>
+                                        </Grid>
+                                    </Paper>
+                                ))}
                             {past.length === 0 && (
                                 <Typography sx={{ p: 2, textAlign: 'center' }}>
                                     {t('home.noneActive')}

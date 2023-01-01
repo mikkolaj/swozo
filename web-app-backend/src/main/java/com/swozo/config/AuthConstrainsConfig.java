@@ -40,7 +40,8 @@ public class AuthConstrainsConfig {
         var jwtMatcher = AllExceptEndpointMatcher.of(
                 EndpointsConfig.of("/auth/**"),             // auth
                 EndpointsConfig.of("/v3/**"),               // swagger
-                EndpointsConfig.of("/swagger-ui/**")        // swagger UI
+                EndpointsConfig.of("/swagger-ui/**"),       // swagger UI
+                EndpointsConfig.of("/actuator/**")          // health checks etc
         ).andWithoutEndpointsMatchedBy(orchestratorMatcher);
 
         return List.of(

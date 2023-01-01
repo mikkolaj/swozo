@@ -1,0 +1,6 @@
+---
+- name: Run orchestrator
+  import_playbook: ./orchestrator/prepare-and-run-orchestrator.yml
+
+- name: Run web-app-backend
+  import_playbook: ./backend/prepare-and-run-server.yml

@@ -1,0 +1,28 @@
+---
+- name: Setup web-app-backend postgres
+  hosts: web-app-backend-dbs
+  become: yes
+  vars:
+    user: swozo
+  vars_files:
+    - ../secrets.yml
+  tasks:
+    - name: Create data directory
+      ansible.builtin.file:
+        path: "/home/{{ user }}/db"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0664"
+
+    - name: Run Postgres container
+      community.docker.docker_container:
+        name: swozo-db
+        image: postgres:14-alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_DB: swozo-web-db
+          POSTGRES_PASSWORD: "{{ web_db_passwd }}"
+        networks:
+          - name: swozo

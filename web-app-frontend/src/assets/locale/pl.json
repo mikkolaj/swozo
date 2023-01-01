@@ -6,7 +6,7 @@
         "loginButton": "Zaloguj się",
         "forgotPassword": "Nie pamiętasz hasła?",
         "invalidCredentials": "Niepoprawny email lub hasło",
-        "tip": "Wskazówka: Jeśli pierwszy raz korzystasz z serwisu, zresetuj hasło podając adres e-mail, który dostałeś od administratora systemu, bądź nauczyciela. Jeśli nie znasz adresu e-mail skontaktuj się z nauczycielem.",
+        "tip": "Wskazówka: Jeśli pierwszy raz korzystasz z serwisu, zresetuj hasło podając adres e-mail, który dostałeś od administratora systemu, bądź nauczyciela.",
         "forgot": {
             "header": "Resetowanie hasła",
             "backToLogin": "Wróć do logowania",
@@ -646,7 +646,8 @@
                 "form": {
                     "name": "Nazwa maszyny w systemie dostawcy usług chmurowych",
                     "vcpu": "Liczba wirtualnych procesorów",
-                    "ramGb": "Liczba pamięci RAM [GB]",
+                    "ramGB": "Liczba pamięci RAM [GB]",
+                    "imageDiskSizeGB": "Rozmiar dysku potrzebny do działania systemu operacyjnego [GB]",
                     "bandwidthMbps": "Szerokość pasma [Mb/s]",
                     "description": "Opis maszyny",
                     "submit": "Zapisz metadane maszyny"

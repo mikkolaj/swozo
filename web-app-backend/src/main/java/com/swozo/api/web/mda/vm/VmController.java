@@ -2,7 +2,7 @@ package com.swozo.api.web.mda.vm;
 
 import com.swozo.api.web.mda.vm.dto.VmDto;
 import com.swozo.api.web.mda.vm.request.CreateVmRequest;
-import com.swozo.api.web.mda.vm.request.EdtiVmRequest;
+import com.swozo.api.web.mda.vm.request.EditVmRequest;
 import com.swozo.security.AccessToken;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +46,8 @@ public class VmController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public VmDto editVm(AccessToken token, @PathVariable Long id, @RequestBody EdtiVmRequest edtiVmRequest) {
+    public VmDto editVm(AccessToken token, @PathVariable Long id, @RequestBody EditVmRequest editVmRequest) {
         logger.info("editing vm with id: {}", id);
-        return vmService.editVm(id, edtiVmRequest);
+        return vmService.editVm(id, editVmRequest);
     }
 }

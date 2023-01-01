@@ -1,0 +1,12 @@
+- name: Create a directory if it does not exist
+  include: ./create-directory.yml
+  vars:
+    path: "{{ path_to }}"
+
+- name: Copy content of directory to remote host
+  copy:
+    src: "{{ path_from }}"
+    dest: "{{ path_to }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: "{{ mode }}"

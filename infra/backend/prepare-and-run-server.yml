@@ -1,0 +1,77 @@
+---
+- name: Setup swozo user
+  import_playbook: ../common/setup-user.yml
+  vars:
+    new_user: swozo
+
+- name: Install docker
+  import_playbook: ../common/install-docker.yml
+
+- name: Setup networking
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create swozo network
+      community.docker.docker_network:
+        name: swozo
+
+- name: Setup server database
+  import_playbook: ../db/setup-web-app-backend-postgres.yml
+
+- name: Setup backend
+  hosts: web-app-backends
+  become: yes
+  vars:
+    user: swozo
+  vars_files:
+    - ../secrets.yml
+  tasks:
+    - name: Create config directory
+      ansible.builtin.file:
+        path: /home/swozo/backend/
+        state: directory
+        mode: "0664"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: Copy configs
+      copy:
+        src: ./gcp-service-key.json
+        dest: "/home/{{ user }}/backend/gcp-service-key.json"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0664"
+
+    - name: Run web-app-backend container
+      community.docker.docker_container:
+        name: web-app-backend
+        image: flok3n/swozo-web-app-backend:latest
+        pull: true
+        ports:
+          - "80:5000"
+        mounts:
+          - source: "/home/{{ user }}/backend"
+            target: /auth
+            type: bind
+        env:
+          WEB_SERVER_URL: http://swozo-project.s3-website.eu-central-1.amazonaws.com/
+          ORCHESTRATOR_URL: http://10.0.0.154:8080
+          DATABASE_HOST: swozo-db
+          DATABASE_PORT: "5432"
+          DATABASE_NAME: swozo-web-db
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: "{{ web_db_passwd }}"
+          JWT_SIGNATURE_SECRET_KEY: "{{ server_jwt_key }}"
+          ORCHESTRATOR_SECRET_KEY: "{{ orchestrator_api_key }}"
+          GCP_WEB_BUCKET_NAME: swozo-dev-bucket-with-at-most-64-chars-kntp1
+          GCP_PROJECT: swozo-362919
+          GCP_ZONE: europe-central2-a
+          GOOGLE_APPLICATION_CREDENTIALS: /auth/gcp-service-key.json
+          EMAIL_USERNAME: flok3n@gmail.com
+          EMAIL_PASSWORD: "{{ email_passwd }}"
+          INITIAL_ADMIN_EMAIL: flok3n@gmail.com
+          INITIAL_ADMIN_NAME: Wojciech
+          INITIAL_ADMIN_SURNAME: Admin
+          ENABLE_BOOTSTRAPPING: "true"
+        networks:
+          - name: swozo

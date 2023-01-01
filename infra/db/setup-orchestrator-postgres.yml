@@ -1,0 +1,28 @@
+---
+- name: Setup orchestrator postgres
+  hosts: orchestrator-dbs
+  become: yes
+  vars:
+    user: swozo
+  vars_files:
+    - ../secrets.yml
+  tasks:
+    - name: Create data directory
+      ansible.builtin.file:
+        path: "/home/{{ user }}/orchestrator-db"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: "0664"
+
+    - name: Run Postgres container
+      community.docker.docker_container:
+        name: swozo-db
+        image: postgres:14-alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_DB: swozo-orchestrator-db
+          POSTGRES_PASSWORD: "{{ orchestrator_db_passwd }}"
+        networks:
+          - name: swozo

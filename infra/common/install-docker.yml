@@ -1,0 +1,52 @@
+---
+- name: Install docker on remote machine
+  become: yes
+  hosts: all
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install docker dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+
+    - name: Add docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository to apt
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Install docker
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+        - docker-compose-plugin
+
+    - name: Install Docker module's dependencies
+      apt:
+        name: python3-pip
+        state: present
+
+    - name: Install Docker module's pip dependencies
+      pip:
+        name: "{{ item }}"
+      with_items:
+        - setuptools
+        - virtualenv
+        - docker
+        - docker-compose

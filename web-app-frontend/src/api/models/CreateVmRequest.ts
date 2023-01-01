@@ -42,6 +42,12 @@ export interface CreateVmRequest {
      * @type {number}
      * @memberof CreateVmRequest
      */
+    imageDiskSizeGB: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateVmRequest
+     */
     bandwidthMbps: number;
     /**
      * 
@@ -64,6 +70,7 @@ export function CreateVmRequestFromJSONTyped(json: any, ignoreDiscriminator: boo
         'name': json['name'],
         'vcpu': json['vcpu'],
         'ramGB': json['ramGB'],
+        'imageDiskSizeGB': json['imageDiskSizeGB'],
         'bandwidthMbps': json['bandwidthMbps'],
         'descriptionHtml': json['descriptionHtml'],
     };
@@ -81,6 +88,7 @@ export function CreateVmRequestToJSON(value?: CreateVmRequest | null): any {
         'name': value.name,
         'vcpu': value.vcpu,
         'ramGB': value.ramGB,
+        'imageDiskSizeGB': value.imageDiskSizeGB,
         'bandwidthMbps': value.bandwidthMbps,
         'descriptionHtml': value.descriptionHtml,
     };

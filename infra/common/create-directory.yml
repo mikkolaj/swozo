@@ -1,0 +1,13 @@
+---
+- name: Create required directory
+  hosts: all
+  become: yes
+  become_user: "{{ user }}"
+  tasks:
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: "{{ path }}"
+        state: directory
+        mode: "0777"
+        owner: "{{ user }}"
+        group: "{{ user }}"

@@ -1952,6 +1952,7 @@ components:
       required:
       - bandwidthMbps
       - descriptionHtml
+      - imageDiskSizeGB
       - name
       - ramGB
       - vcpu
@@ -1963,6 +1964,9 @@ components:
           type: integer
           format: int32
         ramGB:
+          type: integer
+          format: int32
+        imageDiskSizeGB:
           type: integer
           format: int32
         bandwidthMbps:
@@ -2344,6 +2348,7 @@ components:
       - displayName
       - isolationModes
       - parameterDescriptions
+      - provisioningSeconds
       - serviceName
       - usageInstructionHtml
       type: object
@@ -2372,6 +2377,9 @@ components:
           type: object
           additionalProperties:
             type: string
+        provisioningSeconds:
+          type: integer
+          format: int32
     ActivityFilesDto:
       required:
       - activityModuleIdToUserFiles
